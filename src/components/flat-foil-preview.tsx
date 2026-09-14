@@ -1,5 +1,6 @@
 import { ArrowDownToLine, Maximize2 } from "lucide-react";
 import { useState } from "react";
+import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
 
 const ARTWORK = {
   large: {
@@ -59,7 +60,7 @@ export default function FlatFoilPreview() {
         <p className="flat-foil-marking-note">
           This preview includes mechanical trim guides. For laser marking, use
           only the marking sheets in the{" "}
-          <a href="/fabrication/small-foil/foil-kit-180mm.zip" download>
+          <a href={FABRICATION_DOWNLOADS.smallKit} download>
             180 mm foil kit
           </a>
           .

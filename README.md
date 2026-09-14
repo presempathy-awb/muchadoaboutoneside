@@ -14,8 +14,8 @@ Artists, makers, teachers, and curious people are welcome to use any part of the
 Project-authored code, poem, designs, artwork, fabrication files, and documentation are dual licensed **MIT OR Apache-2.0**, at your option. Choose one license and follow its terms, including its required notices. See [reuse guidance](REUSE.md), [MIT](LICENSE-MIT), and [Apache 2.0](LICENSE-APACHE). Third-party components keep their own licenses: the bundled Great Vibes font is OFL-1.1, and [third-party notices](THIRD_PARTY_NOTICES.md) accompany the dependencies. This does not require the generated calligraphy artwork to use OFL.
 
 - [Download the complete public source](https://github.com/presempathy-awb/muchadoaboutoneside/archive/refs/heads/main.zip)
-- [Large sculpture foil kit](https://muchadoaboutoneside.com/fabrication/laser/panel-kit.zip)
-- [180 mm foil kit](https://muchadoaboutoneside.com/fabrication/small-foil/foil-kit-180mm.zip)
+- [Large sculpture foil kit](https://muchadoaboutoneside.com/fabrication/laser/panel-kit.zip?v=4a13f29f1c91892be9cc806df0e584ede1aa2ce3536ab9253e7114a4dc74d368)
+- [180 mm foil kit](https://muchadoaboutoneside.com/fabrication/small-foil/foil-kit-180mm.zip?v=3a5b2613bd9823fb748a60b5ae9dea15453117d4ae80d58265191af7b90b5bff)
 - [Printable 180 mm STL](https://muchadoaboutoneside.com/fabrication/print/muchado-maquette-180mm.stl)
 - [Editable sculpture OBJ](https://muchadoaboutoneside.com/api/assets/snake_build.obj)
 - [Poem text](https://muchadoaboutoneside.com/editions/much-ado-about-one-side.txt)

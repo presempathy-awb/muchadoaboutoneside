@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { createApp } from "../server/app";
 import { project } from "../server/project";
+import { FABRICATION_DOWNLOADS } from "../shared/fabrication-downloads";
 
 const app = createApp({
   staticDir: resolve(import.meta.dir, "../dist"),
@@ -11,12 +12,22 @@ const app = createApp({
 const server = app.server;
 if (!server) throw new Error("Smoke server did not start");
 const origin = `http://127.0.0.1:${server.port}`;
+const stableCache = "no-store";
+const immutableCache = "public, max-age=31536000, immutable";
+const versionedFabricationDownloads = new Map(
+  Object.values(FABRICATION_DOWNLOADS).map((url) => [
+    new URL(url, origin).pathname,
+    url,
+  ]),
+);
 
 try {
   let html = "";
   for (const route of ["/", "/foil", "/studio", "/assembly", "/archive"]) {
     const response = await fetch(`${origin}${route}`);
     if (!response.ok) throw new Error(`${route} returned ${response.status}`);
+    if (response.headers.get("cache-control") !== stableCache)
+      throw new Error(`${route} has an unsafe cache policy`);
     html = await response.text();
     if (!html.includes('<div id="root"></div>'))
       throw new Error(`${route} did not serve the app`);
@@ -30,6 +41,8 @@ try {
     const response = await fetch(`${origin}${asset}`);
     if (!response.ok || !(await response.arrayBuffer()).byteLength)
       throw new Error(`Built asset unavailable: ${asset}`);
+    if (response.headers.get("cache-control") !== immutableCache)
+      throw new Error(`Built asset is not immutable: ${asset}`);
   }
   const metadata = await fetch(`${origin}/api/project`).then((response) =>
     response.json(),
@@ -37,12 +50,14 @@ try {
   if (metadata.assets.length !== 4)
     throw new Error("Project metadata unavailable");
   for (const asset of project.assets) {
-    const response = await fetch(`${origin}${asset.url}`);
+    const response = await fetch(`${origin}${asset.url}?v=${asset.sha256}`);
     const hash = new Bun.CryptoHasher("sha256")
       .update(await response.arrayBuffer())
       .digest("hex");
     if (!response.ok || hash !== asset.sha256)
       throw new Error(`Download mismatch: ${asset.name}`);
+    if (response.headers.get("cache-control") !== stableCache)
+      throw new Error(`Download has an unsafe cache policy: ${asset.name}`);
   }
   for (const [path, type] of [
     ["/fonts/GreatVibes-Regular.ttf", "font/ttf"],
@@ -70,16 +85,20 @@ try {
     ["/licenses/LICENSE-APACHE.txt", "text/plain"],
     ["/licenses/REUSE.txt", "text/plain"],
     ["/licenses/THIRD-PARTY-NOTICES.txt", "text/plain"],
-  ]) {
-    const response = await fetch(`${origin}${path}`);
-    const downloaded = await response.arrayBuffer();
+  ] as const) {
     const expected = await Bun.file(
       resolve(import.meta.dir, `../public${path}`),
     ).arrayBuffer();
+    const requestPath = versionedFabricationDownloads.get(path) ?? path;
+    if (path.endsWith(".zip") && requestPath === path)
+      throw new Error(`ZIP lacks a versioned download URL: ${path}`);
+    const response = await fetch(`${origin}${requestPath}`);
+    const downloaded = await response.arrayBuffer();
     if (
       !response.ok ||
       !response.headers.get("content-type")?.includes(type ?? "") ||
-      !Buffer.from(downloaded).equals(Buffer.from(expected))
+      !Buffer.from(downloaded).equals(Buffer.from(expected)) ||
+      response.headers.get("cache-control") !== stableCache
     )
       throw new Error(`Inscription asset mismatch: ${path}`);
   }

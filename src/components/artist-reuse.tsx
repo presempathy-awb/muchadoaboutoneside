@@ -8,6 +8,7 @@ import {
   FileText,
   Sparkles,
 } from "lucide-react";
+import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
 
 interface ReuseDownload {
   href: string;
@@ -19,13 +20,13 @@ interface ReuseDownload {
 
 const downloads: readonly ReuseDownload[] = [
   {
-    href: "/fabrication/laser/panel-kit.zip",
+    href: FABRICATION_DOWNLOADS.largeKit,
     label: "Large foil kit",
     detail: "Patterns, marking art, maps, and notes",
     icon: FileArchive,
   },
   {
-    href: "/fabrication/small-foil/foil-kit-180mm.zip",
+    href: FABRICATION_DOWNLOADS.smallKit,
     label: "180 mm foil kit",
     detail: "Small-scale patterns and marking art",
     icon: FileArchive,

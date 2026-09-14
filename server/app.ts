@@ -9,6 +9,9 @@ export interface AppOptions {
 }
 
 const defaultAssetDir = resolve(import.meta.dir, "../source/assets");
+const stableCache = "no-store";
+const immutableCache = "public, max-age=31536000, immutable";
+const viteAssetPattern = /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.[^/]+$/;
 
 const contentTypes: Record<string, string> = {
   ".css": "text/css; charset=utf-8",
@@ -28,7 +31,10 @@ const contentTypes: Record<string, string> = {
 };
 
 function notFound(message = "Not found") {
-  return Response.json({ error: message }, { status: 404 });
+  return Response.json(
+    { error: message },
+    { status: 404, headers: { "cache-control": stableCache } },
+  );
 }
 
 function safeStaticPath(root: string, pathname: string) {
@@ -45,12 +51,17 @@ function safeStaticPath(root: string, pathname: string) {
     : undefined;
 }
 
-function fileResponse(path: string, headers?: HeadersInit) {
+function fileResponse(
+  path: string,
+  headers?: HeadersInit,
+  cacheControl = stableCache,
+) {
   const file = Bun.file(path);
   const type =
     contentTypes[extname(path).toLowerCase()] ?? "application/octet-stream";
   return new Response(file, {
     headers: {
+      "cache-control": cacheControl,
       "content-length": String(file.size),
       "content-type": type,
       ...headers,
@@ -78,8 +89,15 @@ export function createApp(options: AppOptions = {}) {
     : undefined;
 
   return new Elysia()
-    .get("/api/health", () => ({ status: "ok" as const }))
-    .get("/api/project", () => project)
+    .get("/api/health", () =>
+      Response.json(
+        { status: "ok" as const },
+        { headers: { "cache-control": stableCache } },
+      ),
+    )
+    .get("/api/project", () =>
+      Response.json(project, { headers: { "cache-control": stableCache } }),
+    )
     .get("/api/assets/:name", async ({ params: { name } }) => {
       if (!assetNames.has(name)) return notFound("Unknown asset");
 
@@ -99,7 +117,12 @@ export function createApp(options: AppOptions = {}) {
 
       const requestedPath = safeStaticPath(staticDir, pathname);
       if (!requestedPath) return notFound("Invalid static path");
-      if (await isFile(requestedPath)) return fileResponse(requestedPath);
+      if (await isFile(requestedPath)) {
+        const cacheControl = viteAssetPattern.test(pathname)
+          ? immutableCache
+          : stableCache;
+        return fileResponse(requestedPath, undefined, cacheControl);
+      }
 
       if (extname(pathname)) return notFound("Static asset is unavailable");
 
