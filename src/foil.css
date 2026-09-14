@@ -188,6 +188,34 @@
   font-size: 14px;
 }
 
+.foil-reading-zoom {
+  position: absolute;
+  top: 66px;
+  left: 22px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 6px;
+  background: #302e29;
+  color: #fffaf0;
+  box-shadow: 0 4px 18px rgba(38, 36, 32, 0.18);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.foil-reading-zoom:hover {
+  background: #4c4941;
+}
+
+.foil-reading-zoom:focus-visible {
+  outline: 2px solid #302e29;
+  outline-offset: 3px;
+}
+
 .foil-viewer-controls {
   bottom: 20px;
 }

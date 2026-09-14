@@ -11,6 +11,7 @@ import {
   RotateCcw,
   ScanLine,
   Sparkles,
+  ZoomIn,
 } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { ArtistReuse } from "@/components/artist-reuse";
@@ -25,10 +26,12 @@ const SculptureViewer = lazy(() => import("@/components/sculpture-viewer"));
 export default function FoilEdition() {
   const [showLettering, setShowLettering] = useState(true);
   const [showSeams, setShowSeams] = useState(false);
+  const [readingView, setReadingView] = useState(false);
   const [autoRotate, setAutoRotate] = useState(false);
   const [resetKey, setResetKey] = useState(0);
 
   function resetView() {
+    setReadingView(false);
     setAutoRotate(false);
     setResetKey((value) => value + 1);
   }
@@ -82,10 +85,25 @@ export default function FoilEdition() {
               edition="inscription"
               showLettering={showLettering}
               showSeams={showSeams}
+              readingView={readingView}
               autoRotate={autoRotate}
               resetKey={resetKey}
             />
           </Suspense>
+
+          <button
+            type="button"
+            className="foil-reading-zoom"
+            aria-pressed={readingView}
+            onClick={() => {
+              setShowLettering(true);
+              setAutoRotate(false);
+              setReadingView((value) => !value);
+            }}
+          >
+            {readingView ? <Maximize size={15} /> : <ZoomIn size={15} />}
+            {readingView ? "Whole sculpture" : "Read poem on foil"}
+          </button>
 
           <div className="foil-viewer-controls">
             <span className="foil-orbit-note">

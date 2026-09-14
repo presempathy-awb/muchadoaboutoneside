@@ -10,6 +10,7 @@ export interface SculptureViewerProps {
   edition?: "construction" | "inscription";
   showLettering?: boolean;
   showSeams?: boolean;
+  readingView?: boolean;
   selectedPart?: string | null;
   hiddenParts?: string[];
   wireframe?: boolean;
@@ -25,6 +26,7 @@ export default function SculptureViewer({
   edition = "construction",
   showLettering = true,
   showSeams = false,
+  readingView = false,
   selectedPart = null,
   hiddenParts = [],
   wireframe = false,
@@ -35,6 +37,7 @@ export default function SculptureViewer({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const controllerRef = useRef<SculptureSceneController | null>(null);
   const onSelectPartRef = useRef(onSelectPart);
+  const previousResetKey = useRef(resetKey);
   const instructionsId = useId();
   const [status, setStatus] = useState<ViewerStatus>("loading");
   const [errorMessage, setErrorMessage] = useState("");
@@ -135,8 +138,14 @@ export default function SculptureViewer({
     controllerRef.current?.setAutoRotate(autoRotate && !prefersReducedMotion);
   }, [autoRotate, prefersReducedMotion]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: resetKey intentionally acts as an imperative signal.
   useEffect(() => {
+    if (edition === "inscription")
+      controllerRef.current?.setReadingView(readingView);
+  }, [readingView, edition]);
+
+  useEffect(() => {
+    if (previousResetKey.current === resetKey) return;
+    previousResetKey.current = resetKey;
     controllerRef.current?.resetCamera();
   }, [resetKey]);
 

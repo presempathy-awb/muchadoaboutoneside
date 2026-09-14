@@ -11,6 +11,7 @@ import type { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
 import { Scene } from "@babylonjs/core/scene";
 import "@babylonjs/loaders/glTF/2.0/glTFLoader";
 import type { FoilSkinController } from "./foil-skin";
+import { inscriptionView } from "./inscription-view";
 
 export const SCULPTURE_ASSET_URL = "/api/assets/snake_build.glb";
 
@@ -34,6 +35,7 @@ export interface SculptureSceneController {
   setWireframe(enabled: boolean): void;
   setLettering(visible: boolean): void;
   setSeams(visible: boolean): void;
+  setReadingView(enabled: boolean): void;
   resetCamera(): void;
   resize(): void;
   dispose(): void;
@@ -146,6 +148,7 @@ export function createSculptureScene(
   let showLettering = true;
   let showSeams = false;
   let wireframe = false;
+  let readingView = false;
   const foilEdition = options.edition === "inscription";
   const coveredStructure = new Set<string>(["ribs", "slats", "spine", "head"]);
   const partVisible = (part: string) =>
@@ -199,6 +202,26 @@ export function createSculptureScene(
     camera.upperRadiusLimit = fittedRadius * 3.2;
     camera.minZ = Math.max(0.1, fittedRadius / 1_000);
     camera.maxZ = fittedRadius * 8;
+  };
+
+  const applyCameraView = () => {
+    camera.inertialAlphaOffset = 0;
+    camera.inertialBetaOffset = 0;
+    camera.inertialRadiusOffset = 0;
+    camera.inertialPanningX = 0;
+    camera.inertialPanningY = 0;
+    if (readingView && foilSkin) {
+      const view = inscriptionView(foilSkin.getReadingMesh());
+      camera.lowerRadiusLimit = 8;
+      camera.target.copyFrom(view.target);
+      camera.setPosition(view.position);
+    } else {
+      camera.lowerRadiusLimit = fittedRadius * 0.18;
+      camera.alpha = START_ALPHA;
+      camera.beta = START_BETA;
+      camera.radius = fittedRadius;
+      camera.target.copyFrom(fittedTarget);
+    }
   };
 
   scene.onPointerObservable.add((pointerInfo) => {
@@ -259,6 +282,7 @@ export function createSculptureScene(
       foilSkin.setLettering(showLettering);
       foilSkin.setSeams(showSeams);
       foilSkin.setWireframe(wireframe);
+      if (readingView) applyCameraView();
     }
   });
 
@@ -291,11 +315,13 @@ export function createSculptureScene(
       showSeams = visible;
       foilSkin?.setSeams(visible);
     },
+    setReadingView(enabled) {
+      readingView = foilEdition && enabled;
+      applyCameraView();
+    },
     resetCamera() {
-      camera.alpha = START_ALPHA;
-      camera.beta = START_BETA;
-      camera.radius = fittedRadius;
-      camera.target.copyFrom(fittedTarget);
+      readingView = false;
+      applyCameraView();
     },
     resize() {
       engine.resize();

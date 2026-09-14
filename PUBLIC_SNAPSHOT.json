@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "a720cb832b7336e779fa2fc10ebf856d7750083a",
+  "sourceCommit": "248ba07228e3816390143b80653e908c86077e74",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -4980,8 +4980,8 @@
     },
     {
       "path": "src/components/sculpture-viewer.tsx",
-      "bytes": 6090,
-      "sha256": "7b631254d6afd123c9cb827301491f2ccfa055323fd687b1f5543ebba4fc57d5"
+      "bytes": 6308,
+      "sha256": "01ee843bc95478e16ab5c8c24d959ce480191683cddd0e3d1f0234b4fd31418a"
     },
     {
       "path": "src/components/ui/badge.tsx",
@@ -5000,8 +5000,8 @@
     },
     {
       "path": "src/foil.css",
-      "bytes": 17543,
-      "sha256": "5c3df6416a164b83db82b3cfee41dd75aba7ff69e3d958ae5e9dd330671d5bc9"
+      "bytes": 18070,
+      "sha256": "ab8439dca597edc4614801480d3e7390c2f01976d24412c6f37d021b3a4d4697"
     },
     {
       "path": "src/lib/foil-geometry.test.ts",
@@ -5014,9 +5014,29 @@
       "sha256": "2758433187681d2995117827b9ba19cdf79589dffb2d83d4f341f23ed87ecb95"
     },
     {
+      "path": "src/lib/foil-mesh.test.ts",
+      "bytes": 2946,
+      "sha256": "fe61991d782f3635ae044d08f491748a191d2a63aca253775132febf9400d45b"
+    },
+    {
+      "path": "src/lib/foil-mesh.ts",
+      "bytes": 683,
+      "sha256": "08771ef6615ea7af60205e346089f76ae638fbdc7a2d6396b0710af682d9e18b"
+    },
+    {
       "path": "src/lib/foil-skin.ts",
-      "bytes": 4694,
-      "sha256": "ac4d15f81be3761704cacc63a28a6e39e713e0b6438d7bd00b99eb9b5a010ef2"
+      "bytes": 4650,
+      "sha256": "e71a3ecfe16aaaa6c13aab8ad98bba292c7515e66d933356f15349c2aa7167b2"
+    },
+    {
+      "path": "src/lib/inscription-view.test.ts",
+      "bytes": 1781,
+      "sha256": "14bf4c2e28ba54e13559b0d6b1930e13decb9f9bb4480d7e98ee362cb5567d2c"
+    },
+    {
+      "path": "src/lib/inscription-view.ts",
+      "bytes": 1424,
+      "sha256": "7f02da820a46c87d6cfb74716b1b0efe0c45e42bd037739d571b6ea4d926479e"
     },
     {
       "path": "src/lib/project-query.ts",
@@ -5025,8 +5045,8 @@
     },
     {
       "path": "src/lib/sculpture-scene.ts",
-      "bytes": 9646,
-      "sha256": "32e72d81db3cd5611d1027eb566e3eaf37ff2d9b3f1e2ecd5b81ca6373b797ce"
+      "bytes": 10472,
+      "sha256": "1eb2ee9ea2ac62be6f1313bc1bb31c10ee4affe3cdb979396585541572ea9e25"
     },
     {
       "path": "src/lib/studio-reflection.ts",
@@ -5055,8 +5075,8 @@
     },
     {
       "path": "src/pages/foil.tsx",
-      "bytes": 16588,
-      "sha256": "8326031e0f2905d033a4a8f0b03783478d8c77bb760f403f2cfdf8ce4e4d4273"
+      "bytes": 17189,
+      "sha256": "c043e2d91a561195896678a3261cf284ff9de8c4a4da926be7cfe5572139de9c"
     },
     {
       "path": "src/pages/studio.tsx",
