@@ -1,0 +1,111 @@
+import { stat } from "node:fs/promises";
+import { extname, resolve, sep } from "node:path";
+import { Elysia } from "elysia";
+import { assetNames, project } from "./project";
+
+export interface AppOptions {
+  staticDir?: string;
+  assetDir?: string;
+}
+
+const defaultAssetDir = resolve(import.meta.dir, "../source/assets");
+
+const contentTypes: Record<string, string> = {
+  ".css": "text/css; charset=utf-8",
+  ".glb": "model/gltf-binary",
+  ".html": "text/html; charset=utf-8",
+  ".ico": "image/x-icon",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".obj": "text/plain; charset=utf-8",
+  ".png": "image/png",
+  ".stl": "model/stl",
+  ".svg": "image/svg+xml",
+  ".ttf": "font/ttf",
+  ".txt": "text/plain; charset=utf-8",
+  ".webp": "image/webp",
+  ".zip": "application/zip",
+};
+
+function notFound(message = "Not found") {
+  return Response.json({ error: message }, { status: 404 });
+}
+
+function safeStaticPath(root: string, pathname: string) {
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    return undefined;
+  }
+
+  const candidate = resolve(root, `.${decoded}`);
+  return candidate === root || candidate.startsWith(`${root}${sep}`)
+    ? candidate
+    : undefined;
+}
+
+function fileResponse(path: string, headers?: HeadersInit) {
+  const file = Bun.file(path);
+  const type =
+    contentTypes[extname(path).toLowerCase()] ?? "application/octet-stream";
+  return new Response(file, {
+    headers: {
+      "content-length": String(file.size),
+      "content-type": type,
+      ...headers,
+    },
+  });
+}
+
+async function isFile(path: string) {
+  try {
+    return (await stat(path)).isFile();
+  } catch {
+    return false;
+  }
+}
+
+export function createApp(options: AppOptions = {}) {
+  const assetDir = resolve(options.assetDir ?? defaultAssetDir);
+  const configuredStaticDir =
+    options.staticDir ??
+    (process.env.NODE_ENV === "production"
+      ? resolve(import.meta.dir, "../dist")
+      : undefined);
+  const staticDir = configuredStaticDir
+    ? resolve(configuredStaticDir)
+    : undefined;
+
+  return new Elysia()
+    .get("/api/health", () => ({ status: "ok" as const }))
+    .get("/api/project", () => project)
+    .get("/api/assets/:name", async ({ params: { name } }) => {
+      if (!assetNames.has(name)) return notFound("Unknown asset");
+
+      const path = resolve(assetDir, name);
+      if (!(await isFile(path))) return notFound("Asset is unavailable");
+
+      const headers: HeadersInit = name.endsWith(".html")
+        ? { "content-disposition": `attachment; filename="${name}"` }
+        : {};
+      return fileResponse(path, headers);
+    })
+    .get("*", async ({ request }) => {
+      const { pathname } = new URL(request.url);
+      if (pathname === "/api" || pathname.startsWith("/api/"))
+        return notFound();
+      if (!staticDir) return notFound();
+
+      const requestedPath = safeStaticPath(staticDir, pathname);
+      if (!requestedPath) return notFound("Invalid static path");
+      if (await isFile(requestedPath)) return fileResponse(requestedPath);
+
+      if (extname(pathname)) return notFound("Static asset is unavailable");
+
+      const indexPath = resolve(staticDir, "index.html");
+      return (await isFile(indexPath))
+        ? fileResponse(indexPath)
+        : notFound("Site build is unavailable");
+    });
+}

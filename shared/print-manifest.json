@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "edition": "Much Ado About One Side \u2014 printable maquette",
+  "source": {
+    "path": "shared/foil-sections.json",
+    "sha256": "8757d717fcc831eb3e0582c35fdd5cee43cae11c83ec1f3bc9f70909923277e2",
+    "derivation": "Closed sweep solids from the stored body, upper-head, and jaw section perimeters; overlapping pieces and plinth resolved by a Manifold boolean union."
+  },
+  "coordinateSystems": {
+    "printStl": {
+      "units": "millimetres",
+      "upAxis": "+Z"
+    },
+    "previewGlb": {
+      "units": "metres",
+      "upAxis": "+Y"
+    }
+  },
+  "dimensionsMm": {
+    "x": 103.5346,
+    "y": 45.9029,
+    "z": 180.0
+  },
+  "boundsMm": {
+    "minimum": {
+      "x": -51.7673,
+      "y": -22.9514,
+      "z": 0.0
+    },
+    "maximum": {
+      "x": 51.7673,
+      "y": 22.9514,
+      "z": 180.0
+    }
+  },
+  "volumeMm3": 110989.8135,
+  "build": {
+    "sourceHeightInches": 194.3826118,
+    "sourceToMillimetresScale": 0.9095463753821216,
+    "booleanOperandCount": 3,
+    "booleanEngine": "manifold3d",
+    "minimumModeledRadiusMm": 1.2
+  },
+  "generator": {
+    "script": {
+      "path": "scripts/generate-print.py",
+      "sha256": "86c3d6b949acd1c3261399bdda6c563bb6fd0ef4ca9059a45147d36c36724bfd"
+    },
+    "requirements": {
+      "path": "scripts/print/requirements.txt",
+      "sha256": "be61f2efd183b8d6f0f5cb179b58ade77f6c55108e6fd99f37f8fd01de4a2046"
+    },
+    "testedPython": "CPython 3.9.6"
+  },
+  "validation": {
+    "watertight": true,
+    "windingConsistent": true,
+    "connectedComponents": 1,
+    "everyEdgeIncidentToTwoFaces": true,
+    "positiveVolume": true,
+    "degenerateFaceCount": 0,
+    "duplicateFaceCount": 0,
+    "nonAdjacentTriangleIntersectionCount": 0,
+    "buildPlateContactVertexCount": 65,
+    "minimumZMm": 0.0,
+    "heightMm": 180.0
+  },
+  "artifacts": {
+    "printStl": {
+      "path": "public/fabrication/print/muchado-maquette-180mm.stl",
+      "bytes": 274584,
+      "sha256": "a3b61ff014486021ae2589ab6c1ec322c5ade9894ccdff180e4e34fc4f376cf7",
+      "vertices": 2747,
+      "triangles": 5490,
+      "coordinateSystem": {
+        "units": "millimetres",
+        "upAxis": "+Z"
+      }
+    },
+    "previewGlb": {
+      "path": "public/fabrication/print/muchado-maquette-180mm.glb",
+      "bytes": 110824,
+      "sha256": "0fafc5f74e615e48519e8b46acb066d8c2b6b9aeaf0f7ae487cc7ae1fe24573e",
+      "vertices": 2747,
+      "triangles": 5490,
+      "coordinateSystem": {
+        "units": "metres",
+        "upAxis": "+Y"
+      }
+    }
+  },
+  "fabrication": {
+    "targetPrinter": "denhac Prusa MK4S, 250 \u00d7 210 \u00d7 220 mm build volume",
+    "orientation": "Print upright on the integrated oval plinth; the files are already Z-up and in millimetres.",
+    "startingProfile": "Prusa MK4S HF 0.4 mm / PLA / 0.20 mm layers / 3 perimeters / 15% gyroid infill.",
+    "supports": "Generate organic supports from the build plate for the jaw, chin, and other overhangs, then inspect every layer in PrusaSlicer before printing.",
+    "gcode": "Not supplied. Slice for the specific denhac printer and loaded filament; submit the resulting standard G-code through the shop's current workflow.",
+    "lettering": "The printed plastic is a smooth substrate, without embossed calligraphy. Apply the corresponding 180 mm marked-foil kit after printing: /fabrication/small-foil/foil-kit-180mm.zip. Test the lettering and foil fit on the chosen stock before marking the complete set.",
+    "minimumModeledDiameterMm": 2.4
+  },
+  "limitations": [
+    "This is a section-derived printable interpretation, not the archival source STL relabeled as print-ready.",
+    "Manifold union removes internal overlaps and crossing self-intersections; it also softens some faceted construction details into a continuous printable shell.",
+    "Support placement, first-layer adhesion, and final slicer collision review remain operator responsibilities."
+  ]
+}

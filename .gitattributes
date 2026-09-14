@@ -1,0 +1,6 @@
+# Preserve the vendored license texts, including their upstream whitespace.
+THIRD_PARTY_NOTICES.md -whitespace
+public/licenses/THIRD-PARTY-NOTICES.txt -whitespace
+public/fonts/OFL.txt -whitespace
+public/fabrication/laser/OFL.txt -whitespace
+public/fabrication/small-foil/OFL.txt -whitespace
