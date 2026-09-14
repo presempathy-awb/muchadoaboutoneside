@@ -3,12 +3,12 @@ import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTextur
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
-import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
 import type { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import type { Scene } from "@babylonjs/core/scene";
 import { FABRICATION_GEOMETRY_OPTIONS } from "../../shared/fabrication";
 import { INSCRIPTION_LAYOUT as layout } from "../../shared/poem";
 import { generateFoilGeometry } from "./foil-geometry";
+import { foilVertexData } from "./foil-mesh";
 import { makeStudioReflection } from "./studio-reflection";
 
 let outlinedMaster: Promise<HTMLImageElement> | undefined;
@@ -30,6 +30,7 @@ function loadOutlinedMaster() {
 
 export interface FoilSkinController {
   detailMaterial: PBRMaterial;
+  getReadingMesh(): Mesh;
   setLettering(visible: boolean): void;
   setSeams(visible: boolean): void;
   setWireframe(enabled: boolean): void;
@@ -43,10 +44,10 @@ export async function createFoilSkin(
   if (scene.isDisposed) return null;
   const geometry = generateFoilGeometry(FABRICATION_GEOMETRY_OPTIONS);
   const canvas = document.createElement("canvas");
-  // The outlined master and atlas each rasterize at most 4096 × 1024.
-  // The vector download retains the full lettering detail.
-  canvas.width = Math.min(4096, scene.getEngine().getCaps().maxTextureSize);
-  canvas.height = canvas.width / 4;
+  const caps = scene.getEngine().getCaps();
+  // Preserve the full UV chart for close reading when the GPU supports it.
+  canvas.width = Math.min(layout.width, caps.maxTextureSize);
+  canvas.height = canvas.width * (layout.height / layout.width);
   const context = canvas.getContext("2d");
   if (!context)
     throw new Error("The browser could not prepare the lettering canvas.");
@@ -61,6 +62,7 @@ export async function createFoilSkin(
   texture.wrapV = Texture.CLAMP_ADDRESSMODE;
   texture.vScale = -1;
   texture.vOffset = 1;
+  texture.anisotropicFilteringLevel = Math.max(1, caps.maxAnisotropy);
   context.scale(canvas.width / layout.width, canvas.height / layout.height);
 
   let showLettering = true;
@@ -91,10 +93,10 @@ export async function createFoilSkin(
   const foil = new PBRMaterial("marked-aluminum-foil", scene);
   foil.albedoColor = Color3.White();
   foil.albedoTexture = texture;
-  foil.metallic = 0.78;
-  foil.roughness = 0.28;
+  foil.metallic = 0.55;
+  foil.roughness = 0.55;
   foil.backFaceCulling = false;
-  foil.environmentIntensity = 1.15;
+  foil.environmentIntensity = 0.75;
 
   const details = foil.clone("foil-covered-details");
   details.albedoTexture = null;
@@ -104,29 +106,27 @@ export async function createFoilSkin(
     data: { positions: number[]; indices: number[]; uvs: number[] },
   ) => {
     const mesh = new Mesh(name, scene);
-    const vertexData = new VertexData();
-    vertexData.positions = data.positions;
-    vertexData.indices = data.indices;
-    vertexData.uvs = data.uvs;
-    const normals: number[] = [];
-    VertexData.ComputeNormals(data.positions, data.indices, normals);
-    vertexData.normals = normals;
-    vertexData.applyToMesh(mesh);
+    foilVertexData(data).applyToMesh(mesh);
     mesh.parent = modelRoot;
     mesh.material = foil;
     mesh.isPickable = false;
     return mesh;
   };
-  applyGeometry("continuous-foil-body-and-head", geometry);
+  const readingMesh = applyGeometry("continuous-foil-body-and-head", geometry);
   applyGeometry("foil-lower-jaw", geometry.jawGeometry);
 
   return {
     detailMaterial: details,
+    getReadingMesh() {
+      return readingMesh;
+    },
     setLettering(visible) {
+      if (showLettering === visible) return;
       showLettering = visible;
       drawAtlas();
     },
     setSeams(visible) {
+      if (showSeams === visible) return;
       showSeams = visible;
       drawAtlas();
     },
