@@ -16,6 +16,7 @@ import { lazy, Suspense, useState } from "react";
 import { ArtistReuse } from "@/components/artist-reuse";
 import FabricationPreview from "@/components/fabrication-preview";
 import FlatFoilPreview from "@/components/flat-foil-preview";
+import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
 import { POEM_STANZAS, POEM_TITLE } from "../../shared/poem";
 import "../foil.css";
 
@@ -275,7 +276,7 @@ export default function FoilEdition() {
                 </span>
                 <ArrowDownToLine aria-hidden="true" />
               </a>
-              <a href="/fabrication/laser/representative-fit-kit.zip" download>
+              <a href={FABRICATION_DOWNLOADS.largeFitKit} download>
                 <FileArchive aria-hidden="true" />
                 <span>
                   <strong>Large sculpture: jaw fit sample</strong>
@@ -285,7 +286,7 @@ export default function FoilEdition() {
                 </span>
                 <ArrowDownToLine aria-hidden="true" />
               </a>
-              <a href="/fabrication/laser/panel-kit.zip" download>
+              <a href={FABRICATION_DOWNLOADS.largeKit} download>
                 <FileArchive aria-hidden="true" />
                 <span>
                   <strong>Large sculpture foil kit</strong>
@@ -316,7 +317,7 @@ export default function FoilEdition() {
               <p>Actual-size patterns · test very fine lettering first</p>
             </header>
             <div className="fabrication-file-list">
-              <a href="/fabrication/small-foil/foil-kit-180mm.zip" download>
+              <a href={FABRICATION_DOWNLOADS.smallKit} download>
                 <FileArchive aria-hidden="true" />
                 <span>
                   <strong>Complete 180 mm foil kit</strong>
