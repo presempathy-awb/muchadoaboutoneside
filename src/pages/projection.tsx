@@ -161,7 +161,6 @@ export default function Projection() {
             <article className="projection-movement" key={movement.id}>
               <header>
                 <span className="projection-cue-id">{movement.id}</span>
-                <span className="projection-science">{movement.science}</span>
               </header>
               <h3>{movement.title}</h3>
               <p className="projection-scene">{movement.scene}</p>

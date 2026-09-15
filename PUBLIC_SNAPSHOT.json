@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "f19a7296a89db192bb11177a8bc8377e245c53ae",
+  "sourceCommit": "d3a4b80ad16b5e33d44dcd6227ab9133c1943ef3",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5210,8 +5210,8 @@
     },
     {
       "path": "src/pages/projection.tsx",
-      "bytes": 11971,
-      "sha256": "b76800351e2b35a15cee5b673cbc97ba60a14d378cd65269502d4d941a04648a"
+      "bytes": 11892,
+      "sha256": "ed453f1af910f0b6e981a5a4e9e8a84a93d135b898cb3914462fecf124f3a674"
     },
     {
       "path": "src/pages/studio.tsx",
@@ -5220,8 +5220,8 @@
     },
     {
       "path": "src/projection.css",
-      "bytes": 8499,
-      "sha256": "35f816330541d98ac962ba9cc785ccda52da68f65ca8bfec3604cc2db08db047"
+      "bytes": 8354,
+      "sha256": "bef14060f3e8e931c38d777d42627bd846d6ef2e82e7264ca2ee4ce07503d949"
     },
     {
       "path": "src/site-guide.css",
