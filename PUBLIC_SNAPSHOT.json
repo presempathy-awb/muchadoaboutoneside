@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "78e5420dd95a381bd9ee2e4ae8900ee44900c7e8",
+  "sourceCommit": "680e62bdc60290ad0528f576aaa3b1a8bf1b7f1b",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 21123,
-      "sha256": "862fe857c9573650aa8e4f78619c40a9fd6edddb6ffbcbfdeed9113cde8ac989"
+      "bytes": 21880,
+      "sha256": "80bd004d7468bc67d74b6eebe00fcae44a80631024037e310987967e792941fb"
     },
     {
       "path": "REUSE.md",
@@ -4904,6 +4904,11 @@
       "sha256": "8757d717fcc831eb3e0582c35fdd5cee43cae11c83ec1f3bc9f70909923277e2"
     },
     {
+      "path": "shared/large-sculpture-guide.ts",
+      "bytes": 10494,
+      "sha256": "128c76855a78c09aa2367abcaae3efb4fabafb8235ebe57ddf3c645ff89adc6c"
+    },
+    {
       "path": "shared/laser-manifest.test.ts",
       "bytes": 10920,
       "sha256": "e6f8e8cf5e5a1a205df7624f7121509840177eba35562c0898754e3ecc238308"
@@ -4935,13 +4940,13 @@
     },
     {
       "path": "shared/project-instructions.test.ts",
-      "bytes": 2338,
-      "sha256": "35a857171c3db49534d0208c82ef3ddf60ff296046619233c95cdc6a13f91185"
+      "bytes": 2446,
+      "sha256": "2541530e34c41c3b44f416ac460896523daac7f34bad4caa37f2a94571961050"
     },
     {
       "path": "shared/project-instructions.ts",
-      "bytes": 5967,
-      "sha256": "5f6e0a8532d2a2954748dd1d4d5804b20f55b5d6a74e4cbd243a1b59d79d4300"
+      "bytes": 6160,
+      "sha256": "173af57cd0e0b735624a1c62c03e0670da81a1f2519ab2033a091c012a7522b3"
     },
     {
       "path": "shared/project.ts",
@@ -5059,6 +5064,11 @@
       "sha256": "483f3cd03f21793404c3bdd6bc0ae13e357bb1d90242f7601e74f9a3553838de"
     },
     {
+      "path": "src/components/large-sculpture-guide.tsx",
+      "bytes": 3637,
+      "sha256": "3ca09ec46535cce2908f69b739e4f9428802a193caa758d2b6a1769955122ea8"
+    },
+    {
       "path": "src/components/project-state.tsx",
       "bytes": 746,
       "sha256": "ce2f8ac5ac16d4f1bab352f9a42affe94f1fc78c48e8e8671e84fce8a0e3c6cc"
@@ -5095,8 +5105,8 @@
     },
     {
       "path": "src/instructions.css",
-      "bytes": 9808,
-      "sha256": "0a01a93e0ba12c31c8705996cec7b57197168a844c00552dba7b94454f329f79"
+      "bytes": 12771,
+      "sha256": "b14a4a8a3aeff3bd651977adc5dac920c501092a652b73092785f1e9e0b3f58a"
     },
     {
       "path": "src/lib/foil-geometry.test.ts",
@@ -5180,13 +5190,13 @@
     },
     {
       "path": "src/pages/foil.tsx",
-      "bytes": 19394,
-      "sha256": "47d81c6674aefc06f370263ef4556f9be92a1f20de5cfd95a42ba823c2b6da40"
+      "bytes": 19822,
+      "sha256": "bba490fe657bea8bb8cc2e82a8805a673b871eddc4520c22bfd962e66fa0255a"
     },
     {
       "path": "src/pages/instructions.tsx",
-      "bytes": 9965,
-      "sha256": "0ebf7598615711041e30210c7700cc554a46d29d6ac4377942d01be177c52150"
+      "bytes": 10121,
+      "sha256": "6d869ab5041a894b7912084ca4492ced08d633052ab590b256f9beb945550a82"
     },
     {
       "path": "src/pages/studio.tsx",
