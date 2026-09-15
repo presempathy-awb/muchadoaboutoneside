@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   ArrowDownToLine,
   ArrowLeft,
+  ArrowRight,
   Box,
   FileArchive,
   FileCode2,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { ArtistReuse } from "@/components/artist-reuse";
+import { DimensionsOverview } from "@/components/dimensions-overview";
 import FabricationPreview from "@/components/fabrication-preview";
 import FlatFoilPreview from "@/components/flat-foil-preview";
 import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
@@ -29,6 +31,7 @@ export default function FoilEdition() {
   const [readingView, setReadingView] = useState(false);
   const [autoRotate, setAutoRotate] = useState(false);
   const [resetKey, setResetKey] = useState(0);
+  const [plainText, setPlainText] = useState(false);
 
   function resetView() {
     setReadingView(false);
@@ -54,11 +57,52 @@ export default function FoilEdition() {
             same marked foil wrapped around a small printed form. The ending
             returns to the beginning.
           </p>
-          <span>Lettering study inspired by Jill’s sample</span>
+          <span>
+            Lettering study inspired by Jill’s sample ·{" "}
+            <Link to="/calligraphy" className="foil-brief-link">
+              read the hand-lettering brief
+            </Link>
+          </span>
         </div>
       </header>
 
+      <nav className="project-paths" aria-label="Start making">
+        <Link to="/instructions" hash="make">
+          <span className="path-number">01</span>
+          <span>
+            <strong>Make the small edition</strong>
+            <small>Dimensions, materials & a clear order of work</small>
+          </span>
+          <ArrowRight size={17} aria-hidden="true" />
+        </Link>
+        <Link to="/calligraphy">
+          <span className="path-number">02</span>
+          <span>
+            <strong>Letter the poem</strong>
+            <small>Jill’s brief & actual-size paper templates</small>
+          </span>
+          <ArrowRight size={17} aria-hidden="true" />
+        </Link>
+        <Link to="/instructions" hash="pack">
+          <span className="path-number">03</span>
+          <span>
+            <strong>Pack & send to CoLab iani</strong>
+            <small>Protect the work & prepare the handoff</small>
+          </span>
+          <ArrowRight size={17} aria-hidden="true" />
+        </Link>
+      </nav>
+
+      <nav className="section-nav" aria-label="On this page">
+        <span>EXPLORE</span>
+        <a href="#sculpture">The sculpture</a>
+        <a href="#dimensions">Dimensions</a>
+        <a href="#fabrication">Making & artwork</a>
+        <a href="#downloads">Downloads</a>
+      </nav>
+
       <section
+        id="sculpture"
         className="foil-workbench"
         aria-label="Inscription edition study"
       >
@@ -134,6 +178,7 @@ export default function FoilEdition() {
               <button
                 type="button"
                 className={autoRotate ? "is-active" : ""}
+                aria-pressed={autoRotate}
                 onClick={() => setAutoRotate((value) => !value)}
               >
                 {autoRotate ? (
@@ -154,8 +199,16 @@ export default function FoilEdition() {
           <span className="foil-reading-index">
             THE INSCRIPTION · CONTINUOUS
           </span>
+          <button
+            type="button"
+            className="poem-reading-toggle"
+            aria-pressed={plainText}
+            onClick={() => setPlainText((value) => !value)}
+          >
+            {plainText ? "Show script lettering" : "Read in plain type"}
+          </button>
           <h2 id="foil-reading-title">{POEM_TITLE}</h2>
-          <div className="foil-poem">
+          <div className={`foil-poem${plainText ? " foil-poem-plain" : ""}`}>
             {POEM_STANZAS.map((stanza, stanzaIndex) => (
               <p key={stanza[0]}>
                 {stanza.map((line) => (
@@ -171,6 +224,10 @@ export default function FoilEdition() {
           </div>
         </aside>
       </section>
+
+      <div id="dimensions">
+        <DimensionsOverview compact />
+      </div>
 
       <section className="foil-loop" aria-labelledby="foil-loop-title">
         <div className="foil-loop-copy">
@@ -200,6 +257,7 @@ export default function FoilEdition() {
       </section>
 
       <section
+        id="fabrication"
         className="fabrication-section"
         aria-labelledby="fabrication-title"
       >
@@ -259,7 +317,7 @@ export default function FoilEdition() {
             mechanically; these files contain no laser-cut perimeter.
           </p>
         </div>
-        <div className="fabrication-file-groups">
+        <div id="downloads" className="fabrication-file-groups">
           <section
             className="fabrication-file-group"
             aria-labelledby="large-files-title"

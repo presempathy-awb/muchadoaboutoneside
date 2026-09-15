@@ -12,6 +12,7 @@ import {
   ScanLine,
 } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
+import { DimensionsOverview } from "@/components/dimensions-overview";
 import { ProjectState } from "@/components/project-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -216,7 +217,10 @@ export function Studio() {
         <div>
           <span className="eyebrow">OVERALL HEIGHT</span>
           <strong>{formatInches(model.heightInches)}</strong>
-          <small>{model.heightInches} inches</small>
+          <small>
+            {model.heightInches} in · {(model.heightInches * 0.0254).toFixed(2)}{" "}
+            m
+          </small>
         </div>
         <div>
           <span className="eyebrow">FOOTPRINT</span>
@@ -224,7 +228,9 @@ export function Studio() {
             {formatInches(model.widthInches)} <span>×</span>{" "}
             {formatInches(model.depthInches)}
           </strong>
-          <small>Width × depth</small>
+          <small>
+            {model.widthInches} × {model.depthInches} in · width × depth
+          </small>
         </div>
         <div>
           <span className="eyebrow">CONSTRUCTION</span>
@@ -246,6 +252,7 @@ export function Studio() {
           <ArrowRight size={17} />
         </a>
       </section>
+      <DimensionsOverview compact />
       <div className="studio-note">
         <Link to="/" className="text-link">
           Explore the foil edition <ArrowRight size={15} />

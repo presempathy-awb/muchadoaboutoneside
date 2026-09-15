@@ -8,6 +8,7 @@
       "!node_modules",
       "!bun.lock",
       "!public/fabrication",
+      "!public/guide",
       "!shared/print-manifest.json",
       "!src/components/ui"
     ]

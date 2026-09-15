@@ -29,6 +29,6 @@ export function materialLabel(code: string) {
   return labels[code] ?? code;
 }
 export function formatInches(value: number) {
-  const rounded = Math.round(value);
-  return `${Math.floor(rounded / 12)}′ ${rounded % 12}″`;
+  const tenths = Math.round(value * 10);
+  return `${Math.floor(tenths / 120)}′ ${(tenths % 120) / 10}″`;
 }

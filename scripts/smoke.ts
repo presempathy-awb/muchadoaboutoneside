@@ -23,7 +23,19 @@ const versionedFabricationDownloads = new Map(
 
 try {
   let html = "";
-  for (const route of ["/", "/foil", "/studio", "/assembly", "/archive"]) {
+  for (const route of [
+    "/",
+    "/foil",
+    "/studio",
+    "/assembly",
+    "/archive",
+    "/instructions",
+    "/calligraphy",
+    "/calligraphy/steps",
+    "/calligraphy/templates",
+    "/calligraphy/quick",
+    "/calligraphy/details",
+  ]) {
     const response = await fetch(`${origin}${route}`);
     if (!response.ok) throw new Error(`${route} returned ${response.status}`);
     if (response.headers.get("cache-control") !== stableCache)
@@ -82,6 +94,8 @@ try {
     ["/fabrication/small-foil/foil-kit-180mm.zip", "application/zip"],
     ["/fabrication/small-foil/manifest.json", "application/json"],
     ["/fabrication/small-foil/README.txt", "text/plain"],
+    ["/guide/calligraphy-guide.pdf", "application/pdf"],
+    ["/guide/calligraphy-guide.html", "text/html"],
     ["/licenses/LICENSE-MIT.txt", "text/plain"],
     ["/licenses/LICENSE-APACHE.txt", "text/plain"],
     ["/licenses/REUSE.txt", "text/plain"],
@@ -118,7 +132,7 @@ try {
   )
     throw new Error("API fallback is incorrect");
   console.log(
-    "Production HTTP smoke passed: 5 routes, bundled entries, metadata, 4 original downloads, 26 inscription/fabrication/license assets, private-path rejection, API 404.",
+    "Production HTTP smoke passed: 11 routes, bundled entries, metadata, 4 original downloads, 28 inscription/fabrication/guide/license assets, private-path rejection, API 404.",
   );
 } finally {
   await app.stop();

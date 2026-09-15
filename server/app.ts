@@ -21,6 +21,7 @@ const contentTypes: Record<string, string> = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".obj": "text/plain; charset=utf-8",
+  ".pdf": "application/pdf",
   ".png": "image/png",
   ".stl": "model/stl",
   ".svg": "image/svg+xml",

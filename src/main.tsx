@@ -14,6 +14,8 @@ import "./styles.css";
 const Foil = lazy(() => import("@/pages/foil"));
 const Assembly = lazy(() => import("@/pages/assembly"));
 const Archive = lazy(() => import("@/pages/archive"));
+const Calligraphy = lazy(() => import("@/pages/calligraphy"));
+const Instructions = lazy(() => import("@/pages/instructions"));
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
 });
@@ -53,6 +55,27 @@ const archiveRoute = createRoute({
     </Suspense>
   ),
 });
+const calligraphyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/calligraphy",
+  component: () => (
+    <Suspense fallback={<RouteLoading />}>
+      <Calligraphy chapter="overview" />
+    </Suspense>
+  ),
+});
+const calligraphyChapterRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/calligraphy/$chapter",
+  component: function CalligraphyChapter() {
+    const { chapter } = calligraphyChapterRoute.useParams();
+    return (
+      <Suspense fallback={<RouteLoading />}>
+        <Calligraphy chapter={chapter} />
+      </Suspense>
+    );
+  },
+});
 const foilRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/foil",
@@ -62,13 +85,26 @@ const foilRoute = createRoute({
     </Suspense>
   ),
 });
+const instructionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/instructions",
+  component: () => (
+    <Suspense fallback={<RouteLoading />}>
+      <Instructions />
+    </Suspense>
+  ),
+});
 const router = createRouter({
+  scrollRestoration: true,
   routeTree: rootRoute.addChildren([
     foilHomeRoute,
     studioRoute,
     assemblyRoute,
     archiveRoute,
+    calligraphyRoute,
+    calligraphyChapterRoute,
     foilRoute,
+    instructionsRoute,
   ]),
   defaultNotFoundComponent: () => (
     <div className="empty-state">
