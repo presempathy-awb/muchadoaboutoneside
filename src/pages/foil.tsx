@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { ArtistReuse } from "@/components/artist-reuse";
+import { AssistanceCredit } from "@/components/assistance-credit";
 import { DesignCredit } from "@/components/design-credit";
 import { DimensionsOverview } from "@/components/dimensions-overview";
 import FabricationPreview from "@/components/fabrication-preview";
@@ -65,6 +66,7 @@ export default function FoilEdition() {
             </Link>
           </span>
           <DesignCredit />
+          <AssistanceCredit />
         </div>
       </header>
 

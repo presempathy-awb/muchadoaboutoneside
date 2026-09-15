@@ -583,7 +583,8 @@ h1 em {
   gap: 5px;
   min-width: 0;
 }
-.design-credit {
+.design-credit,
+.assistance-credit {
   color: #344b3c;
   font-size: 13px;
   line-height: 1.6;

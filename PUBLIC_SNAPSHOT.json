@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "680e62bdc60290ad0528f576aaa3b1a8bf1b7f1b",
+  "sourceCommit": "342d036363ec536d78e8fff084b3d9fbde01529e",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 21880,
-      "sha256": "80bd004d7468bc67d74b6eebe00fcae44a80631024037e310987967e792941fb"
+      "bytes": 21941,
+      "sha256": "d8abafc2608607eeaa4b073e1e05488e2c8ad444d20eaafbeb68823705df3a49"
     },
     {
       "path": "REUSE.md",
@@ -5015,13 +5015,18 @@
     },
     {
       "path": "src/components/app-shell.tsx",
-      "bytes": 5214,
-      "sha256": "e0a9506c388485726f6732b5f79132eacb84935a28191733dc98dbc8e1df14ab"
+      "bytes": 5314,
+      "sha256": "7340aa1641016b78d3c0b5aa91018ba00ad493f6efd0a8a658a18e740147ae3d"
     },
     {
       "path": "src/components/artist-reuse.tsx",
       "bytes": 3726,
       "sha256": "6a691ac308b4d4f5ece4fdddc161cfb60a560aba67b7be090dbe179b8ab3fd64"
+    },
+    {
+      "path": "src/components/assistance-credit.tsx",
+      "bytes": 174,
+      "sha256": "9ededf14170f449c8aa1e4adc9f8e732c5d1d58ff2e49449d4bbfcf382b8b493"
     },
     {
       "path": "src/components/calligraphy/blocks.tsx",
@@ -5100,8 +5105,8 @@
     },
     {
       "path": "src/foil.css",
-      "bytes": 20035,
-      "sha256": "faaaaa8653ce384a05e19ff0b01741759b5eaeb20f496ac869e7f2aec1d30630"
+      "bytes": 20072,
+      "sha256": "8c67414fbbc0001e1b3067115c8e3edce453137fd9e935d053934e871ecc7edf"
     },
     {
       "path": "src/instructions.css",
@@ -5190,8 +5195,8 @@
     },
     {
       "path": "src/pages/foil.tsx",
-      "bytes": 19822,
-      "sha256": "bba490fe657bea8bb8cc2e82a8805a673b871eddc4520c22bfd962e66fa0255a"
+      "bytes": 19920,
+      "sha256": "b80c428eb755e844897ce3d30edcf264bfa9b6c5bf18c5ade98093e5db350b26"
     },
     {
       "path": "src/pages/instructions.tsx",
@@ -5210,8 +5215,8 @@
     },
     {
       "path": "src/styles.css",
-      "bytes": 26382,
-      "sha256": "b6bfdd64350020e8d3031ae17855326fb4830b86097839e72d25ea787930f7b6"
+      "bytes": 26402,
+      "sha256": "8353e7b557201feca4cfb45b1a14f274a5c889027c78e6847a1321e840d9c9a5"
     },
     {
       "path": "tsconfig.json",
