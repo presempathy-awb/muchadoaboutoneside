@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "507440156657f03b9032ffdbb82a52a16f9803c7",
+  "sourceCommit": "78e5420dd95a381bd9ee2e4ae8900ee44900c7e8",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 20893,
-      "sha256": "5ad6c1793739cca17c6acf98512c63d2cfc6154c50ad0584cab621ae5907bd54"
+      "bytes": 21123,
+      "sha256": "862fe857c9573650aa8e4f78619c40a9fd6edddb6ffbcbfdeed9113cde8ac989"
     },
     {
       "path": "REUSE.md",
@@ -5010,8 +5010,8 @@
     },
     {
       "path": "src/components/app-shell.tsx",
-      "bytes": 4535,
-      "sha256": "3b1f90d7ff436aae07d1224c27a7869d7bce229e1646736de6dd663a9453d626"
+      "bytes": 5214,
+      "sha256": "e0a9506c388485726f6732b5f79132eacb84935a28191733dc98dbc8e1df14ab"
     },
     {
       "path": "src/components/artist-reuse.tsx",
@@ -5037,6 +5037,11 @@
       "path": "src/components/calligraphy/templates.tsx",
       "bytes": 24733,
       "sha256": "b71122a3b2cd0939470c33fc3c8017c3d478c81ee9c32060ff433e7158000037"
+    },
+    {
+      "path": "src/components/design-credit.tsx",
+      "bytes": 306,
+      "sha256": "6e0fcfa8fe5efb14cf8d5ee6ff069991d05d23f1c8a8a5e689ca65fc8e75dd73"
     },
     {
       "path": "src/components/dimensions-overview.tsx",
@@ -5085,8 +5090,8 @@
     },
     {
       "path": "src/foil.css",
-      "bytes": 19871,
-      "sha256": "b96e7e0daddd0fe3dc5f9ba07decbf7f5b1616a304a3f8a0bee0d4906a21431f"
+      "bytes": 20035,
+      "sha256": "faaaaa8653ce384a05e19ff0b01741759b5eaeb20f496ac869e7f2aec1d30630"
     },
     {
       "path": "src/instructions.css",
@@ -5175,8 +5180,8 @@
     },
     {
       "path": "src/pages/foil.tsx",
-      "bytes": 19308,
-      "sha256": "4412057227b468de276b0518f0d4f15a89e80a1e03730829b0103d86f4ec2112"
+      "bytes": 19394,
+      "sha256": "47d81c6674aefc06f370263ef4556f9be92a1f20de5cfd95a42ba823c2b6da40"
     },
     {
       "path": "src/pages/instructions.tsx",
@@ -5195,8 +5200,8 @@
     },
     {
       "path": "src/styles.css",
-      "bytes": 26056,
-      "sha256": "b7fd8007d20abc44014b7fc087e2c72fcb2303a74c92a62e5f6395df31837d6e"
+      "bytes": 26382,
+      "sha256": "b6bfdd64350020e8d3031ae17855326fb4830b86097839e72d25ea787930f7b6"
     },
     {
       "path": "tsconfig.json",

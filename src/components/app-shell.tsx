@@ -10,6 +10,7 @@ import {
   PenLine,
 } from "lucide-react";
 import { useEffect } from "react";
+import { DesignCredit } from "@/components/design-credit";
 
 const links = [
   {
@@ -138,8 +139,27 @@ export function AppShell() {
           <Outlet />
         </main>
         <footer className="page-footer">
-          <span>Much Ado About One Side</span>
+          <div className="page-footer-credit">
+            <span>Much Ado About One Side</span>
+            <DesignCredit />
+          </div>
           <span className="page-footer-links">
+            <a
+              href="https://github.com/presempathy-awb/muchadoaboutoneside"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+            <span aria-hidden="true">·</span>
+            <a
+              href="https://git.telpher.stream/awb/muchadoaboutoneside"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Gitea (sign-in)
+            </a>
+            <span aria-hidden="true">·</span>
             <Link to="/instructions" hash="send">
               Mailing & handoff
             </Link>

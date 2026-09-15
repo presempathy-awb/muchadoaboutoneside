@@ -2,7 +2,10 @@
 
 A sculpture studio for the figure-eight snake, with an aluminum-foil inscription edition: explore the original model, follow the poem around its covered surface, inspect the component groups, and download the preserved source files.
 
+**3D design by [iani schrodinger](https://www.facebook.com/profile.php?id=100009324056794).**
+
 - Public source: [presempathy-awb/muchadoaboutoneside on GitHub](https://github.com/presempathy-awb/muchadoaboutoneside)
+- Canonical project archive (sign-in required): [awb/muchadoaboutoneside on Gitea](https://git.telpher.stream/awb/muchadoaboutoneside)
 - Public site: [muchadoaboutoneside.com](https://muchadoaboutoneside.com)
 - Public foil edition: [muchadoaboutoneside.com](https://muchadoaboutoneside.com) (`/foil` remains an alias)
 - Source conversation: [Claude share](https://claude.ai/share/f424ef86-dcac-4e63-aecb-a017ed781b5b)

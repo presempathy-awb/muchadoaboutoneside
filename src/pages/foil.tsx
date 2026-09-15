@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { ArtistReuse } from "@/components/artist-reuse";
+import { DesignCredit } from "@/components/design-credit";
 import { DimensionsOverview } from "@/components/dimensions-overview";
 import FabricationPreview from "@/components/fabrication-preview";
 import FlatFoilPreview from "@/components/flat-foil-preview";
@@ -63,6 +64,7 @@ export default function FoilEdition() {
               read the hand-lettering brief
             </Link>
           </span>
+          <DesignCredit />
         </div>
       </header>
 

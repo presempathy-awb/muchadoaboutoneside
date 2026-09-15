@@ -76,6 +76,15 @@
   text-transform: uppercase;
 }
 
+.foil-intro-note .design-credit {
+  display: block;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
 .foil-brief-link {
   text-decoration: underline;
   text-decoration-color: #9b978f;
