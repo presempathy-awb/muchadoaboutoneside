@@ -8,6 +8,7 @@ import {
   GitFork,
   MoveUpRight,
   PenLine,
+  Projector,
 } from "lucide-react";
 import { useEffect } from "react";
 import { AssistanceCredit } from "@/components/assistance-credit";
@@ -33,22 +34,28 @@ const links = [
     index: "03",
   },
   {
+    to: "/projection" as const,
+    icon: Projector,
+    label: "Projection & score",
+    index: "04",
+  },
+  {
     to: "/studio" as const,
     icon: Box,
     label: "Sculpture studio",
-    index: "04",
+    index: "05",
   },
   {
     to: "/assembly" as const,
     icon: GitFork,
     label: "Assembly map",
-    index: "05",
+    index: "06",
   },
   {
     to: "/archive" as const,
     icon: FolderOpen,
     label: "Files & source",
-    index: "06",
+    index: "07",
   },
 ];
 

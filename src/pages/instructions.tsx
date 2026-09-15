@@ -212,6 +212,19 @@ export default function Instructions() {
 
         <LargeSculptureGuide />
 
+        <aside className="instructions-note instructions-projection-link">
+          <strong>Bring the calligraphy into the performance.</strong>
+          <p>
+            Plan full-sculpture projection, cues for the future score, Enceladus
+            environments, and original dark chimeras, with a separate sequence
+            for the burn.
+          </p>
+          <a href="/projection">
+            Open the projection & score plan
+            <ExternalLink size={15} aria-hidden="true" />
+          </a>
+        </aside>
+
         <section
           id="pack"
           className="instructions-section"

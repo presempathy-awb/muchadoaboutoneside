@@ -92,6 +92,12 @@ const instructionsRoute = createRoute({
   component: lazyRouteComponent(() => import("@/pages/instructions")),
   pendingComponent: RouteLoading,
 });
+const projectionRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/projection",
+  component: lazyRouteComponent(() => import("@/pages/projection")),
+  pendingComponent: RouteLoading,
+});
 const router = createRouter({
   scrollRestoration: true,
   routeTree: rootRoute.addChildren([
@@ -103,6 +109,7 @@ const router = createRouter({
     calligraphyChapterRoute,
     foilRoute,
     instructionsRoute,
+    projectionRoute,
   ]),
   defaultNotFoundComponent: () => (
     <div className="empty-state">
