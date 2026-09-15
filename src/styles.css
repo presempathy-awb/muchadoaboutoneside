@@ -577,6 +577,23 @@ h1 em {
   color: #63705c;
   letter-spacing: 0.4px;
 }
+.page-footer-credit {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-width: 0;
+}
+.design-credit {
+  color: #344b3c;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: normal;
+}
+.design-credit a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .page-footer-links {
   display: inline-flex;
   flex-wrap: wrap;
@@ -1316,6 +1333,7 @@ h2[id] {
     margin-top: 5px;
   }
   .page-footer {
+    flex-direction: column;
     padding: 34px 18px 18px;
     font-size: 10px;
   }
@@ -1384,7 +1402,7 @@ h2[id] {
 }
 @media (max-width: 640px) {
   .page-footer-links {
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
   .artist-reuse {
     margin-top: 42px;
