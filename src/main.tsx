@@ -3,6 +3,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   RouterProvider,
 } from "@tanstack/react-router";
 import { lazy, StrictMode, Suspense } from "react";
@@ -14,6 +15,7 @@ import "./styles.css";
 const Foil = lazy(() => import("@/pages/foil"));
 const Assembly = lazy(() => import("@/pages/assembly"));
 const Archive = lazy(() => import("@/pages/archive"));
+const Calligraphy = lazy(() => import("@/pages/calligraphy"));
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
 });
@@ -53,6 +55,27 @@ const archiveRoute = createRoute({
     </Suspense>
   ),
 });
+const calligraphyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/calligraphy",
+  component: () => (
+    <Suspense fallback={<RouteLoading />}>
+      <Calligraphy chapter="overview" />
+    </Suspense>
+  ),
+});
+const calligraphyChapterRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/calligraphy/$chapter",
+  component: function CalligraphyChapter() {
+    const { chapter } = calligraphyChapterRoute.useParams();
+    return (
+      <Suspense fallback={<RouteLoading />}>
+        <Calligraphy chapter={chapter} />
+      </Suspense>
+    );
+  },
+});
 const foilRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/foil",
@@ -62,13 +85,24 @@ const foilRoute = createRoute({
     </Suspense>
   ),
 });
+const instructionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/instructions",
+  // Let the router load the sections before it restores a hash destination.
+  component: lazyRouteComponent(() => import("@/pages/instructions")),
+  pendingComponent: RouteLoading,
+});
 const router = createRouter({
+  scrollRestoration: true,
   routeTree: rootRoute.addChildren([
     foilHomeRoute,
     studioRoute,
     assemblyRoute,
     archiveRoute,
+    calligraphyRoute,
+    calligraphyChapterRoute,
     foilRoute,
+    instructionsRoute,
   ]),
   defaultNotFoundComponent: () => (
     <div className="empty-state">

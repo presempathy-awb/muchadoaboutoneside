@@ -27,8 +27,9 @@
     "generate:inscription": "bun scripts/generate-inscription.ts",
     "generate:laser": "bun scripts/generate-laser.ts",
     "generate:small-foil": "bun scripts/generate-small-foil.ts",
+    "generate:guide": "bun scripts/generate-calligraphy-guide.tsx",
     "export:public": "bun scripts/export-public.ts",
-    "check": "bun run lint && bun run typecheck && bun test && bun run verify:assets && bun scripts/generate-inscription.ts --check",
+    "check": "bun run lint && bun run typecheck && bun test && bun run verify:assets && bun scripts/generate-inscription.ts --check && bun scripts/generate-calligraphy-guide.tsx --check",
     "smoke": "bun scripts/smoke.ts"
   },
   "dependencies": {

@@ -1,0 +1,32 @@
+/* Screen layout only; printed lettering templates retain their physical scale. */
+.guide-site .guide-kicker,
+.guide-site .guide-spec-strip,
+.guide-site .guide-chapters a span,
+.guide-site .guide-table th {
+  font-size: 11px;
+  color: #5f5c56;
+}
+
+.guide-site .guide-chapters a,
+.guide-site .guide-download-copy strong,
+.guide-site .guide-download-copy small {
+  font-size: 13px;
+}
+
+.guide-site .guide-body > p,
+.guide-site .guide-body > ul,
+.guide-site .guide-body > ol,
+.guide-site .guide-steps p,
+.guide-site .guide-checklist {
+  font-size: 16px;
+}
+
+.guide-site .guide-table {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.guide-site .guide-table th,
+.guide-site .guide-table td {
+  padding-right: 12px;
+}

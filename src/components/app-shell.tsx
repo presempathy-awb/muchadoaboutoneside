@@ -2,11 +2,14 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import {
   ArrowUpRight,
   Box,
+  ClipboardList,
   Feather,
   FolderOpen,
   GitFork,
   MoveUpRight,
+  PenLine,
 } from "lucide-react";
+import { useEffect } from "react";
 
 const links = [
   {
@@ -16,22 +19,34 @@ const links = [
     index: "01",
   },
   {
+    to: "/instructions" as const,
+    icon: ClipboardList,
+    label: "Project instructions",
+    index: "02",
+  },
+  {
+    to: "/calligraphy" as const,
+    icon: PenLine,
+    label: "Calligraphy guide",
+    index: "03",
+  },
+  {
     to: "/studio" as const,
     icon: Box,
     label: "Sculpture studio",
-    index: "02",
+    index: "04",
   },
   {
     to: "/assembly" as const,
     icon: GitFork,
     label: "Assembly map",
-    index: "03",
+    index: "05",
   },
   {
     to: "/archive" as const,
     icon: FolderOpen,
     label: "Files & source",
-    index: "04",
+    index: "06",
   },
 ];
 
@@ -39,6 +54,14 @@ export function AppShell() {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
+  const currentPage = links.find(({ to }) =>
+    to === "/"
+      ? pathname === "/" || pathname === "/foil"
+      : pathname === to || pathname.startsWith(`${to}/`),
+  );
+  useEffect(() => {
+    document.title = `${currentPage?.label ?? "Page not found"} · Much Ado About One Side`;
+  }, [currentPage]);
 
   return (
     <div className="app-shell">
@@ -62,13 +85,16 @@ export function AppShell() {
         <nav aria-label="Main navigation" className="main-nav">
           {links.map(({ to, icon: Icon, label, index }) => {
             const active =
-              pathname === to || (to === "/" && pathname === "/foil");
+              pathname === to ||
+              (to === "/" && pathname === "/foil") ||
+              (to === "/calligraphy" && pathname.startsWith("/calligraphy/"));
             return (
               <Link
                 key={to}
                 to={to}
                 activeOptions={{ exact: true }}
                 className={active ? "nav-link active" : "nav-link"}
+                aria-current={active ? "page" : undefined}
               >
                 <Icon size={18} strokeWidth={1.6} />
                 <span>{label}</span>
@@ -78,18 +104,16 @@ export function AppShell() {
           })}
         </nav>
         <div className="sidebar-note">
-          <span className="eyebrow">THE PROJECT</span>
+          <span className="eyebrow">FROM STUDIO TO COLAB</span>
           <p>
-            One continuous idea.
+            Make something
             <br />
-            Many connected parts.
+            worth passing on.
           </p>
           <div className="fine-rule" />
-          <span className="muted text-xs">
-            Figure-eight snake
-            <br />
-            Construction model · Study 01
-          </span>
+          <Link to="/instructions" hash="pack" className="text-link">
+            Packing & mailing <MoveUpRight size={15} aria-hidden="true" />
+          </Link>
         </div>
         <a
           className="repo-link"
@@ -103,11 +127,11 @@ export function AppShell() {
       <div className="workspace">
         <header className="topbar">
           <div className="breadcrumb">
-            The workshop <span>/</span> Much Ado About One Side
+            <Link to="/">The workshop</Link> <span aria-hidden="true">/</span>{" "}
+            <strong>{currentPage?.label ?? "Page not found"}</strong>
           </div>
-          <Link to="/archive" className="saved-status">
-            <span className="status-dot" />4 source files preserved{" "}
-            <MoveUpRight size={13} />
+          <Link to="/instructions" hash="send" className="saved-status">
+            CoLab iani handoff <MoveUpRight size={13} />
           </Link>
         </header>
         <main id="main" tabIndex={-1}>
@@ -116,6 +140,10 @@ export function AppShell() {
         <footer className="page-footer">
           <span>Much Ado About One Side</span>
           <span className="page-footer-links">
+            <Link to="/instructions" hash="send">
+              Mailing & handoff
+            </Link>
+            <span aria-hidden="true">·</span>
             <a href="/licenses/REUSE.txt">Open reuse</a>
             <span aria-hidden="true">·</span>
             <a href="/licenses/LICENSE-MIT.txt">MIT</a>

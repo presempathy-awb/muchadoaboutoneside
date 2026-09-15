@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "af14a0b366a70db52c515b8ef1df40bd4f4cd386",
+  "sourceCommit": "507440156657f03b9032ffdbb82a52a16f9803c7",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 17540,
-      "sha256": "31cbb1ad8833d3c0590a52cfe1d682cc7f24dc28b109be2b73c476d26197d72c"
+      "bytes": 20893,
+      "sha256": "5ad6c1793739cca17c6acf98512c63d2cfc6154c50ad0584cab621ae5907bd54"
     },
     {
       "path": "REUSE.md",
@@ -55,8 +55,8 @@
     },
     {
       "path": "biome.json",
-      "bytes": 641,
-      "sha256": "7a69c89c3bf96f3f5e67c1289bdf4910bab1fe7983391ece7252605a499074e5"
+      "bytes": 664,
+      "sha256": "3f6647ec1136870b6579dc55621ff93b1dcf0bbcb636039881e56cbb34e25b82"
     },
     {
       "path": "bun.lock",
@@ -85,8 +85,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 1976,
-      "sha256": "a6680c0de0c7538ae73bd7a6abf76d5ee7d3b149411a1461757077f34ca981ca"
+      "bytes": 2098,
+      "sha256": "0eae649b85c7af877b181163186ca911e5dea00db386539eedea12f787790f73"
     },
     {
       "path": "public/editions/endless-inscription-study.svg",
@@ -4739,6 +4739,16 @@
       "sha256": "61093a21f5e63dedf54222b3c09997e54c0fe43e3851d21386e02ddcbc246d49"
     },
     {
+      "path": "public/guide/calligraphy-guide.html",
+      "bytes": 160756,
+      "sha256": "569f8a2f54a2c04df6930fdf4c2cf4562e921f22565bd4cc073c6cd7a8bc0de4"
+    },
+    {
+      "path": "public/guide/calligraphy-guide.pdf",
+      "bytes": 722269,
+      "sha256": "9d4e05d6fed80a1ca1f50112de27eb1ec15327534a066960908bf5d3fa997507"
+    },
+    {
       "path": "public/licenses/LICENSE-APACHE.txt",
       "bytes": 11358,
       "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
@@ -4767,6 +4777,11 @@
       "path": "scripts/export-public.ts",
       "bytes": 3383,
       "sha256": "a434c04f074e9fce4cc2e56bb7986dbaf7d5087b6e3275d2c15f49a88727aada"
+    },
+    {
+      "path": "scripts/generate-calligraphy-guide.tsx",
+      "bytes": 3037,
+      "sha256": "25a3d220fade958e5cb471ba78661ba791d7b5c80149fde984f046c88b214876"
     },
     {
       "path": "scripts/generate-inscription.ts",
@@ -4820,8 +4835,8 @@
     },
     {
       "path": "scripts/smoke.ts",
-      "bytes": 5542,
-      "sha256": "381dc4b3f6d67ebe2d9b236b3f4b4e824c1ece5bbd4cd3576535831b4ad601ba"
+      "bytes": 5834,
+      "sha256": "2a0360bdc5221692bc372eeca14b5d620a57c08409adacc65cc08c7ddb0d60df"
     },
     {
       "path": "scripts/verify-assets.ts",
@@ -4835,8 +4850,8 @@
     },
     {
       "path": "server/app.ts",
-      "bytes": 3967,
-      "sha256": "738df4b008444ebf72b9f31006f88062d915f17805f213d3e23abda7883dac9a"
+      "bytes": 3996,
+      "sha256": "870c031c6154c30d57dc33f487732eca035a85c38b641ddd8b098d7ac9491613"
     },
     {
       "path": "server/index.ts",
@@ -4847,6 +4862,26 @@
       "path": "server/project.ts",
       "bytes": 2527,
       "sha256": "08a5a10ce5d9a290cdffdded40c927b5e95d3a7724add3f3621f070dc04595a3"
+    },
+    {
+      "path": "shared/calligraphy-guide.test.ts",
+      "bytes": 5417,
+      "sha256": "6fd232e2518317d86c1b3cd56be18851f81b432f03616d1e53b980550de1638d"
+    },
+    {
+      "path": "shared/calligraphy-guide.ts",
+      "bytes": 38103,
+      "sha256": "063d2ea905207b17df3016f66c136ce2b4eebad4eff15cb665cc192bf71106a6"
+    },
+    {
+      "path": "shared/dimensions.test.ts",
+      "bytes": 1178,
+      "sha256": "e90d8ea946df3b89a69d0ba5c9a36a17f5922792441a558062eba119e00c13d6"
+    },
+    {
+      "path": "shared/dimensions.ts",
+      "bytes": 971,
+      "sha256": "9d80d15bff399ad42525d38bae34ddf2beef5c41454f35aa996ac9c03fad4ffa"
     },
     {
       "path": "shared/fabrication-downloads.test.ts",
@@ -4897,6 +4932,16 @@
       "path": "shared/print-manifest.test.ts",
       "bytes": 2143,
       "sha256": "f8b9356acd7f739a423e7720b74bba913bd6eb3d35a19de23de9539c5f8b6468"
+    },
+    {
+      "path": "shared/project-instructions.test.ts",
+      "bytes": 2338,
+      "sha256": "35a857171c3db49534d0208c82ef3ddf60ff296046619233c95cdc6a13f91185"
+    },
+    {
+      "path": "shared/project-instructions.ts",
+      "bytes": 5967,
+      "sha256": "5f6e0a8532d2a2954748dd1d4d5804b20f55b5d6a74e4cbd243a1b59d79d4300"
     },
     {
       "path": "shared/project.ts",
@@ -4959,14 +5004,44 @@
       "sha256": "9558601540ebdbd5e0998ce2736108b968f06ad857daf75f5e5f2e625388381e"
     },
     {
+      "path": "src/calligraphy.css",
+      "bytes": 10073,
+      "sha256": "973ec775348dac509639d13db7a45706cbac20669cc0c11547a39d8f97162ab9"
+    },
+    {
       "path": "src/components/app-shell.tsx",
-      "bytes": 3572,
-      "sha256": "48f6b91e8d721885c3641ed4111e840aaebccfe8f5a557f7495d6b156ef2e348"
+      "bytes": 4535,
+      "sha256": "3b1f90d7ff436aae07d1224c27a7869d7bce229e1646736de6dd663a9453d626"
     },
     {
       "path": "src/components/artist-reuse.tsx",
       "bytes": 3726,
       "sha256": "6a691ac308b4d4f5ece4fdddc161cfb60a560aba67b7be090dbe179b8ab3fd64"
+    },
+    {
+      "path": "src/components/calligraphy/blocks.tsx",
+      "bytes": 6919,
+      "sha256": "a606ea6f1671819f1d1464957ee53bb41c64ad3577125bc9f984de07612ec7a4"
+    },
+    {
+      "path": "src/components/calligraphy/printable.tsx",
+      "bytes": 5656,
+      "sha256": "93b3c773e915bfef7efc8024b4087f652920b19c96199047f03b94a02c62fea9"
+    },
+    {
+      "path": "src/components/calligraphy/templates.test.tsx",
+      "bytes": 2359,
+      "sha256": "e33df7e503791d1e3a4ab780288f5cffb565c33713bf643205a86e5e150a5cb2"
+    },
+    {
+      "path": "src/components/calligraphy/templates.tsx",
+      "bytes": 24733,
+      "sha256": "b71122a3b2cd0939470c33fc3c8017c3d478c81ee9c32060ff433e7158000037"
+    },
+    {
+      "path": "src/components/dimensions-overview.tsx",
+      "bytes": 4200,
+      "sha256": "bdeafd9893e57e0a84e6d1c8fcbef8a36c213522e65e27bb9d5eb92716d063bf"
     },
     {
       "path": "src/components/fabrication-preview.tsx",
@@ -5004,9 +5079,19 @@
       "sha256": "39480d5b63e46554f1cfcedaa91052c848bda5c45d7a5dda80fe91e7be604fb0"
     },
     {
+      "path": "src/dimensions.css",
+      "bytes": 2776,
+      "sha256": "1eeddfe2987ad3bab07b30d5a5d2970c86aa304c81fa26689c9b820a6315afb6"
+    },
+    {
       "path": "src/foil.css",
-      "bytes": 18070,
-      "sha256": "ab8439dca597edc4614801480d3e7390c2f01976d24412c6f37d021b3a4d4697"
+      "bytes": 19871,
+      "sha256": "b96e7e0daddd0fe3dc5f9ba07decbf7f5b1616a304a3f8a0bee0d4906a21431f"
+    },
+    {
+      "path": "src/instructions.css",
+      "bytes": 9808,
+      "sha256": "0a01a93e0ba12c31c8705996cec7b57197168a844c00552dba7b94454f329f79"
     },
     {
       "path": "src/lib/foil-geometry.test.ts",
@@ -5044,9 +5129,14 @@
       "sha256": "eed0181d765d2bf588f837d9d5ba0384799fc9253963b06e63a1c0b2cb01142b"
     },
     {
+      "path": "src/lib/project-query.test.ts",
+      "bytes": 372,
+      "sha256": "7926332a1d7bbe474912d2bf4d46cde2718a802fb13ae1043a7b76e5beb847c9"
+    },
+    {
       "path": "src/lib/project-query.ts",
-      "bytes": 954,
-      "sha256": "2d2dcf87a6a729aa301b3a0d22d04f84596f57ffb375394b2d1e61dbee22a0e5"
+      "bytes": 965,
+      "sha256": "1bc7942e10fbdeee16fd64c6673019aa6493f8345330124fbce48fd4e875ed9f"
     },
     {
       "path": "src/lib/sculpture-scene.ts",
@@ -5065,8 +5155,8 @@
     },
     {
       "path": "src/main.tsx",
-      "bytes": 2589,
-      "sha256": "d9395457ceaee610613773df4bd13ee7b38d36a85d2ac10dc300a6b662179108"
+      "bytes": 3643,
+      "sha256": "253c33fc520f3cd0ce6fb169ab5c209d23dc171f1e660b4d58ca515bfaaa9d1a"
     },
     {
       "path": "src/pages/archive.tsx",
@@ -5079,19 +5169,34 @@
       "sha256": "0d329126071fb2aeb406413afd1ed3bb088e4081185c4182df6a844f3d2f8e86"
     },
     {
+      "path": "src/pages/calligraphy.tsx",
+      "bytes": 4908,
+      "sha256": "f900b265da8269dc31aaf1c20e860579d039227d1887c321508ed44dbb1ee760"
+    },
+    {
       "path": "src/pages/foil.tsx",
-      "bytes": 17170,
-      "sha256": "dbbd06ed5211d976954de66f0d90f3f01c6ca1b3d3078130a187892556b48e8c"
+      "bytes": 19308,
+      "sha256": "4412057227b468de276b0518f0d4f15a89e80a1e03730829b0103d86f4ec2112"
+    },
+    {
+      "path": "src/pages/instructions.tsx",
+      "bytes": 9965,
+      "sha256": "0ebf7598615711041e30210c7700cc554a46d29d6ac4377942d01be177c52150"
     },
     {
       "path": "src/pages/studio.tsx",
-      "bytes": 8806,
-      "sha256": "6b24b8a19f2af8d3580793d19c0390757aa0773a0b4d99531e645cdbe491579a"
+      "bytes": 9072,
+      "sha256": "476a1925e25406df50aed3de9cb922038322d15219bf5b9059b9c3dd237539f8"
+    },
+    {
+      "path": "src/site-guide.css",
+      "bytes": 712,
+      "sha256": "4ecaaf369f086c2d5b5cf312590ce73a5a2d9350c3cd86ebc4a1995593924a33"
     },
     {
       "path": "src/styles.css",
-      "bytes": 24153,
-      "sha256": "d248697e024cb2f4841fc67527e09f0ddb3d1101064e326574a93b65b878faa5"
+      "bytes": 26056,
+      "sha256": "b7fd8007d20abc44014b7fc087e2c72fcb2303a74c92a62e5f6395df31837d6e"
     },
     {
       "path": "tsconfig.json",
