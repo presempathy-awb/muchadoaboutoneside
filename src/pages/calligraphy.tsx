@@ -54,9 +54,8 @@ export default function CalligraphyGuide({ chapter }: { chapter: string }) {
             </span>
           </a>
           <p className="guide-spec-strip">
-            {MASTER_ROWS.length} rows · {WORKING.xHeightMm} mm x-height ·{" "}
-            {WORKING.slantDegrees}° slant · thinnest stroke{" "}
-            {WORKING.minimumThinStrokeMm} mm
+            {MASTER_ROWS.length} rows · your own copperplate · x-height about{" "}
+            {WORKING.xHeightMm} mm · hairlines thickened after the scan
           </p>
         </div>
       </header>

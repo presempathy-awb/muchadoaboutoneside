@@ -3,10 +3,8 @@
  * Every coordinate is in millimetres; the SVG viewBox is the paper size, so
  * a 100 % print reproduces the working size exactly.
  */
-import type { ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 import {
-  ALPHABET_ROWS,
-  CAPITALS,
   HARD_WORD_ROWS,
   MASTER_ROWS,
   MASTER_SHEETS,
@@ -15,6 +13,7 @@ import {
   SHEET,
   SHEET_WRITING_WIDTH_MM,
   SMALL_EDITION,
+  STYLE_SAMPLE_ROWS,
   WORKING,
 } from "../../../shared/calligraphy-guide";
 import { POEM_LINES, POEM_TITLE } from "../../../shared/poem";
@@ -22,26 +21,58 @@ import { POEM_LINES, POEM_TITLE } from "../../../shared/poem";
 const SCRIPT = "'Great Vibes', 'Iowan Old Style', serif";
 const SANS = "'Avenir Next', 'Segoe UI', sans-serif";
 const INK = "#211f1b";
-const GHOST = "#bdb9b1";
 const GHOST_DARK = "#8f8a82";
 const RULE = "#7e7a73";
 const FAINT = "#d7d3cb";
 
 const round = (value: number) => Math.round(value * 1000) / 1000;
 
+type RowMode = "copperplate" | "plain";
+
 interface RowLinesProps {
   baseline: number;
   x1: number;
   x2: number;
+  mode?: RowMode;
 }
 
-/** The guideline set for one row: solid, dashed, and dotted rules plus slant. */
-function RowLines({ baseline, x1, x2 }: RowLinesProps) {
+/** The guide-line set for one row. Plain mode keeps only baseline and x-height. */
+function RowLines({ baseline, x1, x2, mode = "copperplate" }: RowLinesProps) {
+  const instanceId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const ceiling = baseline - WORKING.flourishCeilingMm;
   const floor = baseline + WORKING.flourishFloorMm;
+  if (mode === "plain") {
+    return (
+      <g stroke={RULE} fill="none">
+        <line
+          x1={x1}
+          y1={baseline - WORKING.xHeightMm}
+          x2={x2}
+          y2={baseline - WORKING.xHeightMm}
+          strokeWidth={0.15}
+          strokeDasharray="0.4 1.6"
+        />
+        <line x1={x1} y1={baseline} x2={x2} y2={baseline} strokeWidth={0.4} />
+        <g
+          fontFamily={SANS}
+          fontSize={2.2}
+          fill={GHOST_DARK}
+          textAnchor="end"
+          stroke="none"
+        >
+          <text x={x2} y={baseline - WORKING.xHeightMm - 0.8}>
+            x-height +{WORKING.xHeightMm}, if you want it
+          </text>
+          <text x={x2} y={baseline + 3}>
+            baseline
+          </text>
+        </g>
+      </g>
+    );
+  }
   const slantRun =
     (floor - ceiling) / Math.tan((WORKING.slantDegrees * Math.PI) / 180);
-  const clipId = `slant-${round(baseline)}-${round(x1)}-${round(x2)}`;
+  const clipId = `slant-${round(baseline)}-${round(x1)}-${round(x2)}-${instanceId}`;
   const slants: ReactNode[] = [];
   for (let x = x1; x + slantRun <= x2 + slantRun; x += SHEET.slantSpacingMm) {
     slants.push(
@@ -73,14 +104,6 @@ function RowLines({ baseline, x1, x2 }: RowLinesProps) {
         />
         <line
           x1={x1}
-          y1={baseline - WORKING.capHeightMm}
-          x2={x2}
-          y2={baseline - WORKING.capHeightMm}
-          strokeWidth={0.2}
-          strokeDasharray="4 2"
-        />
-        <line
-          x1={x1}
           y1={baseline - WORKING.ascenderMm}
           x2={x2}
           y2={baseline - WORKING.ascenderMm}
@@ -101,7 +124,7 @@ function RowLines({ baseline, x1, x2 }: RowLinesProps) {
           x2={x2}
           y2={baseline + WORKING.descenderMm}
           strokeWidth={0.2}
-          strokeDasharray="1.5 1.5"
+          strokeDasharray="4 2"
         />
         <line
           x1={x1}
@@ -116,11 +139,8 @@ function RowLines({ baseline, x1, x2 }: RowLinesProps) {
         <text x={x2} y={ceiling - 0.8}>
           flourish ceiling +{WORKING.flourishCeilingMm}
         </text>
-        <text x={x2} y={baseline - WORKING.capHeightMm - 0.8}>
-          capitals +{WORKING.capHeightMm}
-        </text>
         <text x={x2} y={baseline - WORKING.ascenderMm - 0.8}>
-          ascender +{WORKING.ascenderMm}
+          ascender · capitals +{WORKING.ascenderMm}
         </text>
         <text x={x2} y={baseline - WORKING.xHeightMm - 0.8}>
           x-height +{WORKING.xHeightMm}
@@ -208,19 +228,27 @@ function SheetFrame({
 interface LabeledRowProps {
   baseline: number;
   id?: string;
-  ghost?: string;
-  ghostFill?: string;
+  /** Plain-type words printed above the row so Jill never has to look away. */
+  prompt?: string;
+  /** Script text on the baseline, used only for the placeholder comparison. */
+  script?: string;
+  mode?: RowMode;
 }
 
 function LabeledRow({
   baseline,
   id,
-  ghost,
-  ghostFill = GHOST,
+  prompt,
+  script,
+  mode = "copperplate",
 }: LabeledRowProps) {
   const m = SHEET.marginMm;
   const x1 = m + SHEET.labelColumnMm;
   const x2 = SHEET.widthMm - m;
+  const promptY =
+    mode === "plain"
+      ? baseline - WORKING.xHeightMm - 6
+      : baseline - WORKING.flourishCeilingMm - 2.5;
   return (
     <g>
       <rect
@@ -245,16 +273,28 @@ function LabeledRow({
           {id}
         </text>
       )}
-      <RowLines baseline={baseline} x1={x1} x2={x2} />
-      {ghost && (
+      <RowLines baseline={baseline} x1={x1} x2={x2} mode={mode} />
+      {prompt && (
+        <text
+          x={x1 + 1}
+          y={promptY}
+          fontFamily={SANS}
+          fontSize={3.6}
+          fontWeight={600}
+          fill={INK}
+        >
+          {prompt}
+        </text>
+      )}
+      {script && (
         <text
           x={x1 + 2}
           y={baseline}
           fontFamily={SCRIPT}
           fontSize={WORKING.emMm}
-          fill={ghostFill}
+          fill={INK}
         >
-          {ghost}
+          {script}
         </text>
       )}
     </g>
@@ -265,50 +305,73 @@ function rowBaselines(count: number, pitch: number, first: number) {
   return Array.from({ length: count }, (_, index) => first + index * pitch);
 }
 
+const MASTER_BASELINES = rowBaselines(
+  SHEET.rowsPerSheet,
+  WORKING.rowPitchMm,
+  SHEET.firstBaselineMm,
+);
+const PRACTICE_PITCH = 44;
+const PRACTICE_FIRST_BASELINE = 54;
+const PRACTICE_BASELINES = rowBaselines(
+  4,
+  PRACTICE_PITCH,
+  PRACTICE_FIRST_BASELINE,
+);
+
+const LINE_KEY =
+  "Solid: baseline and x-height. Dashed: ascender and descender at 1.5 × x-height. Dotted: flourish ceiling and floor. Faint diagonals: 55° slant.";
+
 export function BlankSheet() {
   return (
     <SheetFrame
-      label="Blank ruled master sheet"
-      title={`${POEM_TITLE} · master sheet`}
-      subtitle={`Blank ruled sheet · x-height ${WORKING.xHeightMm} mm · slant ${WORKING.slantDegrees}° · write one row ID per box`}
-      footer="Solid: baseline and x-height. Long dash: ascender and capital. Short dash: descender. Dotted: flourish limits. Keep every stroke inside the dotted lines."
+      label="Blank copperplate master sheet"
+      title={`${POEM_TITLE} · blank master sheet`}
+      subtitle={`Copperplate guide lines · x-height ${WORKING.xHeightMm} mm suggested · write the row ID in the box`}
+      footer={`${LINE_KEY} Use for rewrites and part-b rows.`}
     >
-      {rowBaselines(
-        SHEET.rowsPerSheet,
-        WORKING.rowPitchMm,
-        SHEET.firstBaselineMm,
-      ).map((baseline) => (
+      {MASTER_BASELINES.map((baseline) => (
         <LabeledRow key={baseline} baseline={baseline} />
       ))}
     </SheetFrame>
   );
 }
 
-interface GhostSheetProps {
+export function FreeSheet() {
+  return (
+    <SheetFrame
+      label="Plain baseline sheet"
+      title={`${POEM_TITLE} · plain sheet`}
+      subtitle="Baseline and a faint x-height only · for writing without slant or loop lines · write the row ID in the box"
+      footer="Keep rows from touching each other; baselines are 56 mm apart for that. Everything else is your choice."
+    >
+      {MASTER_BASELINES.map((baseline) => (
+        <LabeledRow key={baseline} baseline={baseline} mode="plain" />
+      ))}
+    </SheetFrame>
+  );
+}
+
+interface MasterSheetProps {
   rows: readonly MasterRow[];
   number: number;
 }
 
-export function GhostSheet({ rows, number }: GhostSheetProps) {
+export function MasterSheet({ rows, number }: MasterSheetProps) {
   return (
     <SheetFrame
-      label={`Ghosted reference sheet ${number} of ${MASTER_SHEETS.length}`}
-      title={`${POEM_TITLE} · reference sheet ${number} of ${MASTER_SHEETS.length}`}
-      subtitle={`Rows ${rows[0]?.id ?? ""} to ${rows[rows.length - 1]?.id ?? ""} · stand-in font at working size · size and spacing reference, not letterforms`}
-      footer="Grey text is the substitute font. Write your own hand over it for practice; write the final master on the blank sheets."
+      label={`Master sheet ${number} of ${MASTER_SHEETS.length}`}
+      title={`${POEM_TITLE} · master sheet ${number} of ${MASTER_SHEETS.length}`}
+      subtitle={`Rows ${rows[0]?.id ?? ""} to ${rows[rows.length - 1]?.id ?? ""} · write each row on the baseline beneath its printed words`}
+      footer={`${LINE_KEY} A row without printed words is a spare for a part-b continuation.`}
     >
-      {rowBaselines(
-        SHEET.rowsPerSheet,
-        WORKING.rowPitchMm,
-        SHEET.firstBaselineMm,
-      ).map((baseline, index) => {
+      {MASTER_BASELINES.map((baseline, index) => {
         const row = rows[index];
         return (
           <LabeledRow
             key={baseline}
             baseline={baseline}
             id={row?.id}
-            ghost={row?.text}
+            prompt={row ? `${row.id} · ${row.text}` : undefined}
           />
         );
       })}
@@ -316,46 +379,33 @@ export function GhostSheet({ rows, number }: GhostSheetProps) {
   );
 }
 
-const PRACTICE_PITCH = 44;
-const PRACTICE_FIRST_BASELINE = 52;
+export function MasterSheets() {
+  return (
+    <>
+      {MASTER_SHEETS.map((rows, index) => (
+        <div className="guide-sheet-page" key={rows[0]?.id ?? index}>
+          <MasterSheet rows={rows} number={index + 1} />
+        </div>
+      ))}
+    </>
+  );
+}
 
-export function AlphabetSheet() {
-  const capitalSet = new Set<string>(CAPITALS);
+export function StyleSampleSheet() {
   return (
     <SheetFrame
-      label="Alphabet warm-up sheet"
-      title={`${POEM_TITLE} · alphabet warm-up`}
-      subtitle="Lowercase joined, then capitals. The poem's capitals (C D E F I L O S T) are shown darker."
-      footer="Write the lowercase alphabet twice and each capital once, joined as in running text. Check ten letters in a row sit on the baseline and touch the x-height line."
+      label="Style-sample sheet"
+      title={`${POEM_TITLE} · style sample`}
+      subtitle="Your alphabet in your own copperplate, at the size you will use for the poem. Also the reference for any digital repair."
+      footer="Join the lowercase as you naturally would; give the capitals the flourishes you like best. Nothing here is compared with a font."
     >
-      {rowBaselines(4, PRACTICE_PITCH, PRACTICE_FIRST_BASELINE).map(
-        (baseline, index) => {
-          const text = ALPHABET_ROWS[index] ?? "";
-          const x1 = SHEET.marginMm + SHEET.labelColumnMm;
-          return (
-            <g key={baseline}>
-              <LabeledRow baseline={baseline} />
-              <text
-                x={x1 + 2}
-                y={baseline}
-                fontFamily={SCRIPT}
-                fontSize={WORKING.emMm}
-                fill={GHOST}
-              >
-                {Array.from(text).map((letter, position) => (
-                  <tspan
-                    // biome-ignore lint/suspicious/noArrayIndexKey: letters repeat within a row
-                    key={position}
-                    fill={capitalSet.has(letter) ? GHOST_DARK : GHOST}
-                  >
-                    {letter}
-                  </tspan>
-                ))}
-              </text>
-            </g>
-          );
-        },
-      )}
+      {MASTER_BASELINES.map((baseline, index) => (
+        <LabeledRow
+          key={baseline}
+          baseline={baseline}
+          prompt={STYLE_SAMPLE_ROWS[index]}
+        />
+      ))}
     </SheetFrame>
   );
 }
@@ -365,23 +415,22 @@ export function HardWordsSheet() {
     <SheetFrame
       label="Hard words practice sheet"
       title={`${POEM_TITLE} · hard words`}
-      subtitle="Invented and compound words, each written as one word with no gap or hyphen."
+      subtitle="Invented and compound words, each written as one word with no gap or hyphen. Plain baselines; use your own slant."
       footer="palindove · inkhands · halfheight · halfknight · quarterknight · knightling · swordfeud · inkprick's · doublelong · mirrorknave · swordwave · Onesided"
     >
-      {rowBaselines(4, PRACTICE_PITCH, PRACTICE_FIRST_BASELINE).map(
-        (baseline, index) => (
-          <LabeledRow
-            key={baseline}
-            baseline={baseline}
-            ghost={HARD_WORD_ROWS[index]}
-          />
-        ),
-      )}
+      {PRACTICE_BASELINES.map((baseline, index) => (
+        <LabeledRow
+          key={baseline}
+          baseline={baseline}
+          prompt={HARD_WORD_ROWS[index]}
+          mode="plain"
+        />
+      ))}
     </SheetFrame>
   );
 }
 
-/** One row of guidelines at the working size with every line named. */
+/** One row of guide lines at the working size with every line named. */
 export function ProportionsFigure() {
   const width = 180;
   const baseline = 40;
@@ -395,10 +444,10 @@ export function ProportionsFigure() {
       width={`${width}mm`}
       height={`${height}mm`}
       role="img"
-      aria-label="Guideline proportions at the working size"
+      aria-label="Guide-line proportions at the working size"
       className="guide-figure guide-actual"
     >
-      <title>Guideline proportions at the working size</title>
+      <title>Guide-line proportions at the working size</title>
       <rect width={width} height={height} fill="#ffffff" />
       <RowLines baseline={baseline} x1={x1} x2={x2} />
       <text
@@ -412,40 +461,39 @@ export function ProportionsFigure() {
       </text>
       <g fontFamily={SANS} fontSize={2.6} fill={INK}>
         <text x={x2 + 6} y={baseline - WORKING.flourishCeilingMm + 1}>
-          flourish ceiling · 1.12 em
-        </text>
-        <text x={x2 + 6} y={baseline - WORKING.capHeightMm + 1}>
-          capital height · 0.81 em
+          flourish ceiling · 3.4 × x-height
         </text>
         <text x={x2 + 6} y={baseline - WORKING.ascenderMm + 1}>
-          ascender · 0.62 em
+          ascender and capitals · 1.5 ×
         </text>
         <text x={x2 + 6} y={baseline - WORKING.xHeightMm + 1}>
-          x-height · 0.36 em
+          x-height · 1 ×
         </text>
         <text x={x2 + 6} y={baseline + 1}>
           baseline
         </text>
         <text x={x2 + 6} y={baseline + WORKING.descenderMm + 1}>
-          descender · 0.32 em
+          descender · 1.5 ×
         </text>
         <text x={x2 + 6} y={baseline + WORKING.flourishFloorMm + 1}>
-          flourish floor · 0.80 em
+          flourish floor · 2.6 ×
         </text>
         <text x={x1} y={height - 3} fill={GHOST_DARK}>
-          1 em = {WORKING.emMm} mm on paper = {SMALL_EDITION.emMm} mm on the
-          maquette · slant {WORKING.slantDegrees}°
+          x-height {WORKING.xHeightMm} mm on paper becomes about{" "}
+          {(WORKING.xHeightMm * (SMALL_EDITION.emMm / WORKING.emMm)).toFixed(1)}{" "}
+          mm on the maquette · slant guide {WORKING.slantDegrees}°
         </text>
       </g>
     </svg>
   );
 }
 
-const GAUGE_WIDTHS = [0.5, 0.75, 1, 1.5, 2, 3] as const;
+const GAUGE_WIDTHS = [0.15, 0.3, 0.5, 1, 1.5, 2.5] as const;
 
 export function StrokeGaugeFigure() {
   const width = 180;
   const height = 46;
+  const scale = SMALL_EDITION.emMm / WORKING.emMm;
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -453,14 +501,21 @@ export function StrokeGaugeFigure() {
       width={`${width}mm`}
       height={`${height}mm`}
       role="img"
-      aria-label="Stroke width gauge from 0.5 to 3 mm"
+      aria-label="Stroke width reference from 0.15 to 2.5 mm"
       className="guide-figure guide-actual"
     >
-      <title>Stroke width gauge</title>
+      <title>Stroke width reference</title>
       <rect width={width} height={height} fill="#ffffff" />
       {GAUGE_WIDTHS.map((stroke, index) => {
-        const x = 8 + index * 28;
-        const tooThin = stroke < WORKING.minimumThinStrokeMm;
+        const x = 16 + index * 28;
+        const label =
+          stroke < WORKING.scanHairlineMm
+            ? "too faint to scan"
+            : stroke < WORKING.digitalHairlineMm
+              ? "thickened to 1 mm"
+              : stroke === WORKING.digitalHairlineMm
+                ? "the floor"
+                : "kept as written";
         return (
           <g key={stroke}>
             <rect x={x} y={8} width={stroke} height={22} fill={INK} />
@@ -480,16 +535,10 @@ export function StrokeGaugeFigure() {
               y={39.5}
               fontFamily={SANS}
               fontSize={2.4}
-              fill={tooThin ? "#9c3b34" : "#2f5a48"}
+              fill={stroke < WORKING.digitalHairlineMm ? "#7a6a3a" : "#2f5a48"}
               textAnchor="middle"
             >
-              {tooThin
-                ? "too thin"
-                : stroke === WORKING.minimumThinStrokeMm
-                  ? "minimum"
-                  : stroke > WORKING.thickStrokeMm[1]
-                    ? "thick limit"
-                    : "good"}
+              {label}
             </text>
           </g>
         );
@@ -503,37 +552,29 @@ export function StrokeGaugeFigure() {
         textAnchor="end"
       >
         On the maquette these become{" "}
-        {GAUGE_WIDTHS.map((w) =>
-          (w * (SMALL_EDITION.emMm / WORKING.emMm)).toFixed(2),
-        ).join(" · ")}{" "}
-        mm
+        {GAUGE_WIDTHS.map((w) => (w * scale).toFixed(2)).join(" · ")} mm
       </text>
     </svg>
   );
 }
 
-/** The first three rows at working size in full ink: the size to aim for. */
+/** The first three rows at working size in the placeholder font, for scale. */
 export function RibbonWorkingFigure() {
   return (
     <SheetFrame
-      label="Reference render at working size"
-      title={`${POEM_TITLE} · reference render`}
-      subtitle="Rows R01 to R03 in the stand-in font at the working size: aim for this size and weight in your own hand."
-      footer="Black text is the substitute font Great Vibes, not the target letterforms. Compare stroke widths with the gauge; the thinnest strokes here are close to the 1 mm minimum."
+      label="Placeholder font at working size"
+      title={`${POEM_TITLE} · placeholder comparison`}
+      subtitle="Rows R01 to R03 in the substitute font Great Vibes on the copperplate sheet lines. A size comparison only."
+      footer="The site shows this font today. Your rows replace it; nothing about its letterforms, weight, or slant is a target."
     >
-      {rowBaselines(
-        SHEET.rowsPerSheet,
-        WORKING.rowPitchMm,
-        SHEET.firstBaselineMm,
-      ).map((baseline, index) => {
+      {MASTER_BASELINES.map((baseline, index) => {
         const row = MASTER_ROWS[index];
         return (
           <LabeledRow
             key={baseline}
             baseline={baseline}
             id={row?.id}
-            ghost={row?.text}
-            ghostFill={INK}
+            script={row?.text}
           />
         );
       })}
@@ -681,8 +722,8 @@ export function LoopFigure() {
           strokeWidth={0.3}
         />
         <text x={width / 2} y={height - 3} textAnchor="middle">
-          One complete poem in the stand-in font · {round(em).toFixed(1)} mm em
-          here, {SMALL_EDITION.emMm} mm on the maquette
+          One complete poem in the substitute font · {round(em).toFixed(1)} mm
+          em here, {SMALL_EDITION.emMm} mm on the maquette
         </text>
       </g>
     </svg>
@@ -719,10 +760,10 @@ export function RowMapFigure() {
 }
 
 const PIPELINE = [
-  ["Paper sheets", "black on white, labelled rows"],
-  ["Scan", "600 dpi, checked to the 100 mm bar"],
+  ["Paper sheets", "your copperplate, labelled rows"],
+  ["Scan", "1200 dpi, checked to the 100 mm bar"],
   ["Trace", "threshold, closed vector outlines"],
-  ["Normalise", `each row to the ${WORKING.emMm} mm em`],
+  ["Adapt", "hairlines to 1 mm, rows normalised"],
   ["Join", "one ribbon, single and double gaps"],
   ["Proof", "1:1 and 4:1 for Jill's approval"],
   ["Coupon", "denhac laser test on real foil"],
@@ -805,17 +846,5 @@ export function PipelineFigure() {
         );
       })}
     </svg>
-  );
-}
-
-export function GhostSheets() {
-  return (
-    <>
-      {MASTER_SHEETS.map((rows, index) => (
-        <div className="guide-sheet-page" key={rows[0]?.id ?? index}>
-          <GhostSheet rows={rows} number={index + 1} />
-        </div>
-      ))}
-    </>
   );
 }

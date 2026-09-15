@@ -1,6 +1,11 @@
 /**
  * Jill's hand-lettering brief: every number the templates, website pages, and
  * printable guide use. The website and the PDF render this same data.
+ *
+ * Revision 2 asks for Jill's own copperplate at its best. The brief keeps only
+ * the requirements the digital adaptation cannot recover (exact words, labelled
+ * rows, black on white, rows that do not touch, a good scan) and moves stroke
+ * weight, size normalisation, and spacing to the post-scan adaptation step.
  */
 import {
   INSCRIPTION_LAYOUT,
@@ -11,8 +16,8 @@ import {
 
 /**
  * Great Vibes metrics measured in Chrome (canvas measureText at 100 px),
- * expressed as fractions of one em. The stand-in font sets the proportions
- * the layout expects; Jill's own hand replaces it at the same proportions.
+ * expressed as fractions of one em. The stand-in font only sets the em the
+ * layouts expect; Jill's rows are normalised to it by x-height after the scan.
  */
 export const REFERENCE_METRICS = {
   xHeight: 0.357,
@@ -28,7 +33,7 @@ export const REFERENCE_METRICS = {
   ],
 } as const;
 
-/** Row pitch of the jaw master and of the working sheets: 96 px rows at a 40 px em. */
+/** Row pitch of the jaw master: 96 px rows at a 40 px em. */
 export const ROW_PITCH_EM =
   JAW_INSCRIPTION_LAYOUT.rowSpacing / JAW_INSCRIPTION_LAYOUT.fontSize;
 /** The large body master currently stacks its rows more tightly. */
@@ -45,25 +50,34 @@ export const SMALL_EDITION = {
   horizontalScale: 0.906,
   ribbonHeightMm: 10,
   foilThicknessMm: 0.127,
-  /** Thin strokes below this are expected to vanish or blob when marked. */
+  /** Marked lines below this are expected to vanish or blob on the foil. */
   minimumStrokeMm: 0.13,
 } as const;
 
-/** Working size on paper. Every template sheet is drawn from these numbers. */
+/**
+ * Suggested working size on paper, in classic copperplate proportions
+ * (x-height : ascender : descender = 2 : 3 : 3). Every template sheet is drawn
+ * from these numbers. They are suggestions except the row pitch, which keeps
+ * neighbouring rows from touching.
+ */
 export const WORKING = {
   xHeightMm: 7,
+  /** Comfortable range; rows are normalised to one x-height afterwards. */
+  xHeightRangeMm: [6, 10] as const,
+  /** The layout em that a 7 mm x-height maps to (7 / 0.357). */
   emMm: 19.6,
-  ascenderMm: 12,
-  capHeightMm: 16,
-  descenderMm: 6,
-  flourishCeilingMm: 22,
-  flourishFloorMm: 16,
-  rowPitchMm: 48,
+  ascenderMm: 10.5,
+  descenderMm: 10.5,
+  flourishCeilingMm: 24,
+  flourishFloorMm: 18,
+  rowPitchMm: 56,
   slantDegrees: 55,
-  minimumThinStrokeMm: 1,
-  thickStrokeMm: [2, 3] as const,
-  wordGapMm: [5, 7] as const,
-  lineGapMm: [10, 14] as const,
+  /** Every hairline is thickened to at least this, at working scale, after the scan. */
+  digitalHairlineMm: 1,
+  /** A pen line thinner than this may not survive the scan itself. */
+  scanHairlineMm: 0.15,
+  wordGapMm: [5, 8] as const,
+  lineGapMm: [10, 16] as const,
 } as const;
 
 export const PAPER_TO_SMALL_SCALE = SMALL_EDITION.emMm / WORKING.emMm;
@@ -75,7 +89,7 @@ export const SHEET = {
   marginMm: 15,
   labelColumnMm: 14,
   rowsPerSheet: 3,
-  firstBaselineMm: 58,
+  firstBaselineMm: 62,
   scaleBarMm: 100,
   slantSpacingMm: 20,
 } as const;
@@ -175,11 +189,18 @@ export const HARD_WORD_ROWS = [
   "mirrorknave Onesided",
 ] as const;
 
+/** Prompts for the style-sample sheet: what to write on each free row. */
+export const STYLE_SAMPLE_ROWS = [
+  "Lowercase a to z, joined as you naturally join them",
+  "Capitals A to M with the flourishes you like best",
+  "Capitals N to Z with the flourishes you like best",
+] as const;
+
 export const ALPHABET_ROWS = [
-  "abcdefghijklm nopqrstuvwxyz",
-  "ABCDEFGHI",
-  "JKLMNOPQR",
-  "STUVWXYZ",
+  "abcdefghijklm",
+  "nopqrstuvwxyz",
+  "ABCDEFGHIJKLM",
+  "NOPQRSTUVWXYZ",
 ] as const;
 
 export const CAPITALS = Array.from(
@@ -214,10 +235,65 @@ export const PUNCTUATION: readonly PunctuationCount[] = (
 }));
 
 export const GUIDE_TITLE = "Hand-lettering the inscription";
-export const GUIDE_SUBTITLE = `A brief for Jill: writing the master for ${POEM_TITLE}`;
-export const GUIDE_VERSION = "2026-09-14";
+export const GUIDE_SUBTITLE = `A brief for Jill: writing the master for ${POEM_TITLE} in your own copperplate`;
+export const GUIDE_VERSION = "revision 2 · 2026-09-14";
 export const GUIDE_PDF_PATH = "/guide/calligraphy-guide.pdf";
 export const GUIDE_HTML_PATH = "/guide/calligraphy-guide.html";
+
+/** The requirements the adaptation step cannot recover. Everything else is preference. */
+export const ESSENTIALS = [
+  {
+    title: "The exact words",
+    text: "Every letter and punctuation mark as printed on the exact-text page, one labelled row at a time, compound words unbroken.",
+  },
+  {
+    title: "Black on white",
+    text: "Dark black ink on smooth, bright white paper. Any pen you love, as long as its thinnest line is a solid line and not a scratch.",
+  },
+  {
+    title: "One row per label",
+    text: "Each row ID gets exactly one finished row. Never split a word between rows; if a row runs long, stop at a word gap and continue on the next row as part b.",
+  },
+  {
+    title: "Rows that stay apart",
+    text: "Flourish as freely as you like inside a row, but keep rows from touching each other. The sheets leave 56 mm between baselines for that.",
+  },
+  {
+    title: "A good scan",
+    text: "Flatbed, 1200 dpi if the scanner allows and 600 dpi otherwise, greyscale, no automatic enhancement, with the row labels and the 100 mm bar in frame.",
+  },
+] as const;
+
+/** What Jill does and what the digital adaptation does afterwards. */
+export const DIVISION_OF_LABOUR = {
+  head: ["You", "After the scan"],
+  rows: [
+    [
+      "Write in your own copperplate: hairline upstrokes, shaded downstrokes, your loops and flourishes.",
+      "Every hairline is thickened to a floor the laser can mark; your shades and shapes stay as written.",
+    ],
+    [
+      "Write at the size that is comfortable, anywhere from 6 to 10 mm x-height, the same on every row.",
+      "Rows are measured from their guide lines and normalised to one common x-height.",
+    ],
+    [
+      "Use your natural slant. The sheets carry a 55° guide because that is the copperplate standard; a few degrees either way is fine.",
+      "Nothing is done to slant. It is part of your hand.",
+    ],
+    [
+      "Space words as you usually do and end each row after its final punctuation.",
+      "Word gaps are evened, the double gap between poem lines is inserted, and the rows are joined into one continuous ribbon.",
+    ],
+    [
+      "Let flourishes run as long as the row allows, within the dotted ceiling and floor.",
+      "A flourish that would collide with a neighbouring row on the sculpture is trimmed slightly or the rows are re-spaced; you see it on the proof.",
+    ],
+    [
+      "Rewrite a row you dislike rather than patching it.",
+      "Small repairs (a broken hairline, a blot, a stray dot) are cleaned up digitally, with your originals as the reference; no letter is ever invented.",
+    ],
+  ],
+} as const;
 
 export type FigureId =
   | "loop"
@@ -226,8 +302,9 @@ export type FigureId =
   | "ribbonSmall"
   | "ribbonWorking"
   | "sheetBlank"
-  | "sheetsGhost"
-  | "alphabet"
+  | "sheetFree"
+  | "sheetsMaster"
+  | "styleSample"
   | "hardWords"
   | "rowMap"
   | "pipeline";
@@ -251,6 +328,7 @@ export type GuideBlock =
     }
   | { kind: "poem" }
   | { kind: "punctuation" }
+  | { kind: "essentials" }
   | { kind: "checklist"; items: readonly string[] };
 
 export interface GuideChapter {
@@ -267,116 +345,91 @@ const small = (paperMm: number) =>
   `${(paperMm * PAPER_TO_SMALL_SCALE).toFixed(2)} mm`;
 
 export const SIZE_TABLE = {
-  head: ["Element", "On your paper", "On the 180 mm maquette", "In ems"],
+  head: ["Guide line", "On your paper (suggested)", "On the 180 mm maquette"],
   rows: [
     [
       "x-height (body of a, o, n)",
-      mm(WORKING.xHeightMm),
+      `${mm(WORKING.xHeightMm)} · ${WORKING.xHeightRangeMm[0]}–${WORKING.xHeightRangeMm[1]} mm is fine`,
       small(WORKING.xHeightMm),
-      "0.36",
     ],
-    ["Em (row size)", mm(WORKING.emMm), mm(SMALL_EDITION.emMm), "1.00"],
     [
-      "Ascender (h, l, d, k)",
+      "Ascender line (1.5 × x-height)",
       mm(WORKING.ascenderMm),
       small(WORKING.ascenderMm),
-      "0.62",
     ],
     [
-      "Capital height",
-      mm(WORKING.capHeightMm),
-      small(WORKING.capHeightMm),
-      "0.81",
-    ],
-    [
-      "Descender (p, g, y, f)",
+      "Descender line (1.5 × x-height)",
       mm(WORKING.descenderMm),
       small(WORKING.descenderMm),
-      "0.32",
+    ],
+    [
+      "Capitals",
+      "To the ascender line; flourishes may rise to the dotted ceiling",
+      "—",
     ],
     [
       "Flourish ceiling (above baseline)",
       mm(WORKING.flourishCeilingMm),
       small(WORKING.flourishCeilingMm),
-      "1.12",
     ],
     [
       "Flourish floor (below baseline)",
       mm(WORKING.flourishFloorMm),
       small(WORKING.flourishFloorMm),
-      "0.80",
     ],
-    [
-      "Row pitch",
-      mm(WORKING.rowPitchMm),
-      small(WORKING.rowPitchMm),
-      String(ROW_PITCH_EM),
-    ],
-    [
-      "Thinnest stroke, minimum",
-      mm(WORKING.minimumThinStrokeMm),
-      small(WORKING.minimumThinStrokeMm),
-      "0.05",
-    ],
-    [
-      "Thick strokes",
-      `${WORKING.thickStrokeMm[0]}–${WORKING.thickStrokeMm[1]} mm`,
-      `${small(WORKING.thickStrokeMm[0])}–${small(WORKING.thickStrokeMm[1])}`,
-      "0.10–0.15",
-    ],
+    ["Baseline to baseline", mm(WORKING.rowPitchMm), small(WORKING.rowPitchMm)],
+    ["Slant guide", `${WORKING.slantDegrees}° from the baseline`, "unchanged"],
     [
       "Gap between words",
-      `${WORKING.wordGapMm[0]}–${WORKING.wordGapMm[1]} mm`,
+      `${WORKING.wordGapMm[0]}–${WORKING.wordGapMm[1]} mm, or your usual`,
       `${small(WORKING.wordGapMm[0])}–${small(WORKING.wordGapMm[1])}`,
-      "0.25–0.35",
     ],
     [
-      "Slant from the baseline",
-      `${WORKING.slantDegrees}°`,
-      `${WORKING.slantDegrees}°`,
-      "—",
+      "Thinnest line after adaptation",
+      `${mm(WORKING.digitalHairlineMm)} equivalent (we add this)`,
+      mm(SMALL_EDITION.minimumStrokeMm),
     ],
   ],
 } as const;
 
 export const MATERIALS = {
-  head: ["Item", "Use this", "Also fine", "Avoid"],
+  head: ["Item", "Your usual, or", "Also fine", "Avoid"],
   rows: [
     [
-      "Pen",
-      "Pointed brush pen with a black pigment cartridge: Pentel Pocket Brush (GFKP3) or Kuretake No. 13. Keep the lightest strokes at 1 mm or more.",
-      "A 1.0 mm round-tip pigment marker (Sakura Pigma Graphic 1, Staedtler pigment liner 1.0) for a monoline master.",
-      "Pointed dip nibs and broad-edge pens on their own: their hairlines are 0.1–0.4 mm and vanish at maquette size unless we thicken them digitally (see In depth).",
+      "Nib and holder",
+      "Whatever you write copperplate with now. Common choices: Nikko G or Zebra G for a firm, forgiving point; Leonardt Principal EF or Hunt 101 for finer hairlines and deeper shades. An oblique holder with the flange set for your nib.",
+      "A straight holder if that is your habit; a pointed brush pen if you sometimes letter that way.",
+      "A change of nib for this job. Familiar tools give the most beautiful, most consistent rows.",
     ],
     [
       "Ink",
-      "The pen's own black pigment cartridge.",
-      "For dip pens: Moon Palace or Kuretake sumi, Higgins Black Magic, Dr. Ph. Martin's Black Star matte.",
-      "Blue-black, grey, walnut, iron-gall, gel pens with sheen, metallic or glossy inks, ballpoint, pencil.",
+      "Dense black: Moon Palace or Kuretake sumi, McCaffery's Penman's black, Ziller Soot Black, Higgins Eternal.",
+      "A drop of gum arabic in sumi if hairlines skip; distilled water to thin if it drags.",
+      "Walnut, sepia, iron gall, blue-black, coloured or metallic inks, gel or ballpoint pens: they scan grey or shiny and lose the hairlines.",
     ],
     [
       "Paper",
-      "Smooth, bright white, 120–270 g/m²: HP Premium Choice 32 lb, Clairefontaine 120 g, or Strathmore 400 smooth Bristol.",
-      "Rhodia or Clairefontaine 90 g pads for brush pens; marker layout paper for practice.",
-      "Textured or cotton watercolour paper, cream or toned stock, lined notebook paper, thin copier paper.",
+      "Rhodia or Clairefontaine Triomphe 90 g pads, the usual copperplate papers: smooth, no feathering, thin enough to see guide lines through.",
+      "HP Premium Choice 32 lb or Clairefontaine 120 g if you print the sheets straight onto the writing paper; Strathmore 400 smooth Bristol with a light pad.",
+      "Textured, cotton, cream, or toned paper, and thin copier paper that feathers.",
     ],
     [
-      "Guidelines",
-      "Print the template sheets at 100 % straight onto the writing paper.",
-      "Print on plain paper and place it under Bristol on a light pad or window, taped with low-tack tape.",
-      "Freehand guessing at x-height; guidelines drawn in ink.",
+      "Guide lines",
+      "Print the master sheets on plain paper and lay your writing paper over them on a light pad or a bright window, taped with low-tack tape.",
+      "Print the sheets directly onto laser-safe writing paper. Or rule your own baselines in pencil and copy the row IDs into the margin.",
+      "Ink guide lines on the master; pencil lines are fine if erased gently after the ink is dry.",
     ],
     [
-      "Tools",
-      "Steel ruler with millimetres, 2H pencil, plastic eraser, low-tack (washi) tape, scrap of the same paper for pen tests, tissue.",
-      "Light pad, T-square, a 55° slant card cut from the template.",
-      "Correction fluid or white gouache patches on the master rows.",
+      "Prep and tools",
+      "Nib prepared as you usually do, ink in a dinky dip or small jar, water, tissue, scrap of the same paper, 2H pencil, soft eraser, low-tack tape.",
+      "A slant card cut from a template, a light pad.",
+      "Correction fluid or white gouache on a master row: rewrite the row instead.",
     ],
     [
       "Capture",
-      "Flatbed scan at 600 dpi, greyscale, no auto-enhance, saved as TIFF or PNG.",
-      "A phone photo in daylight, straight on, whole sheet in frame including the 100 mm bar, if a scanner is impossible.",
-      "JPEG at low quality, cropped scans that lose the row labels or scale bar, skewed or shadowed photos.",
+      "Flatbed scan at 1200 dpi greyscale, no auto-enhance or sharpening, TIFF or PNG, whole sheet in frame.",
+      "600 dpi if 1200 is unavailable; a phone photo in even daylight, straight on, whole sheet in frame, only as a stopgap.",
+      "JPEG at low quality, cropped scans that lose the labels or bar, skewed or shadowed photos.",
     ],
   ],
 } as const;
@@ -388,21 +441,28 @@ export const CHAPTERS: readonly GuideChapter[] = [
     title: "Overview",
     kicker: "What we are asking for",
     summary:
-      "One poem, written once by hand in a slanted script, becomes the endless inscription on both foil editions of the sculpture.",
+      "The poem, written once in your own copperplate at its most beautiful. We scan it, adapt it for the laser, and wrap it around the sculpture.",
     blocks: [
       {
         kind: "p",
-        text: `The sculpture is a figure-eight snake wrapped in aluminum foil. The poem “${POEM_TITLE}” is laser-marked onto that foil as one continuous ribbon of script that runs along the body, around the nose, back along the other side, around the tail, and straight into its own first word. The website currently shows the poem in a substitute font called Great Vibes. Your hand-lettering replaces it.`,
+        text: `The sculpture is a figure-eight snake wrapped in aluminum foil. The poem “${POEM_TITLE}” is laser-marked onto that foil as one continuous ribbon of script that runs along the body, around the nose, back along the other side, around the tail, and straight into its own first word. The website currently shows the poem in a substitute font. Your hand replaces it.`,
       },
       {
         kind: "p",
-        text: "We do not need you to letter the sculpture or the foil. We need a master: the complete poem written on paper at a comfortable size, with consistent guidelines, so it can be scanned, traced into vector outlines, and scaled to each edition. The master is written once and reused everywhere.",
+        text: "This is not a job of writing to a specification. Write the poem the way you would write it for someone you love: pointed pen, hairlines and shades, your loops, your capitals, your flourishes. What we need from the sheets is only what a computer cannot recover afterwards, and there are five such things.",
       },
+      { kind: "essentials" },
+      { kind: "h", text: "What happens after you hand the sheets over" },
+      {
+        kind: "p",
+        text: "Your rows are scanned and traced into vector outlines. Copperplate hairlines are far thinner than a laser can mark on foil, so every hairline is thickened to a floor the machine can hold, while your shaded strokes keep their weight and shape. Rows are normalised to one x-height, joined into the ribbon with even word gaps, and scaled to each edition. Small repairs are made digitally, with your originals beside the screen, and nothing is invented. You approve a proof before any foil is marked.",
+      },
+      { kind: "table", ...DIVISION_OF_LABOUR, caption: "Who does what" },
       {
         kind: "figure",
         figure: "loop",
         caption:
-          "The ribbon has no end. The final ellipsis after “twine…” runs straight into the opening “Come,”.",
+          "The ribbon has no end. The final ellipsis after “twine…” runs straight into the opening “Come,”. Shown in the substitute font at about maquette size.",
       },
       { kind: "h", text: "Where the lettering goes" },
       {
@@ -422,19 +482,10 @@ export const CHAPTERS: readonly GuideChapter[] = [
         ],
       },
       {
-        kind: "p",
-        text: "Because the same outlines serve both editions, the master is drawn at one working size and every number in this guide is given in millimetres on your paper. The tables also show what each size becomes on the small maquette, which is the tightest case.",
-      },
-      { kind: "h", text: "The deliverable in one sentence" },
-      {
-        kind: "p",
-        text: `${MASTER_ROWS.length} labelled rows of black script on white paper, one poem line (or half line) per row, ${WORKING.xHeightMm} mm x-height, ${WORKING.slantDegrees}° slant, no stroke thinner than ${WORKING.minimumThinStrokeMm} mm, scanned at 600 dpi.`,
-      },
-      {
         kind: "note",
         title: "Your hand, not the font",
         tone: "tip",
-        text: "Great Vibes was chosen because its slanted script and flourished capitals resembled your sample. Treat the rendered reference sheets as a size and proportion guide only. Your letterforms, joins, and flourishes are what we want.",
+        text: "Great Vibes was chosen as a placeholder because its slant and flourished capitals came closest to your sample. It appears in this guide only where a size comparison needs it. Nothing about it is a target.",
       },
       { kind: "h", text: "The poem, exactly" },
       { kind: "poem" },
@@ -446,75 +497,64 @@ export const CHAPTERS: readonly GuideChapter[] = [
     title: "Step by step",
     kicker: "From blank sheet to approved master",
     summary:
-      "Twelve steps, each with a check you can do before moving on. Most of the time goes into warming up and writing; the rest is checking.",
+      "Ten steps. Most of the time is your usual warm-up and writing; the rest is checking words and getting a clean scan.",
     blocks: [
       {
         kind: "steps",
         steps: [
           {
-            title: "Read the poem aloud from the exact-text sheet",
-            body: "Use the “The poem, exactly” page. Note the invented compound words (palindove, inkhands, halfheight, halfknight, quarterknight, knightling, swordfeud, doublelong, mirrorknave, swordwave), the apostrophes, and the single lowercase start of the last line. The wording is checked letter by letter against the source text.",
+            title: "Read the poem aloud from the exact-text page",
+            body: "Note the invented compound words (palindove, inkhands, halfheight, halfknight, quarterknight, knightling, swordfeud, doublelong, mirrorknave, swordwave), the five apostrophes, the single ellipsis, and the lowercase “come” that opens the last line. The wording is checked letter by letter against the source text.",
             check:
-              "You can name every punctuation mark on the inventory table without looking.",
+              "You can find every mark on the punctuation inventory without looking twice.",
           },
           {
-            title: "Gather materials",
-            body: "One pen (brush pen recommended), its black pigment cartridge, smooth bright-white paper, ruler, 2H pencil, eraser, low-tack tape, and a scrap of the same paper for pen tests. The materials table lists specific products and what to avoid.",
+            title: "Set up as you always do",
+            body: "Your nib, holder, black ink, and the paper you trust. Print the master sheets at 100 % and use them under your paper on a light pad, or print them straight onto the writing paper. The materials table has suggestions only if you want them.",
+            check: `The ${SHEET.scaleBarMm} mm bar on a printed sheet measures ${SHEET.scaleBarMm} mm, within 1 mm.`,
+          },
+          {
+            title: "Warm up on the style-sample sheet",
+            body: "A row of joined lowercase and two rows of capitals with your favourite flourishes, at the size you will use for the poem. This sheet is also a reference for the adaptation: if a letter ever needs repair, it is matched to your own alphabet.",
             check:
-              "Test-write “palindove” on the scrap; the ink dries matte black with no feathering.",
-          },
-          {
-            title: "Print the template sheets at 100 %",
-            body: "Print the eight ghosted sheets and at least ten blank ruled sheets. In the print dialog choose “Actual size” or 100 %, landscape, no “fit to page”. Print on the writing paper itself if the printer accepts it; otherwise print on plain paper and use it under your paper on a light pad.",
-            check: `Measure the bar in each sheet's header: it must be ${SHEET.scaleBarMm} mm, within 1 mm.`,
-          },
-          {
-            title: "Warm up on the alphabet sheet",
-            body: `Write the lowercase alphabet twice and the capitals once at the working size, joined as you would in running text. Aim the body of a, o, n at the ${WORKING.xHeightMm} mm x-height, ascenders to the ${WORKING.ascenderMm} mm line, descenders to the ${WORKING.descenderMm} mm line.`,
-            check:
-              "Ten consecutive letters sit on the baseline and touch the x-height line without drifting.",
-          },
-          {
-            title: "Set your stroke weights",
-            body: `Write “Come, palindove,” at working size. Lay the printed stroke gauge beside the thinnest hairline: it must be at least ${WORKING.minimumThinStrokeMm} mm wide. Thick strokes should be ${WORKING.thickStrokeMm[0]}–${WORKING.thickStrokeMm[1]} mm. If your hairlines are thinner, increase the minimum pressure or switch to the 1.0 mm marker for the master.`,
-            check: `No stroke in the test line is narrower than the ${WORKING.minimumThinStrokeMm} mm gauge bar.`,
+              "The rows are written at one consistent size you can keep for 23 rows.",
           },
           {
             title: "Practise the hard words",
-            body: "Use the hard-words sheet. Write each compound word as one word with no gap and no hyphen. Then practise the capitals that appear in the poem (C, D, E, F, I, L, O, S, T, shown darker on the alphabet sheet) with the flourish you intend to use for each, staying inside the dotted flourish lines.",
+            body: "The hard-words sheet lists the compound words. Write each as one word with no gap and no hyphen. The poem's capitals are C, D, E, F, I, L, O, S, T; try the flourishes you intend for each.",
             check:
-              "Every flourish stays between the dotted ceiling and floor lines; nothing crosses into the next row.",
+              "Every flourish stays between the dotted ceiling and floor lines.",
           },
           {
             title: "Write the master rows in order",
-            body: `Use blank ruled sheets. One row per labelled row ID (R01 to R17, with a/b halves), in poem order, writing the row ID in pencil in the left label box. Keep one steady word gap of about ${WORKING.wordGapMm[0]}–${WORKING.wordGapMm[1]} mm. Never split a word across rows. If a row runs long, stop at a word gap, write the rest on the next row, and label both with the same ID plus a and b.`,
+            body: "Each master sheet shows three rows, each with its row ID and its words printed in small type above the guide lines. Write the row on the baseline below its words. If a row runs long, stop at a word gap and continue on the next row, labelling both with the same ID plus a and b (a spare row is ruled on the last sheet, and blank sheets are included).",
             check:
-              "Each row starts at the left rule and ends before the right margin; the text matches the exact-text sheet.",
+              "Every row begins at the left rule, ends before the right margin, and matches its printed words.",
           },
           {
             title: "Let every sheet dry fully",
-            body: "Brush-pen pigment is touch dry in a minute; sumi needs an hour. Do not stack sheets or erase before then.",
+            body: "Sumi and pigment inks are touch dry in minutes and safe to handle in an hour. Do not stack sheets or erase before then.",
             check:
-              "A clean tissue pressed on the darkest stroke picks up nothing.",
+              "A clean tissue pressed on the darkest shade picks up nothing.",
           },
           {
-            title: "Review with the checklist",
-            body: "Go row by row with the quick-reference checklist: wording, capitals, punctuation, x-height, slant, joins, stroke minimum, flourish zones, nothing touching the row above or below.",
-            check: "Every row has a pencil tick in its label box.",
+            title: "Review the words, not the beauty",
+            body: "Check each row against the exact-text page with a finger under every word: spelling, capitals, punctuation, nothing added. Beauty you already judged as you wrote; if a row displeases you, that is a rewrite, not a repair.",
+            check: "Each row has a pencil tick in its label box.",
           },
           {
             title: "Rewrite, do not patch",
-            body: "If a row has a wrong letter, a blob, a stroke that touches another row, or a hairline under 1 mm, rewrite the whole row on a fresh ruled sheet with the same ID. Put a single pencil X through the rejected row. Do not use correction fluid on a master row; a clean rewrite scans cleaner than a repair.",
+            body: "For a wrong letter, a blot, or a row you simply do not like, write the whole row again on a blank sheet with the same ID. Put a single pencil X through the rejected row and keep it; it is still useful reference.",
             check: "Exactly one un-crossed row exists for each row ID.",
           },
           {
-            title: "Scan or photograph every sheet",
-            body: "Flatbed at 600 dpi, greyscale, no auto-contrast or sharpening, saved as TIFF or PNG named by sheet (for example jill-sheet-03.tif). Keep the whole sheet in the scan, including the row labels and the 100 mm bar, so scale and identity are recorded. If you must photograph: daylight, straight on, the whole sheet in frame, no shadows.",
-            check: `The scanned bar measures ${SHEET.scaleBarMm} mm when the file is opened at 600 dpi.`,
+            title: "Scan every sheet",
+            body: "Flatbed at 1200 dpi if the scanner allows, otherwise 600 dpi. Greyscale, no auto-contrast or sharpening, TIFF or PNG, one file per sheet named by sheet number. Keep the whole sheet in the scan, including the row labels and the 100 mm bar. If a scanner is impossible, photograph in even daylight, straight on, whole sheet in frame, and keep the originals safe for a proper scan later.",
+            check: `The scanned bar measures ${SHEET.scaleBarMm} mm when the file is opened at its stated resolution.`,
           },
           {
             title: "Approve the proof",
-            body: "Andrew traces the scans into outlines, joins the rows into the continuous ribbon, and sends back a proof at 1:1 and at 4:1 alongside a maquette-size print. Mark anything you want changed. Nothing is laser-marked before you approve the proof, and the first laser job is a small test coupon, not the full skin.",
+            body: "Andrew sends back the adapted ribbon at 1:1 and 4:1 alongside a maquette-size print, with notes on anything that was thickened, re-spaced, or repaired. Mark what you want changed. Nothing is laser-marked before you approve, and the first laser job is a small test coupon, not the full skin.",
             check: "You have written “approved” and the date on the proof.",
           },
         ],
@@ -529,14 +569,14 @@ export const CHAPTERS: readonly GuideChapter[] = [
   {
     id: "templates",
     index: "03",
-    title: "Templates and reference render",
+    title: "Templates",
     kicker: "Print these at 100 %",
     summary:
-      "Ruled sheets at the working size, ghosted reference rows rendered in the stand-in font, the alphabet, the hard words, and a true-size preview of the ribbon.",
+      "Copperplate guide sheets with each row's words printed above its lines, a style-sample sheet, a hard-words sheet, blank sheets, and a plain baseline sheet if you prefer fewer lines.",
     blocks: [
       {
         kind: "p",
-        text: `Every sheet is US Letter, landscape, with a ${SHEET.scaleBarMm} mm check bar in the header. Solid lines are baseline and x-height; long dashes are ascender and capital height; short dashes mark the descender line; dotted lines are the flourish ceiling and floor. Light diagonal lines show the ${WORKING.slantDegrees}° slant every ${SHEET.slantSpacingMm} mm.`,
+        text: `Every sheet is US Letter, landscape, with a ${SHEET.scaleBarMm} mm check bar in the header. On the copperplate sheets the solid lines are the baseline and x-height; dashes mark the ascender and descender lines at 1.5 × x-height; dotted lines are the flourish ceiling and floor; faint diagonals show the ${WORKING.slantDegrees}° slant every ${SHEET.slantSpacingMm} mm. The plain sheet keeps only the baseline and a faint x-height.`,
       },
       {
         kind: "figure",
@@ -545,38 +585,33 @@ export const CHAPTERS: readonly GuideChapter[] = [
       },
       {
         kind: "figure",
-        figure: "ribbonWorking",
+        figure: "sheetsMaster",
         caption:
-          "Reference render of rows R01 to R03 at the working size, in the stand-in font. This is the size and weight to aim for, not the letterforms.",
-      },
-      {
-        kind: "figure",
-        figure: "ribbonSmall",
-        caption: `The same lettering at maquette size (${SMALL_EDITION.emMm} mm em), actual size when printed at 100 %. This is why hairlines matter.`,
+          "Master sheets: each row's ID and words are printed in small type above its guide lines. Write the row on the baseline beneath.",
       },
       {
         kind: "figure",
         figure: "sheetBlank",
         caption:
-          "Blank ruled sheet for the master rows. Print as many as you need; write the row ID in the left box.",
+          "Blank copperplate sheet for rewrites and part-b rows. Write the row ID in the left box.",
       },
       {
         kind: "figure",
-        figure: "alphabet",
+        figure: "sheetFree",
         caption:
-          "Alphabet warm-up sheet: the stand-in font rendered faintly at working size. Write over it or beside it in your own hand.",
+          "Plain sheet: baseline and a faint x-height only, for anyone who prefers to work without slant and loop lines.",
+      },
+      {
+        kind: "figure",
+        figure: "styleSample",
+        caption:
+          "Style-sample sheet: your joined lowercase and your flourished capitals, in your own hand, at the size you will use.",
       },
       {
         kind: "figure",
         figure: "hardWords",
         caption:
-          "Hard words and the poem's capitals, ghosted at working size for practice.",
-      },
-      {
-        kind: "figure",
-        figure: "sheetsGhost",
-        caption:
-          "Ghosted reference sheets: every master row rendered faintly in the stand-in font with its row ID. Use them for size and spacing; write the final master on blank sheets.",
+          "Hard-words sheet: the compound words printed above free rows for practice.",
       },
     ],
   },
@@ -586,50 +621,23 @@ export const CHAPTERS: readonly GuideChapter[] = [
     title: "The easy parts",
     kicker: "One-page quick reference",
     summary:
-      "If you only read one page, read this one. Sizes, the stroke rule, the checklist, and what to send back.",
+      "If you only read one page, read this one. The five essentials, the suggested sizes, the row checklist, and what to send back.",
     blocks: [
-      { kind: "table", ...SIZE_TABLE, caption: "Sizes at the working scale" },
+      { kind: "essentials" },
       {
-        kind: "figure",
-        figure: "strokeGauge",
-        caption:
-          "Stroke gauge. Hold a written hairline against the bars: it must be at least as wide as the 1 mm bar.",
-      },
-      { kind: "h", text: "Do" },
-      {
-        kind: "ul",
-        items: [
-          "Write in your own slanted, joined script with flourished capitals.",
-          `Keep the x-height on the ${WORKING.xHeightMm} mm line and the slant near ${WORKING.slantDegrees}°.`,
-          "Keep the thinnest stroke at 1 mm or wider.",
-          "Keep flourishes inside the dotted lines.",
-          "Write compound words as single words: palindove, inkhands, halfknight.",
-          "Copy punctuation exactly, including the final ellipsis.",
-          "Label every row; rewrite rather than patch.",
-        ],
-      },
-      { kind: "h", text: "Don't" },
-      {
-        kind: "ul",
-        items: [
-          "Don't add words, hyphens, or extra capitals.",
-          "Don't split a word across two rows.",
-          "Don't let any stroke touch the row above or below.",
-          "Don't use coloured, glossy, or metallic ink.",
-          "Don't crop the row labels or the 100 mm bar out of the scans.",
-        ],
+        kind: "table",
+        ...SIZE_TABLE,
+        caption: "Guide lines on the sheets (suggested sizes)",
       },
       { kind: "h", text: "Row checklist" },
       {
         kind: "checklist",
         items: [
-          "Wording matches the exact-text sheet, letter for letter",
+          "Wording matches the exact-text page, letter for letter",
           "Capitals only where the poem has them",
           "Punctuation present and correct",
-          "Bodies of letters sit on the baseline and reach the x-height line",
-          "Slant consistent along the row",
-          "Thinnest stroke at least 1 mm",
-          "Flourishes stay inside the dotted lines",
+          "Compound words written as one word",
+          "No stroke touches the row above or below",
           "Row ID written in the label box",
         ],
       },
@@ -637,10 +645,16 @@ export const CHAPTERS: readonly GuideChapter[] = [
       {
         kind: "ol",
         items: [
-          `${MASTER_ROWS.length} approved rows across the sheets, scanned at 600 dpi as TIFF or PNG, one file per sheet, with the full sheet in frame.`,
-          "One photo of the pen you used and the paper's packaging, so the archive records the materials.",
-          "Any notes on rows you were unsure about.",
+          `${MASTER_ROWS.length} approved rows across the sheets, plus the style-sample sheet, scanned as described, one file per sheet.`,
+          "A line about the nib, ink, and paper you used, so the archive records the materials.",
+          "Any notes on rows you were unsure about, or flourishes you would like kept exactly as written.",
         ],
+      },
+      {
+        kind: "note",
+        title: "Everything else is yours to decide",
+        tone: "tip",
+        text: "Size within the suggested range, slant, stroke contrast, the scale of your loops, how you join letters, where you lift the pen: none of it needs to match this guide. Write your best copperplate and let the adaptation meet you there.",
       },
     ],
   },
@@ -648,57 +662,71 @@ export const CHAPTERS: readonly GuideChapter[] = [
     id: "details",
     index: "05",
     title: "In depth",
-    kicker: "Why the numbers are what they are",
+    kicker: "Why the sheets look the way they do",
     summary:
-      "Proportions, spacing and joins, flourish zones, what the laser can and cannot mark, materials in detail, how the scan becomes foil, and what to do when things go wrong.",
+      "Proportions, spacing and joins, flourish room, what the laser can hold and how the adaptation gets your hairlines there, materials in detail, the scan-to-foil pipeline, and troubleshooting.",
     blocks: [
       { kind: "h", text: "Proportions" },
       {
         kind: "figure",
         figure: "proportions",
         caption:
-          "The guideline set on every sheet, with the stand-in font's “palindove” placed on it for scale.",
+          "The guide-line set on every copperplate sheet, with the substitute font's “palindove” placed on it for scale only.",
       },
       {
         kind: "p",
-        text: `The layout is built around the em, the nominal row size. The stand-in font has an x-height of 0.36 em, ascenders at 0.62 em, capitals at 0.81 em, and descenders to 0.32 em. At the working size that gives a ${WORKING.xHeightMm} mm x-height, ${WORKING.ascenderMm} mm ascenders, ${WORKING.capHeightMm} mm capitals and ${WORKING.descenderMm} mm descenders. Your natural proportions may differ a little; what matters is that they stay the same on every row, because rows are scaled to a common x-height when they are joined.`,
+        text: `The sheets use the classic copperplate ratio of 2 : 3 : 3, so at a ${WORKING.xHeightMm} mm x-height the ascender and descender lines sit ${WORKING.ascenderMm} mm from the baseline. Capitals reach the ascender line and their flourishes may rise to the dotted ceiling ${WORKING.flourishCeilingMm} mm above the baseline; descender loops and lower flourishes may reach the floor ${WORKING.flourishFloorMm} mm below. If your own proportions differ, keep yours: rows are normalised by x-height after the scan, and the ascender and descender lines are there to keep rows consistent with each other, not to change your letters.`,
       },
       {
         kind: "p",
-        text: `The working sheets and the jaw master space rows ${ROW_PITCH_EM} ems apart, which is ${WORKING.rowPitchMm} mm at the working size. The dotted flourish lines mark the space a letter may use without touching a neighbouring row: up to ${WORKING.flourishCeilingMm} mm above the baseline and ${WORKING.flourishFloorMm} mm below. The maquette's ribbon band is ${SMALL_EDITION.ribbonHeightMm} mm tall for a ${SMALL_EDITION.emMm} mm em, so the same limits apply there. The large body master currently stacks ${BODY_ROWS} rows only ${BODY_ROW_PITCH_EM} ems apart; before that run Andrew re-spaces the body rows to the real extent of your capitals and descenders, so do not tighten your hand for it.`,
+        text: `Baselines are ${WORKING.rowPitchMm} mm apart, which leaves a clear gap between one row's floor and the next row's ceiling. On the sculpture the jaw master spaces rows ${ROW_PITCH_EM} ems apart and the maquette's ribbon band is ${SMALL_EDITION.ribbonHeightMm} mm tall for a ${SMALL_EDITION.emMm} mm em, both roomy enough for the dotted limits. The large body master currently stacks ${BODY_ROWS} rows only ${BODY_ROW_PITCH_EM} ems apart; before that run Andrew re-spaces the body rows to the real extent of your capitals and descenders, so do not tighten your hand for it.`,
       },
       { kind: "h", text: "Spacing, joins, and slant" },
       {
         kind: "ul",
         items: [
-          `Letters within a word join in the usual running-script way; keep the spacing between joined letters even and fairly tight, roughly the width of a lowercase n between stems.`,
-          `Words are separated by one steady gap of ${WORKING.wordGapMm[0]}–${WORKING.wordGapMm[1]} mm, about one x-height. The gap between poem lines on the ribbon is doubled (${WORKING.lineGapMm[0]}–${WORKING.lineGapMm[1]} mm); Andrew adds that when the rows are joined, so end each row after the final punctuation with no special gap.`,
-          `Slant is ${WORKING.slantDegrees}° from the baseline, the classic copperplate angle, drawn faintly on every sheet. If your natural slant is a few degrees different, use yours and keep it constant.`,
-          "The ribbon is one continuous line, so the tail of each row must be able to meet the head of the next at a word gap. Exit strokes may trail a little; an entry flourish on a capital may lead in a little; neither should be longer than one word gap.",
+          "Join letters as you normally do and lift where you normally lift. The adaptation keeps your joins; it never redraws them.",
+          `Words are separated by your usual gap, about ${WORKING.wordGapMm[0]}–${WORKING.wordGapMm[1]} mm at this size. The gap between poem lines on the ribbon is doubled (${WORKING.lineGapMm[0]}–${WORKING.lineGapMm[1]} mm); Andrew adds that when the rows are joined, so end each row after its final punctuation with no special gap.`,
+          `The slant guide is ${WORKING.slantDegrees}° from the baseline, the copperplate standard. Use your own angle and keep it steady; it is not adjusted afterwards.`,
+          "The ribbon is one continuous line, so the tail of each row meets the head of the next at a word gap. Exit strokes may trail and an entry flourish may lead in; neither needs to be shorter than you would normally make it.",
           "The final ellipsis runs into the first word. Give the three dots a normal ending and let the first “C” carry whatever lead-in flourish you like; the join will read as a loop either way.",
         ],
       },
       { kind: "h", text: "Capitals and flourishes" },
       {
         kind: "p",
-        text: `The poem uses these capitals: ${CAPITALS.join(", ")}. Each begins a line or a sentence except the lowercase “come” that starts the last line, which is deliberate: the poem loops, so its last line is a continuation. Flourished capitals are welcome. Keep flourishes clear of the words before and after them, and never above the ceiling or below the floor line. A flourish that crosses another letter becomes an unreadable blob at ${SMALL_EDITION.emMm} mm.`,
+        text: `The poem uses these capitals: ${CAPITALS.join(", ")}. Each begins a line or a sentence except the lowercase “come” that starts the last line, which is deliberate: the poem loops, so its last line is a continuation. Flourished capitals are wanted. Keep a flourish clear of the letters of other words so it stays readable at ${SMALL_EDITION.emMm} mm, and keep it inside the dotted lines; a flourish that crosses the ceiling or floor is the one thing the adaptation may have to trim, and you would see that on the proof.`,
       },
-      { kind: "h", text: "Why the 1 mm stroke rule" },
+      { kind: "h", text: "Hairlines, shades, and the laser" },
       {
         kind: "p",
-        text: `The foil is ${SMALL_EDITION.foilThicknessMm} mm AlumaMark aluminum. A CO₂ laser darkens its coating rather than cutting it, and the marked line cannot be narrower than the beam's focused spot, roughly 0.1–0.2 mm. Your master is scaled by ${PAPER_TO_SMALL_SCALE.toFixed(3)} to reach the maquette's ${SMALL_EDITION.emMm} mm em, so a ${WORKING.minimumThinStrokeMm} mm stroke on paper becomes ${SMALL_EDITION.minimumStrokeMm} mm on the foil, right at the limit of what survives. Anything thinner drops out or fills in. Thick strokes of ${WORKING.thickStrokeMm[0]}–${WORKING.thickStrokeMm[1]} mm keep the script's contrast without closing up the counters of e, a, and o.`,
+        text: `The foil is ${SMALL_EDITION.foilThicknessMm} mm AlumaMark aluminum. A CO₂ laser darkens its coating rather than cutting it, and the marked line cannot be narrower than the beam's focused spot, roughly 0.1–0.2 mm. Your master is scaled by ${PAPER_TO_SMALL_SCALE.toFixed(3)} to reach the maquette's ${SMALL_EDITION.emMm} mm em, so a copperplate hairline of 0.1 mm on paper would become 0.013 mm on the foil and vanish. That is why the adaptation thickens every hairline to at least ${WORKING.digitalHairlineMm} mm at working scale, ${SMALL_EDITION.minimumStrokeMm} mm on the foil, before scaling. Shaded downstrokes are already well above that floor and keep their exact width. The result reads as a slightly bolder copperplate, with your contrast softened but your forms intact.`,
       },
       {
-        kind: "note",
-        title: "If you prefer a pointed dip pen",
-        tone: "warn",
-        text: "Copperplate hairlines from a Nikko G or Zebra G nib are 0.1–0.2 mm on paper and would vanish. If that is the hand you want, write it anyway and say so: Andrew will thicken every outline uniformly by about 0.4 mm on the paper scale before scaling. The hairlines then survive, but the contrast softens and the letters gain a little weight. A brush pen avoids that step entirely.",
+        kind: "figure",
+        figure: "strokeGauge",
+        caption:
+          "For reference only: the thinnest line the adaptation leaves is the 1 mm bar; a scanner still needs your pen's hairline to be a solid line of about 0.15 mm or more.",
+      },
+      {
+        kind: "figure",
+        figure: "ribbonSmall",
+        caption: `The substitute font at maquette size (${SMALL_EDITION.emMm} mm em), actual size when printed at 100 %: this is how small the ribbon is on the 180 mm form.`,
+      },
+      { kind: "h", text: "What the adaptation does, and does not do" },
+      {
+        kind: "ul",
+        items: [
+          "Does: trace the scans into closed vector outlines at hairline resolution; thicken hairlines to the floor above; normalise rows to one x-height; even out word gaps; join the rows into the ribbon; trim or re-space a flourish that would collide on the sculpture; repair a broken hairline or remove a blot using your own strokes as the pattern.",
+          "May, with your agreement on the proof: unify a letter that varies noticeably between rows by choosing one of your own versions; adjust the overall weight for a specific edition.",
+          "Does not: invent letters, change joins, alter slant, redraw flourishes, or substitute anything from a font. Where a repair is impossible from your strokes, the row comes back to you to rewrite.",
+        ],
       },
       { kind: "h", text: "Materials in detail" },
       { kind: "table", ...MATERIALS },
       {
         kind: "p",
-        text: "Matte black on smooth bright white scans as a clean two-tone image, which is what vector tracing needs. Glossy inks reflect the scanner lamp and produce grey speckles inside strokes; textured paper adds noise along every edge; cream paper lowers contrast. Bristol or a heavy laser paper also stays flat on the scanner glass.",
+        text: "Dense black on smooth bright white scans as a clean two-tone image, which is what vector tracing needs, and 1200 dpi keeps a 0.1 mm hairline about five pixels wide so it traces as a line rather than a chain of dots. Glossy inks reflect the scanner lamp and speckle the shades; textured paper adds noise along every edge; cream paper lowers contrast. Rhodia and Clairefontaine stay flat on the scanner glass.",
       },
       { kind: "h", text: "From scan to foil" },
       {
@@ -710,10 +738,11 @@ export const CHAPTERS: readonly GuideChapter[] = [
         kind: "ol",
         items: [
           "Each scan is checked against its 100 mm bar and straightened using the printed baselines.",
-          "The image is thresholded to pure black and white and traced into closed vector outlines, the same kind of outlines the current stand-in font produces.",
+          "The image is thresholded to pure black and white and traced into closed vector outlines.",
+          `Hairlines are thickened to ${WORKING.digitalHairlineMm} mm at working scale; shades are left as written.`,
           `Each row is measured from its baseline and x-height lines and normalised to the ${WORKING.emMm} mm em, so rows written on different days still match.`,
-          "Rows are joined in poem order with one word gap inside a line and a double gap between lines, producing one continuous ribbon.",
-          `The ribbon's length is compared with the stand-in layout (about ${Math.round(REFERENCE_METRICS.loopWidthEm)} ems for one poem). Up to about 15 % difference is absorbed by adjusting word gaps and a small uniform scale; outside that we talk before changing anything.`,
+          "Rows are joined in poem order with even word gaps inside a line and a double gap between lines, producing one continuous ribbon.",
+          `The ribbon's length is compared with the current layout (about ${Math.round(REFERENCE_METRICS.loopWidthEm)} ems for one poem). Differences are absorbed by word gaps and a small uniform scale; a copperplate hand is usually wider than the placeholder, and that is expected.`,
           `The ribbon replaces the font outlines in the generators for both editions: two repetitions around the maquette's ${Math.round(SMALL_EDITION.circuitLengthMm)} mm body circuit, and one poem per row on the large study.`,
           "You receive a proof. After approval, denhac staff mark a small test coupon with your lettering at 2.5, 4, 6, 8, 10 and 14 mm em sizes on the actual foil, and we look at it together before any full sheet is marked.",
         ],
@@ -724,44 +753,44 @@ export const CHAPTERS: readonly GuideChapter[] = [
         head: ["Problem", "Likely cause", "Fix"],
         rows: [
           [
+            "Hairlines skip or break",
+            "Nib not fully prepared, ink too thick, or paper too absorbent",
+            "Re-prepare the nib, add a drop of gum arabic or water to the ink, or move to Rhodia or Clairefontaine.",
+          ],
+          [
             "Edges feather or bleed",
-            "Absorbent or textured paper, or a wet dip-pen line",
-            "Switch to smooth Bristol or 120 g laser paper; let the pen's own cartridge ink do the work.",
+            "Absorbent or textured paper, or a very wet line",
+            "Switch to smooth pad paper; let a wet shade dry before the next row.",
           ],
           [
-            "Hairlines under 1 mm",
-            "Too little pressure on the up-strokes",
-            "Slow down on up-strokes and keep the brush tip slightly loaded; or use the 1.0 mm marker for the master.",
-          ],
-          [
-            "Counters of e, a, o fill in",
-            "Thick strokes over 3 mm at this size",
-            "Ease the pressure on down-strokes; the gauge's 3 mm bar is the ceiling.",
+            "Ink pools or blots at joins",
+            "Pausing with the nib on the paper, or too much ink on the nib",
+            "Lift between words; wipe the nib more often.",
           ],
           [
             "x-height drifts along the row",
-            "Writing without looking at the line, or fatigue",
-            "Write in shorter bursts; check the height every three words; rewrite the row if it drifts more than 1 mm.",
+            "Long rows, or the guide sheet slipping",
+            "Tape the guide sheet and paper together; write in shorter bursts; rewrite the row if it drifts more than a millimetre.",
           ],
           [
             "Slant wanders",
-            "Paper rotated, or guidelines too faint",
-            "Tape the sheet square to the table; darken the slant lines with pencil if needed.",
+            "Paper rotated on the light pad",
+            "Square the paper to the guide sheet's slant lines before each row.",
           ],
           [
             "Row runs out of room",
-            "Wide hand or generous word gaps",
+            "A wide hand or generous flourishes",
             "Stop at a word gap and continue on the next row as part b; never squeeze the last word.",
           ],
           [
-            "Ink pooling at joins",
-            "Pausing with the tip on the paper",
-            "Lift between words; keep the pen moving through joins.",
+            "Two rows touch",
+            "A tall flourish or a deep loop",
+            "Rewrite the lower or upper row; or write the poem with an extra blank row between rows if your loops need it.",
           ],
           [
             "Scan looks grey or speckled",
             "Auto-enhance, glossy ink, or low resolution",
-            "Rescan at 600 dpi greyscale with all automatic corrections off.",
+            "Rescan at 1200 dpi greyscale with all automatic corrections off.",
           ],
         ],
       },
@@ -770,6 +799,13 @@ export const CHAPTERS: readonly GuideChapter[] = [
       {
         kind: "p",
         text: "The apostrophes belong to inkprick's, who's, that's, mine's and thine's. The only ellipsis is the last character of the poem. There are no quotation marks, dashes, or parentheses anywhere.",
+      },
+      { kind: "h", text: "The placeholder the site shows today" },
+      {
+        kind: "figure",
+        figure: "ribbonWorking",
+        caption:
+          "Rows R01 to R03 in the substitute font at the working size, on the copperplate sheet lines. A size comparison only; your rows replace this.",
       },
     ],
   },

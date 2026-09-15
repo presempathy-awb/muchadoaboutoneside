@@ -15,8 +15,8 @@ export const PROJECT_PATHS = [
       "Create the full-size paper originals from the row templates, preserving every word, punctuation mark, split, and row ID.",
     steps: [
       "Download or print the hand-lettering guide at 100% scale; do not fit the template to the page.",
-      "Practice the alphabet, hard words, spacing, and punctuation before beginning the numbered master rows.",
-      "Letter each row on its own baseline at the specified 7 mm x-height and 55° slant. Keep the row ID with every original.",
+      "Warm up on the style-sample and hard-words sheets, then letter each numbered master row in your own copperplate on the baseline beneath its printed words. Keep the row ID with every original.",
+      "Write at a comfortable size and keep rows from touching; hairline weight, size normalisation, and spacing are handled digitally after the scan.",
       "Let the ink dry fully, check every finished row against the canonical poem, then make a high-resolution scan and row-by-row inventory before packing the originals flat.",
     ],
     downloads: [

@@ -296,6 +296,43 @@
   text-transform: uppercase;
 }
 
+.guide-essentials {
+  display: grid;
+  gap: 10px;
+  margin: 6px 0 26px;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-essentials li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--guide-line);
+  background: #fff;
+}
+
+.guide-essentials li > span {
+  padding-top: 2px;
+  color: #8f8a82;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 20px;
+}
+
+.guide-essentials strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+}
+
+.guide-essentials p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .guide-checklist {
   margin: 0 0 22px;
   padding: 0;

@@ -28,7 +28,7 @@ body { margin: 0; background: #fff; }
 .guide-chapter-head .guide-kicker { margin-bottom: 12px; }
 .guide-body { max-width: none; }
 .guide-body > h3 { page-break-after: avoid; }
-.guide-table, .guide-note, .guide-figure-inline, .guide-steps li, .guide-poem, .guide-checklist li, .guide-row-map > div { page-break-inside: avoid; }
+.guide-table, .guide-note, .guide-figure-inline, .guide-steps li, .guide-poem, .guide-checklist li, .guide-row-map > div, .guide-essentials li { page-break-inside: avoid; }
 .guide-figure-inline svg { max-width: 100%; height: auto; }
 .guide-figure-inline svg.guide-actual { width: 180mm; height: auto; }
 .guide-figure-sheets { margin: 0; }
@@ -86,10 +86,9 @@ export function PrintableGuide({ css, fontUrl }: PrintableGuideProps) {
             </ol>
           </div>
           <p className="guide-cover-meta">
-            {MASTER_ROWS.length} master rows · {WORKING.xHeightMm} mm x-height ·{" "}
-            {WORKING.slantDegrees}° slant · thinnest stroke{" "}
-            {WORKING.minimumThinStrokeMm} mm · print every template sheet at 100
-            % and check its 100 mm bar.
+            {MASTER_ROWS.length} master rows in your own copperplate · x-height
+            about {WORKING.xHeightMm} mm · hairlines thickened after the scan ·
+            print every template sheet at 100 % and check its 100 mm bar.
             <br />
             The rendered script in this guide is the substitute font Great Vibes
             (SIL Open Font License), shown for size and spacing only. Project
@@ -112,9 +111,9 @@ export function PrintableGuide({ css, fontUrl }: PrintableGuideProps) {
           </section>
         ))}
         <footer className="guide-footer">
-          {GUIDE_TITLE} · version {GUIDE_VERSION} · generated from the public
-          project source at github.com/presempathy-awb/muchadoaboutoneside.
-          Questions go to Andrew.
+          {GUIDE_TITLE} · {GUIDE_VERSION} · generated from the public project
+          source at github.com/presempathy-awb/muchadoaboutoneside. Questions go
+          to Andrew.
         </footer>
       </body>
     </html>

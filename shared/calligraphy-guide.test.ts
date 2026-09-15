@@ -4,6 +4,8 @@ import {
   BODY_ROWS,
   CAPITALS,
   CHAPTERS,
+  DIVISION_OF_LABOUR,
+  ESSENTIALS,
   HARD_WORD_ROWS,
   HARD_WORDS,
   JAW_ROWS,
@@ -16,6 +18,7 @@ import {
   SHEET,
   SHEET_WRITING_WIDTH_MM,
   SMALL_EDITION,
+  STYLE_SAMPLE_ROWS,
   WORKING,
 } from "./calligraphy-guide";
 import { INSCRIPTION_LAYOUT, JAW_INSCRIPTION_LAYOUT, POEM_LINES } from "./poem";
@@ -37,22 +40,35 @@ test("master rows reproduce the poem exactly, in order, splitting only at word g
   expect(ids.at(-1)).toBe("R17");
 });
 
-test("every row fits the sheet's writing width at the working size", () => {
+test("every row fits the sheet's writing width and every sheet fits the page", () => {
   for (const row of MASTER_ROWS) {
     expect(row.widthMm).toBeLessThan(SHEET_WRITING_WIDTH_MM - 4);
   }
   expect(MASTER_SHEETS.flat()).toEqual([...MASTER_ROWS]);
   for (const sheet of MASTER_SHEETS)
     expect(sheet.length).toBeLessThanOrEqual(SHEET.rowsPerSheet);
+  const lastBaseline =
+    SHEET.firstBaselineMm + (SHEET.rowsPerSheet - 1) * WORKING.rowPitchMm;
+  expect(lastBaseline + WORKING.flourishFloorMm).toBeLessThan(
+    SHEET.heightMm - SHEET.marginMm,
+  );
+  expect(SHEET.firstBaselineMm - WORKING.flourishCeilingMm).toBeGreaterThan(
+    SHEET.marginMm + 12,
+  );
 });
 
-test("working sizes follow the measured reference proportions", () => {
-  const em = WORKING.emMm;
-  expect(WORKING.xHeightMm / em).toBeCloseTo(REFERENCE_METRICS.xHeight, 1);
-  expect(WORKING.ascenderMm / em).toBeCloseTo(REFERENCE_METRICS.ascender, 1);
-  expect(WORKING.capHeightMm / em).toBeCloseTo(REFERENCE_METRICS.capHeight, 1);
-  expect(WORKING.descenderMm / em).toBeCloseTo(REFERENCE_METRICS.descender, 1);
-  expect(WORKING.rowPitchMm / em).toBeCloseTo(ROW_PITCH_EM, 0);
+test("guide lines follow copperplate proportions and rows cannot touch", () => {
+  expect(WORKING.ascenderMm).toBeCloseTo(WORKING.xHeightMm * 1.5, 5);
+  expect(WORKING.descenderMm).toBeCloseTo(WORKING.xHeightMm * 1.5, 5);
+  expect(WORKING.xHeightMm / WORKING.emMm).toBeCloseTo(
+    REFERENCE_METRICS.xHeight,
+    1,
+  );
+  expect(WORKING.xHeightRangeMm[0]).toBeLessThanOrEqual(WORKING.xHeightMm);
+  expect(WORKING.xHeightRangeMm[1]).toBeGreaterThanOrEqual(WORKING.xHeightMm);
+  expect(WORKING.flourishCeilingMm + WORKING.flourishFloorMm).toBeLessThan(
+    WORKING.rowPitchMm,
+  );
   expect(ROW_PITCH_EM).toBe(
     JAW_INSCRIPTION_LAYOUT.rowSpacing / JAW_INSCRIPTION_LAYOUT.fontSize,
   );
@@ -61,17 +77,15 @@ test("working sizes follow the measured reference proportions", () => {
   );
   expect(BODY_ROWS).toBe(4);
   expect(JAW_ROWS).toBe(18);
-  expect(WORKING.flourishCeilingMm + WORKING.flourishFloorMm).toBeLessThan(
-    WORKING.rowPitchMm,
-  );
 });
 
-test("the stroke minimum on paper survives the scale to the maquette", () => {
+test("the digital hairline floor survives the scale to the maquette", () => {
   expect(PAPER_TO_SMALL_SCALE).toBeCloseTo(SMALL_EDITION.emMm / WORKING.emMm);
-  expect(WORKING.minimumThinStrokeMm * PAPER_TO_SMALL_SCALE).toBeCloseTo(
+  expect(WORKING.digitalHairlineMm * PAPER_TO_SMALL_SCALE).toBeCloseTo(
     SMALL_EDITION.minimumStrokeMm,
     2,
   );
+  expect(WORKING.scanHairlineMm).toBeLessThan(WORKING.digitalHairlineMm);
   expect(REFERENCE_METRICS.lineWidthsEm).toHaveLength(POEM_LINES.length);
   const sum = REFERENCE_METRICS.lineWidthsEm.reduce((a, b) => a + b, 0);
   expect(REFERENCE_METRICS.loopWidthEm).toBeGreaterThan(sum);
@@ -90,6 +104,15 @@ test("hard words, capitals, and punctuation are drawn from the poem", () => {
   expect(counts["'"]).toBe(5);
   expect(counts["?"]).toBe(1);
   expect(text).not.toMatch(/[“”"—–()]/);
+});
+
+test("the brief keeps five essentials and leaves the rest to Jill", () => {
+  expect(ESSENTIALS).toHaveLength(5);
+  expect(DIVISION_OF_LABOUR.rows.length).toBeGreaterThanOrEqual(5);
+  expect(STYLE_SAMPLE_ROWS).toHaveLength(3);
+  const allText = JSON.stringify(CHAPTERS);
+  expect(allText).toContain("copperplate");
+  expect(allText).not.toContain("must be at least 1 mm wide");
 });
 
 test("chapters are complete and ordered", () => {
@@ -119,13 +142,21 @@ test("chapters are complete and ordered", () => {
     "ribbonSmall",
     "ribbonWorking",
     "sheetBlank",
-    "sheetsGhost",
-    "alphabet",
+    "sheetFree",
+    "sheetsMaster",
+    "styleSample",
     "hardWords",
     "rowMap",
     "pipeline",
   ])
     expect(figures).toContain(required);
   const steps = CHAPTERS[1]?.blocks.find((block) => block.kind === "steps");
-  expect(steps?.kind === "steps" && steps.steps.length).toBe(12);
+  expect(steps?.kind === "steps" && steps.steps.length).toBe(10);
+  const essentials = CHAPTERS.filter((chapter) =>
+    chapter.blocks.some((block) => block.kind === "essentials"),
+  );
+  expect(essentials.map((chapter) => chapter.id)).toEqual([
+    "overview",
+    "quick",
+  ]);
 });

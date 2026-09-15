@@ -3,6 +3,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   RouterProvider,
 } from "@tanstack/react-router";
 import { lazy, StrictMode, Suspense } from "react";
@@ -15,7 +16,6 @@ const Foil = lazy(() => import("@/pages/foil"));
 const Assembly = lazy(() => import("@/pages/assembly"));
 const Archive = lazy(() => import("@/pages/archive"));
 const Calligraphy = lazy(() => import("@/pages/calligraphy"));
-const Instructions = lazy(() => import("@/pages/instructions"));
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
 });
@@ -88,11 +88,9 @@ const foilRoute = createRoute({
 const instructionsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/instructions",
-  component: () => (
-    <Suspense fallback={<RouteLoading />}>
-      <Instructions />
-    </Suspense>
-  ),
+  // Let the router load the sections before it restores a hash destination.
+  component: lazyRouteComponent(() => import("@/pages/instructions")),
+  pendingComponent: RouteLoading,
 });
 const router = createRouter({
   scrollRestoration: true,

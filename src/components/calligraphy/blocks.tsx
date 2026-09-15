@@ -1,29 +1,32 @@
 /** Renders the shared guide content for both the website and the printable. */
 import {
+  ESSENTIALS,
   type FigureId,
   type GuideBlock,
   PUNCTUATION,
 } from "../../../shared/calligraphy-guide";
 import { POEM_STANZAS } from "../../../shared/poem";
 import {
-  AlphabetSheet,
   BlankSheet,
-  GhostSheets,
+  FreeSheet,
   HardWordsSheet,
   LoopFigure,
+  MasterSheets,
   PipelineFigure,
   ProportionsFigure,
   RibbonSmallFigure,
   RibbonWorkingFigure,
   RowMapFigure,
   StrokeGaugeFigure,
+  StyleSampleSheet,
 } from "./templates";
 
 /** Figures that are whole printable sheets rather than in-line diagrams. */
 const SHEET_FIGURES: ReadonlySet<FigureId> = new Set<FigureId>([
   "sheetBlank",
-  "sheetsGhost",
-  "alphabet",
+  "sheetFree",
+  "sheetsMaster",
+  "styleSample",
   "hardWords",
   "ribbonWorking",
 ]);
@@ -50,12 +53,18 @@ function Figure({ id }: { id: FigureId }) {
           <BlankSheet />
         </div>
       );
-    case "sheetsGhost":
-      return <GhostSheets />;
-    case "alphabet":
+    case "sheetFree":
       return (
         <div className="guide-sheet-page">
-          <AlphabetSheet />
+          <FreeSheet />
+        </div>
+      );
+    case "sheetsMaster":
+      return <MasterSheets />;
+    case "styleSample":
+      return (
+        <div className="guide-sheet-page">
+          <StyleSampleSheet />
         </div>
       );
     case "hardWords":
@@ -94,6 +103,22 @@ function ExactPoem() {
         ↻ the ellipsis runs straight into line 01
       </p>
     </div>
+  );
+}
+
+function Essentials() {
+  return (
+    <ol className="guide-essentials">
+      {ESSENTIALS.map((item, index) => (
+        <li key={item.title}>
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <div>
+            <strong>{item.title}</strong>
+            <p>{item.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -215,6 +240,8 @@ export function GuideBlocks({ blocks }: { blocks: readonly GuideBlock[] }) {
             return <ExactPoem key={key} />;
           case "punctuation":
             return <PunctuationTable key={key} />;
+          case "essentials":
+            return <Essentials key={key} />;
           case "checklist":
             return (
               <ul className="guide-checklist" key={key}>
