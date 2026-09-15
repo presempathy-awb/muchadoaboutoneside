@@ -66,12 +66,12 @@ export const PROJECT_PATHS = [
     number: "03",
     title: "Fit aluminum to the large wood sculpture",
     summary:
-      "Fit the reference patterns to iani’s actual wooden surface, then use the installation guide below to prepare and attach the aluminum.",
+      "Plan varied aluminum scale plates on iani’s actual prepared wood, with individually fitted paper patterns and measured room for every added layer.",
     steps: [
-      "Measure the actual sculpture and confirm a smooth, continuously supported surface before covering open ribs or laths.",
-      "Begin with the representative fit kit and confirm the surface mapping on paper. The panel set is a conceptual reference with no completed physical fit test.",
-      "Use the body and jaw marking masters as separate artwork; keep the jaw seam and crossing clearance visible in planning.",
-      "Test the actual aluminum, wood finish, and adhesive on a matching sample before marking or attaching the full set.",
+      "Measure the prepared support for each scale. Record local backing or leveling, adhesive, metal, finish, and any overlap, then check the jaw and crossing with the complete planned build-up.",
+      "Paper-fit a small neighboring group of body, tight-turn, and custom edge scales. Give every piece an ID, orientation, contour, and measured joint margin. The existing triangular panel kit is a conceptual reference, not the new scale layout.",
+      "Keep body and jaw artwork separate. Map the complete poem across the approved scale layout, keeping visible lettering clear of cut edges and any hidden overlap margins.",
+      "Test the actual aluminum, prepared wood, attachment, and edge joints as a marked group before choosing final plate sizes or producing the full set.",
     ],
     downloads: [
       {

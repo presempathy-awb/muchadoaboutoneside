@@ -11,6 +11,9 @@ import {
   LARGE_SCULPTURE_FILES,
   LARGE_SCULPTURE_INTRO,
   LARGE_SCULPTURE_LAYERS,
+  LARGE_SCULPTURE_PLATE_FAMILIES,
+  LARGE_SCULPTURE_PLATE_RECORD,
+  LARGE_SCULPTURE_REFERENCE_NOTE,
   LARGE_SCULPTURE_SHOP_GUIDE_URI,
   LARGE_SCULPTURE_SOURCES,
   LARGE_SCULPTURE_STATUS,
@@ -34,6 +37,10 @@ export function LargeSculptureGuide() {
       </header>
 
       <p className="instructions-cladding-intro">{LARGE_SCULPTURE_INTRO}</p>
+
+      <p className="instructions-cladding-reference">
+        {LARGE_SCULPTURE_REFERENCE_NOTE}
+      </p>
 
       <div className="instructions-cladding-setup">
         <aside>
@@ -59,6 +66,39 @@ export function LargeSculptureGuide() {
               </li>
             ))}
           </ol>
+        </div>
+      </div>
+
+      <div className="instructions-cladding-planning">
+        <div>
+          <h3>Plate families</h3>
+          <p className="instructions-cladding-planning-intro">
+            Choose by local fit and support; no fixed plate size is assumed.
+          </p>
+          <ul className="instructions-cladding-families">
+            {LARGE_SCULPTURE_PLATE_FAMILIES.map(({ title, note }) => (
+              <li key={title}>
+                <strong className="instructions-cladding-family-title">
+                  {title}
+                </strong>
+                <span className="instructions-cladding-family-note">
+                  {note}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3>Plate record</h3>
+          <p className="instructions-cladding-planning-intro">
+            Complete this record on each paper template before marking metal.
+          </p>
+          <ul className="instructions-cladding-record">
+            {LARGE_SCULPTURE_PLATE_RECORD.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
         </div>
       </div>
 

@@ -104,8 +104,10 @@ export function DimensionsOverview({ compact = false }: { compact?: boolean }) {
             </div>
           </dl>
           <p className="dimension-note">
-            Original construction-model dimensions, recorded in inches. Foil
-            clearance and seams still need a physical fit test.
+            Original construction-model dimensions, recorded in inches. Measure
+            the actual prepared wood and backing for the scale plates, then
+            record the finished clad size and remaining jaw/crossing clearance.
+            Added layers and overlaps need their own measurements.
           </p>
         </article>
       </div>
