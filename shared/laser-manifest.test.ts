@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { resolve } from "node:path";
 import { generateFoilGeometry } from "../src/lib/foil-geometry";
 import { FABRICATION_GEOMETRY_OPTIONS } from "./fabrication";
-import { INSCRIPTION_LAYOUT, POEM_LOOP } from "./poem";
+import { INSCRIPTION_LAYOUT, JAW_INSCRIPTION_LAYOUT, POEM_LOOP } from "./poem";
 
 const root = resolve(import.meta.dir, "..");
 const laserRoot = resolve(root, "public/fabrication/laser");
@@ -69,6 +69,16 @@ describe("laser fabrication artifacts", () => {
     );
     expect(manifest.poemSha256).toBe(digest(POEM_LOOP));
     expect(manifest.inscriptionLayout).toEqual(INSCRIPTION_LAYOUT);
+    expect(manifest.jawInscriptionLayout).toEqual(JAW_INSCRIPTION_LAYOUT);
+    expect(manifest.artwork.surfaceMasters).toEqual({
+      body: "marking-master.svg",
+      jaw: "jaw-marking-master.svg",
+    });
+    for (const panel of manifest.panels) {
+      expect(panel.artworkMaster).toBe(
+        manifest.artwork.surfaceMasters[panel.surface],
+      );
+    }
   });
 
   test("records physically dimensioned exact facets within stock", () => {
@@ -142,7 +152,7 @@ describe("laser fabrication artifacts", () => {
     expect(master).not.toContain("<text");
     expect(master).not.toContain("<font");
     expect(master).not.toContain("<rect");
-    expect(master.match(/<use /g)).toHaveLength(18);
+    expect(master.match(/<use /g)).toHaveLength(INSCRIPTION_LAYOUT.rows);
     expect(master).toContain('viewBox="0 0 8192 2048"');
     expect(coupon).not.toContain("<text");
     expect(coupon).not.toContain("<font");
@@ -154,6 +164,54 @@ describe("laser fabrication artifacts", () => {
       expect(bytes.byteLength).toBe(file.bytes);
       expect(digest(bytes)).toBe(file.sha256);
     }
+  });
+
+  test("keeps body and jaw poem circuits complete, distinct, and inside their masters", async () => {
+    const heights: number[] = [];
+    for (const [file, layout] of [
+      ["marking-master.svg", INSCRIPTION_LAYOUT],
+      ["jaw-marking-master.svg", JAW_INSCRIPTION_LAYOUT],
+    ] as const) {
+      const master = await Bun.file(resolve(laserRoot, file)).text();
+      expect(master).toContain(POEM_LOOP);
+      expect(master).not.toContain("<text");
+      expect(master).not.toContain("<font");
+      expect(master).not.toContain("<rect");
+      const offsets = [
+        ...master.matchAll(
+          /<use href="#poem-row" transform="translate\(0 ([\d.]+)\)"\/>/g,
+        ),
+      ].map((match) => Number(match[1]));
+      expect(offsets).toHaveLength(layout.rows);
+      const paths = [...master.matchAll(/<path d="([^"]+)"\/>/g)];
+      expect(paths.length).toBeGreaterThan(100);
+      const points = paths.flatMap((path) =>
+        [
+          ...(path[1] ?? "").matchAll(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g),
+        ].map((point) => [Number(point[1]), Number(point[2])] as const),
+      );
+      const minX = Math.min(...points.map(([x]) => x));
+      const maxX = Math.max(...points.map(([x]) => x));
+      const minY = Math.min(...points.map(([, y]) => y));
+      const maxY = Math.max(...points.map(([, y]) => y));
+      expect(minX).toBeGreaterThan(0);
+      expect(maxX).toBeLessThan(layout.width);
+      expect(minY).toBeGreaterThan(65);
+      expect(maxY + (offsets.at(-1) ?? 0)).toBeLessThan(layout.height - 65);
+      for (let row = 1; row < offsets.length; row += 1) {
+        expect(minY + (offsets[row] ?? 0)).toBeGreaterThan(
+          maxY + (offsets[row - 1] ?? 0),
+        );
+      }
+      heights.push(maxY - minY);
+      expect(
+        manifest.archiveEntries.some(
+          (entry: { path: string }) => entry.path === file,
+        ),
+      ).toBe(true);
+    }
+    expect(heights[0]).toBeGreaterThan(300);
+    expect(heights[1]).toBeLessThan(60);
   });
 
   test("packages separate marking and manual-trim sample files deterministically", () => {

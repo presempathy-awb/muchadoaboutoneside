@@ -1,4 +1,5 @@
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
+import "@babylonjs/core/Culling/ray";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { PointerEventTypes } from "@babylonjs/core/Events/pointerEvents";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
@@ -213,10 +214,12 @@ export function createSculptureScene(
     if (readingView && foilSkin) {
       const view = inscriptionView(foilSkin.getReadingMesh());
       camera.lowerRadiusLimit = 8;
+      camera.upVector = view.up;
       camera.target.copyFrom(view.target);
       camera.setPosition(view.position);
     } else {
       camera.lowerRadiusLimit = fittedRadius * 0.18;
+      camera.upVector = Vector3.Up();
       camera.alpha = START_ALPHA;
       camera.beta = START_BETA;
       camera.radius = fittedRadius;

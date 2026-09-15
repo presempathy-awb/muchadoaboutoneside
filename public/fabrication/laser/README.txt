@@ -21,7 +21,8 @@ SAFE WORKFLOW
 6. Start with representative-fit-kit.zip: print the manual-trim page on paper first, confirm its 304.8 × 508 mm page and crosshair spacing, and dry-assemble jaw-T0061 through jaw-T0068. Then mark the companion SVG on a test sheet, align the two shared outside-art crosshairs, mechanically trim, and test fit. These are four adjacent surface quads from the actual jaw, not a generic drawing.
 
 FILE ROLES
-marking-master.svg — transparent, unitless 8192 × 2048 normalized UV art used by the website preview. It is not physically dimensioned.
+marking-master.svg — transparent, unitless 8192 × 2048 normalized UV art for the body, with 4 complete poem circuits. The taller UV lettering compensates for the body's long reading path so it stays legible on the sculpture. It is not physically dimensioned.
+jaw-marking-master.svg — separate normalized UV art for the shorter jaw, with 18 complete poem circuits. Jaw facets use this master, not the body's lettering proportions.
 denhac-test-coupon.svg — practical millimetre coupon with flattened, closed outlines and no fonts.
 panels/mark-sheet-NNN.svg — 304.8 × 508 mm marking-only sheets. Artwork is clipped by the exact unfolded triangle boundary, but the boundary is absent from the laser layer.
 manual-trim/trim-sheet-NNN.svg — separate triangle boundaries and IDs for mechanical trimming/reference. Never import these as a laser-cut operation.

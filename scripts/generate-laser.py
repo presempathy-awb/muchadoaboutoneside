@@ -157,15 +157,16 @@ class Outliner:
         self.face = hb.Face(font_bytes)
         self.hb_font = hb.Font(self.face)
         self.hb_font.scale = (self.face.upem, self.face.upem)
-        self.cache: dict[int, list[list[tuple[float, float]]]] = {}
+        self.cache: dict[tuple[int, float], list[list[tuple[float, float]]]] = {}
 
-    def contours(self, glyph_id: int) -> list[list[tuple[float, float]]]:
-        if glyph_id not in self.cache:
-            pen = FlattenPen(self.glyph_set, FLATTEN_TOLERANCE_MASTER * self.face.upem / 40.0)
+    def contours(self, glyph_id: int, maximum_scale: float = 40.0) -> list[list[tuple[float, float]]]:
+        key = (glyph_id, maximum_scale)
+        if key not in self.cache:
+            pen = FlattenPen(self.glyph_set, FLATTEN_TOLERANCE_MASTER * self.face.upem / maximum_scale)
             self.glyph_set[self.glyph_order[glyph_id]].draw(pen)
             pen._endPath()
-            self.cache[glyph_id] = pen.contours
-        return self.cache[glyph_id]
+            self.cache[key] = pen.contours
+        return self.cache[key]
 
     def shape(self, text: str, font_size: float, x: float, baseline: float, target_width: float | None = None):
         buffer = hb.Buffer()
@@ -177,11 +178,15 @@ class Outliner:
         advance = sum(position.x_advance for position in positions)
         scale_y = font_size / self.face.upem
         scale_x = scale_y if target_width is None else target_width / advance
+        # Preserve the established small-kit precision, and tighten it when
+        # larger or horizontally expanded lettering would exceed the stated
+        # output-space tolerance. Cache each precision separately.
+        maximum_scale = max(40.0, scale_x * self.face.upem, font_size)
         cursor_x = 0.0
         cursor_y = 0.0
         geometries = []
         for info, position in zip(infos, positions):
-            contours = self.contours(info.codepoint)
+            contours = self.contours(info.codepoint, maximum_scale)
             rings = []
             origin_x = x + (cursor_x + position.x_offset) * scale_x
             origin_y = baseline - (cursor_y + position.y_offset) * scale_y
@@ -358,6 +363,7 @@ def main(input_path: Path):
     payload = json.loads(input_path.read_text())
     geometry = payload["geometry"]
     layout = payload["layout"]
+    jaw_layout = payload["jawLayout"]
     poem = payload["poem"]
     options = payload["options"]
     OUTPUT.mkdir(parents=True, exist_ok=True)
@@ -369,7 +375,7 @@ def main(input_path: Path):
         previous = json.loads(marker.read_text())
         if previous.get("producer") not in (None, PRODUCER) or previous.get("generatedFrom") != "shared/FABRICATION_GEOMETRY_OPTIONS + src/lib/foil-geometry.ts + shared/poem.ts":
             raise RuntimeError(f"Refusing to clean output not owned by this generator: {OUTPUT}")
-        for name in ("README.txt", "marking-master.svg", "denhac-test-coupon.svg", "assembly-map.svg", "panel-kit-manifest.json", "panel-kit.zip", "representative-fit-kit.zip", "manifest.json", *LICENSE_FILES):
+        for name in ("README.txt", "marking-master.svg", "jaw-marking-master.svg", "denhac-test-coupon.svg", "assembly-map.svg", "panel-kit-manifest.json", "panel-kit.zip", "representative-fit-kit.zip", "manifest.json", *LICENSE_FILES):
             path = OUTPUT / name
             if path.exists():
                 path.unlink()
@@ -379,27 +385,32 @@ def main(input_path: Path):
                 shutil.rmtree(path)
 
     outliner = Outliner(FONT_PATH)
-    row_geometries = []
-    for row in range(layout["rows"]):
-        baseline = layout["firstBaseline"] + row * layout["rowSpacing"]
-        row_geometries.extend(outliner.shape(poem, layout["fontSize"], layout["left"], baseline, layout["textWidth"]))
-    art_tree = STRtree(row_geometries)
+    surface_masters = {"body": "marking-master.svg", "jaw": "jaw-marking-master.svg"}
+    artwork_by_surface = {}
+    for surface, surface_layout in (("body", layout), ("jaw", jaw_layout)):
+        row_geometries = []
+        for row in range(surface_layout["rows"]):
+            baseline = surface_layout["firstBaseline"] + row * surface_layout["rowSpacing"]
+            row_geometries.extend(outliner.shape(poem, surface_layout["fontSize"], surface_layout["left"], baseline, surface_layout["textWidth"]))
+        if not all(box(0, 0, MASTER_WIDTH, MASTER_HEIGHT).covers(item) for item in row_geometries):
+            raise ValueError(f"The {surface} inscription extends beyond its UV master")
+        artwork_by_surface[surface] = (row_geometries, STRtree(row_geometries))
 
-    first_row = outliner.shape(poem, layout["fontSize"], layout["left"], layout["firstBaseline"], layout["textWidth"])
-    first_row_paths = "".join(f'<path d="{polygon_path(item)}"/>' for item in first_row if not item.is_empty)
-    row_uses = "".join(
-        f'<use href="#poem-row" transform="translate(0 {fmt(row * layout["rowSpacing"])})"/>'
-        for row in range(layout["rows"])
-    )
-    master = (
-        '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<svg xmlns="http://www.w3.org/2000/svg" width="4096" height="1024" viewBox="0 0 8192 2048" role="img" aria-labelledby="title desc">\n'
-        '<title id="title">Much Ado About One Side — outlined marking master</title>'
-        '<desc id="desc">Transparent normalized UV reference artwork. Dimensions are intentionally unitless; use the millimetre panel sheets for physical output. All lettering is flattened to closed outlines with even-odd holes and no live fonts.</desc>\n'
-        f'<metadata>Great Vibes outlines, SIL Open Font License. Curve flattening tolerance {FLATTEN_TOLERANCE_MASTER} master units. Exact shaped poem: {xml_escape(poem)} Inspired by Jill’s reference; replace with her approved final vector master before a final sculpture run.</metadata>\n'
-        f'<defs><g id="poem-row">{first_row_paths}</g></defs><g fill="#151816" fill-rule="evenodd">{row_uses}</g>\n</svg>\n'
-    )
-    (OUTPUT / "marking-master.svg").write_text(master)
+        first_row = outliner.shape(poem, surface_layout["fontSize"], surface_layout["left"], surface_layout["firstBaseline"], surface_layout["textWidth"])
+        first_row_paths = "".join(f'<path d="{polygon_path(item)}"/>' for item in first_row if not item.is_empty)
+        row_uses = "".join(
+            f'<use href="#poem-row" transform="translate(0 {fmt(row * surface_layout["rowSpacing"])})"/>'
+            for row in range(surface_layout["rows"])
+        )
+        master = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<svg xmlns="http://www.w3.org/2000/svg" width="4096" height="1024" viewBox="0 0 8192 2048" role="img" aria-labelledby="title desc">\n'
+            f'<title id="title">Much Ado About One Side — {surface} outlined marking master</title>'
+            f'<desc id="desc">Transparent normalized UV reference artwork for the {surface}, with {surface_layout["rows"]} complete poem circuits. Dimensions are intentionally unitless; use the millimetre panel sheets for physical output. All lettering is flattened to closed outlines with even-odd holes and no live fonts.</desc>\n'
+            f'<metadata>Great Vibes outlines, SIL Open Font License. Curve flattening tolerance {FLATTEN_TOLERANCE_MASTER} master units. Exact shaped poem: {xml_escape(poem)} Inspired by Jill’s reference; replace with her approved final vector master before a final sculpture run.</metadata>\n'
+            f'<defs><g id="poem-row">{first_row_paths}</g></defs><g fill="#151816" fill-rule="evenodd">{row_uses}</g>\n</svg>\n'
+        )
+        (OUTPUT / surface_masters[surface]).write_text(master)
 
     body_source_count = len(geometry["indices"]) // 3
     jaw_source_count = len(geometry["jawGeometry"]["indices"]) // 3
@@ -421,6 +432,7 @@ def main(input_path: Path):
     facet_artwork = {}
     facet_targets = {}
     for facet in source_facets:
+        row_geometries, art_tree = artwork_by_surface[facet.surface]
         target = translated_flat(facet)
         uv_master = facet.uv * np.array([MASTER_WIDTH, MASTER_HEIGHT])
         uv_triangle = Polygon(uv_master)
@@ -468,6 +480,7 @@ def main(input_path: Path):
             "id": facet.identifier,
             "sourceTriangleId": facet.source_identifier,
             "surface": facet.surface,
+            "artworkMaster": surface_masters[facet.surface],
             "sheet": facet.sheet + 1,
             "markFile": f"panels/mark-sheet-{facet.sheet + 1:03d}.svg",
             "manualTrimFile": f"manual-trim/trim-sheet-{facet.sheet + 1:03d}.svg",
@@ -605,7 +618,8 @@ SAFE WORKFLOW
 6. Start with representative-fit-kit.zip: print the manual-trim page on paper first, confirm its 304.8 × 508 mm page and crosshair spacing, and dry-assemble jaw-T0061 through jaw-T0068. Then mark the companion SVG on a test sheet, align the two shared outside-art crosshairs, mechanically trim, and test fit. These are four adjacent surface quads from the actual jaw, not a generic drawing.
 
 FILE ROLES
-marking-master.svg — transparent, unitless 8192 × 2048 normalized UV art used by the website preview. It is not physically dimensioned.
+marking-master.svg — transparent, unitless 8192 × 2048 normalized UV art for the body, with {layout["rows"]} complete poem circuits. The taller UV lettering compensates for the body's long reading path so it stays legible on the sculpture. It is not physically dimensioned.
+jaw-marking-master.svg — separate normalized UV art for the shorter jaw, with {jaw_layout["rows"]} complete poem circuits. Jaw facets use this master, not the body's lettering proportions.
 denhac-test-coupon.svg — practical millimetre coupon with flattened, closed outlines and no fonts.
 panels/mark-sheet-NNN.svg — 304.8 × 508 mm marking-only sheets. Artwork is clipped by the exact unfolded triangle boundary, but the boundary is absent from the laser layer.
 manual-trim/trim-sheet-NNN.svg — separate triangle boundaries and IDs for mechanical trimming/reference. Never import these as a laser-cut operation.
@@ -633,14 +647,16 @@ READINESS BLOCKERS
         "geometryGeneratorSha256": sha256(ROOT / "src" / "lib" / "foil-geometry.ts"),
         "geometryOptions": options,
         "inscriptionLayout": layout,
+        "jawInscriptionLayout": jaw_layout,
         "physicalScale": {"sourceCoordinateUnitAssumption": "inch", "millimetresPerSourceUnit": MM_PER_INCH, "sourceHasEmbeddedUnits": False},
         "stockMm": {"width": STOCK_WIDTH, "height": STOCK_HEIGHT, "margin": STOCK_MARGIN},
         "licensing": {"projectAuthored": "MIT OR Apache-2.0", "font": "OFL-1.1", "scope": "REUSE.txt"},
-        "artwork": {"font": "Great Vibes", "fontSha256": sha256(FONT_PATH), "license": "SIL Open Font License", "liveFonts": False, "curveFlatteningToleranceMasterUnits": FLATTEN_TOLERANCE_MASTER, "masterViewBox": [0, 0, 8192, 2048]},
+        "artwork": {"font": "Great Vibes", "fontSha256": sha256(FONT_PATH), "license": "SIL Open Font License", "liveFonts": False, "curveFlatteningToleranceMasterUnits": FLATTEN_TOLERANCE_MASTER, "masterViewBox": [0, 0, 8192, 2048], "surfaceMasters": surface_masters},
         "coverage": {"sourceTriangles": source_count, "bodySourceTriangles": body_source_count, "jawSourceTriangles": jaw_source_count, "generatedFacets": len(source_facets), "coveredSourceTriangleIds": len(set(item.source_identifier for item in source_facets)), "bodyGeneratedFacets": sum(1 for item in source_facets if item.surface == "body"), "jawGeneratedFacets": sum(1 for item in source_facets if item.surface == "jaw"), "stockSheets": sheet_count, "representativeFitSampleFacetIds": sample_ids},
-        "inputDigestSha256": hashlib.sha256(json.dumps({"geometry": geometry, "layout": layout, "options": options, "poem": poem}, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+        "inputDigestSha256": hashlib.sha256(json.dumps({"geometry": geometry, "layout": layout, "jawLayout": jaw_layout, "options": options, "poem": poem}, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
         "poemSha256": hashlib.sha256(poem.encode()).hexdigest(),
         "layoutSha256": hashlib.sha256(json.dumps(layout, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+        "jawLayoutSha256": hashlib.sha256(json.dumps(jaw_layout, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
         "verification": {"maximumUnfoldingEdgeErrorMm": maximum_error, "maximumExportedEdgeErrorMm": maximum_exported_error, "maximumAllowedExportedEdgeErrorMm": 0.01, "totalMeshAreaMm2": total_area_3d, "totalFlatAreaMm2": total_area_flat, "totalExportedAreaMm2": total_exported_area, "absoluteAreaErrorMm2": abs(total_area_3d - total_area_flat), "absoluteExportedAreaErrorMm2": abs(total_area_3d - total_exported_area), "allArtworkClippedToFacetBoundaries": artwork_within_panels, "allSheetsWithinStock": all_sheets_within_stock, "allAreasPositive": all(record["areaMm2"] > 0 for record in panel_records), "allSourceTrianglesCovered": len(set(item.source_identifier for item in source_facets)) == source_count, "edgeMatchesAreReciprocal": reciprocal_edges},
         "readiness": "REFERENCE_ONLY_NOT_PRODUCTION_CERTIFIED",
         "unresolvedBlockers": blockers,
@@ -655,7 +671,7 @@ READINESS BLOCKERS
         if not source.is_file():
             raise FileNotFoundError(f"Missing canonical license file: {source}")
         (OUTPUT / name).write_bytes(source.read_bytes())
-    archive_files = [OUTPUT / "README.txt", *[OUTPUT / name for name in LICENSE_FILES], OUTPUT / "marking-master.svg", OUTPUT / "denhac-test-coupon.svg", OUTPUT / "assembly-map.svg", *sorted(sample_dir.glob("*.svg")), *sorted(panels_dir.glob("*.svg")), *sorted(trims_dir.glob("*.svg"))]
+    archive_files = [OUTPUT / "README.txt", *[OUTPUT / name for name in LICENSE_FILES], *[OUTPUT / name for name in surface_masters.values()], OUTPUT / "denhac-test-coupon.svg", OUTPUT / "assembly-map.svg", *sorted(sample_dir.glob("*.svg")), *sorted(panels_dir.glob("*.svg")), *sorted(trims_dir.glob("*.svg"))]
     with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         manifest_info = zipfile.ZipInfo("panel-kit-manifest.json", date_time=(2026, 9, 14, 0, 0, 0))
         manifest_info.compress_type = zipfile.ZIP_DEFLATED

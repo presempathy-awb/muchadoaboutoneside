@@ -5,7 +5,7 @@ import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
 const ARTWORK = {
   large: {
     label: "Large sculpture",
-    path: "/fabrication/laser/marking-master.svg",
+    path: FABRICATION_DOWNLOADS.bodyMaster,
     toolbar: "LARGE SURFACE / CONTINUOUS UV ARTWORK",
     alt: "Continuous outlined calligraphy mapped across the large sculpture surface",
     download: "Download large artwork",

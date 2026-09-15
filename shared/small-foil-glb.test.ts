@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
+import { inflateSync } from "node:zlib";
 
 type Point = [number, number, number];
 interface Gltf {
@@ -209,11 +210,58 @@ describe("small foil GLB independent binary verification", () => {
     }
     expect(renderedFaces.sort()).toEqual(originalFaces.sort());
 
+    // Physical source-chart landmarks, in print millimetres. These asymmetric
+    // transverse values distinguish SVG's downward T from a reflected image;
+    // checking only UV bounds would let mirrored calligraphy pass unnoticed.
+    const chartLandmarks = [
+      {
+        position: [-25.041698, 0.236838, 105.811395],
+        chart: [120.701345, 2.863205],
+      },
+      {
+        position: [-30.881966, 8.725809, 80.364659],
+        chart: [345.744641, 6.865945],
+      },
+      {
+        position: [-35.061665, -8.731553, 29.342113],
+        chart: [696.058584, 2.944992],
+      },
+      {
+        position: [22.140827, -11.162804, 86.698525],
+        chart: [854.626247, 6.65035],
+      },
+    ];
+    for (const landmark of chartLandmarks) {
+      const corners = positions.flatMap((position, index) => {
+        const printPoint = [
+          at(position, 0) * 1000,
+          -at(position, 2) * 1000,
+          at(position, 1) * 1000,
+        ];
+        return Math.hypot(
+          ...printPoint.map(
+            (value, axis) => value - at(landmark.position, axis),
+          ),
+        ) < 0.0001
+          ? [at(uv, index)]
+          : [];
+      });
+      expect(corners.length).toBeGreaterThan(0);
+      for (const pair of corners) {
+        expect(at(pair, 0) * 1028.1043219155401).toBeCloseTo(
+          at(landmark.chart, 0),
+          3,
+        );
+        expect(at(pair, 1) * 10).toBeCloseTo(at(landmark.chart, 1), 3);
+      }
+    }
+
     const material = doc.materials[primitive.material]?.pbrMetallicRoughness;
     if (!material) throw new Error("Metallic foil material missing");
     expect(material.metallicFactor).toBeGreaterThan(0.5);
-    expect(material.roughnessFactor).toBeGreaterThan(0);
-    expect(material.roughnessFactor).toBeLessThan(1);
+    expect(material.metallicFactor).toBeLessThan(0.65);
+    expect(material.roughnessFactor).toBeGreaterThanOrEqual(0.5);
+    expect(material.roughnessFactor).toBeLessThan(0.7);
     const image = at(
       doc.images,
       at(doc.textures, material.baseColorTexture.index).source,
@@ -228,9 +276,23 @@ describe("small foil GLB independent binary verification", () => {
       png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])),
     ).toBeTrue();
     expect(png.toString("ascii", 12, 16)).toBe("IHDR");
-    expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(2048);
-    expect(png.readUInt32BE(20)).toBeGreaterThanOrEqual(64);
+    expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(8192);
+    expect(png.readUInt32BE(20)).toBeGreaterThanOrEqual(256);
     expect(png[24]).toBe(8);
-    expect([2, 6]).toContain(png.readUInt8(25));
+    expect(png[25]).toBe(2); // RGB, no alpha.
+    expect(png[28]).toBe(0); // Non-interlaced scanlines.
+    const compressed: Buffer[] = [];
+    for (let offset = 8; offset < png.length; ) {
+      const length = png.readUInt32BE(offset);
+      const kind = png.toString("ascii", offset + 4, offset + 8);
+      if (kind === "IEND") break;
+      if (kind === "IDAT")
+        compressed.push(png.subarray(offset + 8, offset + 8 + length));
+      offset += length + 12;
+    }
+    const pixels = inflateSync(Buffer.concat(compressed));
+    // Every PNG filter uses zero for the absent upper/left neighbors of the
+    // first RGB pixel, so its three encoded bytes equal the decoded silver.
+    expect(pixels.subarray(1, 4)).toEqual(Buffer.from([185, 190, 194]));
   });
 });

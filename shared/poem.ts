@@ -3,6 +3,20 @@ export const POEM_TITLE = "Much Ado About One Side";
 export const INSCRIPTION_LAYOUT = {
   width: 8192,
   height: 2048,
+  // The body is much longer than it is wide: compensate in UV space so
+  // the complete poem keeps readable letter proportions on the surface.
+  fontSize: 300,
+  textWidth: 8000,
+  left: 96,
+  firstBaseline: 420,
+  rowSpacing: 420,
+  rows: 4,
+} as const;
+
+// The short jaw has its own surface proportions and marking artwork.
+export const JAW_INSCRIPTION_LAYOUT = {
+  width: 8192,
+  height: 2048,
   fontSize: 40,
   textWidth: 8000,
   left: 96,

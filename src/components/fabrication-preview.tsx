@@ -1,4 +1,5 @@
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
+import "@babylonjs/core/Culling/ray";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
@@ -8,9 +9,7 @@ import { Scene } from "@babylonjs/core/scene";
 import "@babylonjs/loaders/glTF/2.0/glTFLoader";
 import { useEffect, useRef, useState } from "react";
 import { makeStudioReflection } from "@/lib/studio-reflection";
-
-const MODEL_DIRECTORY = "/fabrication/small-foil/";
-const MODEL_FILE = "muchado-foil-180mm.glb";
+import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
 
 export default function FabricationPreview() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -107,7 +106,12 @@ export default function FabricationPreview() {
           });
     visibilityObserver?.observe(canvas);
 
-    void SceneLoader.ImportMeshAsync("", MODEL_DIRECTORY, MODEL_FILE, scene)
+    void SceneLoader.ImportMeshAsync(
+      "",
+      "",
+      FABRICATION_DOWNLOADS.smallModel,
+      scene,
+    )
       .then(({ meshes }) => {
         if (disposed) return;
         let minimum = new Vector3(
@@ -123,6 +127,10 @@ export default function FabricationPreview() {
         let foundBounds = false;
         for (const mesh of meshes) {
           if (!mesh.getTotalVertices || mesh.getTotalVertices() === 0) continue;
+          for (const texture of mesh.material?.getActiveTextures() ?? []) {
+            // Keep the narrow physical lettering clear on receding foil faces.
+            texture.anisotropicFilteringLevel = 16;
+          }
           mesh.computeWorldMatrix(true);
           const bounds = mesh.getBoundingInfo().boundingBox;
           minimum = Vector3.Minimize(minimum, bounds.minimumWorld);

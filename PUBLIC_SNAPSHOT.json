@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "248ba07228e3816390143b80653e908c86077e74",
+  "sourceCommit": "af14a0b366a70db52c515b8ef1df40bd4f4cd386",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 17318,
-      "sha256": "899220445eae57307e2805179bb8db35880431c5c9a0a6a660105182e38560c1"
+      "bytes": 17540,
+      "sha256": "31cbb1ad8833d3c0590a52cfe1d682cc7f24dc28b109be2b73c476d26197d72c"
     },
     {
       "path": "REUSE.md",
@@ -90,8 +90,8 @@
     },
     {
       "path": "public/editions/endless-inscription-study.svg",
-      "bytes": 629899,
-      "sha256": "f9c7a529a50e1067e4c3a5d0edf98035545df80821acd0d21989696be91621ca"
+      "bytes": 618973,
+      "sha256": "67519faf23d0796be15a05d8a547d37378f00b41e5090ecc4431b06e4c3cf9f7"
     },
     {
       "path": "public/editions/much-ado-about-one-side.txt",
@@ -115,8 +115,8 @@
     },
     {
       "path": "public/fabrication/laser/README.txt",
-      "bytes": 5295,
-      "sha256": "8541808188efb043684806c76404f25a7c7efc20994c32c60f894c8e7fe04de9"
+      "bytes": 5591,
+      "sha256": "572bcd213ab85a891effb7cfa7f2eff379d1113e421f70dddf0d74a9aa81f6f9"
     },
     {
       "path": "public/fabrication/laser/REUSE.txt",
@@ -134,9 +134,14 @@
       "sha256": "fac6fbb765d8c4213fff2a794cdd242696c5b1bba044e7bdf43498ed09637797"
     },
     {
+      "path": "public/fabrication/laser/jaw-marking-master.svg",
+      "bytes": 416273,
+      "sha256": "91b54311d0a7e6447a8c96d2211b21dc515e2c4239370b5001272237d1ea7e35"
+    },
+    {
       "path": "public/fabrication/laser/manifest.json",
-      "bytes": 5396740,
-      "sha256": "656fbcdf0e2df9a2c7443372e33bedd16d3a077f3f49ab5235c4f94a43ee7b63"
+      "bytes": 5570497,
+      "sha256": "bc03acaf3d471e8948d1b0c0e94329373a7df5eecc121787ad9e4304280dfa02"
     },
     {
       "path": "public/fabrication/laser/manual-trim/trim-sheet-001.svg",
@@ -2370,2248 +2375,2248 @@
     },
     {
       "path": "public/fabrication/laser/marking-master.svg",
-      "bytes": 412777,
-      "sha256": "1caf16978585fdd0e09bda33725ab48ec56d41b52ca79379d91d95bbf1c2c3ce"
+      "bytes": 876112,
+      "sha256": "b597cbdd1f63fa407de65dd57225d420510c7c13eacae95b5ad70d0c82f8c23e"
     },
     {
       "path": "public/fabrication/laser/panel-kit.zip",
-      "bytes": 7702058,
-      "sha256": "4a13f29f1c91892be9cc806df0e584ede1aa2ce3536ab9253e7114a4dc74d368"
+      "bytes": 6356799,
+      "sha256": "0a253226337f873b23fd82ac9a43844e39f2dbc516a8b2a1a0fce2f38d66184e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-001.svg",
-      "bytes": 622604,
-      "sha256": "dcc4b0ac44c2d941428935bcd28bb0d5ab6db0c1f46f699557339ddd334da78f"
+      "bytes": 628529,
+      "sha256": "b9e31f9aec487b8cb33df2670f9bc82af6c471ede8b961d5231fad032ad8d855"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-002.svg",
-      "bytes": 68479,
-      "sha256": "ef07655f83152d732b98efb54232576a70c67bf131cd92c39bf7cc1a91d150a3"
+      "bytes": 68524,
+      "sha256": "1fe23806d384e4957da2a59d3efdebd8357720a44533d84df9b0f35cb4f63bd1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-003.svg",
-      "bytes": 77140,
-      "sha256": "f7c55e7c12e2e269ebf264501bb9b48fa17c94493f6aecd0b440f2d1a6c9237b"
+      "bytes": 65968,
+      "sha256": "d17f444c099936b56f3baf4f7e77ba310c0656e1c732186be7c7537d62ab0922"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-004.svg",
-      "bytes": 46671,
-      "sha256": "2709cf7c12f36fa43352f2edb82f965ac6200ba46b29469c87884d754dafabac"
+      "bytes": 33286,
+      "sha256": "69d677272fbd448b6393c2362930984642d9354b46d71f439133dce383356d1f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-005.svg",
-      "bytes": 21009,
-      "sha256": "4e08a772558571f6b628326c8f2c215e6bf7cfea3c87ce299fb793bab9e31286"
+      "bytes": 13195,
+      "sha256": "8f7492a2b5c4be7ae0905f21ae5f26ebe70c98ac1c5d573cdc6134f14da642fb"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-006.svg",
-      "bytes": 83301,
-      "sha256": "414bf883ed4e2ac9c147e833206e5cf99b17a69e28172e5d1eaa9dcb92a1bd5e"
+      "bytes": 70153,
+      "sha256": "18e5369dff22e7b07a2f016835284db30db018206f88ba38b0c3e39a796a94c7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-007.svg",
-      "bytes": 38098,
-      "sha256": "4e35490350973a5ee09fb2f80d301307b5539f62be32613dae6d689f544f7953"
+      "bytes": 34087,
+      "sha256": "9d16cca36893c72a735e9cc6a59407da11240d5e7e6c28ebdfd31c47a8341205"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-008.svg",
-      "bytes": 71666,
-      "sha256": "855dc2bbc8325ebfbc7c255f027e4b2ce384ecd19f2d1b4acf4fe927e159f266"
+      "bytes": 62262,
+      "sha256": "840caa03d3018c9242550b316c45848d91afd68b4053e034c263f2966f73cc2e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-009.svg",
-      "bytes": 57274,
-      "sha256": "04593aca904a900d2fb5011079565ebb6f350b63888405f48e7fa20ec0c0466d"
+      "bytes": 50300,
+      "sha256": "4e7c12c6f5a426f8421d73678bb27f3c08cfe849481d3f243e6dd1f10fbf3f57"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-010.svg",
-      "bytes": 68785,
-      "sha256": "cf099de05390eb6fea6385cb95a4820d5e8aa5e869f2bfda36ceeaf362d97cb5"
+      "bytes": 67108,
+      "sha256": "3f3f15b4b29197155c731e1aab19088425daf8779ed8aba4a8f5b86ec8ff9c2b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-011.svg",
-      "bytes": 12914,
-      "sha256": "ece932f884c36b15d803109702238a4a10ee77b07ee45955b628ec9cc23abf88"
+      "bytes": 6567,
+      "sha256": "6ca7f9ce8a3f0f8ab8ebcbcf4fd90147444d5f14a7c73a01177d8e629f12758d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-012.svg",
-      "bytes": 109400,
-      "sha256": "85e9b22805d995af6bcc30e4553906f44d6aa2bf45c920fe484c6ddfd9e76832"
+      "bytes": 107886,
+      "sha256": "bd1d676d76b3faca26d9516fff28a9ffc1fa3255109c228cd832109cb20a3fff"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-013.svg",
-      "bytes": 15197,
-      "sha256": "0c0866fcb495151eadbeb5aefc939e1efe24df1e4fa84cc53534b40f53fd3eb7"
+      "bytes": 11699,
+      "sha256": "f9773e7127ece11735421f441c97642afb41eacd0bc5c5a6388c15cf8f7a91f4"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-014.svg",
-      "bytes": 29616,
-      "sha256": "c814e39dea0b932570716aa6a38268a018eb6a3456d1571783c915d937044e02"
+      "bytes": 16275,
+      "sha256": "dd08eb7312eb676f919987d782a4cf7b96d46e3a0fcf0691f43d77662afcecd8"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-015.svg",
-      "bytes": 20833,
-      "sha256": "8f4a1ce2d02a6d8d0822b486b7450a57358e7b2636e5766ab4f79689c73e4834"
+      "bytes": 2828,
+      "sha256": "0bd61851228b7efdc24eea1390693111b9c1871ec738739f38e2a24df87a890a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-016.svg",
-      "bytes": 16214,
-      "sha256": "50861c662184763df4d4258121f6ad8948cd38d78c344a329d9275e4153c9cae"
+      "bytes": 10566,
+      "sha256": "f8af2c04bd3e565b7392dceb47e7af96c1e234d7b4448d755cea453477dfd510"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-017.svg",
-      "bytes": 31145,
-      "sha256": "37d416f3c97d950c5dc0fe77fa6ad8b06e660477bbfd472493715a96dd2dbc84"
+      "bytes": 18845,
+      "sha256": "aab078a1912af0ff95d933bf12c73959eebbefd9d51d04c6e4900e4d362c9caa"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-018.svg",
-      "bytes": 16691,
-      "sha256": "c5f1521a74610052ee91cec38aea2e964a5ecce247ed96c7269d9743e2ad7dae"
+      "bytes": 6048,
+      "sha256": "c3ab860d6a4695b2a6df596ada5bbb82146ccef7ed40985afabbea8f7c7c9ce1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-019.svg",
-      "bytes": 14107,
-      "sha256": "307c6dc4c3ccf59939b7e5656503db04db694eb3b0406a787e19114f56b1edfd"
+      "bytes": 3744,
+      "sha256": "81a657afdb754200243f6e9236b02c7a757c90df67bdc85a544404ebd1d98516"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-020.svg",
-      "bytes": 15376,
-      "sha256": "eef72eb3d934dc13b407db1e740d7df02aba9e80abb83961e25e5eb6cfa92ec4"
+      "bytes": 9166,
+      "sha256": "601cc8d994f7e878cbd14f2c89d2cbcf05b0e7d1dac6dc5ee9691380948406e6"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-021.svg",
-      "bytes": 17874,
-      "sha256": "c095b69cf033812494f219e4aad405c4cd03930f94d9fb24098780f6b2d64bd8"
+      "bytes": 4187,
+      "sha256": "dbc2be43c9a14c65d861475bcf6208071af42eb6b1c6555562d38e2ec6af2c1d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-022.svg",
-      "bytes": 12631,
-      "sha256": "765c3175b0677b4104e45af5d2be4e1b8929d2bf520bad8a6d92aa1a99b61572"
+      "bytes": 11469,
+      "sha256": "9837fbffe9877b1926f9ef67f97e50fdff7d303345bcd74dccdf6681d57c342a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-023.svg",
-      "bytes": 11490,
-      "sha256": "d9d264974c310b8c1767c2f909f08a4f6c987c7229040b5e669aa4a5dbc30755"
+      "bytes": 2564,
+      "sha256": "51532f4f9e81ae73c19b1888339cca974cf6a54a34f59d3e08f683cede85a07f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-024.svg",
-      "bytes": 12752,
-      "sha256": "10fe6cb9c17924707bf5b978905a6535240183fe9f276f8d6960288fa097b4ed"
+      "bytes": 9542,
+      "sha256": "68e5c3b1225c001ade4336e5aaaf2ffa0c244bf763d915f9a905122337276012"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-025.svg",
-      "bytes": 14207,
-      "sha256": "d37161251daba253cd306d38fecd1fb092bea69508cf0d8cccf0267d980b48ec"
+      "bytes": 8056,
+      "sha256": "5f53fbf23827c1ad225a81a404fed83a23606442c8b307ccd7bebc3646377a80"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-026.svg",
-      "bytes": 10677,
-      "sha256": "8131cf21dd9b8d560131ccd52e53b1451f94eb6efcb4f1da833b6c0b5472740c"
+      "bytes": 4754,
+      "sha256": "e6d03667e539dfd89c1fd9fafd90e9a3049cd0768fd28ef388fbc035259d6015"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-027.svg",
-      "bytes": 10576,
-      "sha256": "10a26a1efc60ac99295359c2404d6af6561627edad023bab3a91d4a1927b10bf"
+      "bytes": 3688,
+      "sha256": "8133c0a4b34e81fc30d21ed55c1ebe3fabe0a6e049bbb8ac5eac91f0ffd9b81c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-028.svg",
-      "bytes": 13009,
-      "sha256": "b17845e3c5d86a492390eb1fdbf1a48613cfce31fe9405b3f43ca371f3389957"
+      "bytes": 3819,
+      "sha256": "cf41dd6ca6681d8eecea036d50c826853e16b7c7899d8bac8c68f591bf6bdc7c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-029.svg",
-      "bytes": 6990,
-      "sha256": "7b1752bf59b802bef32a965e83f1105ca24f352657f960d5a1479df280b14080"
+      "bytes": 5099,
+      "sha256": "20bdbb9911f95421a39986421401596273d341b13e300349fc6c36f962ccc1f7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-030.svg",
-      "bytes": 14325,
-      "sha256": "4df11c52ff2badb38a93fb213c9a415a6fe81079a1ecb0ac720be88cb3346f07"
+      "bytes": 4861,
+      "sha256": "f80671dcb28e3ce4c941f9cc6a25490770d0fcd94564b5349db777e1dbf630e1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-031.svg",
-      "bytes": 13857,
-      "sha256": "378f47493af7a5281e9515629e7764fe9b346ca76eea9e2a184f09e6d15a2c2a"
+      "bytes": 3714,
+      "sha256": "7004204cae16100e4513da62344b7e886f01ba4f925e9d52bdc68f358796239c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-032.svg",
-      "bytes": 14630,
-      "sha256": "3606795b97b5ed55d409b193dd21f5b61f0b3dd025be1b18a954dbfdc522ba1b"
+      "bytes": 7451,
+      "sha256": "51834bf32b67cde5d7634015309dec9e5f74e5f5ec3a1bb2d58cd5f7fe8fc005"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-033.svg",
-      "bytes": 11644,
-      "sha256": "fd8452b2464402bda659c3edf154cbe7c7514a70c9b411cc50ec21514af09887"
+      "bytes": 11514,
+      "sha256": "92f85b363687a5a31e8175b60ed91b18194820d84ed83280e3b71e1a09248b6e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-034.svg",
-      "bytes": 9063,
-      "sha256": "11d214ceaea09c5ea4e50f3e026296d696e699bf8c0248bca63f2552d4f76f19"
+      "bytes": 2970,
+      "sha256": "a6b09d25915628c2ad704437d4fc68ea7ed187050eb583faa0c1f6af1ad96d5b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-035.svg",
-      "bytes": 18489,
-      "sha256": "fe33f7e15b2bf604f7bbebe2f502cf2f63e59561bb5442a727df0b1613dbdf35"
+      "bytes": 7789,
+      "sha256": "e25a20f452cba0ae95a2708a559a1b4a1cc3d49cbe0ceab816ec3a3504465281"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-036.svg",
-      "bytes": 16930,
-      "sha256": "51d66e4202ba7c995eba3dee5f259f94a1c87d5596818ba4d7d3d6112e1ad8de"
+      "bytes": 12933,
+      "sha256": "6ad0f5325b3693944e72cd6670ce5a1c970448784a201cef01cda4be0d669304"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-037.svg",
-      "bytes": 17823,
-      "sha256": "f581ef24e6fe06c0c0f67ce192f5aa01dfaff96f5f26be5f333ab39f7e48d8f9"
+      "bytes": 10208,
+      "sha256": "b74a91a6e00fecf6a86a23e11b2aeab39aa452309d5759adfb66411639a62124"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-038.svg",
-      "bytes": 19825,
-      "sha256": "a989a99e951a514ef85bf4f75166c97b749cbd2ee2e9da9414662e0d494c859d"
+      "bytes": 12285,
+      "sha256": "e6baafa132cb75b1db3f0e14fa4bc84e40c77571d3ad151dcab3851badad1ece"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-039.svg",
-      "bytes": 34090,
-      "sha256": "24fa431a2f54d2bcabc23f9ab2184d47570aaeb3590b50dbb37231a9c069f62d"
+      "bytes": 30802,
+      "sha256": "652af32e45621350f29f9e674b8f7cad6d19dec967a1860a5853980eb47b31e3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-040.svg",
-      "bytes": 12954,
-      "sha256": "74723b1ae85a5019c125fcb9ccf4e6d366d5885618dd9559906632b739f35a20"
+      "bytes": 2722,
+      "sha256": "4af2c3d5aea8368f82c80506432edbb7cb2f87d1e667c977ea6b9d760e80cb1f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-041.svg",
-      "bytes": 12585,
-      "sha256": "aa464d8ad6cb3055415037e41400c66636bee6035359304a5749e8df07e99dbc"
+      "bytes": 5283,
+      "sha256": "787d9e8c7d6ca11542e5961d78e668a6920ba9124acbdf7d65f65fb35333b93a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-042.svg",
-      "bytes": 14099,
-      "sha256": "275f1a0d48a3b513bdf640f62b3957cc28dc637a1d9aa5c8ef03b0949d3b3588"
+      "bytes": 3854,
+      "sha256": "8ff865f3383c1f05e6aaec0c92be0fd2b27896b0dc0f5f77717af711298c4ebe"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-043.svg",
-      "bytes": 12971,
-      "sha256": "21f1e29a01bf6838c6d504544e26d8f7cba27ee20c77878186692202396a5cfd"
+      "bytes": 8646,
+      "sha256": "1934a2668e1b52e5df518232394f32d97d981047f5fe3946833452d2c4887b86"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-044.svg",
-      "bytes": 13034,
-      "sha256": "33f257d4d4cf1ae4829ea4befad941edc16ee49442dbabb26cefd07a00cf173b"
+      "bytes": 2543,
+      "sha256": "70674cccdd5f74511ec97d8c2a2001b9174106c024dd0e5ad000f1d9939118c2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-045.svg",
-      "bytes": 18950,
-      "sha256": "df3f18abb6db214fee8b9472090b1ccc452540f1bc0592f2db299e7e4f491b8b"
+      "bytes": 11178,
+      "sha256": "59f2b05508002c64932ff3a6c8319c6858b7dd788bf2a5798a9d9aa61eb066fe"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-046.svg",
-      "bytes": 16690,
-      "sha256": "a298958317716c1063feb7ec6708be38d445b80eed8532a0b5ec27627e80236c"
+      "bytes": 7343,
+      "sha256": "4c66952c73f71ae43e98577e2e8cc3c34464a101c6f45b47394fb2503c58bace"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-047.svg",
-      "bytes": 15256,
-      "sha256": "22e6a9320741f7438e85b365633d9bed74b2f4e7d2a117c0028e9961b4c6dd54"
+      "bytes": 6474,
+      "sha256": "19e9b51e33c4de053f891da330e0f2b1f1dcf9b8dc789ecc1da7a041bfa8ea1b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-048.svg",
-      "bytes": 25102,
-      "sha256": "7fd42dda557db053995fa9293844d74028996225b4b7523ee4c14df5f8ad02ee"
+      "bytes": 9520,
+      "sha256": "7cf34525a82a0afa9b4d0bee6d70e629f44540b4e852be6c82b4b29c8d2e5e37"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-049.svg",
-      "bytes": 11062,
-      "sha256": "d5ded88a8040cd784a432d4299a709d810bcff15845d9a63e095045b67aa72d6"
+      "bytes": 4163,
+      "sha256": "e2b7cfdf8f6b265c6b7dbe54f357e7fd2c4ae6cc6adabdae9b97faab756e92d2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-050.svg",
-      "bytes": 13386,
-      "sha256": "1f16028d5bd51513b9df6d6dd28f847046573f4ec5292b0fe522154201db20f3"
+      "bytes": 4585,
+      "sha256": "987d94b1a4ddbf39d9bfee9004ea54fed14925973d24a575c58ca92bbb3a04b8"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-051.svg",
-      "bytes": 72983,
-      "sha256": "c4be8a0a10f03d9275da74106850154a94a16d15069a8471564d4d9d44fd4773"
+      "bytes": 65703,
+      "sha256": "e3a80e76189ae61756c1cf416d0e438ad12f9f66dbdc498a5615e4d810a5a798"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-052.svg",
-      "bytes": 19805,
-      "sha256": "2f45415f27f884e17dc868282a2689f7dafcfed1e02ade28bbf449c576b33ad9"
+      "bytes": 14303,
+      "sha256": "fcd8215fd9851b62a277868d2878c1022c30823c9f7610a341565dd8f149c1cd"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-053.svg",
-      "bytes": 18801,
-      "sha256": "8888e676077ece24071fa77253858f18cff568620b65ea130a20fecaee43c7ba"
+      "bytes": 4415,
+      "sha256": "2616acde47f86e7f15f34bce44c8032323a453f080407eaa6be30951d9c7f8a9"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-054.svg",
-      "bytes": 106060,
-      "sha256": "6304679f3e154410a607e9a10b3c2c4d7e724af4f2f5c639a216eeb61f54a4d6"
+      "bytes": 107124,
+      "sha256": "45912dfe4c5aa61475f8177ee44bec59d7533d3e35ef47713dcff6b25a1b13b5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-055.svg",
-      "bytes": 19602,
-      "sha256": "7e6ad091079f7e69ac450b39b92cd11d3e231091e3e349f7d64e51893d919704"
+      "bytes": 11552,
+      "sha256": "bd0bae49a330189e572209710f9fd74221d907d72cfe61b6b9e6c93afda5903a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-056.svg",
-      "bytes": 19102,
-      "sha256": "fe53552da6edd591384d6d824942aa68437310de6c156f484d09a4eb13fcfe81"
+      "bytes": 10745,
+      "sha256": "d937487c58b52b92662ddaf66236af5831ce592370520818ba917fc7450e60cf"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-057.svg",
-      "bytes": 14609,
-      "sha256": "6176eabc84760ecbb99c3a9333c3c0df216470eb4ddb5eace7c4b53fa2f2f44c"
+      "bytes": 9231,
+      "sha256": "034daa3b426ac2813ad4ad2b82a9ef66adbbca1494b80fc3f2ca8df4ebeeb3a0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-058.svg",
-      "bytes": 12958,
-      "sha256": "b6889f39187a373ed5f75fa02b07f9dc089988d6a62e909484acaae8141d5303"
+      "bytes": 7932,
+      "sha256": "04862262a849f95cf5729f0821f01e753bd858caea7950642c11afbf74dca1e2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-059.svg",
-      "bytes": 20098,
-      "sha256": "e9b460c49cf9014f4240a3f30d082a57102183fe55f27ea575650efb647708f8"
+      "bytes": 9305,
+      "sha256": "316a29ae6f9b2071ee0fef4db6a3e60c90feb4f28a6fca5ed03002df51b339a6"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-060.svg",
-      "bytes": 12814,
-      "sha256": "70f27ed5c67e7d5917dd5e44170387796c96ff2127aa73526c4056929b921130"
+      "bytes": 9181,
+      "sha256": "bf76a50cd229fd0019ca661576397ab21d2c11024be0d404a4c79ef94d77ec1d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-061.svg",
-      "bytes": 10222,
-      "sha256": "cc3490be46b51964fa536dd34255b8109a05b67ac3c05ed0362b7b9fa6ca81b8"
+      "bytes": 2205,
+      "sha256": "2d94063b7d909bd7da23ccaa8127b607586b52b4f51bd0d5b61023719133bd0f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-062.svg",
-      "bytes": 134137,
-      "sha256": "68537297aaf4b5b83052245e413488048394f8b4f1d602658c13c1789811d65e"
+      "bytes": 133606,
+      "sha256": "92559e4b824b5021eb4f660e5a60a190353b239b093831c86dff7e494cb46bb2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-063.svg",
-      "bytes": 115310,
-      "sha256": "5108fd267f3fdef3a354916529b772b23de44421fceb1e3358e4cf268fffee77"
+      "bytes": 111956,
+      "sha256": "5784cb379eb7187bf5f3ffe0dca28a923d16c7f80ee36e12205a0bb96bb17fdc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-064.svg",
-      "bytes": 9943,
-      "sha256": "723b65d70c34703e163fb9f2b148c527cefd7e79315f55b248e67b5d83aca230"
+      "bytes": 2586,
+      "sha256": "d0f1d3bac9d69d8d474403f5f946474041665091408f3e81eab72e297f3f828b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-065.svg",
-      "bytes": 12192,
-      "sha256": "79f4d9d96471daaf63317403767a81e32c7dfd6bc710a18ecbdbc0c1c1072a29"
+      "bytes": 2500,
+      "sha256": "bdb0250271118d97a3e9c7ade69603918cd7a8c998d42f077e66984e9e3a3423"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-066.svg",
-      "bytes": 18487,
-      "sha256": "6bf5e40ffd3feb365fc9b302b0e811d5a2db7dbb1f104fb7b95ea7ef1a4e447e"
+      "bytes": 11443,
+      "sha256": "b91a9325ffbf64228b69881f6c08fa114b7b7b0c2a8b35e478827825507c4495"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-067.svg",
-      "bytes": 14091,
-      "sha256": "f9d9f662d1d3e61feb0ccd4fca0faaf77b9eef2d833a31bb2fbbbf27d44ba671"
+      "bytes": 1806,
+      "sha256": "a7fcb1fa14424325e9e45ed0cb8dac97829569d36b702ed68fad3a72e3d88142"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-068.svg",
-      "bytes": 16293,
-      "sha256": "bfa76735fc174da597f48645676e46cb23846cca0f75e0d9bc571f2234150c0b"
+      "bytes": 7379,
+      "sha256": "388b53a77c11b2b81896278729988513bf6a8059c8396acf09476f8811bf0a22"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-069.svg",
-      "bytes": 16793,
-      "sha256": "0006e4bf44cd250daae6830d5f318ba0293dd062792ccf8959bbc747e7700584"
+      "bytes": 7264,
+      "sha256": "4f14be8ff5f439c5ec79051f45751596096d78dfae15d4c1673b6cfc15b007e7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-070.svg",
-      "bytes": 17059,
-      "sha256": "a612a5ac3c731430fa32ec3fafef22c1d0623f19269e7b27127921321c48860a"
+      "bytes": 8608,
+      "sha256": "0f8c809b2866ca2ce62d94cf6b47a305396558ca89e85a21330a29636a8ea29f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-071.svg",
-      "bytes": 14241,
-      "sha256": "d8f7b5c07bfe9c1ec0e524b804aa579decf384a9fcfa8412cf557fc0f6732b79"
+      "bytes": 7608,
+      "sha256": "68de6fc33eea997469dfecd54891e5464b2d8cb2233ef4d6c9e349551b996651"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-072.svg",
-      "bytes": 10217,
-      "sha256": "e4f0c088a82188035c8ca26dc396f48b3262a33111a35fa83564a03038d988d2"
+      "bytes": 6473,
+      "sha256": "242ee80fd73ffb19ecdf810124215d521cd3d67095ffaed94ae34b2704f2baee"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-073.svg",
-      "bytes": 11999,
-      "sha256": "c9929c2cdb4e4516ff841cf9e888acae7de417e5f0bfcae13d953a5093a41a37"
+      "bytes": 4208,
+      "sha256": "f3c522bfe7c967bc975567989276b2c1521320d20d45a2a52e03727d58bc3668"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-074.svg",
-      "bytes": 8311,
-      "sha256": "ce622ee2b66721cce089a1f8db8cc8a19680b60a6710907b30e0b8318a793676"
+      "bytes": 3584,
+      "sha256": "eccfad209b73f5375148cbbf5b4c75cabe4239a9f16bb034a361a96614cb7515"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-075.svg",
-      "bytes": 15433,
-      "sha256": "6b7cc9e06667b6a4cae8058a585b5028b420d005576316b5a2becf5aa8f8c3fb"
+      "bytes": 6920,
+      "sha256": "c57a4bb686460b1eb2e6bfdacbebd677b57ffbd453ec97a9f5f3b1ac8b8a89ae"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-076.svg",
-      "bytes": 10869,
-      "sha256": "73569ed7dd0384be5317c3c3f94423f02cb0fef3f1aebca8ee2e3863dc1eb17e"
+      "bytes": 6985,
+      "sha256": "eb7a2f6a4e3363900741c91166d9e7587a956a88400fb861938120529ee52832"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-077.svg",
-      "bytes": 14186,
-      "sha256": "5fea5cc88b82eb749d4848ccd6f902f43ca75ac3982a1cef9bb7ec3edff159ce"
+      "bytes": 7127,
+      "sha256": "2477b4bb7b51187f71c4e2a1ef9469989089c8379f28df35062f413b87ffc6f6"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-078.svg",
-      "bytes": 32334,
-      "sha256": "ae12e71068c0272036c198feed96dabae56b7fa14cee932d6947d4837dc9ce62"
+      "bytes": 25754,
+      "sha256": "63393f6c3cab13c10128d456f040b5c9ed0d009c355462557c793b97facd9e3a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-079.svg",
-      "bytes": 8800,
-      "sha256": "802dd0d3a9e7ca1d9fcf03cbf5c67978285268b503a00d579f7919dec93274b8"
+      "bytes": 6046,
+      "sha256": "4650e635365f55687c83b58efd837b9ac4d7c66835f62e9d54d2d881a330fe2c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-080.svg",
-      "bytes": 17760,
-      "sha256": "992c3c09971207bbbbeb646c1eddb896a4d23062c2c9ee4803c8a2cf9553fb97"
+      "bytes": 5364,
+      "sha256": "2f151814daaa018b77de2ae443f5cf9f13f7214a110127f123af8488ce7c98b7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-081.svg",
-      "bytes": 16673,
-      "sha256": "a1680daa7667bb507c65a7f4c53728dba2c65556b83f1214fbeb48cbf3098334"
+      "bytes": 7196,
+      "sha256": "d674e2aa6ae0a11eb61904149947203b2dccfc68af0e4caae18368dcdef39c25"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-082.svg",
-      "bytes": 9371,
-      "sha256": "0206bb982a09e2f02e1832b16144c9735ca879168ad0d0ec8bcf1f2a299edfd3"
+      "bytes": 4610,
+      "sha256": "d17b09da5a8df19b66dcfbc843063ba8b345a1a8583133bbecd2149daafdb675"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-083.svg",
-      "bytes": 13352,
-      "sha256": "f926f94bf7c47439fbf3ea84d2e7ffa154069376af161cdfe46a1bad2d37d4d5"
+      "bytes": 7988,
+      "sha256": "310d3eb31b140f18258e0fcf03d3326054a6ffee7c31e8412b2978909c0ff00f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-084.svg",
-      "bytes": 17253,
-      "sha256": "86eeeb8192c2e5b9561563fba831fca61e50b0abbf0a2e5726ccaf9579c77d31"
+      "bytes": 7118,
+      "sha256": "fe01c94a3b853534423d7515731bce8c7da02a989f4a75159814c0cc8d70ad19"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-085.svg",
-      "bytes": 16963,
-      "sha256": "0aaf91a12b9daadf0c03b6681a03c5290723c61b85de74f3a2f709e7c6b76792"
+      "bytes": 8788,
+      "sha256": "7fbef916a6661eeb095a3b5e621fb8f2c29da0814caa78e929d95c84225da0f0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-086.svg",
-      "bytes": 13319,
-      "sha256": "f04809c111a4ef5c6a3596107595bbb1b7c55eae87b70bbcf7473e28872228d8"
+      "bytes": 6553,
+      "sha256": "eab8801745a3ff992a7aff35ac21c6c57b3e7329ddbc0ea1677dd54542128535"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-087.svg",
-      "bytes": 12116,
-      "sha256": "908084396120c639be8775b8ddba6cb8b0c67e1696109e4af3b22c81e462bf11"
+      "bytes": 9186,
+      "sha256": "56770d6d09b5ab80f400148dcbdbc8a015b197e9e2f96efc4498f4933a202dba"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-088.svg",
-      "bytes": 6966,
-      "sha256": "0bb1c340526d8401ccdf0279fc623a328765b6cdbc4f5598ee91575d80c57c0d"
+      "bytes": 1331,
+      "sha256": "60b10f9030314006f2a6c1d542a52c99a63782475dea0af28b544b545a9bf837"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-089.svg",
-      "bytes": 24621,
-      "sha256": "f29073ea50cf678128f7a7336f4656193b4a57db5eb3a18d941b0b97d6330775"
+      "bytes": 10900,
+      "sha256": "c3c85888e26ba73d3aafa9a18cfcf2d6ef8106779b2c0b8221d0ac72e5e17ab5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-090.svg",
-      "bytes": 16099,
-      "sha256": "3305e7b7ee3adfd48e18c28fa0f7d2533a2018e93f63f9197751dc0b348cb657"
+      "bytes": 10930,
+      "sha256": "16edefb289804714da804f5a9625cf0572759e774977537aadf24b03840c860c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-091.svg",
-      "bytes": 14819,
-      "sha256": "3631d166de891f45783b6aa66236a09e0938fb59004de5cf56606d898b2ec29d"
+      "bytes": 7661,
+      "sha256": "3a675c76b068078de739542e0dea01e81ab9fec1fabf482fa66977b806929fce"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-092.svg",
-      "bytes": 10885,
-      "sha256": "25e2b76cbc5ef3e91ac7924f22c896a41cd4b9703640f063fe528b8839608870"
+      "bytes": 3432,
+      "sha256": "195e9e21c5605c2f2400ff0cad790c3931773163be1ae61e4adb21eaaa56c8d3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-093.svg",
-      "bytes": 10713,
-      "sha256": "70181911ce32e45b1e6adb3a27dfb7d4510c4fe3352bdc6986005241759d4628"
+      "bytes": 4977,
+      "sha256": "a66ef47d667f1f83af5c7ef2b2b66fe96a23dbcbff11e6cb940364d13334e9fe"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-094.svg",
-      "bytes": 15992,
-      "sha256": "c18d2089acebaed80e1b2ef70b9ac968ca1dae447e6edeae74096553036ed5da"
+      "bytes": 12999,
+      "sha256": "66f7621a070be179ee224138c6f78d7fc5095269ce213634c07c9a6f8f9d26c7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-095.svg",
-      "bytes": 12508,
-      "sha256": "4691bd45e1d0674bf280bba74a3966d618a77f430e80550432f133c67e2fbcea"
+      "bytes": 5182,
+      "sha256": "5708f0727d0d6afdf262fa2afc13380d6d51e0c13e48c7c5fe28abe3b2ac5279"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-096.svg",
-      "bytes": 43912,
-      "sha256": "c1d5a69f9a2ca992588084136b9cad1d489ec1f87456016bb0a6215004b5cff8"
+      "bytes": 35017,
+      "sha256": "9d1ab8eb19fd0bbef993e69d47c0137bf4b971008145e6e84f603f9bbb334386"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-097.svg",
-      "bytes": 13711,
-      "sha256": "8faeedfc8269afb98089b6ae169fe744cf7b4bed8d4b87a8ff80745b9d6e4374"
+      "bytes": 10985,
+      "sha256": "53099e174c22b718d5d5e4ded71746cbdaebc38c9ffc97ee70958c81047b18b2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-098.svg",
-      "bytes": 50360,
-      "sha256": "75b739b9fef6ff716fabf0cc0e2a96982500f05198fdc32219e6607dcb3a6459"
+      "bytes": 39594,
+      "sha256": "fbfb6f3b270be06587efaec81cff051d62ae7394ebc74f798874babac756161a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-099.svg",
-      "bytes": 13379,
-      "sha256": "59e8f379012357fe11b148a7416ef2abe3d38a67a1eca123866448e450f3adf9"
+      "bytes": 9957,
+      "sha256": "934d9730e31f6cc390c28ed9411bec5e2d13ecb9fa4d47dd979156f8b5c6e993"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-100.svg",
-      "bytes": 10911,
-      "sha256": "7fb50025bbfa4f67bc98e788c3321f91bcd76443ce8ff5a09149bbc5fab7fcfc"
+      "bytes": 5468,
+      "sha256": "9fa7ca70fed047ce1e1a2312e91a3f2d67aa96673fa04e76e2718c149eca635a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-101.svg",
-      "bytes": 11039,
-      "sha256": "86148f3996ef02c2215bfea23fef498ca8f410ca6a5fe12e88560ea41ff5fac7"
+      "bytes": 3800,
+      "sha256": "9d62833c31cc0ba09eaf97f3c6e7647372d8714d07418f11046ce559e62e2188"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-102.svg",
-      "bytes": 11910,
-      "sha256": "fa3b1c1d0ab5763dbe378f4c05561c4c87de5a532b138f6be1dfb733b006f154"
+      "bytes": 6512,
+      "sha256": "2ad4f7abac8e84ddd89877482393f0c70e7ec65f6f356bb0a414c635f9ffc064"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-103.svg",
-      "bytes": 75526,
-      "sha256": "be3d1686c79549d1b95563b79bcd91ddd330f19c71d518eaa19d25bb9ef23de3"
+      "bytes": 64498,
+      "sha256": "8a55ae3583e3c6f8b0fe04982f6df67c226492e1da5fd4c899386cbf3b5815b6"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-104.svg",
-      "bytes": 13073,
-      "sha256": "e16b1907e9a325c3f436db719b347e5a6c0dd45da6105a768d50810c3704fcbd"
+      "bytes": 8747,
+      "sha256": "5c96b3d0a93d19482ec77b4fe0bc828e8cc610c5ea85f4e0588e1d3464e92d56"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-105.svg",
-      "bytes": 48640,
-      "sha256": "bd5f99216a428e843dbf0a42e15d513fb5fa5d974bbef18d2e406d5cee549e71"
+      "bytes": 40776,
+      "sha256": "e6c810e5b0f70d65e3354be0621e564f53bf6e787adeec404f324dfc380f8bac"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-106.svg",
-      "bytes": 41108,
-      "sha256": "a84d13295abadfd0420142362478b50e2eb329e6ee242c75965a647ef81c6f7a"
+      "bytes": 29361,
+      "sha256": "72a1447950dbf808a5e0ba7bcce7693a683198c3f07ac8f397240c15309252e5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-107.svg",
-      "bytes": 15079,
-      "sha256": "0cd1efe5ae741015e2eade6a46cae2664232428ca1643475567905d8fb4bc648"
+      "bytes": 7046,
+      "sha256": "d95a60657648f2a09db990c347e87ee674e49ba28041a8be9bc37a0997dfafb3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-108.svg",
-      "bytes": 83187,
-      "sha256": "c1ea5bfac49eb2fd93a208c719a739c20bb60133f0edf48acd5c0bffd48c7bde"
+      "bytes": 76862,
+      "sha256": "145c74180c243a8e00ca41cac35bfa07c09f013b8b18fcffb09da27cfe6553fd"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-109.svg",
-      "bytes": 14138,
-      "sha256": "bba6f59bee61a418fb09f2838b97f16f2aa4c1f3fd24fec8dda96981c6640a40"
+      "bytes": 10504,
+      "sha256": "cd778b5dbd8b540c224fc15e42e92d02faf2dc8e6a136944778eb43ee02a441b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-110.svg",
-      "bytes": 18350,
-      "sha256": "6435ef2be0e9d235a36438a856a0325ca6909c12712895248c5a6030be786fa6"
+      "bytes": 4042,
+      "sha256": "d3f256e96b618cb2dded152bc880fe01a2f1c471971fa7ed56921519c00d973a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-111.svg",
-      "bytes": 18205,
-      "sha256": "c230acfbcdc9529984cdf11c1f0f442e53a917b54cf6ce82acb94608307f0388"
+      "bytes": 12548,
+      "sha256": "47b995e285d217cf05f89f1a07a49dc887e8406643e8474a9029b01e68b5627d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-112.svg",
-      "bytes": 14582,
-      "sha256": "f34bb874692674a6aa699971501776c08ca27ff85bbe145c2c369297ea90cb5c"
+      "bytes": 3855,
+      "sha256": "bf79fd7681d56266a50651f9da437caa20b2521dd0365bc342901182388014f1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-113.svg",
-      "bytes": 12864,
-      "sha256": "fc8885082bf195ceaf79747b53a171e521ae2d0ef34f7e55397446bdbe1c6228"
+      "bytes": 10608,
+      "sha256": "c6825a3461f2a77b866ed981fcc7c20933983ddc11e0501347326d5f463be871"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-114.svg",
-      "bytes": 13314,
-      "sha256": "4c91c06a13b4f09193c2dfc257df819bcce9d48cdc65c0dd90de03dc6979e554"
+      "bytes": 5888,
+      "sha256": "d025e1e1855bfed0ecb2a9ac52ac7890d43e6b0d886756ecda76cbcb6ddd6106"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-115.svg",
-      "bytes": 14464,
-      "sha256": "8cf666b679e0090699be268f34978e6bad4ca07a8607bbf7632384012e9e7c88"
+      "bytes": 9845,
+      "sha256": "f2b6504ac132b06ebea05986cb4ab7c2f251d56a2587f75a64f584a3dde943e8"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-116.svg",
-      "bytes": 15321,
-      "sha256": "0d0cde8b618a8f5b01ca79ae18b00f49cd09e9caab0c0cc461b93bc301a97df6"
+      "bytes": 4602,
+      "sha256": "267ad80e967dc2e7c86cc40fd70c0845313e7f95f3182b102f4bdc5ed9f5b6e1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-117.svg",
-      "bytes": 13064,
-      "sha256": "244ec244c1d942d3f5b44edcb36e029701c68d2913c186c5641c11365d5b784b"
+      "bytes": 8698,
+      "sha256": "040b850094bf98d2689a4a22fde31ab4c916cb191adca0236ba4d571f9b9fb68"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-118.svg",
-      "bytes": 11864,
-      "sha256": "0a2f1ead603d5eefb798d3115f299947dddcb33a78dd33d8dcc7cd6d06ee2a9c"
+      "bytes": 9256,
+      "sha256": "a43fc00e27ea7b6933a261d66de4795de2bfb1ff1006ed746d463f00e59440ba"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-119.svg",
-      "bytes": 13590,
-      "sha256": "5c5615a45057622aa3d1e07f8976a4c45187b87aa44ccf4340ae51d081fa5564"
+      "bytes": 1861,
+      "sha256": "786a95849836ac4ad338d814746eec141272790efed3122e939a2aff6d5aaa3e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-120.svg",
-      "bytes": 17778,
-      "sha256": "53beb1a41e16f9455f1db66f211e6272d8f4593b37a1eb16fcdf483b86f3723a"
+      "bytes": 7417,
+      "sha256": "cb97d756c9aca8c118152dbeb787ac0339aa1f063ede85829a8767bb1751a052"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-121.svg",
-      "bytes": 15725,
-      "sha256": "fe45b94f6b53d0c40a9dab8c9bef8af1a8389af75b7dc04a495a6bae334f7bff"
+      "bytes": 10516,
+      "sha256": "4af69d45cfd898a8a7b503a621e450c6a6e1a39ab9642072b75c8e79beee3126"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-122.svg",
-      "bytes": 18643,
-      "sha256": "8230de8dd5f30f8210b0068a6525ca2d9ff61a316c579d6e0ba2cf0c729d6075"
+      "bytes": 9722,
+      "sha256": "9e3fd034bd1498e9c6a44d0e7b80467ef2ebb1a7be3587c8b332c8e007b7e2ec"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-123.svg",
-      "bytes": 18337,
-      "sha256": "a8d54c31c36357e94c69dfdb62cca775a4e2e5ed80d302bd1477a4aaf33f7e1b"
+      "bytes": 13501,
+      "sha256": "9abb5103daf9bb3284fce03d5b70c175a1a7bcfac853bfda8f287fb0d33479fe"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-124.svg",
-      "bytes": 14900,
-      "sha256": "a45f8144b10fff59bd75106f2c987f784e83f6814b8596c6e5f939bac84f6bdf"
+      "bytes": 9459,
+      "sha256": "1c553efc03ab2ff377f42d94af3c1a027d46634796360846a3fd1cd48af2bb55"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-125.svg",
-      "bytes": 61048,
-      "sha256": "18ae02b6cb506bcaa9875c7a7a44cb54e1286d0768f5d369099a996525c0e03f"
+      "bytes": 53393,
+      "sha256": "5028b579566145c1fc619f5c151268456dac7c93241efb1a392c8e5557871a9a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-126.svg",
-      "bytes": 52482,
-      "sha256": "370882f53857d41104a6011c5ad27343368c3b89b082ea58b0945e17302d6def"
+      "bytes": 40911,
+      "sha256": "bebc3d1ba3529c9484d6d74b159e0ead66c2f41c2639532e27679d3e469bf556"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-127.svg",
-      "bytes": 23686,
-      "sha256": "a56cbb55f80894a1dfb71631d4fee6aa52266442972aa9a379afe5e182fa86e1"
+      "bytes": 8778,
+      "sha256": "102cc8377265f188793e540a0e2a58fbcc04e2cffb9cce688034c74ebac9b431"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-128.svg",
-      "bytes": 18142,
-      "sha256": "bddf4e901f8940a7bce85187fc05d8316a19b788aa6b7dae8470fae6bb473587"
+      "bytes": 11454,
+      "sha256": "ebc26a64301dc36c980a3287159f71281b453f35da2c80ca86f4e8d33e57dbd8"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-129.svg",
-      "bytes": 42497,
-      "sha256": "7a704865cfa529bc70afc77a1cd50f7ec34ab24fa1aaf941dadf6b3120cf724a"
+      "bytes": 29493,
+      "sha256": "fb6ed028a74348254f07ab7a8b9d0fc9e78e693069cbbfa6c8015b5f80bf8940"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-130.svg",
-      "bytes": 54289,
-      "sha256": "9f5cc22ad6efcf901df5fbb69319a9784e45474c73dcbb5ed62d1f8212434b32"
+      "bytes": 46965,
+      "sha256": "a1b57cc00078605851261075438f01c41dbb7048166624961cfbc2c61f2e42f9"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-131.svg",
-      "bytes": 76589,
-      "sha256": "c703f0073621c5cd988c5bb1297ff6557ff2df15adc22af3bf29fc72b1ffabf5"
+      "bytes": 73078,
+      "sha256": "dfd806d432ce26c3fbd8f783dbce07d2bf6c8c30af99d6481f4cc652177e4f7b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-132.svg",
-      "bytes": 41766,
-      "sha256": "d756f388fe5e0a1d701160a6c4603398526c0d510d1f62e6803415d596dbb765"
+      "bytes": 32594,
+      "sha256": "ae5866b7d566a0b4af2c4101005baaab2790eed4a93f59bd767256bf8e95f447"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-133.svg",
-      "bytes": 18503,
-      "sha256": "d3d71c4f93b40ea09afa5c1a19b01a94305459405f5ba326acca75e1b24473e9"
+      "bytes": 8558,
+      "sha256": "d4cb8eabe31440e9db953b866205f5deff78356a7dffef2d309fe778fe2a764f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-134.svg",
-      "bytes": 20580,
-      "sha256": "fd00e5e8eab5e0833c082d8c914d7e5f1e3adb34f47c44a3b8f0d87eaabababc"
+      "bytes": 11374,
+      "sha256": "8a441eb00d598facbdca12e44b502e4fe5b9f6c23d3e492133d35bfa18bd8944"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-135.svg",
-      "bytes": 15384,
-      "sha256": "ece8c4c9dcce73b83c0672f3c3505bbe3c7f922293beceffdf1a693e61f2ec61"
+      "bytes": 9493,
+      "sha256": "5941d79d4206fed91dac327f2a3e39bcb765e184b1e12147210b957d47bc6fdc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-136.svg",
-      "bytes": 17604,
-      "sha256": "73a7ad84991bbf4b02e0642a8ae28379a2003c3681b56387a4f59565f9c6b679"
+      "bytes": 8055,
+      "sha256": "151ff267e85b81cb7cd906e7efa956d2f2f3aec5263c620feb1e0cfaa4852a37"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-137.svg",
-      "bytes": 67491,
-      "sha256": "3ff294d3e0ed454e316026a73aa112a5c416e17c2d1860a6d64a2fb1d96cb456"
+      "bytes": 60195,
+      "sha256": "aa53fca6225f2caad0747ef790edc097798ee3f5cf44522527703a0585fcfe73"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-138.svg",
-      "bytes": 34289,
-      "sha256": "ac84a0a968d441e6b0c871d090ebf54d36211eaea2b5460d9ef240e0c1f30958"
+      "bytes": 30069,
+      "sha256": "7f8847725f04ac582dc71bcc4e4a1a71ba0e930f2142ca933397a7057fbcbaaa"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-139.svg",
-      "bytes": 40659,
-      "sha256": "810247c3aa9a7c601121888f191e4ba098fa59325dc29074e62e1c648fcbfb9e"
+      "bytes": 27653,
+      "sha256": "d47dd003e6f4be23d18d07e380f675abc939a2d61198997011f73192661d7d80"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-140.svg",
-      "bytes": 8454,
-      "sha256": "485793cb4646435e54baf1de9a5aff38e24ac658fb84f31a37dcc3dee026f29f"
+      "bytes": 6049,
+      "sha256": "b4c21554e5777d972151bfc070df058326b762c60b64f4e1b7adc6d32627fb34"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-141.svg",
-      "bytes": 18562,
-      "sha256": "2ee0c047498e3b31f810911c4043201350a50caea0f955454fa4992c2c686458"
+      "bytes": 10419,
+      "sha256": "fea97fc6984e4e92de0cc83ed1cd0a596adf03861b761ddbefd17cde3683adbc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-142.svg",
-      "bytes": 21560,
-      "sha256": "e97f57c2596b3417fa10383a2dfb659cc1104667de0e04459eeb948fa1f23679"
+      "bytes": 11587,
+      "sha256": "a1655bfc0f2ff15f8df63a4ea8e7ba83b60962521af7f482c8b04d479408dd1f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-143.svg",
-      "bytes": 21464,
-      "sha256": "50bfc1bd88cb5b51021489b3fca905c9cd39d54b2862115857ac44bc0eba1a4c"
+      "bytes": 11114,
+      "sha256": "e1fef3f800fce69fd556e018ea663203f14bcaa1e6b18ff9b0b1f7ecc55e88cd"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-144.svg",
-      "bytes": 10613,
-      "sha256": "6aa07f124dac84027b8214f588f148b48f98873c486cafcae3fa7945af6b7e9a"
+      "bytes": 6912,
+      "sha256": "3824281c4e5b219ae22accdc5956ff7427989d6ae6570fa999b497b2e8c09667"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-145.svg",
-      "bytes": 17564,
-      "sha256": "f3de22606727c63631c30d02f35f62b39e99b2015efc90f38b733e328e98a295"
+      "bytes": 13188,
+      "sha256": "92fb21d5d1e9a5f88832482608fa8985ac261c7fbc73a9ffcef2d48bd9e11805"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-146.svg",
-      "bytes": 20467,
-      "sha256": "9dac7a90c0ad1a99e9c85e65f16db214668e1d59c7584cee6190a86ff25bb69a"
+      "bytes": 5637,
+      "sha256": "50cc7a2bf6ba000e43dc32a48484851d90435eec5bc3caeea4f3a4cbd7ec1320"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-147.svg",
-      "bytes": 19259,
-      "sha256": "9c03aec447b5aff9062e68591e368021f323335ff163423f6e3e19a2486aace9"
+      "bytes": 8151,
+      "sha256": "fbc26b4d8ba27e855993cddad50b032d742a049e8042269ace90790d7dc09563"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-148.svg",
-      "bytes": 58587,
-      "sha256": "440f21000af37e6c5cac80b2884ee0de579cc9f9dc5054ac02f772547a1cafe9"
+      "bytes": 51930,
+      "sha256": "784939d8ecd36a518f14c5c2048c6faffa58a9f415f22d8963a4e89f30898029"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-149.svg",
-      "bytes": 84433,
-      "sha256": "b434986d686613c11c4f39cc88d4eaa3ab8f39f1e29156a3308cf6dad9f75548"
+      "bytes": 78662,
+      "sha256": "6092c77de7cd728cb9c09084c8cbb97356fcacf51214424cf84f636de28dd352"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-150.svg",
-      "bytes": 44357,
-      "sha256": "47e114242ec81707766189ca2c34323a7eb582cc53397fac3f16ee1cd9c4a661"
+      "bytes": 43915,
+      "sha256": "7dd3e8c4e823fe9fe7fe500f2823a423e9f7a3e5264a007b4013f663c3e9316e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-151.svg",
-      "bytes": 93715,
-      "sha256": "230c036505f59e22fa3a4ef7e6b2c53c0a1f6480440db1bb13abfb6c449eff9b"
+      "bytes": 78142,
+      "sha256": "e33cf81b453f0b66f2d7ccef13712e9c7903e4cbe70b5de3ab4f02dcb5e081bc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-152.svg",
-      "bytes": 73632,
-      "sha256": "1576d5305869526cc6437163c6800415d2fd98dcd283e01877990cec36726dcf"
+      "bytes": 64012,
+      "sha256": "6a4ac9a36ed3090cfa5a616cdf658d2d02756fb44079dd1d272c77923e5d70d7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-153.svg",
-      "bytes": 62401,
-      "sha256": "62a7a88959b6c92f78b67fd90d847cf0110820555ebf6a100c5af1ab3247965d"
+      "bytes": 57265,
+      "sha256": "39981231e3dba914997801a81afc33a9d7233d8f20681870b2c1391c419370a5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-154.svg",
-      "bytes": 18669,
-      "sha256": "b314a9f15be24f263914be9a0fa9cdf905c22435ddabceaef88e01688d2ff640"
+      "bytes": 8106,
+      "sha256": "28c72decdf6e3e5a0ac124f8d16e24176713b9943b6e59842871530733059ead"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-155.svg",
-      "bytes": 14381,
-      "sha256": "306e1faf1d704375ad9ca7696e74bcbab8a3279528e8f8cf2b834404a0b1309d"
+      "bytes": 2132,
+      "sha256": "ee2ec70ecf89ec9a78146164c688736a3dfa6d113786d1849cff03bdfc1394cc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-156.svg",
-      "bytes": 16343,
-      "sha256": "35c92ea85573dea09ec914f7eb8e4ed24e76280f511324ba7f4e1ae8a23a1b25"
+      "bytes": 10005,
+      "sha256": "82a1df2b2e3ba97eb7db5386a3ebe18b4b78acd76d82ab928287639fdbe76f2d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-157.svg",
-      "bytes": 19008,
-      "sha256": "1d4fad578f262a94bd2be3660282cd2e34031bcb35f59acfbb40e343c7e74ce8"
+      "bytes": 4089,
+      "sha256": "d88dc7c8ac06dd3a608a619176b43c3686ca3debe0116876449e64dc605effda"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-158.svg",
-      "bytes": 18760,
-      "sha256": "cdcca81c7043e24927463990f491f538a612879d083fd8a410310aedcbf11cd9"
+      "bytes": 18422,
+      "sha256": "497557ce89a07083885731e8c7877e092b204f34a72bdb479a3da8b873d3b503"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-159.svg",
-      "bytes": 12503,
-      "sha256": "ac23fca0b924101716ba15acf8bfc3a1b1e30b37d0db638968eb77aa1ac29ac1"
+      "bytes": 5674,
+      "sha256": "249b2a08ef800bc27b65665b63e69605379e02ab52cb5813cb3a4b255a1dd795"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-160.svg",
-      "bytes": 40796,
-      "sha256": "ef9b0c8fe648ab70fd1ec20e8e72dd58f72f6de1b364c2272111d06d7daa410a"
+      "bytes": 32078,
+      "sha256": "da42d0574cb1e05d02d6df6e5c9604d18d441eb0174ed7b07f1ea6705c093764"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-161.svg",
-      "bytes": 53223,
-      "sha256": "7ae3a012201d2cad24eb3b03fccef498aa32c27336439e3bb5fcfb2be250064c"
+      "bytes": 46935,
+      "sha256": "32cd9ab0a1f72715295f3a9c8b7237cb53ce5912d56aaec7b2dd01a12d8f571e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-162.svg",
-      "bytes": 7737,
-      "sha256": "89fb03ab9afd6403750703de4b82499aecc57d6bbe415dd340022fbfe8695564"
+      "bytes": 3061,
+      "sha256": "08c5bf993a110c064c1d692eccd0c9c9cafd70b807ec5f3cb0a56334e157dbd3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-163.svg",
-      "bytes": 48667,
-      "sha256": "1e23a9306b82d81a0fb420466372ef84dbcc63e59aa88e6bf62df8fac6f94e09"
+      "bytes": 40966,
+      "sha256": "7dbf95772c9c7f81f8bf3fa7e77f23babfdf69fa3e3f60bd17a1ad7e5dcbffeb"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-164.svg",
-      "bytes": 78857,
-      "sha256": "4ba802897b64e6eabb4465c146d6de1b6f95f753b6c24c693b0420e7a4f764dd"
+      "bytes": 73251,
+      "sha256": "d0f8a2b2f553d10e001314fd22e85200f22c4a2608d4b881bd8607406c29c236"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-165.svg",
-      "bytes": 18565,
-      "sha256": "24272af50fc3007115faf15f1618cba901e1af31520939b3217bdea2816eab6a"
+      "bytes": 8779,
+      "sha256": "b0904aefdfb823e06414e343a2e4677b9f21a4240f6ca7dfeb9a237be9eca3d8"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-166.svg",
-      "bytes": 41944,
-      "sha256": "2e32348d0c53e2aa30890ea87b4ac2f121598a3ba6709c93e7d33da0fc987b96"
+      "bytes": 34230,
+      "sha256": "d893a6b90a06b42fb6738f67b2dbbab5d29f70d5b7202730f6344777f0af5308"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-167.svg",
-      "bytes": 51989,
-      "sha256": "5df5d7b539f7a2826964235e7f35010b503c88926d8aed10502d05c15c9ed268"
+      "bytes": 45229,
+      "sha256": "d4d5c7728cf8618d6f5ce059d40d275a676a6e9a5953e92af0263d72c1822fbd"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-168.svg",
-      "bytes": 12473,
-      "sha256": "cefc3dd0ac6bc9f0470ea6dbd12ed4db27d9ff0f7c3cb3ed35ca6f0909e88fed"
+      "bytes": 6855,
+      "sha256": "d177bdf20bd2be70e6d6bc566d8b9d6df2fc133c2d552a611538cb3574aaad24"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-169.svg",
-      "bytes": 70939,
-      "sha256": "9d9461829ca345e2dfd34f0abff8461154112750cb4fb90704db41ed318b3b1a"
+      "bytes": 62033,
+      "sha256": "193eac4f081b46263a1c11a20580ac69bd30836e27f2f2fdec79254b91aaa960"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-170.svg",
-      "bytes": 41389,
-      "sha256": "5960afcd3fe5d430fb423adaf19a26c18e3c3dbf552f04c6a3a63afa3b0b5f27"
+      "bytes": 35303,
+      "sha256": "691b537bf6968c2f400124cc9c21faf8f85378e9741ad35da5344cbcc63864cc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-171.svg",
-      "bytes": 18544,
-      "sha256": "65a74abcf8bebf849f314676d584a0dd35b1feef5003b0ee923e64e66ae27336"
+      "bytes": 6820,
+      "sha256": "48dc646de46a3a10356d0eee37f37a416b6c2e388436c91453c4c00226698f3d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-172.svg",
-      "bytes": 48348,
-      "sha256": "8af14076ea653e1829b9f56d3d0c8a23f6f5ce77e366a53a1dbb30fa35c27f69"
+      "bytes": 43002,
+      "sha256": "4a9489120d5398756ba2cbd814a4e4be7099bbfd584cfc1082ebea17f75c55b0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-173.svg",
-      "bytes": 81927,
-      "sha256": "6ac36cf957a0096a8d4730b13a13aaf2cdda74df7d885ceabb63f7e7adf4e10a"
+      "bytes": 72761,
+      "sha256": "c5ececada85c84dbc69b0cdabdedca0b5f3b550834f0e051f37eff8aaa0f8feb"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-174.svg",
-      "bytes": 19101,
-      "sha256": "d29d92853f832177f322d81dab5afe5089571aa0a61ac148fe8d49928bffa344"
+      "bytes": 12411,
+      "sha256": "89348def18a55a44f6cdc9554c0f441fb3be54c53ef11c0f870ab68a127919ba"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-175.svg",
-      "bytes": 48310,
-      "sha256": "efd3c53a51057056f8d15d18854bc642c8900c88f46536795e1415eda67bfbf5"
+      "bytes": 42834,
+      "sha256": "662b18148b697d3d984122108467b91749c2c8d54db91d040aa4d39e87a257c7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-176.svg",
-      "bytes": 44322,
-      "sha256": "743881cfe0143724d78ed291dc90d2a6202f1255d9ad0ca065ac49d02c223e09"
+      "bytes": 41755,
+      "sha256": "b8cbf339c5297e9d638f92a3f8acca685b90b38d29f612381a3c53c4e5637753"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-177.svg",
-      "bytes": 16932,
-      "sha256": "61d5ec6f796b1ddfafb5fe152fad8a5aa8edf357ec027f7190515030c03cdf8e"
+      "bytes": 11939,
+      "sha256": "d2bc2d9aabae2644dec0d938f8fdd515906dc33482930d2db47db3de52d26877"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-178.svg",
-      "bytes": 44473,
-      "sha256": "199e0e68f1201d325e16a85791d6790411108b145d8991041ee815935d37c494"
+      "bytes": 34680,
+      "sha256": "9661345c5c8b9a9d49ac24e252575298917af2894b47dbaed6b529837f4d5791"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-179.svg",
-      "bytes": 14316,
-      "sha256": "fbc95a61069cdd09ee6e5cf5a1f18c414ecb494c187183a3df6e8311756239a0"
+      "bytes": 4036,
+      "sha256": "4452ac0a1256c19adf214a4ef5802cdc7e058b8419f8df4ccf2ece5c0dfd0f84"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-180.svg",
-      "bytes": 74519,
-      "sha256": "1b7cdbd0ac184bef0799ae52699a2aeb82f7243ed2871bcea23240effafab381"
+      "bytes": 65822,
+      "sha256": "afb3f0353fd3f5b09089e4d93b38769b36e1e9d180497a1d51c853da1d29c994"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-181.svg",
-      "bytes": 49073,
-      "sha256": "5e6daf9925c90217b3694ea64e2879afefd19b3fd02850b5a63ade3e59e6d4e1"
+      "bytes": 45095,
+      "sha256": "a7dc9f6cbd91aa246c98575a75889a1081862666e3abf2e15cd171249012d38c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-182.svg",
-      "bytes": 88508,
-      "sha256": "519a9746f1efe90fed7c44c59c9f51ffee7557d4a81d72acc5f98e997e1edddb"
+      "bytes": 85347,
+      "sha256": "cb724ac234be6de9b0e33f7f8135c4e8ee19ba68edf358fdef2b275deeba9428"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-183.svg",
-      "bytes": 93622,
-      "sha256": "de369a6ce6b8f8b8ad61eb42dc73fa35ebc042985212f180c4dfe676b89b82d0"
+      "bytes": 89611,
+      "sha256": "7f5bcda03e87d0777ee25635bb997df1ac1f84fc8beeaffca5c11f76924d0d33"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-184.svg",
-      "bytes": 12872,
-      "sha256": "1a64e8ff53ce311555eb46350b866bf9e6a3875b5da699382d85eb49766c6d6d"
+      "bytes": 8248,
+      "sha256": "e621207b0498025a1f1eb082bec9174b8d017976cd8705203686b5dd9c4f87dd"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-185.svg",
-      "bytes": 18429,
-      "sha256": "d7da1bc4bbbae5587a30728e0c902f34b808f561adfcadf654f6ff057c5061d7"
+      "bytes": 13242,
+      "sha256": "5a68b128b02381a60341f690bfa2f4f6b03605cd87e1cee69d617d25109eb776"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-186.svg",
-      "bytes": 23055,
-      "sha256": "07769a0dbc4a587024581420e63091b841685084c853bc4c30d4596a9e68f1ae"
+      "bytes": 17606,
+      "sha256": "f92d11f209ca3c6ae3f138f60dbfe2929673cd021d9e2e4ded3018501dc553d2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-187.svg",
-      "bytes": 20521,
-      "sha256": "14be693a011b42b6e568f238256b5789f1ff58af48740004655802bfa9093e74"
+      "bytes": 9321,
+      "sha256": "ccfc96f1cd71d42fc2e8517954e69e76bbfde055150004bab2e80f194b3008c5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-188.svg",
-      "bytes": 14485,
-      "sha256": "7a2bb558e7d3e30b6dd28da4014ef0bc813b7e54f8408a478b75323cebf398f9"
+      "bytes": 7549,
+      "sha256": "533a705ab815eeef81d8c8655cd13a9329bb69074520e4edc0e6c12f20891a85"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-189.svg",
-      "bytes": 89393,
-      "sha256": "d42cf1d1a533e87b49c16d565aad9e10fa8d311e4579d967dceb2824a5c2553c"
+      "bytes": 81768,
+      "sha256": "15b854da0e8cc618af6347d664638332455fe607989bd19d6bc684cf280a9250"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-190.svg",
-      "bytes": 16198,
-      "sha256": "0ed05a716d73742caf01a36597fd1f814b3ed5253d74ac4bfc194d1cc19f2c6a"
+      "bytes": 4385,
+      "sha256": "670be31dfc886dfacd8f1236c0331eb6277870a1c77c70292e66ca658f3166b3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-191.svg",
-      "bytes": 13656,
-      "sha256": "52bbfb47bd2c5efd78e932ad1219ca905fba7d819bf8508a66cf942ae702df91"
+      "bytes": 12605,
+      "sha256": "d7bec7607ecc7e41ca40351776551a1ae9fbee267263fda306119c571ab0dd41"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-192.svg",
-      "bytes": 17529,
-      "sha256": "3bc25c9be344ff8fe56711c6d69acef6feccc13c2dac1e3d60aea2a6741c0d99"
+      "bytes": 11033,
+      "sha256": "54f28fdae1273d670ac2993c382c5b7f42f102bb6420c11ed68500583650c1d1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-193.svg",
-      "bytes": 18126,
-      "sha256": "a6a79f1f5ece46ba5b21dbb81ce282d78a164e6bcb50dbb8fcd0bff967dd7998"
+      "bytes": 7489,
+      "sha256": "0648fdb38c7477053a63a6f8d5ffda3e1f124ac78c4e23a86aa963dc9a966a9b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-194.svg",
-      "bytes": 34766,
-      "sha256": "5dc69eea12deb05186a140d1d99bddee4ced4a276fe2536362decb1fa3a40dd5"
+      "bytes": 28547,
+      "sha256": "a4593f1cbfe1672c2d576d18e7572e1cb2c2091545179a444efc337f2273ca4f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-195.svg",
-      "bytes": 14915,
-      "sha256": "54b375647fcfcac596fbd6d92123f62c918f11930c4ef2a111a729c4e2759770"
+      "bytes": 8244,
+      "sha256": "fc4bf85ff67cbbf22b77862972ff3dcb50ee394271d1e65e44c3d593f97ee04a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-196.svg",
-      "bytes": 17985,
-      "sha256": "59f572529cdfd293b6235da97b4d984649ab55842fe7e98a7c63ffb2ef7e81fa"
+      "bytes": 8363,
+      "sha256": "9d4c668cec23db1a46357f485d25aaf0e9668edb9952bd6c50b7eebf9317cef2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-197.svg",
-      "bytes": 17448,
-      "sha256": "e93a76b4a422a77f8cd72a4a726458af602e01f6bd0ef79af8d2ce563d043180"
+      "bytes": 6537,
+      "sha256": "dfecdfd0ac5756cb00e83579b340a919c251dcba18b6b2d4ba68559c6ea84db4"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-198.svg",
-      "bytes": 23230,
-      "sha256": "f98a531cfab0654a98023cc08e491bb810077966c5f650598800b71094cc77b8"
+      "bytes": 16716,
+      "sha256": "1f4db706fbbd1635cb4f48a52356c93848c484302587221235bd4b3883e71b9a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-199.svg",
-      "bytes": 16641,
-      "sha256": "ad0b4a522171d6b41517c0f7c345da44f8c14e2699a93bf33d8e32e975e3c874"
+      "bytes": 8266,
+      "sha256": "4ae66944569ffc4c018acffb623bdc338486151a90cee40304fc9d2ae5c40542"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-200.svg",
-      "bytes": 18462,
-      "sha256": "32e252ab17cd04c45aae43c01f9c01a698f0811d464a56b4e10ad941331c3f65"
+      "bytes": 9996,
+      "sha256": "b2953159ad56ff55e104ae083de53b494a2c58959d94f3877dccd221170b9441"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-201.svg",
-      "bytes": 22528,
-      "sha256": "69e48a9f92ef38667dc7028721454996475dd94ee581352592d2b4f22bd503f0"
+      "bytes": 13741,
+      "sha256": "80e3f96f2184555a673f9710ad3b2dfac1491711fb0fa80b7811d1ef6c764e2b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-202.svg",
-      "bytes": 13813,
-      "sha256": "8e0fd77423c127aa2389a0db8de8e0af996c6fdb50b2d38a738c2a36a671ec1f"
+      "bytes": 6430,
+      "sha256": "b2d8c4c9c56aaac21f50f0087ebe491d5803dbc53caf5c9b230eb74aa79f6aad"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-203.svg",
-      "bytes": 79691,
-      "sha256": "c721f0b56af2b8d9a016366c39a65d7c742c6e6f6663be30d024631ca7ead7f3"
+      "bytes": 77537,
+      "sha256": "3f7206a0e1968b53f5714382bffc3d732f17826c797cfe6911c64b2fc9838761"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-204.svg",
-      "bytes": 17013,
-      "sha256": "fc518d5b1949e15d235f3289b4d78a06d2d79351597728b9bcbe3cb1b42d2a97"
+      "bytes": 11921,
+      "sha256": "d79d064a0a5fe536c94e1dcce828c64993dfbf93730c2b1d40308dbc1dc83ab9"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-205.svg",
-      "bytes": 18884,
-      "sha256": "95f8c989b755b9960b350104fd3a8ab81bb95904139df47aed92508a5091f7ae"
+      "bytes": 9342,
+      "sha256": "eb9614e145bf74b217c571124f1d82114a051c53362bf83f8fc4f051742ad73f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-206.svg",
-      "bytes": 53353,
-      "sha256": "e7d8d8b390f85772ac9c0cb1f08066f532f71114d1056912cb3194586bad4b73"
+      "bytes": 49236,
+      "sha256": "59bb4d1ac97a3c5ca235c73ea01a10953bfb1ae35b9316e3975e6e38b1688d17"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-207.svg",
-      "bytes": 103574,
-      "sha256": "bfe2647dd6225c021565cbe8e7b6f59ec78d489c20447454312df67f070a2a76"
+      "bytes": 94509,
+      "sha256": "c63ee28a9255e2bc4b19c83779d00de9100967cc419508457a016639eb976e78"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-208.svg",
-      "bytes": 15664,
-      "sha256": "fe2651850a59386ecb6f73b5251789b95fa1b0046f48c6e2f44feb40c80964f1"
+      "bytes": 12727,
+      "sha256": "c5d747c50bdbe4679e6381c82d231b62b2303a29885f00569f9d647247b247e3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-209.svg",
-      "bytes": 17909,
-      "sha256": "59230ba4dc4728cd01d210bd7975c523556d77055e49e76dcfeec9d01d8bc8bc"
+      "bytes": 7140,
+      "sha256": "703ee55add001add259d1e7fab09dbc28a76418b5205d9ae1e7cdf809d5851c2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-210.svg",
-      "bytes": 37180,
-      "sha256": "8d9838509747e2a4b803bcc63088fc04229d033eea19a31279d333a220bef054"
+      "bytes": 26250,
+      "sha256": "9d472d6e573ca12816c49a61388cb58af7d355fc7e27d3d51244a1ca8c411ae5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-211.svg",
-      "bytes": 16456,
-      "sha256": "6589ffcf1949f50bc1519eb76c325ddfe35f8a042392d1cc659e7c65f572a633"
+      "bytes": 10319,
+      "sha256": "134e695aa536002fe71618532df1115648f5856c05c5766808bc95e80f396c5d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-212.svg",
-      "bytes": 13178,
-      "sha256": "cb74bd3b820614e683c54820d5b8dd1647c08923891c797ef8e0a0584db4d242"
+      "bytes": 6191,
+      "sha256": "bb5e4a473314010efe2cd114a1a53f6f69a27b091b600073fd7f298c2f491764"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-213.svg",
-      "bytes": 13581,
-      "sha256": "b55f023744ea51dfe97abb6180986c2eac3745331dc922affc5fca9ec12534e8"
+      "bytes": 8646,
+      "sha256": "03c071781196b51077568893c04c40be19d8ea7aec0a167d623d1919969e0971"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-214.svg",
-      "bytes": 18838,
-      "sha256": "cd7919c08ccf6f3bda007d2173b779ac0b919729b630ced0cf1f05ead7f00c83"
+      "bytes": 7499,
+      "sha256": "7e00b882b05c691a65e246feb3efd52bc08105f4981242f02b276b68b9f0d20b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-215.svg",
-      "bytes": 24413,
-      "sha256": "64f26374269c5bdf9a842fe3a80b0ee339bc028dd74033c30c9bfab088ec9fae"
+      "bytes": 14961,
+      "sha256": "dc25b90979cecc8d6081eb743abed9570c2d2386f6b4dde9439de98936d52d18"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-216.svg",
-      "bytes": 16152,
-      "sha256": "f2b0c7ec81f9d8368e94f682ff293877c2d23d0a89f8f28d6341a0979e47bd95"
+      "bytes": 2652,
+      "sha256": "970ef28bb0131bacc91d98a686ec0727b89cdd38d6392c8e742792d973122961"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-217.svg",
-      "bytes": 14669,
-      "sha256": "a4522832b4e354f8a5a9d4b2c5615b407a468fa68ff6f3edceb866b30f202e20"
+      "bytes": 10147,
+      "sha256": "597f0ade37e55f58753e37e7ec04811e65a914f1ed584a2c0461b585818d8a07"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-218.svg",
-      "bytes": 20151,
-      "sha256": "af7524ff5448c6908c267d9ec28bc78afb0a5836b696fbebb484c3fdc6f45284"
+      "bytes": 4616,
+      "sha256": "f09f372f40fb62beda441205c69991119d553e376a9867e0b4c093d865e06518"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-219.svg",
-      "bytes": 17175,
-      "sha256": "b3a52a4b435c6ca167f2d864501a6b3937848d39639ece9e1e978808464f2e4e"
+      "bytes": 10271,
+      "sha256": "27ee70493405a5cb1f281721ab59bfb79b03972ac326581ed960591530537a94"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-220.svg",
-      "bytes": 11310,
-      "sha256": "8498b11736d664fea7c768a1e9023beb3c2b11353318159ed0c5d33bb6f6a38f"
+      "bytes": 5347,
+      "sha256": "0ac491aa1bf59d9d75af7f6650ba1444bb32100c4a8e2bb58de83082c1368106"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-221.svg",
-      "bytes": 11942,
-      "sha256": "37743f17dbb20c04a3b3e899cfe5560d9c3c2106eaf5d8aa21ea3a87a1329bcd"
+      "bytes": 8784,
+      "sha256": "1543ebc235400a00ca1bbf7de9abca83e22fc13cba6ae9be0a7beaa724a7e6ab"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-222.svg",
-      "bytes": 9231,
-      "sha256": "58ce0ea8c240abe86d75ab4f32162de413146606c6a0a69a982c8eb308dc78ed"
+      "bytes": 4590,
+      "sha256": "52b88932d6915ed9a246145b7f0d1215508c819cbcc7f9690f7908cea6dbf4f4"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-223.svg",
-      "bytes": 13581,
-      "sha256": "68ceea68425bbc0040a8c42358b691cacfc224d6c534714e096d015b01d0fce5"
+      "bytes": 3598,
+      "sha256": "9d15b091bb76aa05682852c47f740b61da823d641467e234a5f84feb20af5635"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-224.svg",
-      "bytes": 9553,
-      "sha256": "53976e97691d8ae34cb565640b5be537d7363075e066a3c8280608e62eb21b6e"
+      "bytes": 6585,
+      "sha256": "af63034c62c34e180875384831b8468a6cec82d963cbe5159115ec0682e3711c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-225.svg",
-      "bytes": 18694,
-      "sha256": "91ba663a19f420211b7df1ef3392a306ab2316faa3502b1159d47607f45e38c3"
+      "bytes": 2998,
+      "sha256": "3855439bfabb2913e60071e1422405e889b84d7e6aa131fa3782d6aff4db1b8d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-226.svg",
-      "bytes": 17260,
-      "sha256": "b08c241e2ef7cd5121a12981531c374f82d7b71f89552a5377dd4b09e71b87c6"
+      "bytes": 6270,
+      "sha256": "3e81b73ef09fe3daef13fd7428c6bfdd8a5d59fe45c08c380c710bca1d78e9bf"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-227.svg",
-      "bytes": 17405,
-      "sha256": "36268dd1991cdda93fef5f12ec565f9a1e44344301cb7c757b16ad599e01625c"
+      "bytes": 13353,
+      "sha256": "04dae4ebe032891905b7b6ee8823c169404ab4d4d7dedf543f89ebba5aa43270"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-228.svg",
-      "bytes": 17333,
-      "sha256": "744ec9c4ad04653977f10d5dbc4aa4b897e705539178d8e8bb0d1c74b470faa7"
+      "bytes": 7769,
+      "sha256": "402203aa2adf2c6845aaa5d5b9325d31156d2de74ab7dc1bcd82798eddf6a131"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-229.svg",
-      "bytes": 69441,
-      "sha256": "199bfed51998199ff9b58fbff5396324659b1f1983ef447e1cc693f70e09b3d0"
+      "bytes": 60636,
+      "sha256": "b355d4bf1f7f80eec50fede99f04fa26a2998c4c5e31cb35db26fff62bf892b0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-230.svg",
-      "bytes": 11440,
-      "sha256": "4f54249bc0464d931bf3e7dd30945eefd30f7c2c0ea87fb80d5e387841f8c3a5"
+      "bytes": 8177,
+      "sha256": "776b85b7eed794be223de3b1b4785df742d3aab872ef9bb1fcd1a1571286dc49"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-231.svg",
-      "bytes": 14631,
-      "sha256": "af47d5e799131056eefadc893bb5928f761c372ff05e5b7b5ce826e6203f39ea"
+      "bytes": 7526,
+      "sha256": "386ccc70fe743a2fdd058eaa365f0c2b461ed3d675403fb32cb6c6a357c2fd16"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-232.svg",
-      "bytes": 17838,
-      "sha256": "8ed9f8cab5ed95207dd62d1d384f64de9ca203758a3e5e85e281af5a959fd42c"
+      "bytes": 7356,
+      "sha256": "d449eacf77067debf510832b5d2f976c12f3d3d763bac430b981eb9852b2ed32"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-233.svg",
-      "bytes": 18024,
-      "sha256": "118ac8cac03b5fd08d1becfba80b8ab9ec653c48e3d40f509ea86791f26a151a"
+      "bytes": 9675,
+      "sha256": "017f679aea46448caf3209e3ee6223bc63411986efc15b8ba63cd67344eab2ad"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-234.svg",
-      "bytes": 17515,
-      "sha256": "2b8332142adeccc8195f7ce37371f88f88e02d95963c0f99091d6f1919a90749"
+      "bytes": 12669,
+      "sha256": "8f6c439e775906e5121a4a5bde2aeb90ebda606390f4a9e7d332aaaa06a420ad"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-235.svg",
-      "bytes": 10497,
-      "sha256": "2bb36211f01d94ae454104899d1fd53ff318f3124a1909ba1410084f0a071ee1"
+      "bytes": 3687,
+      "sha256": "a699b82066a4ef1c7ba1b11d5df897a4c027d7f2cb0b70d379d16c7a74187c0e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-236.svg",
-      "bytes": 15210,
-      "sha256": "6fb1d833f0b69a2557fea0b02c1c1d98ec2801f01f389a6f240cad28332eb0ed"
+      "bytes": 9141,
+      "sha256": "5c85d9078fa9b38dad3a23c226ff8f9085f8351c052af331cc4a86e6c952ba02"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-237.svg",
-      "bytes": 11802,
-      "sha256": "08a8135be8c071c412fca0e91c38a482ef88202a469247fe425d8177cd90b5f1"
+      "bytes": 7076,
+      "sha256": "cfaabbbb1d790058eda370b5dc65e8ef6907613d29cf7054279e322ab1e45a20"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-238.svg",
-      "bytes": 13752,
-      "sha256": "78f9dec4b6390c05750754c62f8f50ef2e78e2a96dcd1b263f78423ef61168c8"
+      "bytes": 8289,
+      "sha256": "a66e3ed10e169336f0d3d05d604bd17e5b51de81c58a99b9a0ee4eed6d221405"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-239.svg",
-      "bytes": 62723,
-      "sha256": "afa61afcba78679545707122d0ff64ffeb29ed0a7e64fc6e6a2402ca847a0532"
+      "bytes": 55817,
+      "sha256": "48cad0c1f0b073a094164580f06cc3d5f0a20c909e5e2834594ba2a7a8d35f9b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-240.svg",
-      "bytes": 15428,
-      "sha256": "7717af5bceacf917f6849662bd33f9999e7605c975785214ca1784df0fc1e3dd"
+      "bytes": 7114,
+      "sha256": "50437d2c86d9c040342a2d6873c1a066602abc6de97a74c9a677486751248e3a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-241.svg",
-      "bytes": 92014,
-      "sha256": "17156abfd84533b93a029623361c1f44e50ce2e79d8670e503384ff9cb3c00db"
+      "bytes": 80300,
+      "sha256": "13f37e6ec713695846cf267493db5e512085f3dee5f8c260f17a88aa0d0f1ddf"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-242.svg",
-      "bytes": 29398,
-      "sha256": "81508d1416f681c3234689a769d02afecbdee3122c7ca91af1f711f60af56d08"
+      "bytes": 28528,
+      "sha256": "f2f2091429d7f0a41bc8c666d8b390128a2f11d0defceb8dab9f7b0b781f96dc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-243.svg",
-      "bytes": 99257,
-      "sha256": "ab05506f21e55e3d09f89bbaa8ee35e2f21537be5fddd39ab112bd30a230a5a7"
+      "bytes": 92298,
+      "sha256": "39c68daf9e53340bce71fc26161a1ecafddfa750b0d6f3140acc656338e93307"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-244.svg",
-      "bytes": 40721,
-      "sha256": "3e2a5753c2b171d160845f2b29bc0124ddfb9da4f1ec9918e466189c19d33890"
+      "bytes": 30855,
+      "sha256": "999a66a179902a6c9a86400fee4540dd407a5ca584e65ad9223266bda0cc3318"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-245.svg",
-      "bytes": 17008,
-      "sha256": "df79402aeb2563b90db75ba5b32e403cce2d5a175ceee551ad863a705b794328"
+      "bytes": 8677,
+      "sha256": "255818310776e2528f5b9a318e39d660d1f106a2a58e555ac71f1489033251d1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-246.svg",
-      "bytes": 58605,
-      "sha256": "8e849ed6faa6a2042a7e245901c29ac22cc6720dbc87f81bfb411a01bfdf25e6"
+      "bytes": 48741,
+      "sha256": "cd5f26242754b0e3ac030097ffe1b07b02fc928a971267804cc03e1d2ff1f883"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-247.svg",
-      "bytes": 20566,
-      "sha256": "bc16f5b1d06ad7f683667554d65abba40f63b90de59ad51f8bdbf172180c6054"
+      "bytes": 11561,
+      "sha256": "ad0c94d91d22c443cc0c717f7559ca1bd30e6aa177974c48fa96f7d955fc9280"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-248.svg",
-      "bytes": 16745,
-      "sha256": "445706f53ddaef681761c23df1797cc2352cdf3bfb4f1479694687733a4ab887"
+      "bytes": 4721,
+      "sha256": "c0c7552eabc843d60bfd7ed3e101e923ae933cea08a9014371ff2571ce9ca8c0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-249.svg",
-      "bytes": 14888,
-      "sha256": "bd5f88ad14f5ce994cb767e1c4201394ca0b1503c8b85e094119fe0dac3ac3db"
+      "bytes": 4561,
+      "sha256": "7704e119b3a4b2d8b33aacc10b879692660ab94d5940a636340bf5ab18d06660"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-250.svg",
-      "bytes": 38312,
-      "sha256": "f593f9024183fce92ac89e45f5e56f246023ddc5ece790ca5ca00cd912282220"
+      "bytes": 27214,
+      "sha256": "907cd60e13853171e5f20cc790ea5779a6d6f4296c91c7c0c70422bf090a0dbe"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-251.svg",
-      "bytes": 49133,
-      "sha256": "90200db17c355e7e522e159805ca756f462fa627f55c33f696de4bfe3f5d45ab"
+      "bytes": 41155,
+      "sha256": "db57fc7aa1fcaf76aca2cc0eabdfe070022dea2649a63901ca9a9febd80e6cbb"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-252.svg",
-      "bytes": 38116,
-      "sha256": "1dba934c31087c8fb12f826e0778a1896fb3068bea7f1946463c3af159bf94a8"
+      "bytes": 32607,
+      "sha256": "385cd3c4d040c121ffb118473e7bb1c808264828a1ad3a0bab9adfc5a7c3989a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-253.svg",
-      "bytes": 23724,
-      "sha256": "238137587f945d38e9630fa8ddca23c812bd01ca8aefaae10452d047b7a1868d"
+      "bytes": 14383,
+      "sha256": "1da46ec6d481783298a9ee9b2aff4a7967513b0ba9da2c22e1efcf847a6d78b3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-254.svg",
-      "bytes": 26705,
-      "sha256": "29e9fe9c4e6c48548eb971d6f90ea80d998e1c35d83e9537954fe01416b981d1"
+      "bytes": 9343,
+      "sha256": "ee4bac9639ca82cb47de19432de8c8ab7eb6bd5f5eb99217ffbf87c3aad5cbb5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-255.svg",
-      "bytes": 55493,
-      "sha256": "1e415e7cd9e8e1504c178ffa6a43cd6145af667bc9ccc7fd54aae5102f398477"
+      "bytes": 47984,
+      "sha256": "b7a71d3d49468e370860f027ee4547a2c18380dd56a74668c408e2a227e1066c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-256.svg",
-      "bytes": 41718,
-      "sha256": "a55eb8b7ece3e9e9ffab70549d2a1846bc19dba6c1d0904390866dda3a815b0f"
+      "bytes": 35824,
+      "sha256": "1e3581bca968833cd70409a154e22cdf14bb2a26ae67b81c5c5a57761db38e50"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-257.svg",
-      "bytes": 36389,
-      "sha256": "1a858146e46167f871999c60c1a30ce3f8236ea8dd33c6b422035c5d658e6571"
+      "bytes": 27900,
+      "sha256": "1a577d54017301a8954eaf6d5d55439d243ad110163799706a4610fbcf985b00"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-258.svg",
-      "bytes": 24812,
-      "sha256": "205a4b1e75622728e95a03f35b5e8ca04044347e47815b4643fffca4234d15db"
+      "bytes": 14191,
+      "sha256": "ac650bb82b7e9f42a9f0b8b985e1353e2eefd5e3191d466dd2feb0210dd5f2ea"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-259.svg",
-      "bytes": 19683,
-      "sha256": "e89ecd280f0cd87e1aa203cecd0dc8b8b841949ffcbb1caa492bb14e172f8b54"
+      "bytes": 9626,
+      "sha256": "ba73699b07d4dd4021117c7cb319bd17ff13ba48762e8c704758c2c7cdb5af75"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-260.svg",
-      "bytes": 88179,
-      "sha256": "5655d3e38e4552433f756810502d2a4849f1f750f4c57f2f67bf63faa48ab742"
+      "bytes": 86032,
+      "sha256": "9d992de01f3ec4396239ca2f7184a69d1a6c9da276e4414e262bd69bcb610514"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-261.svg",
-      "bytes": 16896,
-      "sha256": "21b475d9a4a237d02e8da7efc173d981e01275dfa70f26fe5ff281b80ef6915b"
+      "bytes": 9466,
+      "sha256": "dd23104c3e58bc22e91056a8b3826b97e744a941bbafe77bf4bd64223a81c2e4"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-262.svg",
-      "bytes": 58376,
-      "sha256": "709be1e8474e135d32d6626272fd16dd0645b4f0c8c41c8449ff01b90d774b95"
+      "bytes": 47419,
+      "sha256": "ab4c4e0b078aac871535730ca78095e8f8fce2444228461a0a2c88cfde722f79"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-263.svg",
-      "bytes": 14918,
-      "sha256": "76629db3b9bf7c783d527d3946765a70cfe5b0afda94a6c5c253c9737bd90704"
+      "bytes": 3982,
+      "sha256": "eae1709eea91f0c7c50a5291115525be44fbb7083b42076109043993b7cec45e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-264.svg",
-      "bytes": 16768,
-      "sha256": "0ef3f677ba908badb0fe07f3c56fc30c4d241c62cb9c20bd38b011fa53fd255d"
+      "bytes": 8311,
+      "sha256": "5c13c61c2403e04bce7ed5186eb7ccb692bee58890c06f3587e6a2367848c0e7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-265.svg",
-      "bytes": 15924,
-      "sha256": "aec9d154321135f2d1da70a056a42f54054aa83ee3a9063f13c3f80223027089"
+      "bytes": 10038,
+      "sha256": "ad865b18f09f4a3258710c9f1c24fda3eba57c32e4f520d4033e405c75522d73"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-266.svg",
-      "bytes": 17329,
-      "sha256": "fd13dd4fc9ab0a01911cb8876ca2c634c070b774fcc0937064ea8e74b04cccee"
+      "bytes": 3153,
+      "sha256": "673cc6c0ef14abb3c907cdb2ce122bcce14f6bcbcfd991dec2e21180f5e7bc92"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-267.svg",
-      "bytes": 71635,
-      "sha256": "758f83c74949a70d5e957b98e70fae7e71dbe2f441e1ff5b535b72726a5ff978"
+      "bytes": 67766,
+      "sha256": "4d4cf33512cb0b1183845aa8141dc5138560215ec86f41cc6c54595b63eeaf90"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-268.svg",
-      "bytes": 18281,
-      "sha256": "ba1e2081e2f936b7f068249b38e2a7b6e10e173e4f072dbc98cd1f741cf6e0a2"
+      "bytes": 2210,
+      "sha256": "792b588bc41d84807098db4e213b8c4fee5e269329fcfe2e262d84471a1823fc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-269.svg",
-      "bytes": 25524,
-      "sha256": "2caf982db28ed598f949889c27891e03a153a54ac58372649296e082f5bdd6e9"
+      "bytes": 12446,
+      "sha256": "0e72e5376e1dff4ae4aa417250b81e83a1249cbfb2e9c5f69ea74eeb92d50e84"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-270.svg",
-      "bytes": 46617,
-      "sha256": "2212bc35daea2d60cf528d781af2250598c5d605df4493fbbdeb10f88572d96f"
+      "bytes": 32273,
+      "sha256": "e6520037d5c4e4a0bde510fa10839028fc44ad3d31b025efd62ed5b360d3bd2b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-271.svg",
-      "bytes": 25177,
-      "sha256": "5fe270d5859a96ccb8cfbb89ca38a1b414917f7399720cd3ba3d311c431c95eb"
+      "bytes": 16652,
+      "sha256": "cba199151a07f23b21b22b4a103a99da5934f847afb976bcb14d77243180b2e5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-272.svg",
-      "bytes": 14515,
-      "sha256": "4d3892f3fe3b8dc0b413255eb02cafd99ce5f3986795ce56f0a688cf9ca96b7d"
+      "bytes": 7425,
+      "sha256": "c81d49699a950441971f45e07bc44ef7e6172384ddcf645640088a8844f5f30c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-273.svg",
-      "bytes": 18148,
-      "sha256": "4dc1260a09d98e384150ef3fa1622f48ffb7ad5d5cae6df3c68924987a9e50c6"
+      "bytes": 6547,
+      "sha256": "8c03f3a17f0dfc990386904ec643afb441f1347b1fd85a4ca75eea3b0ebbc866"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-274.svg",
-      "bytes": 9456,
-      "sha256": "43d8d09c2deb60b0ced9324b49d89b1cf7e03d7e6bf665290b92550a34a74062"
+      "bytes": 3663,
+      "sha256": "7407eb95bd1dd3e02c862937393aa21c46de1d7a7fdcb8adfd083dea7df4ccc9"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-275.svg",
-      "bytes": 27868,
-      "sha256": "6af6692842b29eadb3dd9df7219577958171cef12b7592634c0aaa720aaba6a4"
+      "bytes": 15965,
+      "sha256": "5b33fd637ca10a06cef88eab488b07a6f5dc51efd5384b4d1cd166d83aa1ec2d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-276.svg",
-      "bytes": 23188,
-      "sha256": "18a0d72213cd0600d98791b046a76e3a67ff7e42087550a5235b34a7ffe4658f"
+      "bytes": 10331,
+      "sha256": "033e5cf5fdfb7319f314df797d534168ba046d5c83c51a868e17cc550e26c08a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-277.svg",
-      "bytes": 24301,
-      "sha256": "6675a5da31e25066c998cb8540b2dd23f6b1113e998260e2a870d2d8143c27d2"
+      "bytes": 9356,
+      "sha256": "ae32c8ca1b7b722bac273a8baa90712923d654296517473de71316f0455c85de"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-278.svg",
-      "bytes": 27449,
-      "sha256": "b82eb28ae35608fca5231e4a49e839e1e9d1eb778155996e9433ee529b3a1f65"
+      "bytes": 14891,
+      "sha256": "775c6b2592f37a428d3950e06fc2080b77d5bf0193ccca2a417abc13b7b73e99"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-279.svg",
-      "bytes": 28759,
-      "sha256": "24aaa0b8a6757fe637a6ec524555e85c93e673ed815066bcd18f2cb5c7d896ba"
+      "bytes": 17998,
+      "sha256": "0c60368ce42fc032374e077148a8cfacf86d990d8ea9ae7e5b5f9f6ee4d09ec7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-280.svg",
-      "bytes": 20763,
-      "sha256": "28d2b9bd159c01c677e7dd969f91801a35534d6f9448d160de79405c1361180e"
+      "bytes": 3393,
+      "sha256": "a71f813597678aa4b84e66f78da234d098e0802a83b0dd2309d674d0c5ab3eca"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-281.svg",
-      "bytes": 17183,
-      "sha256": "c5a5734b71ebe9410c93e9fc80584e88c6a8495248cc715e84b444a2e0abc1e9"
+      "bytes": 10456,
+      "sha256": "8c407b19e71d03f958c7d95da8c70e0dc3b236c654fbeabcc39f8cb2db6e6de0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-282.svg",
-      "bytes": 20970,
-      "sha256": "51925f3d894e6a2b6ec02306dbec01c04303f4fd2b1d7b8ec81a238424b1cf72"
+      "bytes": 9745,
+      "sha256": "31d13ffce0e39871a7c54045b0e1f219c977abf3b565ebacdb1ebc55f064848c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-283.svg",
-      "bytes": 16584,
-      "sha256": "1e6350f8d7a8efd21a71aef4eaf5376881269903d27975c9d1b288111b99420b"
+      "bytes": 7505,
+      "sha256": "49f05b0016e866bbd2fc82be0d1ebe84bf1680c0e07e1280b538ef45b535f25a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-284.svg",
-      "bytes": 24334,
-      "sha256": "b643e625f2911df3cde646cefa08fd4589c857fc12e12f5aab8f017c50d559fd"
+      "bytes": 12278,
+      "sha256": "f18759eeb7a613690732651c079e55a9bf8d1690e461492a944ff8ee7dfd2626"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-285.svg",
-      "bytes": 20491,
-      "sha256": "1822c0d5b00f2f0abbef19b8d7c72159f8749c09608a0c33473ebfad19d08201"
+      "bytes": 7234,
+      "sha256": "53561ce72e5604704cea957dc2b58b42456a57561e4c026f239ce92e328aed02"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-286.svg",
-      "bytes": 104705,
-      "sha256": "b79fe55949e2fda9692d4c6a53f454f8872940e68539e921bd624fcdd1720fba"
+      "bytes": 102156,
+      "sha256": "ddad83b8346bff1246b5026e8eff815189d1129f991c00213ffbe1fef3376fe7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-287.svg",
-      "bytes": 15719,
-      "sha256": "95aa7589b67b75d30236fd99428ea2304e034aa7a5a8b8507b231e4e99738b37"
+      "bytes": 2783,
+      "sha256": "487c0e20bc4b4410f5b3b9ff271ee5e4a9e9dbfc74b1fcc053c2136a02a22219"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-288.svg",
-      "bytes": 27432,
-      "sha256": "ffedbe712f89d1736961178cc797a44a0883074020e7d85ec3dea4fce754da3f"
+      "bytes": 19613,
+      "sha256": "cd1e4fe1aa0db8231ce54542851e6f400d5a77cf742d5efb934d57fbc452dc36"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-289.svg",
-      "bytes": 25703,
-      "sha256": "e2d805cb630d030d135dadc4ba65e2ac79d48f9aa1fad73c37b78470857b6e9b"
+      "bytes": 15378,
+      "sha256": "fe4fac44d1bd674a11a8fe32e200be2434a478c240fcec270325d84ac50f3a12"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-290.svg",
-      "bytes": 24941,
-      "sha256": "7972becde69bbcc46a68044d4398094c0b3a6ef111c22cd808fe371d44df1ad4"
+      "bytes": 14343,
+      "sha256": "653ef8573af2b65cc886a6396b300ed08ecc82acc496228d0c3995db376bad17"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-291.svg",
-      "bytes": 17024,
-      "sha256": "d08389170e6fa84add02f2ee9b5ce224656742c81cdd1a109087d51f3b6a843d"
+      "bytes": 9394,
+      "sha256": "229bc4984c976a287fb93f4461c6b10d41819f90f71c45d2aa1ec0c9d753243c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-292.svg",
-      "bytes": 18025,
-      "sha256": "836b3f386801ad7a931ac72cc95e52c28417f6fee76936edb37e494daa6f1700"
+      "bytes": 12644,
+      "sha256": "c71f504990e531ed509cf3c3bee63627a86c1fa2e559a490727df35eed462c7f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-293.svg",
-      "bytes": 12655,
-      "sha256": "85c91f51d57f6928c92153668c24d00a01ede100efa20b52bd8b39040fc0c1a7"
+      "bytes": 2798,
+      "sha256": "c43ad2d46815bdc2c5c9cce53e6d31b10fa943927e962459ecbbb3417a00e983"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-294.svg",
-      "bytes": 24483,
-      "sha256": "c302025355046e74e13e75b121eb7086c121443c488735718657178b5563862d"
+      "bytes": 16323,
+      "sha256": "1b90b07b813d7ad77e490e7883b0ad42f4fde5dae51d105884dcc9d7810b7941"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-295.svg",
-      "bytes": 10576,
-      "sha256": "49344952805e15ed62c1a9279ba048b9d174285f5f9d75eba0aa9a05344b992e"
+      "bytes": 4093,
+      "sha256": "ae65da4db8ce61be5d36629c2c30ff64fef1941f1712be96009eefba49abfb17"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-296.svg",
-      "bytes": 13886,
-      "sha256": "15940c7faf582c0b04b615153f8b6be72fe89f0a1084ad7340706fe1064920ac"
+      "bytes": 8261,
+      "sha256": "be867997ea9a8fca21414f82a71c4d89c69f726ddb5ab31f7a855c0f2ddf188f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-297.svg",
-      "bytes": 25305,
-      "sha256": "520dbe0efadd38260aadba43efebef87aa1f21682e3187c2abf6d22f9f73bfe3"
+      "bytes": 11838,
+      "sha256": "1920e0296a2fe9240ec30188da0d0880c60f7a7f37be7aca396136af8f82939d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-298.svg",
-      "bytes": 20908,
-      "sha256": "770c75603cb8ff1f19b0ed579c4569dbeae3a8d5b12a0adb780a5e6f7d9c4028"
+      "bytes": 10153,
+      "sha256": "51bdabbca16ccd812e1e7c1c7d09ed0ef525811bd53e31d2a759cde4c1df53f3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-299.svg",
-      "bytes": 21262,
-      "sha256": "3c5f52757d45baf9ddd2d76599a9f6ea72aba64bd62e4138ada4ef8b7a705ebb"
+      "bytes": 10694,
+      "sha256": "74fa810fb5797b3528dcf0074be1d0af00f7315ae8d7a9a7eb53d85d9dac1071"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-300.svg",
-      "bytes": 18457,
-      "sha256": "5a7e6ba92ec156cbe534a241663a2f10b0e64f8cf60afb7e5e1720495d4f8a85"
+      "bytes": 10313,
+      "sha256": "ca191e76709ecd769c42ea905f74c80d429850e74d47be3c80ec35b6ea9fa9a7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-301.svg",
-      "bytes": 22151,
-      "sha256": "0c64412ca3eb52b617364ac239593e35c7c1498ebc782a6de4c6fe877f754c34"
+      "bytes": 12037,
+      "sha256": "d5d294baeb67ee4b045376f593f112871b19144a197213cc9101f9b326f777fd"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-302.svg",
-      "bytes": 18569,
-      "sha256": "8fc45253b1fa48ae4c9b4613cea533d6dc754811bda564d86f79e8340d6d9005"
+      "bytes": 12200,
+      "sha256": "a4bfa61c7d11f88af043358583a7f7707695fa2f8fb04243270f3a76c7b7bf9c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-303.svg",
-      "bytes": 48957,
-      "sha256": "385b4f43969fb093f65651d1d6003f559a66d686417033fcf31853d1e3927a3d"
+      "bytes": 38187,
+      "sha256": "f2a2f9228773e001ad24ebe179c765d744bbd764bc2130b0e417ab280699fe8e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-304.svg",
-      "bytes": 27610,
-      "sha256": "a6839456012e50718e68deab3ad9956de8e2669d1473dc3d5eb2d8b6dcf4aef6"
+      "bytes": 16305,
+      "sha256": "35f819702911f309a5185304d3da4c8068ccd56096ff09866d9121707762d7fa"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-305.svg",
-      "bytes": 26553,
-      "sha256": "e78c179f7654fc36ac51e3b1e6ec80c56869e6e21c3e624a2c0e0099b30f6895"
+      "bytes": 12784,
+      "sha256": "0107e72f1a54f77ae23ea98e4caac21a5ad1b76bb9705986a81637e0d6371c39"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-306.svg",
-      "bytes": 33693,
-      "sha256": "b3ae9a594f90446fd441928c44b4b7dcbeda1a588b4f03713e09faa31d6f0bac"
+      "bytes": 19285,
+      "sha256": "d0a103437296992e325864aca0228b63cdab0033e51ae845b13274b283e888da"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-307.svg",
-      "bytes": 21661,
-      "sha256": "c1867ecdd46e265ea9105bed6d1c376fc383caa8a3547cd6e957fa299b85fb75"
+      "bytes": 12114,
+      "sha256": "ad47b1415eaeb69e85a20ee83d59a969e01107b5e00c18b660c9dde12c9733d2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-308.svg",
-      "bytes": 50237,
-      "sha256": "5e3bc35d7ccae4b19592edcedf46f0734f39451a8c832001fc2854ae097daa98"
+      "bytes": 41070,
+      "sha256": "f5dee2aa8e9b853ad9b0060c6d78d27c2a0d977a8d09badef6902529c249b068"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-309.svg",
-      "bytes": 80183,
-      "sha256": "39164dd8ac0a45742a4acd571b659bbe40b25031f1ce673632066aefe7ad8910"
+      "bytes": 69622,
+      "sha256": "514b72ee5cec16156a010be2c442c031d8a14c4a6e2c0d5a2996ccea02dada13"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-310.svg",
-      "bytes": 49881,
-      "sha256": "902b20f0a566afc5188fd2e35848beb08ef1acf788ea1137f9dc9ce3e5d5f4c3"
+      "bytes": 40871,
+      "sha256": "bab22b381b4c4a55d5e551f36045f217e76a306806f55d0438e7a862e5ac59bb"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-311.svg",
-      "bytes": 26526,
-      "sha256": "f59bd37cafe6e6c53ad740f13e2e6754522d4dc04e09ac9fc5675b2f8d73a038"
+      "bytes": 7284,
+      "sha256": "42bb2919f31f7df2aef991fc5a50337dcdcaecb2cb60f809ebcc0e6f7c2c1bb8"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-312.svg",
-      "bytes": 18436,
-      "sha256": "2f62a365e757cf81833a4dcbe09b92049c8cb476ef850931f5a6933e2ec47170"
+      "bytes": 12160,
+      "sha256": "3e687fae76e782fe812e201fd988a73928a8df6df06fffe74f37dfad6a1da568"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-313.svg",
-      "bytes": 57635,
-      "sha256": "44bc7a4df5524a4cb8fdad8198fbc3ce28725faa91633a5f58a94c39bc96d721"
+      "bytes": 50008,
+      "sha256": "e7f23124640b3ba4266394baa7b70762f7768cdd1b2442a8a3dc776c80600d84"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-314.svg",
-      "bytes": 87524,
-      "sha256": "6dafee0b473f6dd12d2fe805c51da645a93adaf13add8623ed6677d575a53486"
+      "bytes": 71487,
+      "sha256": "daf836eeaec317b8f0a6049badc10555a09af0dae712d082d6d4d735178c1920"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-315.svg",
-      "bytes": 20409,
-      "sha256": "aea625fdefe7141d59fe5e0de46461a057871107703988058da1021999c1a891"
+      "bytes": 11912,
+      "sha256": "cc2e288ae04a31343ced7dcdc03094d19d67f9e576800ecb656ac6e2fe6a250f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-316.svg",
-      "bytes": 24939,
-      "sha256": "76fc7c64bf6823fd5c9e656db2c9ffdb6ec65002b24de36ace2980c293e9d35f"
+      "bytes": 12161,
+      "sha256": "b31572eaf2e919bd40d15f98a9cb0e4e2a9398d6c05766d347981d8698c3e53c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-317.svg",
-      "bytes": 28851,
-      "sha256": "cb6890d61aac1ae0bfef070a01069eaa6a70566f13034bf6d34f747071f1a6b9"
+      "bytes": 14411,
+      "sha256": "8e97d33b01136f3765c0aca38c8ca7d413faf6e3b03ab91c84e2083baa838579"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-318.svg",
-      "bytes": 30617,
-      "sha256": "7494d33e3bb5cfcaa2e200904e856c9b57be110954e58c5d1324144e81a45ffd"
+      "bytes": 26213,
+      "sha256": "37b8bc0077dd7431ddecdbf44a8312638630a74504e79fb1e5d4cde490be66a8"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-319.svg",
-      "bytes": 85185,
-      "sha256": "65b5bbeb6ae4dbcc2d65be83dac13bbb2255b0e6e4b89edc3947c12177fc4003"
+      "bytes": 76667,
+      "sha256": "a93822057dc81c1a3bc1c35c77de129164b48b32ceda00c59a20099f4479086a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-320.svg",
-      "bytes": 42076,
-      "sha256": "01ea6bb19f8c5f78e1814416ffb1dc237f870872801eb75d8d81b9cca5c77a36"
+      "bytes": 31751,
+      "sha256": "ef31f7da227b3850cf948355a25984d677c8e9ce789138b87c749ded0ec054dc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-321.svg",
-      "bytes": 45933,
-      "sha256": "2bd392f41f7fcfd8f3182e8ead4dd2e1502af21ac6405db3eb553d30e1376411"
+      "bytes": 38147,
+      "sha256": "72a51272a1d7444925835b93bc938c78c001ff3b29021808587c15559b1496f9"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-322.svg",
-      "bytes": 29121,
-      "sha256": "b8239d7f59d2c33e0e1a836d0e7dae1f27b8c1d285573447e285c22071bf3d55"
+      "bytes": 19342,
+      "sha256": "b3b247f2a8892ebe4d7bf8b91168577f79ef9a0f71e5128ce030dcbaf0f605bd"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-323.svg",
-      "bytes": 11993,
-      "sha256": "17c9a8f5d26cffc0d6fd89c0b560e0be0cb3ae5fd5a0debbdde09f30e5adc4d1"
+      "bytes": 5221,
+      "sha256": "a91e2ac72cc39a5e1fc0e5b675da558967e9443dffb6c99ae328322a5d85607f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-324.svg",
-      "bytes": 60961,
-      "sha256": "d7c6f824fdffc4f0fa4d5af78d3801711944d35eb05d37c372424574dd8330a0"
+      "bytes": 48908,
+      "sha256": "906832f23f1cb273db37a83836451768e18d65374e463e14688011dbd96c55e7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-325.svg",
-      "bytes": 80204,
-      "sha256": "35d41bf22bc1bda259b539b7c4b18c532e6df46743c53f32e3b2deb53268d168"
+      "bytes": 71392,
+      "sha256": "b4aef365c073443eca197966997984f2f9c11b3794ba7facef08769b4e0c715e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-326.svg",
-      "bytes": 17447,
-      "sha256": "7340797f5649d1b735f3c8b976dcfef4d63dbfc4e904d2d45d9b111985a69fab"
+      "bytes": 7001,
+      "sha256": "91ae37c8f8765ae3314c3215b26648f4a8d32a344f005ffaddaded3843393c77"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-327.svg",
-      "bytes": 21313,
-      "sha256": "06a5c8324a50a1c3e548dc82170bdd084ef46912e820fb7b207a8087e8a90d8f"
+      "bytes": 10186,
+      "sha256": "933b5e972b42403ba6ccd6371eb0504aea396d4041e165397067ef67b0b26de7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-328.svg",
-      "bytes": 69990,
-      "sha256": "d0b736bcb0fe1fad493bb909e92f979a54582ae5f2dece738271efa21761309a"
+      "bytes": 64533,
+      "sha256": "a61530c85162a6f56f978ffde177aff8358872d9c3b6249d7c5809fc08bb99f2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-329.svg",
-      "bytes": 22319,
-      "sha256": "d9308dd2e5e55fa72314f6852f8e6a5ffa77f85d2a2e3d7ceb1faa911c01aca9"
+      "bytes": 6853,
+      "sha256": "ab9ad0b336e16113385f1e7d3305536c619e92ba6e2323d0de5dc54b162a7b4d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-330.svg",
-      "bytes": 50838,
-      "sha256": "f122030e739070ce0c258ccea3d742d309ea3be5c97a0c348072019dc86950f7"
+      "bytes": 41640,
+      "sha256": "f3f2bcef97d344f13809ccd9498a92d0c082d313d87ed60791291992c4cbe47e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-331.svg",
-      "bytes": 21961,
-      "sha256": "28823c771224eea0d40933c82285d7728b8c3e574b4d539e37ac9bfb1f507bde"
+      "bytes": 9003,
+      "sha256": "a6891957a5bcf9c8162a203716a9ffb049dc00c0555a23b9eaf88d3d711a91ba"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-332.svg",
-      "bytes": 20712,
-      "sha256": "60f1206cabab73261127e6e161d96234b5cde9dcae5c97ae8470767b6d29520b"
+      "bytes": 13036,
+      "sha256": "0f620234d41964027d5405fda708124c85cafae5117f22a0e5b7a8b4a8e2d576"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-333.svg",
-      "bytes": 19501,
-      "sha256": "e0273a83b3ec32e2bb673f1e646d2e02e9210885c62f714d8234b11453bc91b1"
+      "bytes": 7535,
+      "sha256": "6d2fd67d4ead88690f7b474371bd1ba3499209ab85e0f9aca4337780f38ec4fa"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-334.svg",
-      "bytes": 63928,
-      "sha256": "2f1a0ff3e1b4fa0bd7af59229a571f8cc34fe973c1ed0f17b544ccf5050f6d0a"
+      "bytes": 56530,
+      "sha256": "ce38a9b00b9e308b0213538c61a26106f80ce7cfa11a4ce91b559c5346a992a3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-335.svg",
-      "bytes": 25525,
-      "sha256": "38b71d393c44133c17a78b274bf6e1c500db349869837a2dfe22e62208644ec0"
+      "bytes": 11791,
+      "sha256": "ece365a72d6e8ba25176cd9acae7b4d08654415138d2e5820402a4bdf5f11d65"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-336.svg",
-      "bytes": 26452,
-      "sha256": "8e3d6398775c9006610740dd95bda849b740aaa7ba7b74335529c41fdce8ff25"
+      "bytes": 15060,
+      "sha256": "c3ea5830d6c9cbbe00d7075fb799c4cf17c58cec4fc4e6ded4956dc193e6c736"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-337.svg",
-      "bytes": 44707,
-      "sha256": "8c0106ee4ab6d05c7336200995777adab693868336b263ecd8570cde54c4aed5"
+      "bytes": 31864,
+      "sha256": "ef7fcd375ff205be79092bae96725d5f42e953f7b44f223f9a67528c834cff3c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-338.svg",
-      "bytes": 18398,
-      "sha256": "d7cdcd6c3c374e57ce6d1b7cea500d42c7a3a1b053cbe53b2f52a1ed78b55a32"
+      "bytes": 8135,
+      "sha256": "83b2fdaeab24756e8f04951b793dc908bcfebcf9087936709b139cf132014848"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-339.svg",
-      "bytes": 23057,
-      "sha256": "e4ac50b625ccf2097976c840ee51c77a05ac8cd68e2ddefa7bf2cdc9ac77d650"
+      "bytes": 10251,
+      "sha256": "f4d66d86ed3ebba7d010559f0d3e982bb7a836b2967109caff1bfb36f25ede1a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-340.svg",
-      "bytes": 28445,
-      "sha256": "7bf42efed2cf71003ae6a6eca31fb4bb935835d2362a1d510e217f61932e55ca"
+      "bytes": 16260,
+      "sha256": "bb3f99161278752e9e1123316931152eb0660948f47faa6803f9194f4e894a47"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-341.svg",
-      "bytes": 19721,
-      "sha256": "f2b778315b20076cfb511b9e160b52ee0bbb208e8da7b2054195a7ce37eaf959"
+      "bytes": 5927,
+      "sha256": "abb40db4893384139df9e4ea5b068bd172fafcdb4135af2dd40f2867e5ebb1e4"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-342.svg",
-      "bytes": 19616,
-      "sha256": "a5d09358990c0b548b5f186bbfcb7bcea31d6261cb64ea0382670ebc7c441c70"
+      "bytes": 7999,
+      "sha256": "35f72c865c7bfecf62f80ea74e37e48c82279cff7e7e1d4ad72007d809cae9e2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-343.svg",
-      "bytes": 31731,
-      "sha256": "5ef017ba0f8d2bf412050d9fdd6aeeb299eb462859a4e73f3d1582a5dbe373cd"
+      "bytes": 11622,
+      "sha256": "0f27b76406fb40bf160b096b0cd94cb167f8e9671182d3953da1eda2c0fc280d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-344.svg",
-      "bytes": 57229,
-      "sha256": "7629ec859f4893ec13257d950f4f304e41c878b25349fd186064542df76864f3"
+      "bytes": 48360,
+      "sha256": "bf425e5483342e275761269869362b22db1004159bd9d99429addabd2ee98e57"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-345.svg",
-      "bytes": 20441,
-      "sha256": "33633b58d1c9166e614fb76f0f2411657c6a0c1fd38b3759135d9ae957d116fe"
+      "bytes": 14273,
+      "sha256": "eb90871625135c6e19acae2eed835565ff143f7b9e2a18277ef791b997fae8ff"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-346.svg",
-      "bytes": 24037,
-      "sha256": "14c233297918d6bd4b2e04bc1bbca92ce1ba2065721755c7edde5e7ddb0fdfc5"
+      "bytes": 11402,
+      "sha256": "6432ea8c645dbef6e6228cc34cbcc348ade8d147c0f34c61482695a203be776f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-347.svg",
-      "bytes": 59647,
-      "sha256": "d07a14d3f379b30964fa078c88946b87a65392c174af5bbb4672f7433f141307"
+      "bytes": 45786,
+      "sha256": "4d666d7f07c96157e15068e91276bf393599427ab264f5004847aeb88c94409c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-348.svg",
-      "bytes": 13479,
-      "sha256": "9a9c04aef9b71d736ba40873632ad51cbe16dfb6998c65a24970fcd4382d8382"
+      "bytes": 6095,
+      "sha256": "d04717025d044fb2443736a2bb7f23f383e47e26a3f239e1c93556b2c1ff1409"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-349.svg",
-      "bytes": 24475,
-      "sha256": "c56f0fd83729ea2b6baf48dedba081f9d921c1b5db158131b797d07f81ac8ff2"
+      "bytes": 15772,
+      "sha256": "62f3f2edfaa7db482458f2f9f1406db5b3b5fae2ec1961d38e0b281ab97808d9"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-350.svg",
-      "bytes": 24920,
-      "sha256": "f7e0e329e36a4c6e245d8a968152969aadbd2d57d9ac1af7ba3e700600cb94f2"
+      "bytes": 17149,
+      "sha256": "de9ccc5ab9144a252ea148bb1656fff14791bc5d0c7f9aaef4877c26de11bbf9"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-351.svg",
-      "bytes": 20555,
-      "sha256": "e5c5b0b5c3c19b5478e42e98de32afd5e5d2b84cbb23b70c4c13d8254fb04055"
+      "bytes": 10164,
+      "sha256": "2a2f612a16d001e3c9ffd41d365a9b419f1a3d9037754a4898d3392ce5248dac"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-352.svg",
-      "bytes": 28666,
-      "sha256": "0be9048bb65b6b00df676ebc1efca849d7d8cd6456633f1dc6ca6fe92193db35"
+      "bytes": 14069,
+      "sha256": "6ca6bf8b5918e9fe24f3c5b3b52231e33666f636b5e38a5c06220b97b83b4e42"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-353.svg",
-      "bytes": 18526,
-      "sha256": "0b119efb34eec6a3f43ce1b13ba6b6a57ea5eadda1ef79ddb52dd864e7ad63d8"
+      "bytes": 8671,
+      "sha256": "3839b679b7032385e96acd6117c8d4fb32f9c26468ba7857efb85fbabe69e045"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-354.svg",
-      "bytes": 14670,
-      "sha256": "61e7eaca1c83f7ad7499f700bb435e4311ed664392f180d600cfe4a8a09e6433"
+      "bytes": 3545,
+      "sha256": "603fc447d2868259aea28678072aa816d2981bd5868e4562fe7b997b793d9591"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-355.svg",
-      "bytes": 20880,
-      "sha256": "d77a0b2d0b6e1886e63cbff028489b25e6d0d928c43b5df758186a6c38a78b73"
+      "bytes": 12575,
+      "sha256": "3797a637cfc1b3bb479e7032f292e1956faa51bd8869cdba6fc4c3311b5b61c0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-356.svg",
-      "bytes": 21666,
-      "sha256": "e24fb5c0d9dbad64432d8b1aa7ecfc69dfacfc1f393b1c28e7b0306644ed92c8"
+      "bytes": 10538,
+      "sha256": "33cce06d30b57b0ec3243f35d7d00232aa5f56fd27216b6ea77591a1ae3dca6f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-357.svg",
-      "bytes": 39671,
-      "sha256": "2dbc9e929b38fe8c0961923761952a36184cbfe81aaa224de4255bd0c78ac75a"
+      "bytes": 28089,
+      "sha256": "1c0860cf84765d4b8d713fd258fc2e8940734ae706b4542fae8ca0d41cd41c23"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-358.svg",
-      "bytes": 30430,
-      "sha256": "86cca36071eb7c44370d962a07d07a5dd2eed259b4fb8f430de9fd2f4be53ef1"
+      "bytes": 11759,
+      "sha256": "7d59fc47781fc98fd600f4b91885d7e805a7bf12ec457de6a3c6528cd0c47d51"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-359.svg",
-      "bytes": 25318,
-      "sha256": "81126c9ccf680c58ddf57c56d8833b4d2fd4585f453a7cdb92a8538647ee77e3"
+      "bytes": 20117,
+      "sha256": "d6be3c0187febb2396b9e12d4273a35588ebce94abe57abbb5b4f150c890cc20"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-360.svg",
-      "bytes": 25502,
-      "sha256": "38bb8f05b6717a7191a55c99256d793fb36205f50bf6dfef0e7b106e36762ccb"
+      "bytes": 11293,
+      "sha256": "35cdcd642c169ef002a493696e4be021ad4b487c243465efb215e486a1430d5e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-361.svg",
-      "bytes": 25401,
-      "sha256": "31258b4ba43de00fdbc54c35420f3c6e13fae12b71d1deb98c3f6d3fe7db1779"
+      "bytes": 13628,
+      "sha256": "21208151538af4093ec1ea2069844173171bf164f03d289e986d159f16afa9b5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-362.svg",
-      "bytes": 32928,
-      "sha256": "09110964a484275c79453094497e34fc8186c31a45f74eff1394f970ddfe2e31"
+      "bytes": 11221,
+      "sha256": "a07a46e06e7fe752c503869892ff92d5ee75da5525f0de56b78873438ec603f5"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-363.svg",
-      "bytes": 25686,
-      "sha256": "66aa1bb2f635692499733a93ab19d2b2cabc2e32be5bc9b73325574ba82b5ee4"
+      "bytes": 15670,
+      "sha256": "167f10f4c65fec5fae25e7cdc62fd06d7c6959654d6c5b87f9b84ab0a1fdc9ec"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-364.svg",
-      "bytes": 23290,
-      "sha256": "23b2457f4aa95154ecd81f82bf5dbbeb5ab385d3fcf7a1611a6514696fb2fd7b"
+      "bytes": 17315,
+      "sha256": "4df00c3917e890ef2d603f7dc22b7a6c2c3f0f4a28dbfe77463b8f68e186c2ac"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-365.svg",
-      "bytes": 46852,
-      "sha256": "128fcc4117016401f782b431394a0a7623571570fa7da2c1217b680b65347e71"
+      "bytes": 34223,
+      "sha256": "1ac2e6362e695f4d875e44158c0e08c4ca63b7b6ce373d50d9d55136c7823147"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-366.svg",
-      "bytes": 119465,
-      "sha256": "734df47f86c95cf0fc26936e467c7016d20fd277fa1a0ae600935d23033a5eb1"
+      "bytes": 113820,
+      "sha256": "84b3877b0d8e546964a603669242a6ee387100dec5b2387558686fdb7bc25d9f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-367.svg",
-      "bytes": 24415,
-      "sha256": "a34e5743926250ae61b939f97be017a04e0b19062e1a1d996dfa1cb821e42d30"
+      "bytes": 13419,
+      "sha256": "76597e63cd78f6482d592b8beb0b2b186eb0ca3168eeed57f7826c31495b28c1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-368.svg",
-      "bytes": 21833,
-      "sha256": "aa005b5e53ba0a03c34524ae7834f28cb47b522fb42db7a8fe83df51117ab6a2"
+      "bytes": 12671,
+      "sha256": "5ee3a54a911acfad5ffda17132c21a53e2f36d0a6ef809fd316844bc26c8f90a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-369.svg",
-      "bytes": 22381,
-      "sha256": "38cc5a41f3e48aa39a626d30cf7a6aeb22c5fa57f5c4ed4d8bd9b2fd34e672f6"
+      "bytes": 13506,
+      "sha256": "8ef9631a346feb01536581a0db1e3266d07641271eec339f112d4c94f553f788"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-370.svg",
-      "bytes": 24239,
-      "sha256": "aa9f3cd6e2aeb197df61445f52d04a8bab38b216214eaa835c0da207df9c08c9"
+      "bytes": 12560,
+      "sha256": "0124b27e228ad3425df52470df1219bb95a83935115827fe85c7b37969f8ff49"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-371.svg",
-      "bytes": 46210,
-      "sha256": "cccba9fa7a67663fc4e44fb4e4e9031664eb9306629fb11aa302818645f8d792"
+      "bytes": 39268,
+      "sha256": "fd335c7c38af037b8133d50bc8550dab06719498ec3502d6837e554d88eb7160"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-372.svg",
-      "bytes": 99972,
-      "sha256": "49dbe556455adf528970bd1413ffe953feb80b8442ec16b29ed5464df96f850c"
+      "bytes": 91074,
+      "sha256": "8251e0ab7a1ac59a74a17ac92fb62bc473da963fece3ce49dfdf2e461b507904"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-373.svg",
-      "bytes": 26010,
-      "sha256": "5486d45e4ab2be9de327eac616da282b93278e90323b38429da83439e925f31f"
+      "bytes": 14595,
+      "sha256": "3f6a3dcd35d46e1b3e8e12458e8ef3d1b0724e14c28fd240a66e79f3e7baac01"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-374.svg",
-      "bytes": 20981,
-      "sha256": "ee3922a1bfb969f3285d4e273288e3288bd7148c7831a1240456a8ee22bcf990"
+      "bytes": 13444,
+      "sha256": "1b222949606815de9badebc2e9447f381e027b1e7ec5d9bf78bb87eb63528841"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-375.svg",
-      "bytes": 46515,
-      "sha256": "7c66a36c52c52d97c9f70608970813fbdaec7f9e84d6344ffc84e9298980ac13"
+      "bytes": 32846,
+      "sha256": "df0845561c3810b2a8ae9c360c95efc67f5e8a6e11f6515a1e3583d8a1f2187f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-376.svg",
-      "bytes": 19620,
-      "sha256": "7642f521f5e9ca861e7096eb5cb6ab1349e6feb2053a0d312cba802e0feef311"
+      "bytes": 13098,
+      "sha256": "adb0c8cdd4468fd3de2f99083cf5b592fb6b3e5ad1d93229d54ae957da245433"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-377.svg",
-      "bytes": 43433,
-      "sha256": "40fa379f50fe26194067a619b5c803c12652df2db0b44b1c5ec7619da4440d92"
+      "bytes": 33832,
+      "sha256": "2430e2c285444f82ef095eb35d02941472a31bb244c5bfb112f6d94e9bbbc448"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-378.svg",
-      "bytes": 15798,
-      "sha256": "7dca092addc5cc7fd94681831c920a1e3b084e6c2fd6c9378417547d7c051b3a"
+      "bytes": 6618,
+      "sha256": "811026ce6214ca7f095af0857115174472b1b028da85ad0be680a184034bd1fa"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-379.svg",
-      "bytes": 22270,
-      "sha256": "7621010a1551317678e0ec4698db9f9766deb20d192052f95ac18fa813fec189"
+      "bytes": 10150,
+      "sha256": "14a9a488176a61e8dd24ac0508a34f8276612b8c42aee99b4ef494582031b8b8"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-380.svg",
-      "bytes": 40875,
-      "sha256": "be343282e2953c330905e7c01edad02d436cbbac69bbdcb4ffd43a61d91f72f4"
+      "bytes": 31504,
+      "sha256": "fdd5cf70e28937d47327164195647b57ae16ea7f23debae74003e26fa87972c1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-381.svg",
-      "bytes": 25318,
-      "sha256": "cf52ce6c1d870d06724b8818fe9f834134951eb61798494b772134c9e3c4fc03"
+      "bytes": 13753,
+      "sha256": "bfff6c1247d08bd73cff4d67d615fc43e7b45d5d0353bdc149cf263e923c3374"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-382.svg",
-      "bytes": 28813,
-      "sha256": "687c406f6d3e4efe3486c5fac210a6ab510cfd1fb8ae44818e768a27f4c9090c"
+      "bytes": 18405,
+      "sha256": "40933577a3aa9f2e5585dcd0280a1d7f194d711550c2a676126ab09d561f5586"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-383.svg",
-      "bytes": 42190,
-      "sha256": "498aa051f71876c4f1916de72ea7436c168a2030492f832e85d3637cdca35659"
+      "bytes": 31636,
+      "sha256": "e55be41bd72ae564b069d51930e794442ce79274680defd0ddd4f955d9315df0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-384.svg",
-      "bytes": 26135,
-      "sha256": "20cce504b04516392d8606cb29b65a18dd43b2bff469a32390bcbb4e843f232d"
+      "bytes": 17081,
+      "sha256": "599ca7b515f7bf30efac5835dfe53e2ec6b66532bf8c63273e7fda4376a31bad"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-385.svg",
-      "bytes": 20445,
-      "sha256": "77c07e696b96df44192aa8c03bd7cb120faa9813c13f99fba1a23726b5a5e570"
+      "bytes": 8609,
+      "sha256": "cfc688a9075d549293f8e63df8f423a03db7ff203f9cf6c1250fea8538cae621"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-386.svg",
-      "bytes": 19004,
-      "sha256": "2c3b065d6ebcdafccf71950d1c0e169cb47b3e04990bbdfd1b69b93019330b1d"
+      "bytes": 8011,
+      "sha256": "8e2a2e8206939465e3ccf3e977a8f4301696ae1a28ddf8d0c87a56f600a74c2a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-387.svg",
-      "bytes": 21511,
-      "sha256": "e90cf6200b5956f440b308d3c480562528cb0ae2035276ba68f7b3f6ea4cd52e"
+      "bytes": 14214,
+      "sha256": "18e2119d235c35f657dcf287aeb1b0f9c452fe41371f0aa2a87afbf374881452"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-388.svg",
-      "bytes": 23097,
-      "sha256": "0fb2fd2e9ab12293b562619fbb9e13acc4c3a90b5a89b775f30a339873077d78"
+      "bytes": 11119,
+      "sha256": "8098b22ade93ae5958f281f81225a7352561240fe4f0c6cf61b5bb5829b5f758"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-389.svg",
-      "bytes": 25425,
-      "sha256": "5beb7b5594a8f65db8601548a42fcbaf556e6b4ae290f42235984b62b79c538b"
+      "bytes": 14235,
+      "sha256": "7df35a9687bcaae2227192cdb138b9b2701a72398a796803809360fe9df8560a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-390.svg",
-      "bytes": 97819,
-      "sha256": "d33ae496b504d1b30d18dcff44978c80396b582db0429674d52f1c735605306a"
+      "bytes": 91272,
+      "sha256": "cf3437eab9c196f11d359015d6178ddaee6aa1d0ff9b2e9bb0d67554a7726bf7"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-391.svg",
-      "bytes": 22595,
-      "sha256": "36681f84acae3b2101de67b2003c081d0cf1c59730aeda3574ad541564cdef2b"
+      "bytes": 9447,
+      "sha256": "7631700640d541d5ac3de964e556ac776637213b79736ea976759d5e85e7a2cc"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-392.svg",
-      "bytes": 59174,
-      "sha256": "ac43287aec6e271edfc035b12a45d08ae774a5269b2b84280c3f324ab5988c52"
+      "bytes": 55319,
+      "sha256": "e369a8f5fee090529f7444b6a0c7b0bce3b4c1487226fe9624268a0abb427c3d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-393.svg",
-      "bytes": 14477,
-      "sha256": "0b7af72b1118fd50b271ec1388e95642d83be69ed7dc904af86e1402927b6454"
+      "bytes": 7683,
+      "sha256": "0a95709c50375e4415f3d092aacf697a088196f1021d3148f174c83ed28296e1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-394.svg",
-      "bytes": 22833,
-      "sha256": "53ef5d63f40d50777edb4fc56fee882620a22d1d9da254c5b5345cbc03603de6"
+      "bytes": 9591,
+      "sha256": "be1c761da9a866f8a6c56372bb9a0e5dbce3a9de17244ff1f951df3f894665b4"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-395.svg",
-      "bytes": 18742,
-      "sha256": "bd0ed0a4371b3433ef11152aafab9bbbc82abffc2252a0c0fea6d06554914047"
+      "bytes": 11216,
+      "sha256": "3fbcc7a794e3e6252f4486662c8e03136a50ec81d99afac98a8aad039258223d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-396.svg",
-      "bytes": 82470,
-      "sha256": "71b140d9cdf4cca2e0059349c72549ec937f1e419d9cee59a4b58eef9ef0051f"
+      "bytes": 69665,
+      "sha256": "a7bde9ccfb1110677c9649490788656af7b107c3098a4bc3836ddf16ab9f3cbe"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-397.svg",
-      "bytes": 101050,
-      "sha256": "02592f731f8eeafba4712e1da962350ea59174584ea2b2f8529b707a193040db"
+      "bytes": 91214,
+      "sha256": "d3ab65cf6d1af2cda4223230cb565e0a96d0159617d3b5c880f3c593f841d45d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-398.svg",
-      "bytes": 14594,
-      "sha256": "4a00276802dc449947e985a41dd0ad67eb41960d4afcdfdc447e200171945ed8"
+      "bytes": 7497,
+      "sha256": "0cc136e502e82f53c029425b74ec95be7423b479869bb9f2348e6c767037985a"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-399.svg",
-      "bytes": 21167,
-      "sha256": "4dfd50eaea0af1a7ac01ef726c895a6134e68017cfa07b14c91461703a06c26f"
+      "bytes": 11546,
+      "sha256": "d4299907a822ec9a1a164321d1a2b784ba8c4929da5d4748cd5903921777d8ac"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-400.svg",
-      "bytes": 21011,
-      "sha256": "f7f17ff550cabb660e340f48bc2905e4a521c66d8c9726cab7710c9c62494aef"
+      "bytes": 8535,
+      "sha256": "9f695d67ab38aaa9ecf4d3103f42612ad03b1a4c6f9a266375173aee701a9092"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-401.svg",
-      "bytes": 25309,
-      "sha256": "88810efa0a640824cddca5aa638fb2891b5c6ff8b3aa271e2db27dd700644f4b"
+      "bytes": 10553,
+      "sha256": "f3843c41f3d9b18854307f1ef90464f5c6e59647213b6ac1ad910e0f76eb11c4"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-402.svg",
-      "bytes": 33631,
-      "sha256": "f384b016c6ce9bdf42b14a605cc829f0dcc9909feeff58d95b15484deb9419fd"
+      "bytes": 22358,
+      "sha256": "7b8593673907bd507434e966aacf27ba4c0204c940dd9a19807ec9dd14a682c2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-403.svg",
-      "bytes": 20377,
-      "sha256": "ff7946ce6161e4fdea96fd45161462c76e5ed79b4be3221b7f593eb0b1dd4375"
+      "bytes": 7820,
+      "sha256": "964aa91535b40d95a25a7b113c0ffcc397a1931c055cc6e5f0589723c0b0f852"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-404.svg",
-      "bytes": 21139,
-      "sha256": "6a566eae11b519949ac5e51ab97e13e19bca282e119b597bca60194fa594ce6d"
+      "bytes": 11663,
+      "sha256": "34eb26da2e1bc4fa99ab729a2ef789c04804f15dd47168219af2a4934ef2bf95"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-405.svg",
-      "bytes": 22397,
-      "sha256": "db9bb412cd50a68fee7ca51234456bb6c3320627b7c2e96bbea18523ec4fe741"
+      "bytes": 10255,
+      "sha256": "15136700ad657539a5911630bb8a591e05c184a6e03f981b1af1cc35b84659f0"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-406.svg",
-      "bytes": 30082,
-      "sha256": "c7f4497d9a2d4b24ff0ea6e600c05b61e61dc7dadf84a102b4368c87cf8c41c9"
+      "bytes": 14813,
+      "sha256": "8a34ed69c5bdccf9199ee8981d9aa9ed3b48ad66c02007c8d428ee88c6fda607"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-407.svg",
-      "bytes": 20376,
-      "sha256": "ba97990f0da83232bf58e89e4cc70360397bff1c2928a636e031747556309dd3"
+      "bytes": 4645,
+      "sha256": "d356cfc74539e9576105a76740462f6c2e880f8cfef76bdfe983181174885a42"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-408.svg",
-      "bytes": 51452,
-      "sha256": "14c36662c93987259e1d6825b3b912d15e19d96186067a5aedce6fa8194e3756"
+      "bytes": 36205,
+      "sha256": "a02aa6979b785e5e505a9205ec47644e26aef26b4dff1c3f291bf8e81b3f7d00"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-409.svg",
-      "bytes": 45711,
-      "sha256": "48ebfd733368ef5ae1db1f3a2d2363abe7393863be4f7c6e74215c8abcda5a1c"
+      "bytes": 37346,
+      "sha256": "e384310aa5024fe7638d8ceea61a6410d28a29808de6d40bb53922372c8ed5fa"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-410.svg",
-      "bytes": 36010,
-      "sha256": "e297e7cf9dbf516616be42c500212e0e180c5645d36c2272b930c867a047c178"
+      "bytes": 29351,
+      "sha256": "148ad85c1cd92c89b3462775edf00b101a2f78fd7a76cabc3dbddbe523c4c86b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-411.svg",
-      "bytes": 29374,
-      "sha256": "a34721dc6fe5b8aa27ece0375f45ede80a51d2a355c992a4abdc71f5b08415eb"
+      "bytes": 17396,
+      "sha256": "bedfc7873db9ca0389f52b5a16a642495e3a59cce74cffb8c31c2af73156e2ff"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-412.svg",
-      "bytes": 144845,
-      "sha256": "83654392f111fc5afe110bcdd66507b9d2edd98d26ea68a915e6df7d49087e82"
+      "bytes": 133464,
+      "sha256": "2254e2fadc01452f4543680a53bc49fa1ce8e3d4a7420378e271265240924762"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-413.svg",
-      "bytes": 95980,
-      "sha256": "53da250a313eb0e172a7b48c42eea1521d63e2044ccf859223965f03a02abc59"
+      "bytes": 86004,
+      "sha256": "832d1ee39534acb142dd742c29028609eff1f6fb005646cb32c9e89cda64b976"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-414.svg",
-      "bytes": 89589,
-      "sha256": "dae60bc88eda8c38bb4ccea4fec2369bc80d1447319e4dbfae4e7beaf9f38342"
+      "bytes": 80332,
+      "sha256": "a54a5953af3ccdf7a35e16e7bcda5ce1c9490b8251b3fafcbd785197e44bff9d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-415.svg",
-      "bytes": 59781,
-      "sha256": "5208c97ac5be81a13d4793aae77c4c6d3c3b0c40cb5252814a50956aca30def6"
+      "bytes": 45205,
+      "sha256": "79054e994d5ded1d24e0bf83e00ba4c32335282ca5a0be1d9f905f61d872e08b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-416.svg",
-      "bytes": 24073,
-      "sha256": "b03604f6b2fd73668befd01fa00333e5ef583a757c680fc99ce9b3b69229ed7e"
+      "bytes": 10117,
+      "sha256": "5c17ce8fd7f616069c1114e9c1f889f4f0881aa51f79c8cacc62f4f3723ae910"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-417.svg",
-      "bytes": 55968,
-      "sha256": "36b745f4a03ba1d4cca1d3a698c29779619ccbea90032ff7857cf81f1f731b7d"
+      "bytes": 45100,
+      "sha256": "75461528641805a67d4c90652c76e245bdcfa9f64cc24b283be3bddfd5967d2d"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-418.svg",
-      "bytes": 13383,
-      "sha256": "6c9cfe80a7ae782f8a1c0bee01dc3ccf20cd7d2713efe40b72e85b29ab56968f"
+      "bytes": 5867,
+      "sha256": "c22190210522e3b5920056c23d756ce0a689371805c0c0530a530359cb0db4be"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-419.svg",
-      "bytes": 66376,
-      "sha256": "16e694c2cc9c289d188237c97adae3e94f3d4c0ca0561497da009775723b7a7e"
+      "bytes": 50218,
+      "sha256": "77bb387d988ee1a4e02a985f657f4772b77a83ac5576b1a222c2c63d23e15be3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-420.svg",
-      "bytes": 23974,
-      "sha256": "7dde789ebeac683b784e508161b1927bac47ed5454dae21a6f866701930dbd54"
+      "bytes": 12836,
+      "sha256": "90c603cfe4e20b3f1273d1ece9ddf72ab4cb41db244cf61c7cca6fcc7117b3b1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-421.svg",
-      "bytes": 271482,
-      "sha256": "e3225273b9592804abc66b17b920c8f492ea626b01a3d45afe3bf96e5d9ec7d3"
+      "bytes": 263362,
+      "sha256": "061486e3ca1005ea984d1e3a5d65988a99629c22904fae647d28a71497c2856b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-422.svg",
-      "bytes": 28529,
-      "sha256": "cf5cf1c1b6b112243c38e5d94c9685f1dbc3a472bca4c64c22c59001f6580227"
+      "bytes": 10062,
+      "sha256": "81d4bc42f7c087ceb01ca63b0cafe1a920d26feff797981bf796a61f2d46ba78"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-423.svg",
-      "bytes": 35968,
-      "sha256": "23d9fc39d65292f43c809627d27aab5176e6b58e003d59a17d87e1b8d8e89c25"
+      "bytes": 25085,
+      "sha256": "d0a80821a3a2b0f5dec6998ffef831963c29e4b158fb7ac4b93b37756fbdeaed"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-424.svg",
-      "bytes": 45038,
-      "sha256": "8ecd40c8aaa05774069b94cc56b92f49874cb0954eef824d1fdfcd782d19d5ea"
+      "bytes": 34928,
+      "sha256": "72c2f7b1171bfc39c39fca6442b6376d5856cc6c9d3a58c329454bbb07bea01c"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-425.svg",
-      "bytes": 30076,
-      "sha256": "626c4097183047e4dd9480f0141dcab4a69ebe3ff44606dcd0938ecfdd8ce573"
+      "bytes": 11740,
+      "sha256": "7eb3fa91b7c755bd30fb01c36cd955b1797e0418a16713c9668101d187a5cdf6"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-426.svg",
-      "bytes": 130733,
-      "sha256": "872535cebd842b79d79bb589853b2a8d8f5eb943bfa22655f0f5f2578a2a21a2"
+      "bytes": 120001,
+      "sha256": "f85ea857dc08d52db9533ff7bb7c794135697814b867b20f2cf0902c37e75597"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-427.svg",
-      "bytes": 43663,
-      "sha256": "84a1f1a184aa7e481dc67695b134371d31447194a3791050f4bb3d00d02642f7"
+      "bytes": 34477,
+      "sha256": "57e4b1d47c458b1488411f51faf8d4b7fdf0e9f30abd29f720bc0aa9fcd36eaa"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-428.svg",
-      "bytes": 49581,
-      "sha256": "13b7ff0348ca8594971466edb19e455ea03953e1c1c4cd2a79fcc2cba99970dd"
+      "bytes": 35997,
+      "sha256": "d5598f8bb9bd4f646a4966c934be5118f27ac337d955c2ffe7a05dabf10817ba"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-429.svg",
-      "bytes": 153066,
-      "sha256": "782a501b3766f2098f79dd27aaa056538ac3a7556becf8a452cf1a8f39772ac9"
+      "bytes": 143452,
+      "sha256": "5c8b32d314ec3db356ae4c42ff863fd1569c6c1fb9ceabdb7291d112ca7633cf"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-430.svg",
-      "bytes": 121923,
-      "sha256": "7f8af6e1d708690a8c3fa5ad1d58d0c81d40d4181f6f68c6ef97daf1a04d8469"
+      "bytes": 110238,
+      "sha256": "b3d85b30d27b0f08521e85a862b8b7e507fcf53369245ba982de6ecc474f1fbf"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-431.svg",
-      "bytes": 87484,
-      "sha256": "8b0a6990d4ef043024970b563f18ca2dfa9e464eae5f2b4e121cae1996183ea1"
+      "bytes": 79098,
+      "sha256": "586cdcd8c4b4a9840aabd41e6dc99ec4d1c67994d7c82e3c289cc7935ed63b07"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-432.svg",
-      "bytes": 53171,
-      "sha256": "07aefa20a9656a4f7ab10c315136bd911304e65da82eae24c4f497dd4d63cdfe"
+      "bytes": 43215,
+      "sha256": "eb61e74dba37139172b3c21ebfa969950fac12702b73866bcc3fa2bf027c828e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-433.svg",
-      "bytes": 32617,
-      "sha256": "aa7c950e529d2fb4385db98946cc9af6a7085d1377ed01ca72d426751fef5d31"
+      "bytes": 13608,
+      "sha256": "afa0ddddb5c9d5d91d120e32e02ccea30dcf7057e85b37bcc2f6ffe11e27faab"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-434.svg",
-      "bytes": 122119,
-      "sha256": "a57373db56bf88c562ce82a0fb0157b8220f4d2e23a03f4a7784c930b82aaa1d"
+      "bytes": 105554,
+      "sha256": "1d22066f993c874e85ccb843efc1ab4c0e33b53a69d74121ea90114920d5e27b"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-435.svg",
-      "bytes": 23128,
-      "sha256": "6df26af8637e51d32367f7c50289a71e146d3bba09785b5d8eb9d5e398b1e7fc"
+      "bytes": 10530,
+      "sha256": "5670eebec33eca31765d168dda642a4ce8f134872546d92e30b09f118f9f9dc1"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-436.svg",
-      "bytes": 73834,
-      "sha256": "27b63fc1b759c3824717a0b5365f2725e7dc1135b0af7a47f6ddc6129ece318d"
+      "bytes": 56436,
+      "sha256": "480e6f5f0b6051a2260da04f973cfc07addb7a50c86c09561776d78e8bb1492e"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-437.svg",
-      "bytes": 35291,
-      "sha256": "865133314af1fe95f9f702049ff45539872aeb89867778730a2982e0808eadcf"
+      "bytes": 18257,
+      "sha256": "dd1d5efd2f13bdaf40737450d2933237e869294af6211d05fa6aad7da54e90c9"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-438.svg",
-      "bytes": 226989,
-      "sha256": "2788c9189d95c340053a20f5b69548ad85232aff1d6c66a66fd3d9b30c6ab9fb"
+      "bytes": 210971,
+      "sha256": "cc257b7224721304611c9f7c317e41e08f4861947ac56f21a4f7b251134f8a69"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-439.svg",
-      "bytes": 47016,
-      "sha256": "979315db0285c2ed3843af50d321bd0c6edba924229f62419ee401c60a70bc64"
+      "bytes": 24832,
+      "sha256": "b8cb6a459fda73dd022c6052db6f1df6dc138917a791f8e3fccf28bb5e1f62b2"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-440.svg",
-      "bytes": 189530,
-      "sha256": "7dbb6314ad16fae56b5420fe793fce1e676b47b996b7fc22de3622fff1afd820"
+      "bytes": 173474,
+      "sha256": "9855706df714e37c111734bcb81f49524e373926db31f83aa5a8b5dbc904f7ca"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-441.svg",
-      "bytes": 43834,
-      "sha256": "c6b16ff23aa0084b51f7e4152a4ccbd7d51272e5b9c870b5f2a13b8ded25331e"
+      "bytes": 19409,
+      "sha256": "02f175feb956f3981fd65a1f97cc3be8dad7a8c0ac2d9cca7b779c398dc64a1f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-442.svg",
-      "bytes": 46800,
-      "sha256": "f751e0081e810e5d06256ae681c7c13b07ca3ed71b6c031a77e895c7561e556d"
+      "bytes": 22590,
+      "sha256": "92c1dc140b5b6a1cc6905bb04dd5542fcef6f8befedb1d137772360553d0ca1f"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-443.svg",
-      "bytes": 47408,
-      "sha256": "c97c560649c884bf7fc1d800aac8e73db83319e4721fd38c7823aebc30939f54"
+      "bytes": 24316,
+      "sha256": "b95f8b0d9a3cd3a01532f9e6cb3aa2a49b40f0d72fd86b39c3948f1457da0673"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-444.svg",
-      "bytes": 54689,
-      "sha256": "1a5f4151f01bcb5677732ad4738fabcb16060d4ed6e0544671947e851f144733"
+      "bytes": 26041,
+      "sha256": "1bfefea4e5b4899289b27f49c264c7580cf29c4dc713d4afbadddcd702fef435"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-445.svg",
-      "bytes": 605,
-      "sha256": "d36c1f9d2498001111e2aa2a8e4fc897f4d129a0ff7dc23cc983702ffb0a021b"
+      "bytes": 451,
+      "sha256": "31ad42f485d3018d11526a1e0cbc1517c0337f29221f22bb8c29a9dc11e43ef3"
     },
     {
       "path": "public/fabrication/laser/panels/mark-sheet-446.svg",
-      "bytes": 12821,
-      "sha256": "9f25f094d0668116adba32f6c586d021377121578a824ded502ee18a34c83953"
+      "bytes": 8008,
+      "sha256": "6d160953ad8b1590625f936c285294fe26858bac096ab5d5dbcfcc768a0efe47"
     },
     {
       "path": "public/fabrication/laser/representative-fit-kit.zip",
-      "bytes": 116371,
-      "sha256": "f2a37ae1a21ec638dc000264bf3356da55614348032ab09505a03ad0f997cba7"
+      "bytes": 116974,
+      "sha256": "b50ec04c554488bc7649ae44ce263170191ea082a1f55e4ec753039239d2e7a4"
     },
     {
       "path": "public/fabrication/laser/samples/representative-jaw-fit-manual-trim.svg",
@@ -4620,8 +4625,8 @@
     },
     {
       "path": "public/fabrication/laser/samples/representative-jaw-fit-mark.svg",
-      "bytes": 281872,
-      "sha256": "e026805c36e82da8dda0762796e57531e8f7c30050f0414a4beb11a8d8c87f51"
+      "bytes": 283445,
+      "sha256": "136c8b5642f839e438becb1b9eceee2c40d75d54869778c70a07057b12065968"
     },
     {
       "path": "public/fabrication/print/README.txt",
@@ -4670,13 +4675,13 @@
     },
     {
       "path": "public/fabrication/small-foil/foil-kit-180mm.zip",
-      "bytes": 1796990,
-      "sha256": "3a5b2613bd9823fb748a60b5ae9dea15453117d4ae80d58265191af7b90b5bff"
+      "bytes": 1968378,
+      "sha256": "9d99556ff16a270cd652e0a79ca71421394e6b156c155a502ecc9af135ea1f71"
     },
     {
       "path": "public/fabrication/small-foil/manifest.json",
       "bytes": 1932961,
-      "sha256": "0d76bcb7bf2ee7ec86ddc36ce618b135ed08dc11d367825892b2738e1404e756"
+      "sha256": "826c2471fc34ed260edc4dde3140db08d345a53085f14319d139e50fc6513dca"
     },
     {
       "path": "public/fabrication/small-foil/marking-master.svg",
@@ -4690,8 +4695,8 @@
     },
     {
       "path": "public/fabrication/small-foil/muchado-foil-180mm.glb",
-      "bytes": 586532,
-      "sha256": "57bb6fc7166d7710618c424471000330254164c1cca06b14571b465c43751461"
+      "bytes": 756532,
+      "sha256": "8d285421e50b63f8597183eb07378a65d2b2acfc58aefb1b81d20db0de00210c"
     },
     {
       "path": "public/fabrication/small-foil/sheets/mark-01.svg",
@@ -4770,13 +4775,13 @@
     },
     {
       "path": "scripts/generate-laser.py",
-      "bytes": 43100,
-      "sha256": "7005b9bfdeb53a1cc48862517d60cd587afeffc8a8b9cf6166b2b2dec2c2a0f4"
+      "bytes": 44939,
+      "sha256": "ddadd4b34224d798350deedf9a830cbc9a434f38cabc858ec1fa0262378c2fd7"
     },
     {
       "path": "scripts/generate-laser.ts",
-      "bytes": 1100,
-      "sha256": "b8e116a08eafb62572c4ab3e1e5be0c8dea78a4986ee4b4c520ac0de690751b4"
+      "bytes": 1172,
+      "sha256": "7529e189b2fde3beebbd051f1b619ac48f5957a29fb41f9009b8916bcd71d9f6"
     },
     {
       "path": "scripts/generate-print.py",
@@ -4785,8 +4790,8 @@
     },
     {
       "path": "scripts/generate-small-foil.py",
-      "bytes": 47258,
-      "sha256": "bce3734bcaa34d649fb0a7f7d5b725322da81952484c3d92e410b3e2f323371a"
+      "bytes": 47533,
+      "sha256": "7c3ff4a64f986ca3d73bb0e07620d5ff73bd746720ae0841ae3f9ce805ffc97e"
     },
     {
       "path": "scripts/generate-small-foil.ts",
@@ -4815,8 +4820,8 @@
     },
     {
       "path": "scripts/smoke.ts",
-      "bytes": 5474,
-      "sha256": "1b48c0dc5dd22d1e483a7fa493fdbc00601e93a50b8c8c91771077a450e2b257"
+      "bytes": 5542,
+      "sha256": "381dc4b3f6d67ebe2d9b236b3f4b4e824c1ece5bbd4cd3576535831b4ad601ba"
     },
     {
       "path": "scripts/verify-assets.ts",
@@ -4845,13 +4850,13 @@
     },
     {
       "path": "shared/fabrication-downloads.test.ts",
-      "bytes": 607,
-      "sha256": "f6a25e77dbeb5aab1c33d20bce22a56aa483e9b6ef08ff27c95d25860f145c65"
+      "bytes": 604,
+      "sha256": "a2b8af5e82ebcfb48d5293b7dc2c52226a5f01be3b8f813578fd6beb4f371f8f"
     },
     {
       "path": "shared/fabrication-downloads.ts",
-      "bytes": 598,
-      "sha256": "7b3cee10d169f544ddb3261cb4cb389a16e9c6369df202dd775247f7677fdb21"
+      "bytes": 988,
+      "sha256": "e043c39571ff01bf34513d366d17287707d95086ff7f61389957ea6a81c1a066"
     },
     {
       "path": "shared/fabrication.ts",
@@ -4865,8 +4870,8 @@
     },
     {
       "path": "shared/laser-manifest.test.ts",
-      "bytes": 8522,
-      "sha256": "c2003fde6da6b9fda48db5777a397f06521577b49e51cfc09b99834d9bc15fb1"
+      "bytes": 10920,
+      "sha256": "e6f8e8cf5e5a1a205df7624f7121509840177eba35562c0898754e3ecc238308"
     },
     {
       "path": "shared/laser-topology.test.ts",
@@ -4880,8 +4885,8 @@
     },
     {
       "path": "shared/poem.ts",
-      "bytes": 1445,
-      "sha256": "fc878e7567300872a61a2826f505a576b88a94fabd4650563be9295179613a7f"
+      "bytes": 1844,
+      "sha256": "ba694f242a89117da3045fb954f05ea5752da805376e2ac8393773354a586701"
     },
     {
       "path": "shared/print-manifest.json",
@@ -4910,8 +4915,8 @@
     },
     {
       "path": "shared/small-foil-glb.test.ts",
-      "bytes": 8745,
-      "sha256": "5e8107bd008acffc18b605713ab4c3515537190ff9d6154297c2a0e943985586"
+      "bytes": 11023,
+      "sha256": "860233892314c9629697b9f40d8bbe181da2571c9ba30ddae08c6932b7800be4"
     },
     {
       "path": "shared/small-foil-manifest.test.ts",
@@ -4965,13 +4970,13 @@
     },
     {
       "path": "src/components/fabrication-preview.tsx",
-      "bytes": 6210,
-      "sha256": "399c723b0e4eb302d1d68dc44c094bbb99707e2973464ab4c92f8b251f085a06"
+      "bytes": 6486,
+      "sha256": "d1a4961169a36575c3d13a13f79afe2785f9d20d29254764e1bd9a8d78841de2"
     },
     {
       "path": "src/components/flat-foil-preview.tsx",
-      "bytes": 2522,
-      "sha256": "7aba1794ab1852371a35256fbf7235082dccaea5f6f96388d1fcb9b110296f54"
+      "bytes": 2515,
+      "sha256": "483f3cd03f21793404c3bdd6bc0ae13e357bb1d90242f7601e74f9a3553838de"
     },
     {
       "path": "src/components/project-state.tsx",
@@ -5025,18 +5030,18 @@
     },
     {
       "path": "src/lib/foil-skin.ts",
-      "bytes": 4650,
-      "sha256": "e71a3ecfe16aaaa6c13aab8ad98bba292c7515e66d933356f15349c2aa7167b2"
+      "bytes": 5620,
+      "sha256": "f3051de612ef4171c3f3d45709c6162ac54d1dfbbc04a6be453a611060a766e8"
     },
     {
       "path": "src/lib/inscription-view.test.ts",
-      "bytes": 1781,
-      "sha256": "14bf4c2e28ba54e13559b0d6b1930e13decb9f9bb4480d7e98ee362cb5567d2c"
+      "bytes": 6223,
+      "sha256": "204d4d9f32d68be93481496fb735e2ac3a648a321d45b3056531dbdd8a1c5ff2"
     },
     {
       "path": "src/lib/inscription-view.ts",
-      "bytes": 1424,
-      "sha256": "7f02da820a46c87d6cfb74716b1b0efe0c45e42bd037739d571b6ea4d926479e"
+      "bytes": 2904,
+      "sha256": "eed0181d765d2bf588f837d9d5ba0384799fc9253963b06e63a1c0b2cb01142b"
     },
     {
       "path": "src/lib/project-query.ts",
@@ -5045,8 +5050,8 @@
     },
     {
       "path": "src/lib/sculpture-scene.ts",
-      "bytes": 10472,
-      "sha256": "1eb2ee9ea2ac62be6f1313bc1bb31c10ee4affe3cdb979396585541572ea9e25"
+      "bytes": 10581,
+      "sha256": "a9f8047ac2566e805ecb7c771441ad57fd1fb9ef7be3f15fd46ed63fe4acdde2"
     },
     {
       "path": "src/lib/studio-reflection.ts",
@@ -5075,8 +5080,8 @@
     },
     {
       "path": "src/pages/foil.tsx",
-      "bytes": 17189,
-      "sha256": "c043e2d91a561195896678a3261cf284ff9de8c4a4da926be7cfe5572139de9c"
+      "bytes": 17170,
+      "sha256": "dbbd06ed5211d976954de66f0d90f3f01c6ca1b3d3078130a187892556b48e8c"
     },
     {
       "path": "src/pages/studio.tsx",

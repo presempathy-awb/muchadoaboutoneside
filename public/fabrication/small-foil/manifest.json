@@ -24,14 +24,14 @@
   "generator": {
     "script": {
       "path": "scripts/generate-small-foil.py",
-      "sha256": "bce3734bcaa34d649fb0a7f7d5b725322da81952484c3d92e410b3e2f323371a"
+      "sha256": "7c3ff4a64f986ca3d73bb0e07620d5ff73bd746720ae0841ae3f9ce805ffc97e"
     },
     "requirements": {
       "path": "scripts/small-foil/requirements.txt",
       "sha256": "3fc689f9b01f63467bac0d57efdeddee6ac7002b3461677f462612c770e4790e"
     },
     "imageMagick": "Version: ImageMagick 7.1.2-31 Q16-HDRI aarch64 8309dc92a:20260903 https://imagemagick.org",
-    "textureRaster": "4096 x 256, stripped 8-bit RGB PNG embedded in GLB"
+    "textureRaster": "8192 x 256, stripped 8-bit RGB PNG embedded in GLB"
   },
   "licensing": {
     "projectAuthored": "MIT OR Apache-2.0",
@@ -109279,8 +109279,8 @@
       "sha256": "253bd80de63c07f8b029a45d7ac16d8cc5867ed2233d48e12ac17a845fe71671"
     },
     "muchado-foil-180mm.glb": {
-      "bytes": 586532,
-      "sha256": "57bb6fc7166d7710618c424471000330254164c1cca06b14571b465c43751461"
+      "bytes": 756532,
+      "sha256": "8d285421e50b63f8597183eb07378a65d2b2acfc58aefb1b81d20db0de00210c"
     },
     "sheets/mark-01.svg": {
       "bytes": 523030,
