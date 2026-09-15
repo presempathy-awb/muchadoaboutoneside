@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "342d036363ec536d78e8fff084b3d9fbde01529e",
+  "sourceCommit": "0ee1415ea23ab64aac72b9f621b9c783f6e2a581",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 21941,
-      "sha256": "d8abafc2608607eeaa4b073e1e05488e2c8ad444d20eaafbeb68823705df3a49"
+      "bytes": 22699,
+      "sha256": "70c9b5f47ac00f518285db5f26b496eff82bb153582fa5f520299bb25fb5aca6"
     },
     {
       "path": "REUSE.md",
@@ -4905,8 +4905,8 @@
     },
     {
       "path": "shared/large-sculpture-guide.ts",
-      "bytes": 10494,
-      "sha256": "128c76855a78c09aa2367abcaae3efb4fabafb8235ebe57ddf3c645ff89adc6c"
+      "bytes": 15338,
+      "sha256": "390eaadba633cb74235b29a329c971bbed7fa4148175aead3c5a0c0f4516dca5"
     },
     {
       "path": "shared/laser-manifest.test.ts",
@@ -4945,8 +4945,8 @@
     },
     {
       "path": "shared/project-instructions.ts",
-      "bytes": 6160,
-      "sha256": "173af57cd0e0b735624a1c62c03e0670da81a1f2519ab2033a091c012a7522b3"
+      "bytes": 6410,
+      "sha256": "20de5681d671aa5b316b5b6ab33c8f3b4b3ec8c58ad8a4164035e3deca3ded4b"
     },
     {
       "path": "shared/project.ts",
@@ -5055,8 +5055,8 @@
     },
     {
       "path": "src/components/dimensions-overview.tsx",
-      "bytes": 4200,
-      "sha256": "bdeafd9893e57e0a84e6d1c8fcbef8a36c213522e65e27bb9d5eb92716d063bf"
+      "bytes": 4362,
+      "sha256": "82ba6f2f3ca72f32577e5b1488ac5ac1a815a1ded2dd1b36937d3cc3b636f17d"
     },
     {
       "path": "src/components/fabrication-preview.tsx",
@@ -5070,8 +5070,8 @@
     },
     {
       "path": "src/components/large-sculpture-guide.tsx",
-      "bytes": 3637,
-      "sha256": "3ca09ec46535cce2908f69b739e4f9428802a193caa758d2b6a1769955122ea8"
+      "bytes": 4990,
+      "sha256": "dde11689e7c8531473440c4681fbd7eedeff89a151c2553fb93bc23dfd887944"
     },
     {
       "path": "src/components/project-state.tsx",
@@ -5110,8 +5110,8 @@
     },
     {
       "path": "src/instructions.css",
-      "bytes": 12771,
-      "sha256": "b14a4a8a3aeff3bd651977adc5dac920c501092a652b73092785f1e9e0b3f58a"
+      "bytes": 13953,
+      "sha256": "44784954bf5903b781d9ea0fdaea0ece0b38c49451b675f4619e904695056ef0"
     },
     {
       "path": "src/lib/foil-geometry.test.ts",
