@@ -10,6 +10,7 @@ import {
   PenLine,
 } from "lucide-react";
 import { useEffect } from "react";
+import { AssistanceCredit } from "@/components/assistance-credit";
 import { DesignCredit } from "@/components/design-credit";
 
 const links = [
@@ -142,6 +143,7 @@ export function AppShell() {
           <div className="page-footer-credit">
             <span>Much Ado About One Side</span>
             <DesignCredit />
+            <AssistanceCredit />
           </div>
           <span className="page-footer-links">
             <a

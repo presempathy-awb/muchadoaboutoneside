@@ -4,6 +4,8 @@ A sculpture studio for the figure-eight snake, with an aluminum-foil inscription
 
 **3D design by [iani schrodinger](https://www.facebook.com/profile.php?id=100009324056794).**
 
+Poem and website created with help from Claude and ChatGPT.
+
 - Public source: [presempathy-awb/muchadoaboutoneside on GitHub](https://github.com/presempathy-awb/muchadoaboutoneside)
 - Canonical project archive (sign-in required): [awb/muchadoaboutoneside on Gitea](https://git.telpher.stream/awb/muchadoaboutoneside)
 - Public site: [muchadoaboutoneside.com](https://muchadoaboutoneside.com)

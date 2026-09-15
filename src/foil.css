@@ -76,7 +76,8 @@
   text-transform: uppercase;
 }
 
-.foil-intro-note .design-credit {
+.foil-intro-note .design-credit,
+.foil-intro-note .assistance-credit {
   display: block;
   margin-top: 12px;
   font-size: 13px;
