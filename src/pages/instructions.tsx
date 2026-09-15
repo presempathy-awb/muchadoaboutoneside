@@ -3,12 +3,14 @@ import {
   Box,
   Check,
   ExternalLink,
+  Layers,
   PackageCheck,
   Printer,
   Ruler,
   Send,
 } from "lucide-react";
 import { DimensionsOverview } from "@/components/dimensions-overview";
+import { LargeSculptureGuide } from "@/components/large-sculpture-guide";
 import {
   HANDOFF_CHECKLIST,
   INSTRUCTION_SECTIONS,
@@ -20,6 +22,7 @@ import "../instructions.css";
 const sectionIcons = {
   dimensions: Ruler,
   make: Check,
+  "large-sculpture": Layers,
   pack: Box,
   send: Send,
 } as const;
@@ -117,11 +120,11 @@ export default function Instructions() {
         </div>
         <div className="instructions-intro">
           <p>
-            A practical path from Jill’s paper lettering to the 180 mm printed
-            and foil study, with the full-scale geometry kept as a conceptual
-            reference.
+            Jill’s paper lettering, the 180 mm printed study, and a practical
+            fitting and attachment guide for aluminum on iani’s large wooden
+            sculpture.
           </p>
-          <span>Read in order · dimensions → make → pack → send</span>
+          <span>Dimensions → make → fit the large sculpture → pack → send</span>
         </div>
       </header>
 
@@ -173,7 +176,7 @@ export default function Instructions() {
             <span className="instructions-section-index">02</span>
             <div>
               <p>Choose one path</p>
-              <h2 id="make-title">From poem to physical study</h2>
+              <h2 id="make-title">From poem to physical work</h2>
             </div>
           </header>
           <div className="instructions-paths">
@@ -207,13 +210,15 @@ export default function Instructions() {
           </p>
         </section>
 
+        <LargeSculptureGuide />
+
         <section
           id="pack"
           className="instructions-section"
           aria-labelledby="pack-title"
         >
           <header className="instructions-section-head">
-            <span className="instructions-section-index">03</span>
+            <span className="instructions-section-index">04</span>
             <div>
               <p>Protect each material</p>
               <h2 id="pack-title">Pack for pressure, moisture, and motion</h2>
@@ -240,7 +245,7 @@ export default function Instructions() {
           aria-labelledby="send-title"
         >
           <header className="instructions-section-head">
-            <span className="instructions-section-index">04</span>
+            <span className="instructions-section-index">05</span>
             <div>
               <p>Confirm before mailing</p>
               <h2 id="send-title">Arrange the CoLab iani handoff</h2>

@@ -14,12 +14,13 @@ describe("project instructions", () => {
     expect(INSTRUCTION_SECTIONS.map((section) => section.id)).toEqual([
       "dimensions",
       "make",
+      "large-sculpture",
       "pack",
       "send",
     ]);
     expect(
       new Set(INSTRUCTION_SECTIONS.map((section) => section.id)).size,
-    ).toBe(4);
+    ).toBe(5);
   });
 
   test("keeps the three production paths separate and downloadable", () => {
@@ -27,7 +28,7 @@ describe("project instructions", () => {
     expect(PROJECT_PATHS.map((path) => path.title)).toEqual([
       "Letter the poem",
       "Build the 180 mm study",
-      "Study the full-scale surface",
+      "Fit aluminum to the large wood sculpture",
     ]);
     for (const path of PROJECT_PATHS) {
       expect(path.downloads.length).toBeGreaterThan(0);
@@ -60,6 +61,7 @@ describe("project instructions", () => {
     expect(html).toContain("Full-scale conceptual panel kit");
     expect(html).toContain('id="instructions-print"');
     expect(html).toContain("Print packing slip");
+    expect(html).toContain('download="iani-large-wood-aluminum.txt"');
     expect(html).not.toContain("<form");
   });
 });

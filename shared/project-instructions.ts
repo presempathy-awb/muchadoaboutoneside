@@ -3,6 +3,7 @@ import { FABRICATION_DOWNLOADS } from "./fabrication-downloads";
 export const INSTRUCTION_SECTIONS = [
   { id: "dimensions", label: "Dimensions" },
   { id: "make", label: "Make" },
+  { id: "large-sculpture", label: "Large wood" },
   { id: "pack", label: "Pack" },
   { id: "send", label: "Send" },
 ] as const;
@@ -63,14 +64,14 @@ export const PROJECT_PATHS = [
   },
   {
     number: "03",
-    title: "Study the full-scale surface",
+    title: "Fit aluminum to the large wood sculpture",
     summary:
-      "Use the large panel files as a conceptual mapping reference for the original sculpture geometry.",
+      "Fit the reference patterns to iani’s actual wooden surface, then use the installation guide below to prepare and attach the aluminum.",
     steps: [
-      "Begin with the representative fit kit and confirm the surface mapping on paper.",
+      "Measure the actual sculpture and confirm a smooth, continuously supported surface before covering open ribs or laths.",
+      "Begin with the representative fit kit and confirm the surface mapping on paper. The panel set is a conceptual reference with no completed physical fit test.",
       "Use the body and jaw marking masters as separate artwork; keep the jaw seam and crossing clearance visible in planning.",
-      "Treat the panel set as a dimensioned reference. It has geometric validation but no completed physical fit test.",
-      "Choose stock, adhesive, machine settings, and final trimming only after shop review and physical coupons.",
+      "Test the actual aluminum, wood finish, and adhesive on a matching sample before marking or attaching the full set.",
     ],
     downloads: [
       {

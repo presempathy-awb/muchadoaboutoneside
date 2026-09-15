@@ -62,7 +62,7 @@
   z-index: 5;
   top: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   max-width: 1380px;
   margin: 0 auto;
   border: 1px solid #d8dbd0;
@@ -74,8 +74,8 @@
   display: flex;
   min-height: 58px;
   align-items: center;
-  gap: 11px;
-  padding: 0 18px;
+  gap: 8px;
+  padding: 0 12px;
   border-right: 1px solid #d8dbd0;
   color: #405248;
   font-size: 13px;
@@ -84,6 +84,9 @@
 
 .instructions-nav a:last-child {
   border-right: 0;
+}
+.instructions-nav svg {
+  flex: none;
 }
 .instructions-nav a:hover {
   background: #e9ece2;
@@ -224,6 +227,156 @@
 
 .instructions-downloads a:hover {
   background: #e8ece2;
+}
+
+.instructions-cladding-intro {
+  max-width: 76ch;
+  margin: 0 0 26px;
+  color: #4c5a50;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.instructions-cladding-setup {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.6fr);
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.instructions-cladding-setup > * {
+  min-width: 0;
+  margin: 0;
+  padding: 25px;
+  border: 1px solid #cbd3c5;
+  background: #eef0e7;
+}
+
+.instructions-cladding h3 {
+  margin: 0 0 12px;
+  color: #304b3a;
+  font-family: var(--font-serif);
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.instructions-cladding-setup p,
+.instructions-cladding-setup li,
+.instructions-cladding-steps p,
+.instructions-cladding-checks,
+.instructions-cladding-sources {
+  color: #4c5a50;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.instructions-cladding-setup ul,
+.instructions-cladding-checks ul,
+.instructions-cladding-sources ul {
+  padding-left: 22px;
+  list-style: disc;
+}
+
+.instructions-cladding-setup li,
+.instructions-cladding-checks li,
+.instructions-cladding-sources li {
+  margin-bottom: 10px;
+}
+
+.instructions-cladding-layers {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.instructions-cladding-layers li {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 4px solid #829285;
+  background: #fafaf6;
+  color: #304b3a;
+  font-size: 14px;
+}
+
+.instructions-cladding-layers li:first-child {
+  border-color: #8b959e;
+  background: #dde3e6;
+}
+
+.instructions-cladding-layers li:last-child {
+  border-color: #927957;
+  background: #e9dfce;
+}
+
+.instructions-cladding-layers li > span,
+.instructions-cladding-sources li > span,
+.instructions-cladding .instructions-downloads small {
+  display: block;
+  color: #59645b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.instructions-cladding-setup h3,
+.instructions-cladding-checks h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.instructions-cladding h3 svg {
+  flex: none;
+}
+
+.instructions-cladding-steps {
+  margin: 36px 0;
+  padding-left: 30px;
+  list-style: decimal;
+}
+
+.instructions-cladding-steps > li {
+  padding: 24px 12px 18px;
+  border-top: 1px solid #ccd3c7;
+}
+
+.instructions-cladding-steps > li::marker {
+  color: #526c57;
+  font-family: var(--font-serif);
+  font-size: 22px;
+}
+
+.instructions-cladding-steps p {
+  max-width: 85ch;
+  margin: 0 0 12px;
+}
+
+.instructions-cladding-sources a {
+  color: #244d40;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.instructions-cladding-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 28px;
+  padding: 13px 18px;
+  border-radius: 3px;
+  background: #244d40;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.instructions-cladding-download:hover {
+  background: #193e32;
 }
 
 .instructions-pack-grid {
@@ -415,7 +568,8 @@
     max-width: 650px;
   }
   .instructions-paths,
-  .instructions-pack-grid {
+  .instructions-pack-grid,
+  .instructions-cladding-setup {
     grid-template-columns: 1fr;
   }
   .instructions-path header {
@@ -430,11 +584,14 @@
   .instructions-nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .instructions-nav a:nth-child(2) {
+  .instructions-nav a:nth-child(even) {
     border-right: 0;
   }
-  .instructions-nav a:nth-child(-n + 2) {
+  .instructions-nav a:nth-child(-n + 4) {
     border-bottom: 1px solid #d8dbd0;
+  }
+  .instructions-nav a:last-child {
+    grid-column: 1 / -1;
   }
   .instructions-page {
     padding: 32px 18px 70px;
@@ -454,7 +611,7 @@
   }
   .instructions-section {
     padding-top: 60px;
-    scroll-margin-top: 110px;
+    scroll-margin-top: 172px;
   }
   .instructions-section-head {
     grid-template-columns: 38px minmax(0, 1fr);

@@ -330,6 +330,16 @@ export default function FoilEdition() {
               <p>Reference patterns · physical fit still required</p>
             </header>
             <div className="fabrication-file-list">
+              <Link to="/instructions" hash="large-sculpture">
+                <FileArchive aria-hidden="true" />
+                <span>
+                  <strong>iani’s guide to aluminum on wood</strong>
+                  <small>
+                    Large sculpture · paper fit, attachment, and seams
+                  </small>
+                </span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
               <a href="/fabrication/laser/denhac-test-coupon.svg" download>
                 <FileCode2 aria-hidden="true" />
                 <span>
