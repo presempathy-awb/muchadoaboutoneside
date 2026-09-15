@@ -98,7 +98,7 @@
 
 .project-paths {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-bottom: 12px;
   border-block: 1px solid #bfc6b4;
   background: #edf0e6;
@@ -113,8 +113,12 @@
   color: #344c39;
 }
 
-.project-paths :where(a) + a {
+.project-paths :where(a:nth-child(even)) {
   border-left: 1px solid #cfd5c6;
+}
+
+.project-paths :where(a:nth-child(n + 3)) {
+  border-top: 1px solid #cfd5c6;
 }
 
 .project-paths a:hover {

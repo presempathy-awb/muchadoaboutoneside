@@ -30,6 +30,7 @@ try {
     "/assembly",
     "/archive",
     "/instructions",
+    "/projection",
     "/calligraphy",
     "/calligraphy/steps",
     "/calligraphy/templates",
@@ -132,7 +133,7 @@ try {
   )
     throw new Error("API fallback is incorrect");
   console.log(
-    "Production HTTP smoke passed: 11 routes, bundled entries, metadata, 4 original downloads, 28 inscription/fabrication/guide/license assets, private-path rejection, API 404.",
+    "Production HTTP smoke passed: 12 routes, bundled entries, metadata, 4 original downloads, 28 inscription/fabrication/guide/license assets, private-path rejection, API 404.",
   );
 } finally {
   await app.stop();

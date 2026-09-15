@@ -156,6 +156,19 @@
   color: #2f493a;
 }
 
+.instructions-projection-link p {
+  margin: 8px 0 12px;
+}
+
+.instructions-projection-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 .instructions-paths {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

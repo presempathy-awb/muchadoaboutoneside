@@ -1,0 +1,452 @@
+.projection-page {
+  padding: 30px 34px 60px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+.projection-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  align-items: center;
+  gap: 44px;
+  padding: 40px;
+  background: #14262f;
+  color: #ecf0e6;
+}
+.projection-kicker,
+.projection-section-head > span {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.projection-kicker {
+  color: #a6c5c1;
+}
+.projection-hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(36px, 4.5vw, 65px);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  margin: 21px 0;
+  max-width: 650px;
+}
+.projection-intro {
+  color: #d0ddd6;
+  font-size: 16px;
+  line-height: 1.75;
+  max-width: 620px;
+}
+.projection-status {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #adc2bd;
+  margin: 23px 0 0;
+}
+.projection-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+.projection-downloads a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 14px;
+  border: 1px solid #8aaba8;
+  color: #f3f2e9;
+  font-size: 13px;
+  font-weight: 600;
+}
+.projection-downloads a:hover {
+  background: #29434b;
+}
+.projection-hero :focus-visible {
+  outline-color: #d6e3aa;
+}
+.projection-study {
+  margin: 0;
+  min-width: 0;
+}
+.projection-study svg {
+  display: block;
+  width: 100%;
+  max-height: 370px;
+}
+.projection-study figcaption {
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #abc3bd;
+  margin-top: 10px;
+}
+.projection-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 22px;
+  border-bottom: 1px solid var(--border);
+  margin: 0 0 35px;
+  padding: 17px 0;
+}
+.projection-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.projection-nav :where(a) span {
+  color: #737b6a;
+  font-size: 10px;
+}
+.projection-nav a:hover,
+.projection-related a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.projection-section {
+  margin-top: 44px;
+  scroll-margin-top: 24px;
+}
+.projection-section-head {
+  margin-bottom: 22px;
+}
+.projection-section-head > span {
+  color: #687563;
+}
+.projection-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin: 9px 0 0;
+}
+.projection-section :where(h2) svg {
+  flex-shrink: 0;
+}
+.projection-movements,
+.projection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.projection-movement {
+  min-width: 0;
+  padding: 26px;
+  background: #fbfaf5;
+  border: 1px solid #d8ded3;
+  border-top: 3px solid #63888a;
+}
+.projection-movement > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+.projection-cue-id {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #426d70;
+}
+.projection-science {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #52665e;
+  background: #e7ece2;
+  padding: 5px 8px;
+  text-align: right;
+}
+.projection-section h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+.projection-scene {
+  font-size: 15px;
+  line-height: 1.75;
+  margin: 0 0 21px;
+  color: #43554c;
+}
+.projection-science-note {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #52665e;
+  margin: -7px 0 20px;
+  padding-left: 12px;
+  border-left: 2px solid #bacfc3;
+}
+.projection-movement dl,
+.projection-phases dl {
+  margin: 0;
+}
+.projection-movement dl > div,
+.projection-phases dl > div {
+  margin-top: 13px;
+}
+.projection-page dt {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #5d715f;
+  margin-bottom: 4px;
+}
+.projection-page dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #46584f;
+}
+.projection-creatures {
+  padding: 30px;
+  background: #e8ece4;
+  border-left: 4px solid #41636b;
+}
+.projection-creatures ul {
+  columns: 2;
+  column-gap: 40px;
+  padding-left: 20px;
+  margin: 0;
+}
+.projection-creatures li {
+  break-inside: avoid;
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.7;
+  list-style: disc;
+}
+.projection-card {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--border);
+  background: #faf9f4;
+}
+.projection-card p,
+.projection-workflow p {
+  margin: 0;
+  color: #4c5e52;
+  font-size: 15px;
+  line-height: 1.75;
+}
+.projection-workflow {
+  margin: 0;
+  padding: 0 0 0 27px;
+  list-style: decimal;
+}
+.projection-workflow li {
+  padding: 0 0 23px 10px;
+}
+.projection-workflow li::marker {
+  color: #527671;
+  font-weight: 600;
+}
+.projection-worksheet {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  background: #e7ece7;
+  padding: 25px;
+  border-left: 3px solid #527671;
+}
+.projection-worksheet > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.projection-worksheet p {
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0 0 15px;
+}
+.projection-worksheet a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.projection-phases {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 15px;
+}
+.projection-phases > li {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 18px;
+  padding: 25px;
+  border: 1px solid #d8dace;
+  background: #f7f5eb;
+}
+.projection-phase-number {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  color: #7b755b;
+  line-height: 1;
+}
+.projection-phases dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+.projection-phases dl > div {
+  margin-top: 4px;
+}
+.projection-decisions {
+  margin-top: 22px;
+  padding: 26px;
+  background: #eee9dc;
+}
+.projection-decisions ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style: disc;
+}
+.projection-decisions li {
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+.projection-related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.projection-related a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.projection-sources ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 30px;
+}
+.projection-sources li {
+  min-width: 0;
+}
+.projection-sources a {
+  display: inline;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.projection-sources a svg {
+  display: inline;
+  vertical-align: middle;
+}
+.projection-sources p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #5e6e60;
+}
+@media (max-width: 1100px) {
+  .projection-hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .projection-study {
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .projection-phases dl {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+}
+@media (max-width: 760px) {
+  .projection-page {
+    padding: 22px 18px 40px;
+  }
+  .projection-hero {
+    padding: 27px 22px;
+  }
+  .projection-movements,
+  .projection-grid,
+  .projection-sources ul {
+    grid-template-columns: 1fr;
+  }
+  .projection-creatures ul {
+    columns: 1;
+  }
+  .projection-creatures,
+  .projection-movement,
+  .projection-card {
+    padding: 22px;
+  }
+  .projection-phases > li {
+    grid-template-columns: 28px minmax(0, 1fr);
+    padding: 20px 16px;
+    gap: 12px;
+  }
+  .projection-phase-number {
+    font-size: 24px;
+  }
+  .projection-worksheet {
+    padding: 22px 18px;
+  }
+}
+@media print {
+  body:has(.projection-page) .sidebar,
+  body:has(.projection-page) .topbar,
+  body:has(.projection-page) .page-footer,
+  .projection-nav,
+  .projection-downloads,
+  .projection-study {
+    display: none;
+  }
+  body:has(.projection-page) .app-shell {
+    display: block;
+  }
+  .projection-page {
+    padding: 0;
+  }
+  .projection-hero {
+    display: block;
+    padding: 0;
+    background: white;
+    color: black;
+  }
+  .projection-intro,
+  .projection-status,
+  .projection-kicker {
+    color: #333;
+  }
+  .projection-movements,
+  .projection-grid,
+  .projection-sources ul {
+    display: block;
+  }
+  .projection-movement,
+  .projection-card,
+  .projection-phases > li {
+    break-inside: avoid;
+    margin-bottom: 14px;
+  }
+  .projection-creatures ul {
+    columns: 1;
+  }
+}

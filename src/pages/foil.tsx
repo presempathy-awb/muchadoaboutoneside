@@ -95,6 +95,14 @@ export default function FoilEdition() {
           </span>
           <ArrowRight size={17} aria-hidden="true" />
         </Link>
+        <Link to="/projection">
+          <span className="path-number">04</span>
+          <span>
+            <strong>Plan projection & score</strong>
+            <small>Enceladus, illuminated letters & the burn performance</small>
+          </span>
+          <ArrowRight size={17} aria-hidden="true" />
+        </Link>
       </nav>
 
       <nav className="section-nav" aria-label="On this page">

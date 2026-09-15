@@ -68,6 +68,12 @@ The homepage links directly to making, lettering, and packing, with in-page navi
 
 The dimension cards retain the original construction-model bounds. Record the actual prepared support surface, local backing or leveling, adhesive, aluminum, finish, and any overlapping plate thickness before approving new scale patterns; then measure the finished clad envelope and minimum jaw/crossing clearances. The large preview and existing triangular kit include a provisional geometric cross-section offset from `shared/fabrication.ts`. That offset has no measured construction-layer specification. The old kit remains a conceptual reference while the new scale shapes and dimensions are established on the actual wood. The separate 180 mm print and foil system keeps its own dimensions and patterns.
 
+## Projection and score
+
+[Inscription below the ice](https://muchadoaboutoneside.com/projection) is the proposed full-sculpture projection and performance plan. Six movements travel from Enceladus’s surface and plumes through a reconstructed subsurface ocean into the fictional construction of dark, angular, elongated-limb chimeras. Their ritual and butoh-inspired visual language is original; itchy-O is an aesthetic reference only.
+
+The plan covers surveyed projector positions, lens and coverage studies, finished-aluminum contrast tests, calligraphy masks tied to the actual installed lettering, cues for the future score, and separate pre-ignition, conditional early-burn, and blackout states. The shared content generates downloadable production notes and a cue CSV with timing and poem-row assignments left for the composer and playback team. Site conditions, the approved burn perimeter, equipment, score, and production media remain to be established. The score does not control ignition.
+
 ## Fabrication exports
 
 The wrapped preview and laser reference archive share the sampling in `shared/fabrication.ts`. The lettering is shaped from the bundled Great Vibes font and converted to closed vector contours; the body and jaw each use their own outlined master for both the wrapped texture and the corresponding laser panels. The flat preview shows the body master. The original editable SVG is retained as a design source. The normalized UV master has no physical cutting scale. The separate marking coupon and developed facets use explicit millimeter dimensions.
