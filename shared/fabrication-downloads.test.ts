@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { FABRICATION_DOWNLOADS } from "./fabrication-downloads";
 
 for (const [name, href] of Object.entries(FABRICATION_DOWNLOADS)) {
-  test(`${name} download version matches the distributed archive`, async () => {
+  test(`${name} download version matches the distributed file`, async () => {
     const url = new URL(href, "https://muchadoaboutoneside.com");
     const bytes = await Bun.file(
       resolve(import.meta.dir, `../public${url.pathname}`),

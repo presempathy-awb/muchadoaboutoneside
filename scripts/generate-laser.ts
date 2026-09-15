@@ -2,7 +2,11 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { FABRICATION_GEOMETRY_OPTIONS } from "../shared/fabrication";
-import { INSCRIPTION_LAYOUT, POEM_LOOP } from "../shared/poem";
+import {
+  INSCRIPTION_LAYOUT,
+  JAW_INSCRIPTION_LAYOUT,
+  POEM_LOOP,
+} from "../shared/poem";
 import { generateFoilGeometry } from "../src/lib/foil-geometry";
 
 const root = resolve(import.meta.dir, "..");
@@ -15,6 +19,7 @@ try {
       geometry: generateFoilGeometry(FABRICATION_GEOMETRY_OPTIONS),
       poem: POEM_LOOP,
       layout: INSCRIPTION_LAYOUT,
+      jawLayout: JAW_INSCRIPTION_LAYOUT,
       options: FABRICATION_GEOMETRY_OPTIONS,
     }),
   );

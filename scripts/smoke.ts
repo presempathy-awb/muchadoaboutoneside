@@ -65,6 +65,7 @@ try {
     ["/editions/endless-inscription-study.svg", "image/svg+xml"],
     ["/editions/much-ado-about-one-side.txt", "text/plain"],
     ["/fabrication/laser/marking-master.svg", "image/svg+xml"],
+    ["/fabrication/laser/jaw-marking-master.svg", "image/svg+xml"],
     ["/fabrication/laser/denhac-test-coupon.svg", "image/svg+xml"],
     ["/fabrication/laser/assembly-map.svg", "image/svg+xml"],
     ["/fabrication/laser/manifest.json", "application/json"],
@@ -117,7 +118,7 @@ try {
   )
     throw new Error("API fallback is incorrect");
   console.log(
-    "Production HTTP smoke passed: 5 routes, bundled entries, metadata, 4 original downloads, 25 inscription/fabrication/license assets, private-path rejection, API 404.",
+    "Production HTTP smoke passed: 5 routes, bundled entries, metadata, 4 original downloads, 26 inscription/fabrication/license assets, private-path rejection, API 404.",
   );
 } finally {
   await app.stop();

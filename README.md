@@ -14,8 +14,8 @@ Artists, makers, teachers, and curious people are welcome to use any part of the
 Project-authored code, poem, designs, artwork, fabrication files, and documentation are dual licensed **MIT OR Apache-2.0**, at your option. Choose one license and follow its terms, including its required notices. See [reuse guidance](REUSE.md), [MIT](LICENSE-MIT), and [Apache 2.0](LICENSE-APACHE). Third-party components keep their own licenses: the bundled Great Vibes font is OFL-1.1, and [third-party notices](THIRD_PARTY_NOTICES.md) accompany the dependencies. This does not require the generated calligraphy artwork to use OFL.
 
 - [Download the complete public source](https://github.com/presempathy-awb/muchadoaboutoneside/archive/refs/heads/main.zip)
-- [Large sculpture foil kit](https://muchadoaboutoneside.com/fabrication/laser/panel-kit.zip?v=4a13f29f1c91892be9cc806df0e584ede1aa2ce3536ab9253e7114a4dc74d368)
-- [180 mm foil kit](https://muchadoaboutoneside.com/fabrication/small-foil/foil-kit-180mm.zip?v=3a5b2613bd9823fb748a60b5ae9dea15453117d4ae80d58265191af7b90b5bff)
+- [Large sculpture foil kit](https://muchadoaboutoneside.com/fabrication/laser/panel-kit.zip?v=0a253226337f873b23fd82ac9a43844e39f2dbc516a8b2a1a0fce2f38d66184e)
+- [180 mm foil kit](https://muchadoaboutoneside.com/fabrication/small-foil/foil-kit-180mm.zip?v=9d99556ff16a270cd652e0a79ca71421394e6b156c155a502ecc9af135ea1f71)
 - [Printable 180 mm STL](https://muchadoaboutoneside.com/fabrication/print/muchado-maquette-180mm.stl)
 - [Editable sculpture OBJ](https://muchadoaboutoneside.com/api/assets/snake_build.obj)
 - [Poem text](https://muchadoaboutoneside.com/editions/much-ado-about-one-side.txt)
@@ -42,7 +42,7 @@ The production server serves the Vite build and the API together at [127.0.0.1:3
 
 ## Site views
 
-- **Endless inscription** (`/`, with `/foil` alias): a silver skin follows the original body and head. Eighteen rows repeat the complete poem around closed reading paths on the large study; the separate lower jaw has its own inscription. The page also shows the 180 mm printed form covered in marked foil. A scale selector switches the flat artwork between the large UV master and the small dimensioned marking sheet. Workshop downloads are grouped by scale, with separate foil kits and a smooth STL substrate for printing the small model.
+- **Endless inscription** (`/`, with `/foil` alias): a silver skin follows the original body and head. Four rows repeat the complete poem around closed reading paths on the large body. Taller lettering in its UV master compensates for the long surface path so the script reads clearly on the foil. The shorter lower jaw keeps a separate eighteen-row inscription master. The page also shows the 180 mm printed form covered in marked foil. A scale selector switches the flat artwork between the large UV master and the small dimensioned marking sheet. Workshop downloads are grouped by scale, with separate foil kits and a smooth STL substrate for printing the small model.
 - **Sculpture studio** (`/studio`): Babylon.js loads the original GLB. Orbit, zoom, select parts, hide/show components, toggle wireframe or rotation, and reset the view. Reduced-motion preferences are respected. A model download remains available if WebGL cannot start.
 - **Assembly map** (`/assembly`): React Flow shows the seven named component groups. Drag nodes, select a component, and open it in the studio. Edges represent model membership, not engineering connections or construction order.
 - **Files & source** (`/archive`): download each original file and inspect its SHA-256 checksum. The standalone HTML viewer is served as an attachment.
@@ -51,7 +51,7 @@ TanStack Router handles navigation and TanStack Query retrieves project metadata
 
 ## Fabrication exports
 
-The wrapped preview and laser reference archive share the sampling in `shared/fabrication.ts`. The lettering is shaped from the bundled Great Vibes font and converted to closed vector contours; both the canvas texture and flat preview use that outlined master. The original editable SVG is retained as a design source. The normalized UV master has no physical cutting scale. The separate marking coupon and developed facets use explicit millimeter dimensions.
+The wrapped preview and laser reference archive share the sampling in `shared/fabrication.ts`. The lettering is shaped from the bundled Great Vibes font and converted to closed vector contours; the body and jaw each use their own outlined master for both the wrapped texture and the corresponding laser panels. The flat preview shows the body master. The original editable SVG is retained as a design source. The normalized UV master has no physical cutting scale. The separate marking coupon and developed facets use explicit millimeter dimensions.
 
 Denhac documents an operational [OMTech Pro Quantum 60 W RF CO₂ laser](https://denhac.org/wiki/laser-cutter-ultra-secret) with a 600 × 1000 mm working area. Its [material policy](https://denhac.org/wiki/allowed-laser-cutter-materials) supports specified aluminum marking workflows, rather than establishing bare household foil as suitable. The proposed stock is unbacked 0.005-inch (0.127 mm) silver AlumaMark, a [manufacturer-documented CO₂-markable aluminum](https://alumamark.com/wp-content/uploads/2024/10/alumamark-brochure.pdf). Confirm the exact product, shop acceptance, and a successful coupon on that lot before preparing the full set. Mark it flat, mechanically trim it, and apply attachment materials afterward. The files do not contain validated machine settings or an aluminum laser-cut job.
 

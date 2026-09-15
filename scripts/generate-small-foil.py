@@ -433,13 +433,13 @@ def render_texture(master_path: Path, texture_path: Path):
     start = vector.index("<svg ")
     end = vector.index(">", start)
     opening = vector[start:end]
-    opening = re.sub(r'width="[^"]+"', 'width="4096"', opening, count=1)
+    opening = re.sub(r'width="[^"]+"', 'width="8192"', opening, count=1)
     opening = re.sub(r'height="[^"]+"', 'height="256"', opening, count=1)
     opening += ' preserveAspectRatio="none"'
     raster_source.write_text(vector[:start] + opening + vector[end:])
     try:
         subprocess.run([
-            executable, str(raster_source), "-background", "#b9bec2", "-alpha", "remove", "-alpha", "off", "-strip", "-depth", "8", f"PNG24:{texture_path}"
+            executable, "-background", "#b9bec2", str(raster_source), "-alpha", "remove", "-alpha", "off", "-strip", "-depth", "8", f"PNG24:{texture_path}"
         ], check=True)
     finally:
         raster_source.unlink(missing_ok=True)
@@ -636,11 +636,15 @@ def generate(payload: dict):
     corner_uv = texture_chart / np.asarray([body_circuit_mm, MASTER_HEIGHT])
     corner_uv[blank] = [0.0, 0.0]
     corner_uv[:, :, 1] = np.clip(corner_uv[:, :, 1], 0.0, 1.0)
+    # SVG T and glTF V both start at the top of the image. Trimesh instead
+    # accepts bottom-origin UVs and flips V on export, so compensate here to
+    # keep the rendered lettering aligned with the physical laser chart.
+    corner_uv[:, :, 1] = 1.0 - corner_uv[:, :, 1]
     corner_uv = corner_uv.reshape(-1, 2)
     preview = trimesh.Trimesh(vertices=corner_vertices, faces=corner_faces, process=False)
     preview.vertices = preview.vertices[:, [0, 2, 1]] * np.asarray([0.001, 0.001, -0.001])
     image = Image.open(texture)
-    material = trimesh.visual.material.PBRMaterial(baseColorTexture=image, metallicFactor=0.82, roughnessFactor=0.34, doubleSided=False)
+    material = trimesh.visual.material.PBRMaterial(baseColorTexture=image, metallicFactor=0.55, roughnessFactor=0.55, doubleSided=False)
     preview.visual = trimesh.visual.texture.TextureVisuals(uv=corner_uv, material=material)
     glb_path = OUTPUT / "muchado-foil-180mm.glb"
     preview.export(glb_path, file_type="glb")
@@ -692,7 +696,7 @@ The project-authored poem, artwork, geometry, fabrication files, code, and docum
         "source": {"stlPath": STL.relative_to(ROOT).as_posix(), "stlSha256": sha256(STL), "stlTriangles": len(mesh.faces), "stlVertices": len(mesh.vertices)},
         "coverage": {"exposedTriangleCount": len(exposed), "excludedUndersideTriangleCount": len(bottom_faces), "coveredTriangleCount": len(covered_faces), "baseTopAndSidesIncluded": True, "undersideExcluded": True},
         "coordinateSystem": {"sheetUnits": "millimetres", "stlUpAxis": "+Z", "glbUnits": "metres", "glbUpAxis": "+Y"},
-        "generator": {"script": {"path": PRODUCER, "sha256": sha256(ROOT / PRODUCER)}, "requirements": {"path": "scripts/small-foil/requirements.txt", "sha256": sha256(ROOT / "scripts/small-foil/requirements.txt")}, "imageMagick": imagemagick_version(), "textureRaster": "4096 x 256, stripped 8-bit RGB PNG embedded in GLB"},
+        "generator": {"script": {"path": PRODUCER, "sha256": sha256(ROOT / PRODUCER)}, "requirements": {"path": "scripts/small-foil/requirements.txt", "sha256": sha256(ROOT / "scripts/small-foil/requirements.txt")}, "imageMagick": imagemagick_version(), "textureRaster": "8192 x 256, stripped 8-bit RGB PNG embedded in GLB"},
         "licensing": {"projectAuthored": "MIT OR Apache-2.0", "font": "OFL-1.1", "scope": "REUSE.txt"},
         "artwork": {"poemSha256": hashlib.sha256(payload["poem"].encode()).hexdigest(), "readingTracks": 1, "poemRepetitionsOnClosedCircuit": 2, "nominalEmSizeMm": 2.5, "horizontalScaleFromNatural": "approximately 0.906", "bodyCircuitLengthMm": body_circuit_mm, "masterDimensions": [round(body_circuit_mm, 6), MASTER_HEIGHT], "liveFonts": False, "font": "Great Vibes outlines, SIL OFL", "masterGlyphOutlineCount": len(glyph_coverage), "glyphOutlinesCoveredAtLeast99Point9Percent": fully_covered_glyphs, "minimumGlyphCoverageRatio": min(glyph_coverage), "missingGlyphCentroidsMm": missing_glyph_centroids, "blankTransitionGuttersMm": [[0, 40], [480, 520], [960, round(body_circuit_mm, 6)]], "physicalLegibility": "Unverified; use the supplied 2.5 mm coupon row. The size fits the modeled minimum body half-circumference where a 5 mm em would not."},
         "projection": {"method": "every output corner is nearest-point/barycentric projected to an exact pre-boolean print operand; jaw, base, and faces whose corners cross operands or cap singularities are reserved as plain foil; the final paper fit resolves sub-millimetre boolean remeshing deviation", "maximumCornerDistanceMm": round(float(projection_distances.max()), 6), "maximumCornerDistanceAboveBaseMm": round(float(projection_distances[np.mean(mesh.triangles[:, :, 2], axis=1) > PROJECTION_BASE_Z_MM].max()), 6), "plainFoilFaceCount": int(np.count_nonzero(blank_transition_faces)), "cornerSourceFaceCount": int(len(np.unique(corner_source_faces)))},

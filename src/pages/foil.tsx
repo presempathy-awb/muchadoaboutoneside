@@ -278,7 +278,7 @@ export default function FoilEdition() {
                 </span>
                 <ArrowDownToLine aria-hidden="true" />
               </a>
-              <a href="/fabrication/laser/marking-master.svg" download>
+              <a href={FABRICATION_DOWNLOADS.bodyMaster} download>
                 <FileCode2 aria-hidden="true" />
                 <span>
                   <strong>Large inscription master</strong>
@@ -363,7 +363,7 @@ export default function FoilEdition() {
                 </span>
                 <ArrowDownToLine aria-hidden="true" />
               </a>
-              <a href="/fabrication/small-foil/muchado-foil-180mm.glb" download>
+              <a href={FABRICATION_DOWNLOADS.smallModel} download>
                 <Box aria-hidden="true" />
                 <span>
                   <strong>Foil-covered model</strong>
