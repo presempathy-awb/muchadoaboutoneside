@@ -1,0 +1,354 @@
+.poem-editor-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 22px;
+}
+
+.poem-editor-tabs button {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 150px;
+  padding: 10px 16px;
+  border: 1px solid rgba(64, 61, 55, 0.25);
+  border-radius: 10px;
+  background: #fff;
+  color: #2f2c27;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.poem-editor-tabs button small {
+  color: #6b6760;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.poem-editor-tabs button.is-active {
+  border-color: #2f2c27;
+  background: #2f2c27;
+  color: #fff;
+}
+
+.poem-editor-tabs button.is-active small {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.poem-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 26px;
+  align-items: start;
+  margin-bottom: 34px;
+}
+
+.poem-editor-card {
+  border: 1px solid rgba(64, 61, 55, 0.2);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.poem-editor-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 18px;
+  padding: 14px 26px;
+  border-bottom: 1px solid rgba(64, 61, 55, 0.14);
+  background: #f6f4ef;
+}
+
+.poem-editor-card-head span {
+  color: #6b6760;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 1.2px;
+}
+
+.poem-editor-card-head strong {
+  color: #2f2c27;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.poem-editor-host {
+  min-height: 540px;
+}
+
+.poem-editor-host .cm-editor {
+  min-height: 540px;
+}
+
+.poem-editor-loading,
+.poem-editor-empty {
+  margin: 0;
+  padding: 26px;
+  color: #6b6760;
+  font-size: 14px;
+}
+
+.poem-editor-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.poem-editor-status {
+  padding: 14px 16px;
+  border-left: 2px solid #658253;
+  background: rgba(101, 130, 83, 0.08);
+  color: #3f4a3b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.poem-editor-status p {
+  margin: 0;
+}
+
+.poem-editor-status p + p {
+  margin-top: 6px;
+}
+
+.poem-editor-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.poem-editor-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border: 1px solid rgba(64, 61, 55, 0.25);
+  border-radius: 999px;
+  background: #fff;
+  color: #2f2c27;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.poem-editor-actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.poem-editor-actions button.is-active {
+  border-color: #2f2c27;
+  background: #2f2c27;
+  color: #fff;
+}
+
+.poem-editor-actions button.is-warn {
+  border-color: #bd6546;
+  color: #8a4127;
+}
+
+.poem-editor-actions button:nth-child(3),
+.poem-editor-actions button:nth-child(6) {
+  grid-column: 1 / -1;
+}
+
+.poem-editor-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 0;
+}
+
+.poem-editor-stats div {
+  padding: 10px 12px;
+  border: 1px solid rgba(64, 61, 55, 0.16);
+  border-radius: 10px;
+}
+
+.poem-editor-stats dt {
+  color: #6b6760;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.poem-editor-stats dd {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.poem-editor-aside .poem-editor-stats dd small {
+  color: #8f8a82;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.poem-editor-note {
+  margin: 0;
+  color: #5f5a52;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.poem-editor-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #344b3c;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.poem-editor-link:hover {
+  text-decoration: underline;
+}
+
+.poem-editor-preview {
+  border: 1px solid rgba(64, 61, 55, 0.2);
+  border-radius: 14px;
+  margin-bottom: 34px;
+}
+
+.poem-editor-preview .foil-poem {
+  columns: 2;
+  column-gap: 44px;
+}
+
+.poem-editor-preview .foil-poem p {
+  break-inside: avoid;
+}
+
+@media (max-width: 960px) {
+  .poem-editor-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .poem-editor-preview .foil-poem {
+    columns: 1;
+  }
+}
+
+.poem-editor-stop {
+  margin: 0;
+  max-height: 0;
+  padding: 0 26px;
+  overflow: hidden;
+  border-top: 0 solid rgba(189, 101, 70, 0.4);
+  background: rgba(189, 101, 70, 0.1);
+  color: #8a4127;
+  font-size: 13px;
+  line-height: 1.5;
+  transition:
+    max-height 0.2s ease,
+    padding 0.2s ease;
+}
+
+.poem-editor-stop.is-visible {
+  max-height: 120px;
+  padding: 10px 26px;
+  border-top-width: 1px;
+}
+
+.poem-editor-budget {
+  padding: 16px;
+  border: 1px solid rgba(64, 61, 55, 0.16);
+  border-radius: 10px;
+}
+
+.poem-editor-budget h3 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #6b6760;
+}
+
+.poem-editor-budget-lede {
+  margin: 0 0 12px;
+  color: #5f5a52;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.poem-editor-meter {
+  display: block;
+  width: 100%;
+  height: 10px;
+  --meter-fill: #658253;
+}
+
+.poem-editor-meter.is-over {
+  --meter-fill: #bd6546;
+}
+
+.poem-editor-meter::-webkit-meter-bar {
+  border: 0;
+  border-radius: 999px;
+  background: rgba(64, 61, 55, 0.12);
+}
+
+.poem-editor-meter::-webkit-meter-optimum-value,
+.poem-editor-meter::-webkit-meter-suboptimum-value,
+.poem-editor-meter::-webkit-meter-even-less-good-value {
+  border-radius: 999px;
+  background: var(--meter-fill);
+}
+
+.poem-editor-meter::-moz-meter-bar {
+  border-radius: 999px;
+  background: var(--meter-fill);
+}
+
+.poem-editor-budget-line {
+  margin: 8px 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2f2c27;
+}
+
+.poem-editor-surfaces {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+
+.poem-editor-surfaces > div {
+  padding: 10px 0 0;
+  border-top: 1px solid rgba(64, 61, 55, 0.12);
+}
+
+.poem-editor-surfaces dt {
+  font-size: 12px;
+  font-weight: 650;
+  color: #2f2c27;
+}
+
+.poem-editor-aside .poem-editor-surfaces dt small,
+.poem-editor-aside .poem-editor-surfaces dd small {
+  display: block;
+  color: #6b6760;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.poem-editor-surfaces dd {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.poem-editor-surfaces > div.is-over dd {
+  color: #8a4127;
+}

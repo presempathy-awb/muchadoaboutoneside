@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import type { PoemVersion } from "../../shared/poem";
 import {
   createSculptureScene,
   SCULPTURE_ASSET_URL,
@@ -10,6 +11,8 @@ export interface SculptureViewerProps {
   edition?: "construction" | "inscription";
   showLettering?: boolean;
   showSeams?: boolean;
+  /** Wording drawn on the foil; defaults to the canonical inscription. */
+  poemVersion?: PoemVersion;
   readingView?: boolean;
   selectedPart?: string | null;
   hiddenParts?: string[];
@@ -26,6 +29,7 @@ export default function SculptureViewer({
   edition = "construction",
   showLettering = true,
   showSeams = false,
+  poemVersion,
   readingView = false,
   selectedPart = null,
   hiddenParts = [],
@@ -133,6 +137,11 @@ export default function SculptureViewer({
   useEffect(() => {
     if (edition === "inscription") controllerRef.current?.setSeams(showSeams);
   }, [showSeams, edition]);
+
+  useEffect(() => {
+    if (edition === "inscription" && poemVersion)
+      controllerRef.current?.setPoemVersion(poemVersion);
+  }, [poemVersion, edition]);
 
   useEffect(() => {
     controllerRef.current?.setAutoRotate(autoRotate && !prefersReducedMotion);

@@ -9,10 +9,12 @@ import {
   MoveUpRight,
   PenLine,
   Projector,
+  SquarePen,
 } from "lucide-react";
 import { useEffect } from "react";
 import { AssistanceCredit } from "@/components/assistance-credit";
 import { DesignCredit } from "@/components/design-credit";
+import { PoemVersionPicker } from "@/components/poem-version-picker";
 
 const links = [
   {
@@ -22,40 +24,46 @@ const links = [
     index: "01",
   },
   {
+    to: "/poem" as const,
+    icon: SquarePen,
+    label: "Poem editor",
+    index: "02",
+  },
+  {
     to: "/instructions" as const,
     icon: ClipboardList,
     label: "Project instructions",
-    index: "02",
+    index: "03",
   },
   {
     to: "/calligraphy" as const,
     icon: PenLine,
     label: "Calligraphy guide",
-    index: "03",
+    index: "04",
   },
   {
     to: "/projection" as const,
     icon: Projector,
     label: "Projection & score",
-    index: "04",
+    index: "05",
   },
   {
     to: "/studio" as const,
     icon: Box,
     label: "Sculpture studio",
-    index: "05",
+    index: "06",
   },
   {
     to: "/assembly" as const,
     icon: GitFork,
     label: "Assembly map",
-    index: "06",
+    index: "07",
   },
   {
     to: "/archive" as const,
     icon: FolderOpen,
     label: "Files & source",
-    index: "07",
+    index: "08",
   },
 ];
 
@@ -139,9 +147,12 @@ export function AppShell() {
             <Link to="/">The workshop</Link> <span aria-hidden="true">/</span>{" "}
             <strong>{currentPage?.label ?? "Page not found"}</strong>
           </div>
-          <Link to="/instructions" hash="send" className="saved-status">
-            CoLab iani handoff <MoveUpRight size={13} />
-          </Link>
+          <div className="topbar-tools">
+            <PoemVersionPicker />
+            <Link to="/instructions" hash="send" className="saved-status">
+              CoLab iani handoff <MoveUpRight size={13} />
+            </Link>
+          </div>
         </header>
         <main id="main" tabIndex={-1}>
           <Outlet />

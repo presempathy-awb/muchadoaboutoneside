@@ -1,7 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { createElement, Fragment, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { PrintableGuide } from "./printable";
+import { guideForVersion } from "../../../shared/calligraphy-guide";
+import { poemVersionById } from "../../../shared/poem";
+import { GuideProvider } from "./guide-context";
+import { PrintableGuide, PrintablePoemSheet } from "./printable";
 import {
   BlankSheet,
   FreeSheet,
@@ -68,5 +71,59 @@ describe("calligraphy template SVG references", () => {
     );
 
     assertUniqueLocalClipReferences(markup);
+    expect(markup).toContain("Master sheet 8 of 8");
+    expect(markup).toContain("revision 2 · 2026-09-14");
+  });
+
+  test("the extended wording's printable guide renders its own sheets", () => {
+    const extended = poemVersionById("extended");
+    const markup = renderToStaticMarkup(
+      createElement(PrintableGuide, {
+        css: "",
+        fontUrl: "font.ttf",
+        version: extended,
+      }),
+    );
+
+    assertUniqueLocalClipReferences(markup);
+    expect(markup).toContain("Master sheet 16 of 16");
+    expect(markup).toContain("R40 · come, palindove, let edges twine");
+    expect(markup).toContain("(EXTENDED) · HARD WORDS");
+    expect(markup).toContain("ouroborrows");
+    expect(markup).toContain("calligraphy?poem=extended");
+    expect(markup).not.toContain("twine…");
+  });
+
+  test("sheets rendered inside a provider follow that wording", () => {
+    const guide = guideForVersion(poemVersionById("extended"));
+    const markup = renderToStaticMarkup(
+      createElement(
+        GuideProvider,
+        { guide },
+        createElement(MasterSheets),
+        createElement(HardWordsSheet),
+      ),
+    );
+
+    assertUniqueLocalClipReferences(markup);
+    expect(markup).toContain("R35a · Onesided. Hold.");
+    expect(markup).toContain("R35b · The strip shrugs, Fine,");
+    expect(markup).toContain("tigerstripes icering Onesided eightwise");
+  });
+
+  test("the poem sheet sets every line of each wording", () => {
+    for (const id of ["canonical", "extended"] as const) {
+      const version = poemVersionById(id);
+      const markup = renderToStaticMarkup(
+        createElement(PrintablePoemSheet, { fontUrl: "font.ttf", version }),
+      );
+      for (const line of version.lines)
+        expect(markup).toContain(line.replaceAll("'", "&#x27;"));
+      expect(markup).toContain(version.loopNote);
+      expect(markup).toContain("Great Vibes");
+      expect(markup.includes('class="sheet-poem is-columns"')).toBe(
+        version.lines.length > 24,
+      );
+    }
   });
 });

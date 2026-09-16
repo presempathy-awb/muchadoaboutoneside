@@ -23,9 +23,21 @@ Project-authored code, poem, designs, artwork, fabrication files, and documentat
 - [180 mm foil kit](https://muchadoaboutoneside.com/fabrication/small-foil/foil-kit-180mm.zip?v=9d99556ff16a270cd652e0a79ca71421394e6b156c155a502ecc9af135ea1f71)
 - [Printable 180 mm STL](https://muchadoaboutoneside.com/fabrication/print/muchado-maquette-180mm.stl)
 - [Editable sculpture OBJ](https://muchadoaboutoneside.com/api/assets/snake_build.obj)
-- [Poem text](https://muchadoaboutoneside.com/editions/much-ado-about-one-side.txt)
+- [Poem text](https://muchadoaboutoneside.com/editions/much-ado-about-one-side.txt) · [extended version](https://muchadoaboutoneside.com/editions/much-ado-about-one-side-extended.txt)
+
+## Poem versions
+
+The site carries two wordings of the poem. The **canonical** seventeen-line version is the default and is the wording every marking master, foil kit, and fabrication file was generated from. The **extended** forty-line version (2026-09-15) adds the clerk's innfinite, the herald's writ, the tigerstriped moon, and the wyrm's hourglass eight. A picker in the top bar switches the whole site: the reading text and 3D foil preview on the home page, the lettering downloads on the instructions and projection pages, and the calligraphy brief with its copperplate template sheets.
+
+Each version has its own files under `public/editions/` (source text, editable UV layout study, and a poem sheet set in the substitute script) and `public/guide/` (the printable lettering brief). `shared/poem.ts` defines the versions; `bun run generate:inscription` and `bun run generate:guide` regenerate the files for all of them. The extended version is previewed live in the browser; no outlined laser artwork exists for it yet.
 
 The public repository includes the working website, generators, tests, and original model assets. Private reference photography, browser-retrieval captures, private Git history, and host-specific deployment configuration remain in the maintainer's private archive.
+
+## Poem editor
+
+`/poem` is a collaborative editor for the poem text, one working draft per version, with the same version selector as the rest of the site. Drafts are Yjs documents: saved in the browser's IndexedDB as you type, mirrored between that browser's open tabs, with undo and redo, a reset to the fixed wording, and plain-text download. "Preview across the site" shows a draft wherever its version is selected: the foil render, the reading text, the lettering downloads, and the calligraphy rows, which are re-split automatically for edited lines. The fixed wordings in `shared/poem.ts` and `source/poem/` change only when a draft is committed there.
+
+Live sync between browsers is off by default. Set `COLLAB_DIR` to a writable directory when starting the API (for example `COLLAB_DIR=data/collab bun run dev`) and the server relays each room over `/api/collab/rooms/<room>` using the y-websocket protocol, keeping a Yjs file and a plain-text mirror per room in that directory; `/api/collab/rooms/<room>/text` returns the current text. Every browser and the server start from the same deterministic seed of the fixed wording, so joining never duplicates text. Anyone who can reach the site can edit the drafts while sync is on, so enable it deliberately and back the directory up with the rest of the deployment.
 
 ## Run locally
 

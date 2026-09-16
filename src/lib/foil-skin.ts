@@ -7,7 +7,17 @@ import type { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import type { Scene } from "@babylonjs/core/scene";
 import { FABRICATION_GEOMETRY_OPTIONS } from "../../shared/fabrication";
 import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
-import { INSCRIPTION_LAYOUT as layout } from "../../shared/poem";
+import {
+  type SurfaceId,
+  type SurfaceLayout,
+  surfaceRows,
+} from "../../shared/inscription-layout";
+import {
+  CANONICAL_POEM,
+  JAW_INSCRIPTION_LAYOUT,
+  INSCRIPTION_LAYOUT as layout,
+  type PoemVersion,
+} from "../../shared/poem";
 import { generateFoilGeometry } from "./foil-geometry";
 import { foilVertexData } from "./foil-mesh";
 import { makeStudioReflection } from "./studio-reflection";
@@ -32,31 +42,81 @@ function loadOutlinedMaster(path: string) {
   return request;
 }
 
+const SCRIPT_FONT = '"Great Vibes"';
+let scriptFont: Promise<void> | undefined;
+
+/** The substitute script is declared in foil.css; wait for it before drawing. */
+function ensureScriptFont() {
+  scriptFont ??=
+    typeof document === "undefined" || !("fonts" in document)
+      ? Promise.resolve()
+      : Promise.all([
+          document.fonts.load(`${layout.fontSize}px ${SCRIPT_FONT}`),
+          document.fonts.load(
+            `${JAW_INSCRIPTION_LAYOUT.fontSize}px ${SCRIPT_FONT}`,
+          ),
+        ]).then(
+          () => undefined,
+          () => undefined,
+        );
+  return scriptFont;
+}
+
+/**
+ * Live preview of a wording that has no outlined master yet: the same rows the
+ * generators lay out for it, fitted to the row width like SVG lengthAdjust.
+ */
+function drawLoopRows(
+  context: CanvasRenderingContext2D,
+  rowText: string,
+  rows: SurfaceLayout,
+) {
+  if (!rowText || rows.rows === 0) return;
+  context.fillStyle = "#17201c";
+  context.font = `${rows.fontSize}px ${SCRIPT_FONT}, serif`;
+  context.textBaseline = "alphabetic";
+  const natural = context.measureText(rowText).width;
+  if (!natural) return;
+  const scaleX = rows.textWidth / natural;
+  for (let index = 0; index < rows.rows; index += 1) {
+    context.save();
+    context.translate(rows.left, rows.firstBaseline + index * rows.rowSpacing);
+    context.scale(scaleX, 1);
+    context.fillText(rowText, 0, 0);
+    context.restore();
+  }
+}
+
 export interface FoilSkinController {
   detailMaterial: PBRMaterial;
   getReadingMesh(): Mesh;
   setLettering(visible: boolean): void;
   setSeams(visible: boolean): void;
   setWireframe(enabled: boolean): void;
+  setPoemVersion(version: PoemVersion): void;
 }
 
 export async function createFoilSkin(
   scene: Scene,
   modelRoot: TransformNode | null,
+  initialVersion: PoemVersion = CANONICAL_POEM,
 ): Promise<FoilSkinController | null> {
   const [bodyArtwork, jawArtwork] = await Promise.all([
     loadOutlinedMaster(FABRICATION_DOWNLOADS.bodyMaster),
     loadOutlinedMaster(FABRICATION_DOWNLOADS.jawMaster),
+    initialVersion.fabricationArtwork ? undefined : ensureScriptFont(),
   ]);
   if (scene.isDisposed) return null;
   const geometry = generateFoilGeometry(FABRICATION_GEOMETRY_OPTIONS);
   let showLettering = true;
   let showSeams = false;
+  let version = initialVersion;
   const createAtlas = (
-    name: string,
+    surface: SurfaceId,
     artwork: HTMLImageElement,
     maxWidth: number,
   ) => {
+    const name = surface;
     const canvas = document.createElement("canvas");
     const caps = scene.getEngine().getCaps();
     // Preserve the full UV chart for close reading when the GPU supports it.
@@ -80,8 +140,11 @@ export async function createFoilSkin(
     const drawAtlas = () => {
       context.fillStyle = "#d9dcd8";
       context.fillRect(0, 0, layout.width, layout.height);
-      if (showLettering) {
+      if (showLettering && version.fabricationArtwork) {
         context.drawImage(artwork, 0, 0, layout.width, layout.height);
+      } else if (showLettering) {
+        const fitted = surfaceRows(surface, version);
+        drawLoopRows(context, fitted.rowText, fitted.layout);
       }
       if (showSeams) {
         context.setLineDash([12, 14]);
@@ -160,6 +223,23 @@ export async function createFoilSkin(
       foil.wireframe = enabled;
       jawFoil.wireframe = enabled;
       details.wireframe = enabled;
+    },
+    setPoemVersion(next) {
+      // A draft keeps its version id but changes the text.
+      if (
+        version.id === next.id &&
+        version.loop === next.loop &&
+        version.fabricationArtwork === next.fabricationArtwork
+      )
+        return;
+      version = next;
+      if (next.fabricationArtwork) {
+        drawAtlases();
+        return;
+      }
+      ensureScriptFont().then(() => {
+        if (!scene.isDisposed && version.id === next.id) drawAtlases();
+      });
     },
   };
 }

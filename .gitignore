@@ -8,3 +8,5 @@ coverage/
 test-results/
 playwright-report/
 __pycache__/
+# Live poem drafts written by the sync route (COLLAB_DIR)
+data/

@@ -21,8 +21,9 @@ import { DesignCredit } from "@/components/design-credit";
 import { DimensionsOverview } from "@/components/dimensions-overview";
 import FabricationPreview from "@/components/fabrication-preview";
 import FlatFoilPreview from "@/components/flat-foil-preview";
+import { keyed } from "@/lib/keyed";
+import { usePoemVersion } from "@/lib/poem-version";
 import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
-import { POEM_STANZAS, POEM_TITLE } from "../../shared/poem";
 import "../foil.css";
 
 const SculptureViewer = lazy(() => import("@/components/sculpture-viewer"));
@@ -34,6 +35,7 @@ export default function FoilEdition() {
   const [autoRotate, setAutoRotate] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [plainText, setPlainText] = useState(false);
+  const { version } = usePoemVersion();
 
   function resetView() {
     setReadingView(false);
@@ -127,6 +129,12 @@ export default function FoilEdition() {
               <i aria-hidden="true" />
               {showLettering ? "Marked foil" : "Unmarked foil"}
             </span>
+            {!version.fabricationArtwork && (
+              <span className="foil-state foil-state-preview">
+                <i aria-hidden="true" />
+                {version.label} poem · live preview in the substitute script
+              </span>
+            )}
           </div>
 
           <Suspense
@@ -141,6 +149,7 @@ export default function FoilEdition() {
               edition="inscription"
               showLettering={showLettering}
               showSeams={showSeams}
+              poemVersion={version}
               readingView={readingView}
               autoRotate={autoRotate}
               resetKey={resetKey}
@@ -219,20 +228,28 @@ export default function FoilEdition() {
           >
             {plainText ? "Show script lettering" : "Read in plain type"}
           </button>
-          <h2 id="foil-reading-title">{POEM_TITLE}</h2>
-          <div className={`foil-poem${plainText ? " foil-poem-plain" : ""}`}>
-            {POEM_STANZAS.map((stanza, stanzaIndex) => (
-              <p key={stanza[0]}>
-                {stanza.map((line) => (
-                  <span key={line}>{line}</span>
-                ))}
-                {stanzaIndex === POEM_STANZAS.length - 1 && (
-                  <span className="foil-loop-mark">
-                    ↻ continues at the first line
-                  </span>
-                )}
-              </p>
-            ))}
+          <h2 id="foil-reading-title">{version.title}</h2>
+          <p className="foil-reading-version">
+            {version.label} version · {version.lines.length} lines
+          </p>
+          <div
+            className={`foil-poem${plainText ? " foil-poem-plain" : ""}`}
+            key={version.id}
+          >
+            {keyed(version.stanzas.map((stanza) => stanza.join("\n"))).map(
+              (stanza, stanzaIndex) => (
+                <p key={stanza.key}>
+                  {keyed(stanza.item.split("\n")).map((line) => (
+                    <span key={line.key}>{line.item}</span>
+                  ))}
+                  {stanzaIndex === version.stanzas.length - 1 && (
+                    <span className="foil-loop-mark">
+                      ↻ continues at the first line
+                    </span>
+                  )}
+                </p>
+              ),
+            )}
           </div>
         </aside>
       </section>
@@ -246,10 +263,9 @@ export default function FoilEdition() {
           <span className="foil-kicker">READING THE SURFACE</span>
           <h2 id="foil-loop-title">The tail returns to the first word.</h2>
           <p>
-            The layout places the final ellipsis beside the opening “Come,” so
-            the inscription has no fixed end. Follow a line along the body,
-            around the nose, back along the other face, and around the tail. The
-            jaw carries its own repeating inscription.
+            {version.loopNote} Follow a line along the body, around the nose,
+            back along the other face, and around the tail. The jaw carries its
+            own repeating inscription.
           </p>
           <p>
             The skin follows the original ribs and head. The reference facets
@@ -285,6 +301,14 @@ export default function FoilEdition() {
             foil. Switch the flat view between their artwork, then orbit the
             foil-covered model to see the small version in hand.
           </p>
+          {!version.fabricationArtwork && (
+            <p className="fabrication-version-note" role="status">
+              The flat artwork, kits, and 180 mm model below carry the canonical
+              poem. No marking masters have been generated for the{" "}
+              {version.label.toLowerCase()} version yet; the sculpture above
+              previews it in the substitute script.
+            </p>
+          )}
         </header>
 
         <div className="fabrication-previews">
@@ -510,14 +534,12 @@ export default function FoilEdition() {
         >
           <ArrowLeft size={15} aria-hidden="true" /> Original model
         </Link>
-        <a
-          href="/editions/endless-inscription-study.svg"
-          download
-          className="foil-download-link"
-        >
+        <a href={version.studyPath} download className="foil-download-link">
           <ArrowDownToLine size={15} aria-hidden="true" />
           Download vector layout study
-          <small>For design review · not machine-ready</small>
+          <small>
+            {version.label} poem · for design review · not machine-ready
+          </small>
         </a>
       </footer>
     </div>

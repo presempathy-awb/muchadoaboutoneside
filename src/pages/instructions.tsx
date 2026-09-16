@@ -11,11 +11,12 @@ import {
 } from "lucide-react";
 import { DimensionsOverview } from "@/components/dimensions-overview";
 import { LargeSculptureGuide } from "@/components/large-sculpture-guide";
+import { usePoemVersion } from "@/lib/poem-version";
 import {
   HANDOFF_CHECKLIST,
   INSTRUCTION_SECTIONS,
   PACKING_GROUPS,
-  PROJECT_PATHS,
+  projectPaths,
 } from "../../shared/project-instructions";
 import "../instructions.css";
 
@@ -105,6 +106,8 @@ function PrintPackingSlip() {
 }
 
 export default function Instructions() {
+  const { version } = usePoemVersion();
+  const paths = projectPaths(version);
   return (
     <div className="instructions-page">
       <header className="instructions-hero">
@@ -179,8 +182,14 @@ export default function Instructions() {
               <h2 id="make-title">From poem to physical work</h2>
             </div>
           </header>
+          <p className="instructions-version-note">
+            Lettering downloads follow the selected poem version:{" "}
+            <strong>{version.label}</strong>, {version.lines.length} lines.
+            {!version.fabricationArtwork &&
+              " The foil kits and marking masters still carry the canonical poem."}
+          </p>
           <div className="instructions-paths">
-            {PROJECT_PATHS.map((path) => (
+            {paths.map((path) => (
               <article key={path.number} className="instructions-path">
                 <header>
                   <span>{path.number}</span>

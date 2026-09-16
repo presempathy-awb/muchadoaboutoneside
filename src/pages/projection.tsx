@@ -5,6 +5,7 @@ import {
   Focus,
   Sparkles,
 } from "lucide-react";
+import { usePoemVersion } from "@/lib/poem-version";
 import {
   PROJECTION_ASSETS,
   PROJECTION_CHIMERAS,
@@ -110,6 +111,7 @@ function InteriorStudy() {
 }
 
 export default function Projection() {
+  const { version } = usePoemVersion();
   return (
     <div className="projection-page">
       <header className="projection-hero">
@@ -335,8 +337,9 @@ export default function Projection() {
           <a href="/calligraphy">
             Calligraphy brief <ArrowUpRight size={16} aria-hidden="true" />
           </a>
-          <a href="/editions/much-ado-about-one-side.txt" download>
-            Canonical poem <ArrowDownToLine size={16} aria-hidden="true" />
+          <a href={version.textPath} download>
+            {version.label} poem{" "}
+            <ArrowDownToLine size={16} aria-hidden="true" />
           </a>
         </div>
       </section>

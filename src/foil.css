@@ -387,6 +387,33 @@
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
+.foil-reading-version {
+  margin: -14px 0 18px;
+  color: #6b6760;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.foil-state-preview {
+  color: #6b4f2a;
+}
+
+.foil-state-preview i {
+  background: #b8862f;
+}
+
+.fabrication-version-note {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border-left: 2px solid #b8862f;
+  background: rgba(184, 134, 47, 0.08);
+  color: #5b4a2e;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .foil-poem {
   max-height: none;
   padding-right: 14px;
