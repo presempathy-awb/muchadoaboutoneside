@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { resolve } from "node:path";
 import {
   CANONICAL_POEM,
+  DEFAULT_POEM,
   DEFAULT_POEM_VERSION_ID,
   escapeXml,
   isPoemVersionId,
@@ -72,14 +73,16 @@ test("every poem version matches its archival source text and shares the loop sh
   expect(new Set(paths).size).toBe(paths.length);
 });
 
-test("the canonical wording stays the default and lookups fall back to it", () => {
-  expect(DEFAULT_POEM_VERSION_ID).toBe("canonical");
+test("the extended wording is the default; the canonical one keeps the artwork", () => {
+  expect(DEFAULT_POEM_VERSION_ID).toBe("extended");
+  expect(DEFAULT_POEM.id).toBe("extended");
+  expect(CANONICAL_POEM.id).toBe("canonical");
   expect(CANONICAL_POEM.lines).toEqual([...POEM_LINES]);
   expect(CANONICAL_POEM.fabricationArtwork).toBe(true);
   expect(poemVersionById("extended").lines).toHaveLength(40);
   expect(poemVersionById("extended").fabricationArtwork).toBe(false);
-  expect(poemVersionById("missing").id).toBe("canonical");
-  expect(poemVersionById(undefined).id).toBe("canonical");
+  expect(poemVersionById("missing").id).toBe("extended");
+  expect(poemVersionById(undefined).id).toBe("extended");
   expect(isPoemVersionId("extended")).toBe(true);
   expect(isPoemVersionId("Extended")).toBe(false);
 });
