@@ -213,6 +213,51 @@ a {
   font-size: 13px;
   color: #5d735b;
 }
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+}
+.poem-version-picker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #626b61;
+}
+.poem-version-draft {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #b8862f;
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.poem-version-picker select {
+  appearance: none;
+  padding: 5px 28px 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%23344b3c' stroke-width='1.4'/></svg>")
+    no-repeat right 11px center,
+    #fff;
+  color: #344b3c;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  text-transform: none;
+  cursor: pointer;
+}
+.poem-version-picker select:focus-visible {
+  outline: 2px solid #658253;
+  outline-offset: 2px;
+}
 .status-dot {
   display: inline-block;
   width: 5px;
@@ -1234,6 +1279,13 @@ h2[id] {
   }
   .saved-status {
     display: none;
+  }
+  .poem-version-picker > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
   }
   .page-content {
     padding: 30px 18px 0;

@@ -1,4 +1,5 @@
 import { FABRICATION_DOWNLOADS } from "./fabrication-downloads";
+import { CANONICAL_POEM, type PoemVersion } from "./poem";
 
 export const INSTRUCTION_SECTIONS = [
   { id: "dimensions", label: "Dimensions" },
@@ -8,85 +9,104 @@ export const INSTRUCTION_SECTIONS = [
   { id: "send", label: "Send" },
 ] as const;
 
-export const PROJECT_PATHS = [
-  {
-    number: "01",
-    title: "Letter the poem",
-    summary:
-      "Create the full-size paper originals from the row templates, preserving every word, punctuation mark, split, and row ID.",
-    steps: [
-      "Download or print the hand-lettering guide at 100% scale; do not fit the template to the page.",
-      "Warm up on the style-sample and hard-words sheets, then letter each numbered master row in your own copperplate on the baseline beneath its printed words. Keep the row ID with every original.",
-      "Write at a comfortable size and keep rows from touching; hairline weight, size normalisation, and spacing are handled digitally after the scan.",
-      "Let the ink dry fully, check every finished row against the canonical poem, then make a high-resolution scan and row-by-row inventory before packing the originals flat.",
-    ],
-    downloads: [
-      {
-        label: "Printable lettering guide",
-        href: "/guide/calligraphy-guide.pdf",
-      },
-      { label: "Print-ready web guide", href: "/guide/calligraphy-guide.html" },
-      {
-        label: "Canonical poem text",
-        href: "/editions/much-ado-about-one-side.txt",
-      },
-    ],
-  },
-  {
-    number: "02",
-    title: "Build the 180 mm study",
-    summary:
-      "Print the smooth maquette first, then mark and fit the separate foil kit made for that exact 180 mm form.",
-    steps: [
-      "Print the STL upright on its integrated base. The file is already in millimetres and Z-up.",
-      "Generate supports from the build plate for the jaw, chin, and overhangs, and inspect every sliced layer before printing.",
-      "Test the 2.5 mm lettering coupon and paper-fit the foil pieces before marking the complete set.",
-      "Mark the foil flat, trim it after the paper fit, and apply it to the printed form only after the material tests pass.",
-    ],
-    downloads: [
-      {
-        label: "180 mm printable maquette (STL)",
-        href: "/fabrication/print/muchado-maquette-180mm.stl",
-      },
-      {
-        label: "Complete 180 mm foil kit",
-        href: FABRICATION_DOWNLOADS.smallKit,
-      },
-      {
-        label: "180 mm lettering test coupon",
-        href: "/fabrication/small-foil/test-coupon.svg",
-      },
-      {
-        label: "Print notes",
-        href: "/fabrication/print/README.txt",
-      },
-    ],
-  },
-  {
-    number: "03",
-    title: "Fit aluminum to the large wood sculpture",
-    summary:
-      "Plan varied aluminum scale plates on iani’s actual prepared wood, with individually fitted paper patterns and measured room for every added layer.",
-    steps: [
-      "Measure the prepared support for each scale. Record local backing or leveling, adhesive, metal, finish, and any overlap, then check the jaw and crossing with the complete planned build-up.",
-      "Paper-fit a small neighboring group of body, tight-turn, and custom edge scales. Give every piece an ID, orientation, contour, and measured joint margin. The existing triangular panel kit is a conceptual reference, not the new scale layout.",
-      "Keep body and jaw artwork separate. Map the complete poem across the approved scale layout, keeping visible lettering clear of cut edges and any hidden overlap margins.",
-      "Test the actual aluminum, prepared wood, attachment, and edge joints as a marked group before choosing final plate sizes or producing the full set.",
-    ],
-    downloads: [
-      {
-        label: "Representative fit kit",
-        href: FABRICATION_DOWNLOADS.largeFitKit,
-      },
-      {
-        label: "Full-scale conceptual panel kit",
-        href: FABRICATION_DOWNLOADS.largeKit,
-      },
-      { label: "Body marking master", href: FABRICATION_DOWNLOADS.bodyMaster },
-      { label: "Jaw marking master", href: FABRICATION_DOWNLOADS.jawMaster },
-    ],
-  },
-] as const;
+export interface ProjectPath {
+  number: string;
+  title: string;
+  summary: string;
+  steps: readonly string[];
+  downloads: readonly { label: string; href: string }[];
+}
+
+/** The three production paths, with downloads for the chosen poem wording. */
+export function projectPaths(
+  version: PoemVersion = CANONICAL_POEM,
+): readonly ProjectPath[] {
+  return [
+    {
+      number: "01",
+      title: "Letter the poem",
+      summary:
+        "Create the full-size paper originals from the row templates, preserving every word, punctuation mark, split, and row ID.",
+      steps: [
+        "Download or print the hand-lettering guide at 100% scale; do not fit the template to the page.",
+        "Warm up on the style-sample and hard-words sheets, then letter each numbered master row in your own copperplate on the baseline beneath its printed words. Keep the row ID with every original.",
+        "Write at a comfortable size and keep rows from touching; hairline weight, size normalisation, and spacing are handled digitally after the scan.",
+        "Let the ink dry fully, check every finished row against the canonical poem, then make a high-resolution scan and row-by-row inventory before packing the originals flat.",
+      ],
+      downloads: [
+        { label: "Printable lettering guide", href: version.guidePdfPath },
+        { label: "Print-ready web guide", href: version.guideHtmlPath },
+        {
+          label: `${version.label} poem text`,
+          href: version.textPath,
+        },
+        {
+          label: "Poem sheet in the substitute script",
+          href: version.scriptPdfPath,
+        },
+      ],
+    },
+    {
+      number: "02",
+      title: "Build the 180 mm study",
+      summary:
+        "Print the smooth maquette first, then mark and fit the separate foil kit made for that exact 180 mm form.",
+      steps: [
+        "Print the STL upright on its integrated base. The file is already in millimetres and Z-up.",
+        "Generate supports from the build plate for the jaw, chin, and overhangs, and inspect every sliced layer before printing.",
+        "Test the 2.5 mm lettering coupon and paper-fit the foil pieces before marking the complete set.",
+        "Mark the foil flat, trim it after the paper fit, and apply it to the printed form only after the material tests pass.",
+      ],
+      downloads: [
+        {
+          label: "180 mm printable maquette (STL)",
+          href: "/fabrication/print/muchado-maquette-180mm.stl",
+        },
+        {
+          label: "Complete 180 mm foil kit",
+          href: FABRICATION_DOWNLOADS.smallKit,
+        },
+        {
+          label: "180 mm lettering test coupon",
+          href: "/fabrication/small-foil/test-coupon.svg",
+        },
+        {
+          label: "Print notes",
+          href: "/fabrication/print/README.txt",
+        },
+      ],
+    },
+    {
+      number: "03",
+      title: "Fit aluminum to the large wood sculpture",
+      summary:
+        "Plan varied aluminum scale plates on iani’s actual prepared wood, with individually fitted paper patterns and measured room for every added layer.",
+      steps: [
+        "Measure the prepared support for each scale. Record local backing or leveling, adhesive, metal, finish, and any overlap, then check the jaw and crossing with the complete planned build-up.",
+        "Paper-fit a small neighboring group of body, tight-turn, and custom edge scales. Give every piece an ID, orientation, contour, and measured joint margin. The existing triangular panel kit is a conceptual reference, not the new scale layout.",
+        "Keep body and jaw artwork separate. Map the complete poem across the approved scale layout, keeping visible lettering clear of cut edges and any hidden overlap margins.",
+        "Test the actual aluminum, prepared wood, attachment, and edge joints as a marked group before choosing final plate sizes or producing the full set.",
+      ],
+      downloads: [
+        {
+          label: "Representative fit kit",
+          href: FABRICATION_DOWNLOADS.largeFitKit,
+        },
+        {
+          label: "Full-scale conceptual panel kit",
+          href: FABRICATION_DOWNLOADS.largeKit,
+        },
+        {
+          label: "Body marking master",
+          href: FABRICATION_DOWNLOADS.bodyMaster,
+        },
+        { label: "Jaw marking master", href: FABRICATION_DOWNLOADS.jawMaster },
+      ],
+    },
+  ];
+}
+
+export const PROJECT_PATHS = projectPaths(CANONICAL_POEM);
 
 export const PACKING_GROUPS = [
   {

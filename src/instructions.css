@@ -745,3 +745,13 @@
     color: #444;
   }
 }
+
+.instructions-version-note {
+  margin: 0 0 18px;
+  color: #5f5a52;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.instructions-section .instructions-version-note strong {
+  color: #2f2c27;
+}

@@ -2,11 +2,13 @@ import { describe, expect, test } from "bun:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import Instructions from "../src/pages/instructions";
+import { poemVersionById } from "./poem";
 import {
   HANDOFF_CHECKLIST,
   INSTRUCTION_SECTIONS,
   PACKING_GROUPS,
   PROJECT_PATHS,
+  projectPaths,
 } from "./project-instructions";
 
 describe("project instructions", () => {
@@ -35,6 +37,20 @@ describe("project instructions", () => {
       for (const download of path.downloads)
         expect(download.href).toStartWith("/");
     }
+  });
+
+  test("lettering downloads follow the chosen poem version", () => {
+    const extended = projectPaths(poemVersionById("extended"));
+    expect(extended.map((path) => path.title)).toEqual(
+      PROJECT_PATHS.map((path) => path.title),
+    );
+    const hrefs = extended[0]?.downloads.map((download) => download.href);
+    expect(hrefs).toContain("/guide/calligraphy-guide-extended.pdf");
+    expect(hrefs).toContain("/editions/much-ado-about-one-side-extended.txt");
+    expect(PROJECT_PATHS[0]?.downloads.map((d) => d.href)).toContain(
+      "/guide/calligraphy-guide.pdf",
+    );
+    expect(extended.slice(1)).toEqual(PROJECT_PATHS.slice(1));
   });
 
   test("retains the material-specific packing constraints", () => {

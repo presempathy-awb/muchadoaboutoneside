@@ -9,6 +9,7 @@ import {
 import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { AppShell } from "@/components/app-shell";
+import { PoemVersionProvider } from "@/lib/poem-version";
 import { Studio } from "@/pages/studio";
 import "./styles.css";
 
@@ -92,6 +93,12 @@ const instructionsRoute = createRoute({
   component: lazyRouteComponent(() => import("@/pages/instructions")),
   pendingComponent: RouteLoading,
 });
+const poemRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/poem",
+  component: lazyRouteComponent(() => import("@/pages/poem")),
+  pendingComponent: RouteLoading,
+});
 const projectionRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/projection",
@@ -109,6 +116,7 @@ const router = createRouter({
     calligraphyChapterRoute,
     foilRoute,
     instructionsRoute,
+    poemRoute,
     projectionRoute,
   ]),
   defaultNotFoundComponent: () => (
@@ -137,7 +145,9 @@ if (!root) throw new Error("Application root is missing");
 createRoot(root).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <PoemVersionProvider>
+        <RouterProvider router={router} />
+      </PoemVersionProvider>
     </QueryClientProvider>
   </StrictMode>,
 );

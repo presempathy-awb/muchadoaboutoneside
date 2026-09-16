@@ -3,9 +3,8 @@ import {
   ESSENTIALS,
   type FigureId,
   type GuideBlock,
-  PUNCTUATION,
 } from "../../../shared/calligraphy-guide";
-import { POEM_STANZAS } from "../../../shared/poem";
+import { useGuide } from "./guide-context";
 import {
   BlankSheet,
   FreeSheet,
@@ -83,10 +82,11 @@ function Figure({ id }: { id: FigureId }) {
 }
 
 function ExactPoem() {
+  const guide = useGuide();
   let line = 0;
   return (
     <div className="guide-poem">
-      {POEM_STANZAS.map((stanza) => (
+      {guide.version.stanzas.map((stanza) => (
         <p key={stanza[0]}>
           {stanza.map((text) => {
             line += 1;
@@ -100,7 +100,9 @@ function ExactPoem() {
         </p>
       ))}
       <p className="guide-poem-loop">
-        ↻ the ellipsis runs straight into line 01
+        {guide.hasEllipsis
+          ? "↻ the ellipsis runs straight into line 01"
+          : "↻ the last line runs straight into line 01"}
       </p>
     </div>
   );
@@ -123,6 +125,7 @@ function Essentials() {
 }
 
 function PunctuationTable() {
+  const guide = useGuide();
   return (
     <table className="guide-table guide-table-compact">
       <thead>
@@ -133,7 +136,7 @@ function PunctuationTable() {
         </tr>
       </thead>
       <tbody>
-        {PUNCTUATION.map((item) => (
+        {guide.punctuation.map((item) => (
           <tr key={item.mark}>
             <td className="guide-mark">{item.mark}</td>
             <td>{item.name}</td>

@@ -1,11 +1,14 @@
 import { stat } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { Elysia } from "elysia";
+import { createCollab } from "./collab";
 import { assetNames, project } from "./project";
 
 export interface AppOptions {
   staticDir?: string;
   assetDir?: string;
+  /** Where live poem drafts are stored; live sync stays off without it. */
+  collabDir?: string;
 }
 
 const defaultAssetDir = resolve(import.meta.dir, "../source/assets");
@@ -88,8 +91,12 @@ export function createApp(options: AppOptions = {}) {
   const staticDir = configuredStaticDir
     ? resolve(configuredStaticDir)
     : undefined;
+  const collab = createCollab(
+    options.collabDir ?? (process.env.COLLAB_DIR?.trim() || undefined),
+  );
 
-  return new Elysia()
+  const app = new Elysia()
+    .use(collab.plugin)
     .get("/api/health", () =>
       Response.json(
         { status: "ok" as const },
@@ -132,4 +139,12 @@ export function createApp(options: AppOptions = {}) {
         ? fileResponse(indexPath)
         : notFound("Site build is unavailable");
     });
+  // Elysia does not await stop hooks; drafts must be written before we return.
+  const stop = app.stop;
+  app.stop = async (closeActiveConnections?: boolean) => {
+    await stop(closeActiveConnections);
+    await collab.close();
+    return app;
+  };
+  return app;
 }

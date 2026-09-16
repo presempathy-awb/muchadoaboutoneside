@@ -30,6 +30,7 @@ try {
     "/assembly",
     "/archive",
     "/instructions",
+    "/poem",
     "/projection",
     "/calligraphy",
     "/calligraphy/steps",
@@ -77,6 +78,13 @@ try {
     ["/fonts/OFL.txt", "text/plain"],
     ["/editions/endless-inscription-study.svg", "image/svg+xml"],
     ["/editions/much-ado-about-one-side.txt", "text/plain"],
+    ["/editions/much-ado-about-one-side-script.pdf", "application/pdf"],
+    ["/editions/endless-inscription-study-extended.svg", "image/svg+xml"],
+    ["/editions/much-ado-about-one-side-extended.txt", "text/plain"],
+    [
+      "/editions/much-ado-about-one-side-extended-script.pdf",
+      "application/pdf",
+    ],
     ["/fabrication/laser/marking-master.svg", "image/svg+xml"],
     ["/fabrication/laser/jaw-marking-master.svg", "image/svg+xml"],
     ["/fabrication/laser/denhac-test-coupon.svg", "image/svg+xml"],
@@ -97,6 +105,8 @@ try {
     ["/fabrication/small-foil/README.txt", "text/plain"],
     ["/guide/calligraphy-guide.pdf", "application/pdf"],
     ["/guide/calligraphy-guide.html", "text/html"],
+    ["/guide/calligraphy-guide-extended.pdf", "application/pdf"],
+    ["/guide/calligraphy-guide-extended.html", "text/html"],
     ["/licenses/LICENSE-MIT.txt", "text/plain"],
     ["/licenses/LICENSE-APACHE.txt", "text/plain"],
     ["/licenses/REUSE.txt", "text/plain"],
@@ -126,6 +136,19 @@ try {
     if ((await fetch(`${origin}${path}`)).status !== 404)
       throw new Error(`Private source path exposed: ${path}`);
   }
+  const collab = await fetch(`${origin}/api/collab/status`);
+  if (
+    !collab.ok ||
+    collab.headers.get("cache-control") !== stableCache ||
+    JSON.stringify(await collab.json()) !==
+      JSON.stringify({ enabled: false, rooms: [] })
+  )
+    throw new Error("Live poem drafts must stay off without COLLAB_DIR");
+  if (
+    (await fetch(`${origin}/api/collab/rooms/poem-canonical/text`)).status !==
+    404
+  )
+    throw new Error("Draft rooms are exposed without COLLAB_DIR");
   const missingApi = await fetch(`${origin}/api/missing`);
   if (
     missingApi.status !== 404 ||
@@ -133,7 +156,7 @@ try {
   )
     throw new Error("API fallback is incorrect");
   console.log(
-    "Production HTTP smoke passed: 12 routes, bundled entries, metadata, 4 original downloads, 28 inscription/fabrication/guide/license assets, private-path rejection, API 404.",
+    "Production HTTP smoke passed: 13 routes, bundled entries, metadata, 4 original downloads, 34 inscription/fabrication/guide/license assets, private-path rejection, drafts off, API 404.",
   );
 } finally {
   await app.stop();

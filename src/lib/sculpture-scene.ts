@@ -11,6 +11,7 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import type { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
 import { Scene } from "@babylonjs/core/scene";
 import "@babylonjs/loaders/glTF/2.0/glTFLoader";
+import { CANONICAL_POEM, type PoemVersion } from "../../shared/poem";
 import type { FoilSkinController } from "./foil-skin";
 import { inscriptionView } from "./inscription-view";
 
@@ -36,6 +37,7 @@ export interface SculptureSceneController {
   setWireframe(enabled: boolean): void;
   setLettering(visible: boolean): void;
   setSeams(visible: boolean): void;
+  setPoemVersion(version: PoemVersion): void;
   setReadingView(enabled: boolean): void;
   resetCamera(): void;
   resize(): void;
@@ -148,6 +150,7 @@ export function createSculptureScene(
   let foilSkin: FoilSkinController | null = null;
   let showLettering = true;
   let showSeams = false;
+  let poemVersion: PoemVersion = CANONICAL_POEM;
   let wireframe = false;
   let readingView = false;
   const foilEdition = options.edition === "inscription";
@@ -274,7 +277,7 @@ export function createSculptureScene(
     if (foilEdition) {
       const { createFoilSkin } = await import("./foil-skin");
       if (disposed) return;
-      foilSkin = await createFoilSkin(scene, meshes[0] ?? null);
+      foilSkin = await createFoilSkin(scene, meshes[0] ?? null, poemVersion);
       if (disposed || !foilSkin) return;
       for (const [part, partMeshes] of meshesByPart) {
         if (!coveredStructure.has(part)) {
@@ -284,6 +287,7 @@ export function createSculptureScene(
       }
       foilSkin.setLettering(showLettering);
       foilSkin.setSeams(showSeams);
+      foilSkin.setPoemVersion(poemVersion);
       foilSkin.setWireframe(wireframe);
       if (readingView) applyCameraView();
     }
@@ -317,6 +321,10 @@ export function createSculptureScene(
     setSeams(visible) {
       showSeams = visible;
       foilSkin?.setSeams(visible);
+    },
+    setPoemVersion(version) {
+      poemVersion = version;
+      foilSkin?.setPoemVersion(version);
     },
     setReadingView(enabled) {
       readingView = foilEdition && enabled;

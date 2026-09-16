@@ -10,5 +10,17 @@ if (!Number.isInteger(port) || port < 1 || port > 65_535) {
   );
 }
 
-createApp().listen({ hostname: host, port });
-console.log(`Much Ado About One Side API listening on http://${host}:${port}`);
+const collabDir = process.env.COLLAB_DIR?.trim() || undefined;
+const app = createApp({ collabDir }).listen({ hostname: host, port });
+console.log(
+  `Much Ado About One Side API listening on http://${host}:${port}${
+    collabDir ? ` · live poem drafts in ${collabDir}` : ""
+  }`,
+);
+if (collabDir) {
+  // Write the drafts out before the process ends.
+  for (const signal of ["SIGINT", "SIGTERM"] as const)
+    process.once(signal, () => {
+      Promise.resolve(app.stop(true)).finally(() => process.exit(0));
+    });
+}

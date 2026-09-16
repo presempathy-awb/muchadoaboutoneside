@@ -5,18 +5,16 @@
  */
 import { type ReactNode, useId } from "react";
 import {
-  HARD_WORD_ROWS,
-  MASTER_ROWS,
-  MASTER_SHEETS,
+  LOOP_FIGURE,
+  LOOP_FIGURE_PERIMETER,
   type MasterRow,
-  REFERENCE_METRICS,
   SHEET,
   SHEET_WRITING_WIDTH_MM,
   SMALL_EDITION,
   STYLE_SAMPLE_ROWS,
   WORKING,
 } from "../../../shared/calligraphy-guide";
-import { POEM_LINES, POEM_TITLE } from "../../../shared/poem";
+import { useGuide } from "./guide-context";
 
 const SCRIPT = "'Great Vibes', 'Iowan Old Style', serif";
 const SANS = "'Avenir Next', 'Segoe UI', sans-serif";
@@ -312,20 +310,29 @@ const MASTER_BASELINES = rowBaselines(
 );
 const PRACTICE_PITCH = 44;
 const PRACTICE_FIRST_BASELINE = 54;
-const PRACTICE_BASELINES = rowBaselines(
-  4,
-  PRACTICE_PITCH,
-  PRACTICE_FIRST_BASELINE,
-);
+
+/** Plain practice rows: up to four keep the roomy pitch; longer lists pack above the footer. */
+function practiceBaselines(count: number) {
+  if (count <= 4)
+    return rowBaselines(count, PRACTICE_PITCH, PRACTICE_FIRST_BASELINE);
+  const first = 46;
+  const last = SHEET.heightMm - SHEET.marginMm - WORKING.descenderMm - 4;
+  return rowBaselines(
+    count,
+    Math.min(PRACTICE_PITCH, Math.floor((last - first) / (count - 1))),
+    first,
+  );
+}
 
 const LINE_KEY =
   "Solid: baseline and x-height. Dashed: ascender and descender at 1.5 × x-height. Dotted: flourish ceiling and floor. Faint diagonals: 55° slant.";
 
 export function BlankSheet() {
+  const guide = useGuide();
   return (
     <SheetFrame
       label="Blank copperplate master sheet"
-      title={`${POEM_TITLE} · blank master sheet`}
+      title={`${guide.sheetTitle} · blank master sheet`}
       subtitle={`Copperplate guide lines · x-height ${WORKING.xHeightMm} mm suggested · write the row ID in the box`}
       footer={`${LINE_KEY} Use for rewrites and part-b rows.`}
     >
@@ -337,10 +344,11 @@ export function BlankSheet() {
 }
 
 export function FreeSheet() {
+  const guide = useGuide();
   return (
     <SheetFrame
       label="Plain baseline sheet"
-      title={`${POEM_TITLE} · plain sheet`}
+      title={`${guide.sheetTitle} · plain sheet`}
       subtitle="Baseline and a faint x-height only · for writing without slant or loop lines · write the row ID in the box"
       footer="Keep rows from touching each other; baselines are 56 mm apart for that. Everything else is your choice."
     >
@@ -357,10 +365,12 @@ interface MasterSheetProps {
 }
 
 export function MasterSheet({ rows, number }: MasterSheetProps) {
+  const guide = useGuide();
+  const total = guide.masterSheets.length;
   return (
     <SheetFrame
-      label={`Master sheet ${number} of ${MASTER_SHEETS.length}`}
-      title={`${POEM_TITLE} · master sheet ${number} of ${MASTER_SHEETS.length}`}
+      label={`Master sheet ${number} of ${total}`}
+      title={`${guide.sheetTitle} · master sheet ${number} of ${total}`}
       subtitle={`Rows ${rows[0]?.id ?? ""} to ${rows[rows.length - 1]?.id ?? ""} · write each row on the baseline beneath its printed words`}
       footer={`${LINE_KEY} A row without printed words is a spare for a part-b continuation.`}
     >
@@ -380,9 +390,10 @@ export function MasterSheet({ rows, number }: MasterSheetProps) {
 }
 
 export function MasterSheets() {
+  const guide = useGuide();
   return (
     <>
-      {MASTER_SHEETS.map((rows, index) => (
+      {guide.masterSheets.map((rows, index) => (
         <div className="guide-sheet-page" key={rows[0]?.id ?? index}>
           <MasterSheet rows={rows} number={index + 1} />
         </div>
@@ -392,10 +403,11 @@ export function MasterSheets() {
 }
 
 export function StyleSampleSheet() {
+  const guide = useGuide();
   return (
     <SheetFrame
       label="Style-sample sheet"
-      title={`${POEM_TITLE} · style sample`}
+      title={`${guide.sheetTitle} · style sample`}
       subtitle="Your alphabet in your own copperplate, at the size you will use for the poem. Also the reference for any digital repair."
       footer="Join the lowercase as you naturally would; give the capitals the flourishes you like best. Nothing here is compared with a font."
     >
@@ -411,18 +423,19 @@ export function StyleSampleSheet() {
 }
 
 export function HardWordsSheet() {
+  const guide = useGuide();
   return (
     <SheetFrame
       label="Hard words practice sheet"
-      title={`${POEM_TITLE} · hard words`}
+      title={`${guide.sheetTitle} · hard words`}
       subtitle="Invented and compound words, each written as one word with no gap or hyphen. Plain baselines; use your own slant."
-      footer="palindove · inkhands · halfheight · halfknight · quarterknight · knightling · swordfeud · inkprick's · doublelong · mirrorknave · swordwave · Onesided"
+      footer={guide.hardWords.join(" · ")}
     >
-      {PRACTICE_BASELINES.map((baseline, index) => (
+      {practiceBaselines(guide.hardWordRows.length).map((baseline, index) => (
         <LabeledRow
           key={baseline}
           baseline={baseline}
-          prompt={HARD_WORD_ROWS[index]}
+          prompt={guide.hardWordRows[index]}
           mode="plain"
         />
       ))}
@@ -560,15 +573,16 @@ export function StrokeGaugeFigure() {
 
 /** The first three rows at working size in the placeholder font, for scale. */
 export function RibbonWorkingFigure() {
+  const guide = useGuide();
   return (
     <SheetFrame
       label="Placeholder font at working size"
-      title={`${POEM_TITLE} · placeholder comparison`}
+      title={`${guide.sheetTitle} · placeholder comparison`}
       subtitle="Rows R01 to R03 in the substitute font Great Vibes on the copperplate sheet lines. A size comparison only."
       footer="The site shows this font today. Your rows replace it; nothing about its letterforms, weight, or slant is a target."
     >
       {MASTER_BASELINES.map((baseline, index) => {
-        const row = MASTER_ROWS[index];
+        const row = guide.masterRows[index];
         return (
           <LabeledRow
             key={baseline}
@@ -584,6 +598,7 @@ export function RibbonWorkingFigure() {
 
 /** The whole poem at maquette size, actual size when printed at 100 %. */
 export function RibbonSmallFigure() {
+  const guide = useGuide();
   const width = 180;
   const em = SMALL_EDITION.emMm;
   const gap = 2 * 0.171 * em * SMALL_EDITION.horizontalScale;
@@ -591,11 +606,9 @@ export function RibbonSmallFigure() {
   const lines: { text: string; x: number; y: number; length: number }[] = [];
   let x = 4;
   let y = 9;
-  POEM_LINES.forEach((text, index) => {
+  guide.version.lines.forEach((text, index) => {
     const length =
-      (REFERENCE_METRICS.lineWidthsEm[index] ?? 10) *
-      em *
-      SMALL_EDITION.horizontalScale;
+      (guide.lineWidthsEm[index] ?? 10) * em * SMALL_EDITION.horizontalScale;
     if (x + length > usable + 4) {
       x = 4;
       y += SMALL_EDITION.ribbonHeightMm + 2;
@@ -668,16 +681,14 @@ export function RibbonSmallFigure() {
 
 /** The closed loop: the whole poem around a stadium path, ending at its start. */
 export function LoopFigure() {
-  const width = 240;
-  const height = 70;
-  const r = 18;
-  const straight = 190;
-  const perimeter = 2 * straight + 2 * Math.PI * r;
-  const em = perimeter / REFERENCE_METRICS.loopWidthEm;
+  const guide = useGuide();
+  const { width, height, radius: r, straight } = LOOP_FIGURE;
+  const perimeter = LOOP_FIGURE_PERIMETER;
+  const em = guide.loopFigureEm;
   const left = (width - straight) / 2;
   const top = 12;
   const path = `M ${left} ${top} H ${left + straight} A ${r} ${r} 0 0 1 ${left + straight} ${top + 2 * r} H ${left} A ${r} ${r} 0 0 1 ${left} ${top} Z`;
-  const loop = `${POEM_LINES.join("  ")} `;
+  const loop = `${guide.version.loop} `;
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -710,10 +721,10 @@ export function LoopFigure() {
       </text>
       <g fontFamily={SANS} fontSize={2.5} fill={GHOST_DARK}>
         <text x={left - 2} y={top - 5} textAnchor="end">
-          ends with “twine…”
+          ends with “{guide.lastWord}”
         </text>
         <text x={left + 2} y={top - 5}>
-          begins with “Come,”
+          begins with “{guide.firstWord}”
         </text>
         <path
           d={`M ${left - 1} ${top - 4} q 1 3 2 0`}
@@ -732,9 +743,10 @@ export function LoopFigure() {
 
 /** Which rows go on which sheet. */
 export function RowMapFigure() {
+  const guide = useGuide();
   return (
     <div className="guide-row-map">
-      {MASTER_SHEETS.map((rows, index) => (
+      {guide.masterSheets.map((rows, index) => (
         <div key={rows[0]?.id ?? index}>
           <span>Sheet {index + 1}</span>
           {rows.map((row) => (
@@ -748,9 +760,9 @@ export function RowMapFigure() {
       <div className="guide-row-map-total">
         <span>Total</span>
         <p>
-          <strong>{MASTER_ROWS.length} rows</strong>
+          <strong>{guide.masterRows.length} rows</strong>
           <span>
-            on {MASTER_SHEETS.length} sheets · writing width{" "}
+            on {guide.masterSheets.length} sheets · writing width{" "}
             {Math.round(SHEET_WRITING_WIDTH_MM)} mm
           </span>
         </p>
