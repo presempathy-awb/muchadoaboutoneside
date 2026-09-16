@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "7374938f81412fbfa010b4a6c3a1845a8e6b1af9",
+  "sourceCommit": "fcfbec7a06e393e7c0d46439aa89f01c28c9f1ac",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -4885,13 +4885,13 @@
     },
     {
       "path": "server/collab.test.ts",
-      "bytes": 7776,
-      "sha256": "59b6b613da708e98abe885218ecf76773786c2adbb789248ac9c6b1e9103dfab"
+      "bytes": 8859,
+      "sha256": "78b96abb5a8e19064c3de94ba2c1096704e40abba8b8a2389e74733aa13ac98d"
     },
     {
       "path": "server/collab.ts",
-      "bytes": 9682,
-      "sha256": "7afe16ae0ef27ddae9e1d97f7cf1803144da191ebf5152d7156d40c5c5a2e954"
+      "bytes": 9909,
+      "sha256": "d6d1930ce4d8a781d0b953b88049f1432e51e2b73cc32c081858697af079c16c"
     },
     {
       "path": "server/index.ts",
@@ -5110,8 +5110,8 @@
     },
     {
       "path": "src/components/calligraphy/blocks.tsx",
-      "bytes": 7059,
-      "sha256": "74687c628a7ce652b0a7b5ed14df3b227ac094e76120189de2629a01940ca924"
+      "bytes": 7217,
+      "sha256": "6243700190f395661c2667716bcf3c7693dfd530a45df98444276c3fdcb735df"
     },
     {
       "path": "src/components/calligraphy/guide-context.tsx",
@@ -5239,6 +5239,16 @@
       "sha256": "eed0181d765d2bf588f837d9d5ba0384799fc9253963b06e63a1c0b2cb01142b"
     },
     {
+      "path": "src/lib/keyed.test.ts",
+      "bytes": 438,
+      "sha256": "bebf8bfbbf952d6384ab9ed65ab59db58e37639ea94b320a84836b6e1782a2dd"
+    },
+    {
+      "path": "src/lib/keyed.ts",
+      "bytes": 415,
+      "sha256": "f75d45368376f3bdc5fe3561561bf3fe76ba349556ec15b101685181ff5a58ed"
+    },
+    {
       "path": "src/lib/poem-drafts.ts",
       "bytes": 6705,
       "sha256": "be71170542e350aa6cd9c3c12b7db84e786e48ee54dd4498ac83feef01feb425"
@@ -5300,8 +5310,8 @@
     },
     {
       "path": "src/pages/foil.tsx",
-      "bytes": 21076,
-      "sha256": "0643e44b6dc19f74db62fa749a2b4ce471ee01547118740d22b2603039dfc90d"
+      "bytes": 21240,
+      "sha256": "33a1134cfef1e7f02d790bb4f919ea971fb44037a9d867dc4e2d313a2e3f1459"
     },
     {
       "path": "src/pages/instructions.tsx",
@@ -5315,8 +5325,8 @@
     },
     {
       "path": "src/pages/poem.tsx",
-      "bytes": 18393,
-      "sha256": "7e790e4a45df1084203022ba60180c7579d80fb7da7dc6d5ddc3946add6207a3"
+      "bytes": 18099,
+      "sha256": "cc5ca376749416a24481798081ec6d7ecd7364b8ab88133173c1503c5da6752b"
     },
     {
       "path": "src/pages/projection.tsx",
@@ -5355,8 +5365,8 @@
     },
     {
       "path": "vite.config.ts",
-      "bytes": 445,
-      "sha256": "05503bd2aea6c821149e3af06e7b897bd03c50776743b64df1d8332302192975"
+      "bytes": 547,
+      "sha256": "f43dcc260683c53d4b187fcfc869384ac1fb05d920b466d5de0126fa5811ea92"
     }
   ]
 }

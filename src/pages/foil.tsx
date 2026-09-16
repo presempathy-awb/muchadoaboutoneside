@@ -21,6 +21,7 @@ import { DesignCredit } from "@/components/design-credit";
 import { DimensionsOverview } from "@/components/dimensions-overview";
 import FabricationPreview from "@/components/fabrication-preview";
 import FlatFoilPreview from "@/components/flat-foil-preview";
+import { keyed } from "@/lib/keyed";
 import { usePoemVersion } from "@/lib/poem-version";
 import { FABRICATION_DOWNLOADS } from "../../shared/fabrication-downloads";
 import "../foil.css";
@@ -235,18 +236,20 @@ export default function FoilEdition() {
             className={`foil-poem${plainText ? " foil-poem-plain" : ""}`}
             key={version.id}
           >
-            {version.stanzas.map((stanza, stanzaIndex) => (
-              <p key={stanza[0]}>
-                {stanza.map((line) => (
-                  <span key={line}>{line}</span>
-                ))}
-                {stanzaIndex === version.stanzas.length - 1 && (
-                  <span className="foil-loop-mark">
-                    ↻ continues at the first line
-                  </span>
-                )}
-              </p>
-            ))}
+            {keyed(version.stanzas.map((stanza) => stanza.join("\n"))).map(
+              (stanza, stanzaIndex) => (
+                <p key={stanza.key}>
+                  {keyed(stanza.item.split("\n")).map((line) => (
+                    <span key={line.key}>{line.item}</span>
+                  ))}
+                  {stanzaIndex === version.stanzas.length - 1 && (
+                    <span className="foil-loop-mark">
+                      ↻ continues at the first line
+                    </span>
+                  )}
+                </p>
+              ),
+            )}
           </div>
         </aside>
       </section>

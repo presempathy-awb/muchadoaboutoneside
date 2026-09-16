@@ -4,6 +4,7 @@ import {
   type FigureId,
   type GuideBlock,
 } from "../../../shared/calligraphy-guide";
+import { keyed } from "../../lib/keyed";
 import { useGuide } from "./guide-context";
 import {
   BlankSheet,
@@ -86,19 +87,21 @@ function ExactPoem() {
   let line = 0;
   return (
     <div className="guide-poem">
-      {guide.version.stanzas.map((stanza) => (
-        <p key={stanza[0]}>
-          {stanza.map((text) => {
-            line += 1;
-            return (
-              <span key={text}>
-                <small>{String(line).padStart(2, "0")}</small>
-                {text}
-              </span>
-            );
-          })}
-        </p>
-      ))}
+      {keyed(guide.version.stanzas.map((stanza) => stanza.join("\n"))).map(
+        (stanza) => (
+          <p key={stanza.key}>
+            {keyed(stanza.item.split("\n")).map((text) => {
+              line += 1;
+              return (
+                <span key={text.key}>
+                  <small>{String(line).padStart(2, "0")}</small>
+                  {text.item}
+                </span>
+              );
+            })}
+          </p>
+        ),
+      )}
       <p className="guide-poem-loop">
         {guide.hasEllipsis
           ? "↻ the ellipsis runs straight into line 01"

@@ -172,8 +172,7 @@ class Room {
   flush() {
     clearTimeout(this.saveTimer);
     this.saveTimer = undefined;
-    this.pending = this.pending.then(() => this.save());
-    return this.pending;
+    return this.queueSave();
   }
 
   async close() {
@@ -193,8 +192,18 @@ class Room {
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(() => {
       this.saveTimer = undefined;
-      this.pending = this.pending.then(() => this.save());
+      this.queueSave();
     }, SAVE_DELAY_MS);
+  }
+
+  /** One save at a time; a failed write is logged and never blocks the next. */
+  private queueSave() {
+    this.pending = this.pending
+      .then(() => this.save())
+      .catch((error: unknown) => {
+        console.error(`Could not save poem room ${this.name}:`, error);
+      });
+    return this.pending;
   }
 
   private async save() {

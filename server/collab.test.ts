@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import * as decoding from "lib0/decoding";
@@ -212,6 +213,34 @@ describe("live poem drafts", () => {
     expect(third.text.toString()).toBe(
       saved.getText(DRAFT_TEXT_NAME).toString(),
     );
+  });
+
+  test("a failed save is logged and the next edit is still written", async () => {
+    const dir = await mkdtemp(resolve(tmpdir(), "muchado-collab-"));
+    cleanups.push(() => rm(dir, { recursive: true, force: true }));
+    const { origin, stop } = await startApp(dir);
+    const client = await connect(origin, "poem-extended");
+    await waitFor(client.isSynced);
+    const quiet = console.error;
+    const errors: unknown[] = [];
+    console.error = (...args: unknown[]) => {
+      errors.push(args);
+    };
+    try {
+      await rm(dir, { recursive: true, force: true });
+      client.text.insert(0, "Lost: ");
+      await waitFor(() => errors.length > 0, 5000);
+      await mkdir(dir, { recursive: true });
+      client.text.insert(0, "Kept: ");
+      await waitFor(() => existsSync(resolve(dir, "poem-extended.txt")), 5000);
+    } finally {
+      console.error = quiet;
+    }
+    client.close();
+    await stop();
+    expect(
+      await readFile(resolve(dir, "poem-extended.txt"), "utf8"),
+    ).toStartWith("Kept: Lost: ");
   });
 
   test("rejects unknown rooms with a close code the client will not retry", async () => {

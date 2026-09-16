@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { yCollab, yUndoManagerKeymap } from "y-codemirror.next";
+import { keyed } from "@/lib/keyed";
 import {
   type DraftSession,
   type DraftStatus,
@@ -125,16 +126,6 @@ function SurfaceRow({
       </dd>
     </div>
   );
-}
-
-/** Stable keys for repeated text: the text itself plus its occurrence. */
-function keyed(items: readonly string[]) {
-  const seen = new Map<string, number>();
-  return items.map((item) => {
-    const occurrence = seen.get(item) ?? 0;
-    seen.set(item, occurrence + 1);
-    return { item, key: `${item}#${occurrence}` };
-  });
 }
 
 function storageLabel(status: DraftStatus) {
