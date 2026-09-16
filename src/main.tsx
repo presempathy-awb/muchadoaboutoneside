@@ -105,6 +105,12 @@ const projectionRoute = createRoute({
   component: lazyRouteComponent(() => import("@/pages/projection")),
   pendingComponent: RouteLoading,
 });
+const sixFootRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/six-foot",
+  component: lazyRouteComponent(() => import("@/pages/six-foot")),
+  pendingComponent: RouteLoading,
+});
 const router = createRouter({
   scrollRestoration: true,
   routeTree: rootRoute.addChildren([
@@ -118,6 +124,7 @@ const router = createRouter({
     instructionsRoute,
     poemRoute,
     projectionRoute,
+    sixFootRoute,
   ]),
   defaultNotFoundComponent: () => (
     <div className="empty-state">

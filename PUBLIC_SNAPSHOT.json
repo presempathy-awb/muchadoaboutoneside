@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "c6906723074a189565a3ec32762e9d934ca5bd01",
+  "sourceCommit": "1dd39a9b716e75ace26da2142054927304ff0c5c",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 26272,
-      "sha256": "36ed95b31831a98e68202e07b531dd112f1d7b5b34fbce31405d0a8a31b4e528"
+      "bytes": 27640,
+      "sha256": "99870c1b07bd39b4d88b25e24077e30d791a2faea8b9258f5bf833d12a72030d"
     },
     {
       "path": "REUSE.md",
@@ -4865,8 +4865,8 @@
     },
     {
       "path": "scripts/smoke.ts",
-      "bytes": 6808,
-      "sha256": "468c3cf237e7b21a5547033870523ef55c2e7e8ec7d37a53e2f0a4009d456a04"
+      "bytes": 6825,
+      "sha256": "10e92f94aa7aaa54aa148170db7b4c3d15eae71c4339cc6b5626050e3acdc6e8"
     },
     {
       "path": "scripts/verify-assets.ts",
@@ -5039,6 +5039,26 @@
       "sha256": "ec9753d6ea09fb37c74d6d343d23d34e3f6d15488e5b1794eb0c6d9e12e9059b"
     },
     {
+      "path": "shared/six-foot-guide.ts",
+      "bytes": 12221,
+      "sha256": "2e93ecc9b35be9d88f01718109441f6e3cc6581c89131f87544796f9c3b1aed7"
+    },
+    {
+      "path": "shared/six-foot-reference.json",
+      "bytes": 740,
+      "sha256": "9d26ea316f4258ded60270810026007bcf789c8541a6486da7768b4e9c422a43"
+    },
+    {
+      "path": "shared/six-foot-study.test.ts",
+      "bytes": 3862,
+      "sha256": "eebe1b1de1aed08a11201904b26cbede95168dccddd641fbaf80bb1f7693e320"
+    },
+    {
+      "path": "shared/six-foot-study.ts",
+      "bytes": 795,
+      "sha256": "97551e8990ff1f2d3088512f5501369436e9873f319ede7ab90da1bb78a97896"
+    },
+    {
       "path": "shared/small-foil-glb.test.ts",
       "bytes": 11023,
       "sha256": "860233892314c9629697b9f40d8bbe181da2571c9ba30ddae08c6932b7800be4"
@@ -5095,8 +5115,8 @@
     },
     {
       "path": "src/components/app-shell.tsx",
-      "bytes": 5719,
-      "sha256": "b5f176cca52671bda03e78860fc5dbe98adb066f2d9a7093ae5af5e7b9eacb5f"
+      "bytes": 5829,
+      "sha256": "0c6de01ab4d9ec359a8617ee1c6dfe2eb0ebbce551208adf400843adbed87205"
     },
     {
       "path": "src/components/artist-reuse.tsx",
@@ -5195,8 +5215,8 @@
     },
     {
       "path": "src/foil.css",
-      "bytes": 20623,
-      "sha256": "9e12763cd1275ef738544572fabd4f55a4d5c463670634fbc0e102ea8baa985e"
+      "bytes": 20740,
+      "sha256": "50b700e17ed9ed3fe5852cb2df48c7c005d2682053e9da09c0f8da3828989c0d"
     },
     {
       "path": "src/instructions.css",
@@ -5290,8 +5310,8 @@
     },
     {
       "path": "src/main.tsx",
-      "bytes": 4184,
-      "sha256": "f9094c231a4d36622a2abf6d6e16301ecc90f7480a538ee5962297e46739f6a8"
+      "bytes": 4398,
+      "sha256": "14909b4fc37a8b577694b5607dcbdd60327ea4ae8859b53d2e04fd4c0ddceded"
     },
     {
       "path": "src/pages/archive.tsx",
@@ -5310,13 +5330,13 @@
     },
     {
       "path": "src/pages/foil.tsx",
-      "bytes": 21240,
-      "sha256": "33a1134cfef1e7f02d790bb4f919ea971fb44037a9d867dc4e2d313a2e3f1459"
+      "bytes": 21531,
+      "sha256": "06a7d76861d120b187b7df0bb0a45f08b125652cedf33b1aeb990d7ff6c9dd80"
     },
     {
       "path": "src/pages/instructions.tsx",
-      "bytes": 11116,
-      "sha256": "3db01febec1e8a0c165fc1c091b8f9aefb7c1ebd4ff1fe4a9ac72d75af006e43"
+      "bytes": 11688,
+      "sha256": "375a7b5810d9d58a7129062915908f82e88e8517fbf6c627d084bfb852af079d"
     },
     {
       "path": "src/pages/poem.test.tsx",
@@ -5332,6 +5352,11 @@
       "path": "src/pages/projection.tsx",
       "bytes": 11987,
       "sha256": "c967eb775573c1dcba147deaaa2b45b521a276566167b860625d3a316f0ec1d2"
+    },
+    {
+      "path": "src/pages/six-foot.tsx",
+      "bytes": 11394,
+      "sha256": "f92a412134a776308047ea266fc63143f4e73751bf2b362aa1139f9948ad2442"
     },
     {
       "path": "src/pages/studio.tsx",
@@ -5352,6 +5377,11 @@
       "path": "src/site-guide.css",
       "bytes": 712,
       "sha256": "4ecaaf369f086c2d5b5cf312590ce73a5a2d9350c3cd86ebc4a1995593924a33"
+    },
+    {
+      "path": "src/six-foot.css",
+      "bytes": 14796,
+      "sha256": "2f092001c0b7f40eeb1cfed0ed51523db5a4d9dc6ee05a2d3aeb9253fffc1ec7"
     },
     {
       "path": "src/styles.css",

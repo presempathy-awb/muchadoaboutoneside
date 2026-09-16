@@ -256,6 +256,13 @@ export default function FoilEdition() {
 
       <div id="dimensions">
         <DimensionsOverview compact />
+        <p className="foil-path-note">
+          Planning a reusable indoor sculpture?{" "}
+          <Link to="/six-foot" className="text-link">
+            Compare the 6-foot construction options
+          </Link>{" "}
+          for an aluminum surface that people can touch.
+        </p>
       </div>
 
       <section className="foil-loop" aria-labelledby="foil-loop-title">

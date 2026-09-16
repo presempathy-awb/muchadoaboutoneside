@@ -222,6 +222,19 @@ export default function Instructions() {
         <LargeSculptureGuide />
 
         <aside className="instructions-note instructions-projection-link">
+          <strong>A six-foot version for indoors.</strong>
+          <p>
+            Compare supported aluminum, aluminum-composite panels, and four
+            other ways to build a reusable display for ordinary touch. Review
+            dimensions, sample panels, base design, and costs before choosing.
+          </p>
+          <a href="/six-foot">
+            Open the 6-foot indoor construction study
+            <ExternalLink size={15} aria-hidden="true" />
+          </a>
+        </aside>
+
+        <aside className="instructions-note instructions-projection-link">
           <strong>Bring the calligraphy into the performance.</strong>
           <p>
             Plan full-sculpture projection, cues for the future score, Enceladus

@@ -9,6 +9,7 @@ import {
   MoveUpRight,
   PenLine,
   Projector,
+  Ruler,
   SquarePen,
 } from "lucide-react";
 import { useEffect } from "react";
@@ -48,22 +49,28 @@ const links = [
     index: "05",
   },
   {
+    to: "/six-foot" as const,
+    icon: Ruler,
+    label: "6-foot indoor",
+    index: "06",
+  },
+  {
     to: "/studio" as const,
     icon: Box,
     label: "Sculpture studio",
-    index: "06",
+    index: "07",
   },
   {
     to: "/assembly" as const,
     icon: GitFork,
     label: "Assembly map",
-    index: "07",
+    index: "08",
   },
   {
     to: "/archive" as const,
     icon: FolderOpen,
     label: "Files & source",
-    index: "08",
+    index: "09",
   },
 ];
 
