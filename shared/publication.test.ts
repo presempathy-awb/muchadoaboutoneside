@@ -3,7 +3,12 @@ import { isPublicSourcePath } from "./publication";
 
 test("public source selection excludes private archives, history, credentials, and host configuration", () => {
   for (const path of [
-    "AGENTS.md",
+    "docs/plans/001-studio-platform.md",
+    "docs/security/threat-model.md",
+    "docs/prds/001-platform-validation.md",
+    "docs/runbook/secrets.md",
+    "inbox/suggestions-to-claude.md",
+    "suggestions-to-programer.md",
     "source/reference/jill-calligraphy.jpg",
     "source/reference/provenance.json",
     "source/claude/share-page.html",
@@ -26,6 +31,11 @@ test("public source selection excludes private archives, history, credentials, a
   ])
     expect(isPublicSourcePath(path)).toBeFalse();
   for (const path of [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "agents.toml",
+    "Dockerfile",
+    "docs/runbook/development.md",
     ".env.example",
     "LICENSE-MIT",
     "LICENSE-APACHE",

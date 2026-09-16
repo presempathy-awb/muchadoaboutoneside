@@ -1,0 +1,27 @@
+{
+  "name": "Much Ado About One Side",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm@sha256:73d85a96694a2cadca1ba3fcb5721f2312a64f1d571dd86f6c77e10a708931dc",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/mise:1": {
+      "version": "2026.9.9"
+    }
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "mise install && mise exec -- just setup && mise exec -- just toolchain-check",
+  "forwardPorts": [3001, 5173],
+  "portsAttributes": {
+    "3001": {
+      "label": "API",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["biomejs.biome", "hverlin.mise-vscode"]
+    }
+  }
+}

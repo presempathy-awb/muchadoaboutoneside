@@ -1,0 +1,11 @@
+# Opt-in: run `lefthook install` explicitly. jj users run just check/security.
+pre-commit:
+  commands:
+    check:
+      run: just check
+    secrets:
+      run: just security-check
+pre-push:
+  commands:
+    security:
+      run: just security-check

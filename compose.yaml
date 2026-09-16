@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "127.0.0.1:${MUCHADO_PORT:-3001}:3001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    init: true
+    restart: "no"
+    mem_limit: 256m
+    pids_limit: 128
+# This app currently needs no database, object store, or identity service.
+# Add those behind reviewed integration profiles when their adapters exist.

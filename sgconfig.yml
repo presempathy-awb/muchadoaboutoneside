@@ -1,0 +1,4 @@
+ruleDirs:
+  - rules/security
+testConfigs:
+  - testDir: tests/security

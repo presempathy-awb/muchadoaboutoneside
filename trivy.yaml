@@ -1,0 +1,19 @@
+# Fail closed on actionable findings. No vulnerability exemptions are configured.
+exit-code: 1
+ignorefile: .trivyignore.yaml
+severity:
+  - HIGH
+  - CRITICAL
+scan:
+  scanners:
+    - vuln
+    - misconfig
+    - secret
+  skip-dirs:
+    - .git
+    - .jj
+    - node_modules
+    - dist
+    - .cache
+pkg:
+  include-dev-deps: true

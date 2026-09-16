@@ -1,0 +1,4 @@
+# Any future exemption needs a finding ID, justification, owner, and expiry.
+vulnerabilities: []
+misconfigurations: []
+secrets: []

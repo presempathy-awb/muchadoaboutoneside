@@ -1,0 +1,3 @@
+# Repository-local configuration intentionally defines no providers, credentials,
+# private MCP paths, approval bypasses, or background services.
+# Project instructions are generated from agents.toml into AGENTS.md.

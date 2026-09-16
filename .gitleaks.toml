@@ -1,0 +1,14 @@
+title = "Much Ado About One Side secret scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Dependency caches and generated build trees; source and archives remain scanned."
+paths = [
+  '''(^|/)\.git/''',
+  '''(^|/)\.jj/''',
+  '''(^|/)node_modules/''',
+  '''(^|/)dist/''',
+  '''(^|/)\.cache/''',
+]

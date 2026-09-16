@@ -1,0 +1,119 @@
+# Canonical instruction source. Only the two managed targets below may be written.
+[meta]
+schema = "agents.core.v1"
+project = "muchadoaboutoneside"
+generated = false
+
+[project]
+slug = "muchadoaboutoneside"
+name = "Much Ado About One Side"
+stack = "bun-react-elysia"
+canonical_forge = "https://git.telpher.stream/awb/muchadoaboutoneside"
+github_mirror = "https://github.com/presempathy-awb/muchadoaboutoneside"
+
+[agents]
+projector = "coroidinator"
+context_files = ["README.md", "INTENT.md", "ROADMAP.md"]
+
+[managed_files.codex]
+schema = "managed-target.v1"
+output = "AGENTS.md"
+content = '''
+# Much Ado About One Side
+
+This is a Bun application with a Vite/React frontend and an Elysia backend.
+Gitea `origin` is canonical: `awb/muchadoaboutoneside` on `git.telpher.stream`.
+The public source mirror is `presempathy-awb/muchadoaboutoneside` on GitHub.
+In a public clone, `origin` points to GitHub. Inspect the remote URL before any
+push; never push private archive history to the public repository.
+
+## Commands
+
+- `bun install --frozen-lockfile`
+- `bun run dev` — frontend on 127.0.0.1:5173, API on 127.0.0.1:3001
+- `bun run check` — Biome, TypeScript 7, Bun tests, source-asset verification
+- `bun run build` — typecheck and production Vite bundle
+- `bun run smoke` — HTTP checks against the production build on an ephemeral port
+- `bun run start` — serve the production bundle and API on 127.0.0.1:3001
+- `bun run generate:inscription` — regenerate the editable SVG and poem download
+- `bun run generate:laser` — regenerate the outlined master and exact-facet reference kit using the isolated Python dependencies in `scripts/laser-requirements.txt`
+- `bun run generate:small-foil` — regenerate the separate 180 mm foil patterns and textured preview using `scripts/small-foil/requirements.txt`
+- `bun run export:public --output <new-directory>` — export a reviewed clean commit without private archive files or Git history
+
+## Boundaries
+
+- Preserve original files under `source/assets/` byte for byte. Update the manifest deliberately if new originals are supplied.
+- The Claude transcript is not imported. Do not invent source dialogue or mark the full Claude Project as recovered.
+- Serve downloaded HTML as an attachment; the original viewer is archival source, not executable application code.
+- Keep model dimensions in source inches. The source GLB is Y-up.
+- Keep user-facing dimensions derived from the source manifest, print manifest, and lettering sheet constants. Convert display units only; the print is Z-up in millimetres. Label height, width, and depth explicitly and distinguish object dimensions from the finished shipping package.
+- `/instructions` is the making, packing, and CoLab iani handoff guide. Publish a mailing address or receiving policy only when explicitly confirmed for this project. The printable packing slip uses blank fields; do not add collection or storage of recipient details as a side effect of content work.
+- Website-only calligraphy typography belongs in `src/site-guide.css`. Keep it separate from the shared print stylesheet so screen readability changes do not alter the physical template scale or make the committed PDF stale.
+- Keep the poem wording exact. Jill's photograph in `source/reference/` is private style reference and must stay out of public assets and release packages. Its song lyrics are not the sculpture inscription.
+- Project-authored code, poem, geometry, artwork, fabrication files, and documentation use `MIT OR Apache-2.0`. Retain third-party notices and the font's OFL license. Include the reuse terms in fabrication ZIPs. Artists may adapt the project under their chosen license; preserving the canonical poem here does not restrict downstream remixes.
+- The foil mesh is a conceptual capped tube; do not call it Möbius geometry or a fabrication-ready pattern. Keep the separate jaw, side seams, and crossing-clearance limitations explicit.
+- The homepage and exact-facet kit share `shared/fabrication.ts` sampling. Keep the outlined UV master identical in the wrapped preview and laser projection. Actual-size marking and manual trimming files are separate; do not invent laser settings or imply that an unresolved reference kit has passed a physical fit test.
+- The STL maquette has its own millimeter solid-body validation. Preserve the archival STL unchanged. The 180 mm print is the smooth substrate for a separate marked-foil kit; match that kit to its actual boolean-unioned STL, including the visible base, instead of scaling the large conceptual skin. Keep physical marking and fit tests distinct from geometric verification.
+- `deploy/` defines the authorized public site on `muchadoaboutoneside.com`. Use a slim release and the scoped Bun runtime; do not change shared runtimes or unrelated edge routes. Verify Cloudflare zone access before DNS/HTTPS activation.
+- `shared/project.ts` defines the frontend/API data contract.
+- Use TypeScript 7's regular `tsc` command. Do not reintroduce `baseUrl` or the old native-preview compiler.
+- Bun owns the lockfile. Keep direct dependency versions pinned and use frozen installs in CI.
+- The `src/components/ui/` files are generated shadcn components; new product UI belongs outside that directory.
+- Branch changes and use Gitea PRs after the initial seed. Do not configure a public deployment as a side effect of local development.
+- This checkout is a colocated jj repository: jj is primary here (bookmarks for branches, `jj git push`), git stays primary on `presvd1`, which holds packaged releases rather than a checkout. The release packager and public exporter read git state, which jj keeps in step.
+- The extended wording is the site default; the canonical wording remains the one every marking master and foil kit was generated from.
+
+Browser or desktop control follows Andrew's explicit computer-control consent instructions. Ordinary code edits and non-browser tests are autonomous.
+'''
+
+[managed_files.claude]
+schema = "managed-target.v1"
+output = "CLAUDE.md"
+content = '''
+# Much Ado About One Side
+
+This is a Bun application with a Vite/React frontend and an Elysia backend.
+Gitea `origin` is canonical: `awb/muchadoaboutoneside` on `git.telpher.stream`.
+The public source mirror is `presempathy-awb/muchadoaboutoneside` on GitHub.
+In a public clone, `origin` points to GitHub. Inspect the remote URL before any
+push; never push private archive history to the public repository.
+
+## Commands
+
+- `bun install --frozen-lockfile`
+- `bun run dev` — frontend on 127.0.0.1:5173, API on 127.0.0.1:3001
+- `bun run check` — Biome, TypeScript 7, Bun tests, source-asset verification
+- `bun run build` — typecheck and production Vite bundle
+- `bun run smoke` — HTTP checks against the production build on an ephemeral port
+- `bun run start` — serve the production bundle and API on 127.0.0.1:3001
+- `bun run generate:inscription` — regenerate the editable SVG and poem download
+- `bun run generate:laser` — regenerate the outlined master and exact-facet reference kit using the isolated Python dependencies in `scripts/laser-requirements.txt`
+- `bun run generate:small-foil` — regenerate the separate 180 mm foil patterns and textured preview using `scripts/small-foil/requirements.txt`
+- `bun run export:public --output <new-directory>` — export a reviewed clean commit without private archive files or Git history
+
+## Boundaries
+
+- Preserve original files under `source/assets/` byte for byte. Update the manifest deliberately if new originals are supplied.
+- The Claude transcript is not imported. Do not invent source dialogue or mark the full Claude Project as recovered.
+- Serve downloaded HTML as an attachment; the original viewer is archival source, not executable application code.
+- Keep model dimensions in source inches. The source GLB is Y-up.
+- Keep user-facing dimensions derived from the source manifest, print manifest, and lettering sheet constants. Convert display units only; the print is Z-up in millimetres. Label height, width, and depth explicitly and distinguish object dimensions from the finished shipping package.
+- `/instructions` is the making, packing, and CoLab iani handoff guide. Publish a mailing address or receiving policy only when explicitly confirmed for this project. The printable packing slip uses blank fields; do not add collection or storage of recipient details as a side effect of content work.
+- Website-only calligraphy typography belongs in `src/site-guide.css`. Keep it separate from the shared print stylesheet so screen readability changes do not alter the physical template scale or make the committed PDF stale.
+- Keep the poem wording exact. Jill's photograph in `source/reference/` is private style reference and must stay out of public assets and release packages. Its song lyrics are not the sculpture inscription.
+- Project-authored code, poem, geometry, artwork, fabrication files, and documentation use `MIT OR Apache-2.0`. Retain third-party notices and the font's OFL license. Include the reuse terms in fabrication ZIPs. Artists may adapt the project under their chosen license; preserving the canonical poem here does not restrict downstream remixes.
+- The foil mesh is a conceptual capped tube; do not call it Möbius geometry or a fabrication-ready pattern. Keep the separate jaw, side seams, and crossing-clearance limitations explicit.
+- The homepage and exact-facet kit share `shared/fabrication.ts` sampling. Keep the outlined UV master identical in the wrapped preview and laser projection. Actual-size marking and manual trimming files are separate; do not invent laser settings or imply that an unresolved reference kit has passed a physical fit test.
+- The STL maquette has its own millimeter solid-body validation. Preserve the archival STL unchanged. The 180 mm print is the smooth substrate for a separate marked-foil kit; match that kit to its actual boolean-unioned STL, including the visible base, instead of scaling the large conceptual skin. Keep physical marking and fit tests distinct from geometric verification.
+- `deploy/` defines the authorized public site on `muchadoaboutoneside.com`. Use a slim release and the scoped Bun runtime; do not change shared runtimes or unrelated edge routes. Verify Cloudflare zone access before DNS/HTTPS activation.
+- `shared/project.ts` defines the frontend/API data contract.
+- Use TypeScript 7's regular `tsc` command. Do not reintroduce `baseUrl` or the old native-preview compiler.
+- Bun owns the lockfile. Keep direct dependency versions pinned and use frozen installs in CI.
+- The `src/components/ui/` files are generated shadcn components; new product UI belongs outside that directory.
+- Branch changes and use Gitea PRs after the initial seed. Do not configure a public deployment as a side effect of local development.
+- This checkout is a colocated jj repository: jj is primary here (bookmarks for branches, `jj git push`), git stays primary on `presvd1`, which holds packaged releases rather than a checkout. The release packager and public exporter read git state, which jj keeps in step.
+- The extended wording is the site default; the canonical wording remains the one every marking master and foil kit was generated from.
+
+Browser or desktop control follows Andrew's explicit computer-control consent instructions. Ordinary code edits and non-browser tests are autonomous.
+'''
+

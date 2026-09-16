@@ -28,7 +28,7 @@
     },
     "requirements": {
       "path": "scripts/small-foil/requirements.txt",
-      "sha256": "3fc689f9b01f63467bac0d57efdeddee6ac7002b3461677f462612c770e4790e"
+      "sha256": "6a73dfda8d920aba9c0360b00906056f7c596b7dd9ba8a2dfc4fb5efe34568ac"
     },
     "imageMagick": "Version: ImageMagick 7.1.2-31 Q16-HDRI aarch64 8309dc92a:20260903 https://imagemagick.org",
     "textureRaster": "8192 x 256, stripped 8-bit RGB PNG embedded in GLB"
@@ -109279,8 +109279,8 @@
       "sha256": "253bd80de63c07f8b029a45d7ac16d8cc5867ed2233d48e12ac17a845fe71671"
     },
     "muchado-foil-180mm.glb": {
-      "bytes": 756532,
-      "sha256": "8d285421e50b63f8597183eb07378a65d2b2acfc58aefb1b81d20db0de00210c"
+      "bytes": 756520,
+      "sha256": "de054d5f7672867dfd38117d467be01f1dbd05d314af4ad5d7696d8d65155f37"
     },
     "sheets/mark-01.svg": {
       "bytes": 523030,

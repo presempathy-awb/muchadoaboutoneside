@@ -1,0 +1,14 @@
+id: no-server-console
+valid:
+  - logger.info("ready")
+  - console.error("fatal")
+  - |
+    console.log(
+      `Much Ado About One Side API listening on http://${host}:${port}${
+        collabDir ? ` · live poem drafts in ${collabDir}` : ""
+      }`,
+    )
+invalid:
+  - console.log("ready")
+  - console.log(user, token)
+  - 'console.log(`API listening on ${host}:${port}`)'

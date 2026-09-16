@@ -1,0 +1,31 @@
+# Deny by default: ignored files never enter any build stage.
+**
+!package.json
+!bun.lock
+!tsconfig.json
+!vite.config.ts
+!index.html
+!src/
+!src/**
+!shared/
+!shared/**
+!server/
+!server/**
+!public/
+!public/**
+!source/
+!source/assets/
+!source/assets/manifest.json
+!source/assets/snake_build.glb
+!source/assets/snake_build.obj
+!source/assets/snake_build.stl
+!source/assets/snake_build_viewer.html
+!source/poem/
+!source/poem/**
+# Defense in depth against credentials and private references in allowed trees.
+**/.env*
+**/.git
+**/.jj
+**/node_modules
+**/PXL_20260914_180707651.RAW-01.jpg
+**/jill-calligraphy.jpg
