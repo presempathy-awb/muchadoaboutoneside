@@ -1136,3 +1136,11 @@
   font-size: 16px;
   line-height: 1.8;
 }
+
+.foil-path-note {
+  margin: 18px 0 0;
+  max-width: 76ch;
+  color: #526459;
+  font-size: 15px;
+  line-height: 1.7;
+}

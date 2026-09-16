@@ -1,0 +1,16 @@
+{
+  "description": "Construction-model bounds excluding the base; conceptual body plus jaw surface areas in source inches. Derived reference only; not a structural design or cut layout.",
+  "sourceGlbSha256": "81167fb7416443e21aab53379e7f6a2d5b43493b9f811829313e7f31e2555150",
+  "sectionDataSha256": "8757d717fcc831eb3e0582c35fdd5cee43cae11c83ec1f3bc9f70909923277e2",
+  "bodyBoundsInches": {
+    "min": [-59.9276237487793, 10.278149604797363, -16.7279052734375],
+    "max": [55.83537673950195, 206.3139190673828, 17.543550491333008]
+  },
+  "skinAreaSquareInches": [28961.425530442342, 32640.332018977348],
+  "sampling": {
+    "subdivisionsPerSpan": 4,
+    "meridianCount": 48,
+    "capSteps": 8
+  },
+  "sourceRadiusOffsetsInches": [0, 1]
+}
