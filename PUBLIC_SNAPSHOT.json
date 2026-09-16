@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "fcfbec7a06e393e7c0d46439aa89f01c28c9f1ac",
+  "sourceCommit": "c6906723074a189565a3ec32762e9d934ca5bd01",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 26155,
-      "sha256": "43473d5d3c4cbf6002939e452591adeea517e40e5a91102f4015a3379a057cf4"
+      "bytes": 26272,
+      "sha256": "36ed95b31831a98e68202e07b531dd112f1d7b5b34fbce31405d0a8a31b4e528"
     },
     {
       "path": "REUSE.md",
@@ -4980,13 +4980,13 @@
     },
     {
       "path": "shared/poem.test.ts",
-      "bytes": 2949,
-      "sha256": "303357a76207c526f6e335725789ea8402b0eeb6caf8b193263cfa8ab85d93c7"
+      "bytes": 3058,
+      "sha256": "04795c3c3494523b49da4acbece044d0e0ff20b63377ca8ffb57a0d351765000"
     },
     {
       "path": "shared/poem.ts",
-      "bytes": 7951,
-      "sha256": "d8cb682f9e4332df701db9a0b40b3505115244bbcf798001c70a9f219ee70e4e"
+      "bytes": 8196,
+      "sha256": "fcb4a676e59c9e9978cd6f8d3e1e066f756b258272e4c6c4d7ea9cec62a8a5fa"
     },
     {
       "path": "shared/print-manifest.json",
@@ -5000,13 +5000,13 @@
     },
     {
       "path": "shared/project-instructions.test.ts",
-      "bytes": 3156,
-      "sha256": "f6f7dabbcff797a44bcb814fed3cbbf45a419e940012ea465abaa51e6e62b7de"
+      "bytes": 3214,
+      "sha256": "c80526d9eda357372182375673fc4911b2d012c2406859644c4cf6a86b0579d9"
     },
     {
       "path": "shared/project-instructions.ts",
-      "bytes": 7089,
-      "sha256": "f4bfceb8202c8b8f8e5cf6cc6b318b5fe518f80ac2a584ac89a3eb081f3d9c87"
+      "bytes": 7083,
+      "sha256": "d6721cb70c5c0c77d73ab7ffeb2299f22ffef54afc856ea475aaf2422c6f95cb"
     },
     {
       "path": "shared/project.ts",
@@ -5255,13 +5255,13 @@
     },
     {
       "path": "src/lib/poem-version.test.tsx",
-      "bytes": 1009,
-      "sha256": "7f4348e3a11a5621876a6f0d594ca5913bef5b7b9a33192975897ad5fd093f03"
+      "bytes": 1007,
+      "sha256": "29f8db2368910998c5a335ca6119eeadec9f604ca0946b90be2ea267e230d81f"
     },
     {
       "path": "src/lib/poem-version.tsx",
-      "bytes": 5024,
-      "sha256": "38b5f0a23477f5ffda746abafe38ff5c42acbe12725efda590393fe7a46e0b10"
+      "bytes": 5128,
+      "sha256": "cae5b91d999b7b5973676748fee7200f93c3759ac073745a29efc62f3e802a77"
     },
     {
       "path": "src/lib/project-query.test.ts",

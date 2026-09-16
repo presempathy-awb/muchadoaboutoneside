@@ -40,17 +40,18 @@ describe("project instructions", () => {
   });
 
   test("lettering downloads follow the chosen poem version", () => {
-    const extended = projectPaths(poemVersionById("extended"));
-    expect(extended.map((path) => path.title)).toEqual(
+    const canonical = projectPaths(poemVersionById("canonical"));
+    expect(canonical.map((path) => path.title)).toEqual(
       PROJECT_PATHS.map((path) => path.title),
     );
-    const hrefs = extended[0]?.downloads.map((download) => download.href);
-    expect(hrefs).toContain("/guide/calligraphy-guide-extended.pdf");
-    expect(hrefs).toContain("/editions/much-ado-about-one-side-extended.txt");
+    const hrefs = canonical[0]?.downloads.map((download) => download.href);
+    expect(hrefs).toContain("/guide/calligraphy-guide.pdf");
+    expect(hrefs).toContain("/editions/much-ado-about-one-side.txt");
+    // The default paths carry the extended wording.
     expect(PROJECT_PATHS[0]?.downloads.map((d) => d.href)).toContain(
-      "/guide/calligraphy-guide.pdf",
+      "/guide/calligraphy-guide-extended.pdf",
     );
-    expect(extended.slice(1)).toEqual(PROJECT_PATHS.slice(1));
+    expect(canonical.slice(1)).toEqual(PROJECT_PATHS.slice(1));
   });
 
   test("retains the material-specific packing constraints", () => {
@@ -69,7 +70,7 @@ describe("project instructions", () => {
 
     for (const section of INSTRUCTION_SECTIONS)
       expect(html).toContain(`id="${section.id}"`);
-    expect(html).toContain('href="/guide/calligraphy-guide.pdf"');
+    expect(html).toContain('href="/guide/calligraphy-guide-extended.pdf"');
     expect(html).toContain(
       'href="/fabrication/print/muchado-maquette-180mm.stl"',
     );

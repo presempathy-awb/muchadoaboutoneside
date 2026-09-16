@@ -9,9 +9,9 @@ function VersionLabel() {
   return createElement("span", null, `${version.id}:${version.lines.length}`);
 }
 
-test("the canonical poem is selected by default, with and without a provider", () => {
+test("the extended poem is selected by default, with and without a provider", () => {
   expect(renderToStaticMarkup(createElement(VersionLabel))).toBe(
-    "<span>canonical:17</span>",
+    "<span>extended:40</span>",
   );
   const markup = renderToStaticMarkup(
     createElement(
@@ -21,7 +21,7 @@ test("the canonical poem is selected by default, with and without a provider", (
       createElement(PoemVersionPicker),
     ),
   );
-  expect(markup).toContain("<span>canonical:17</span>");
-  expect(markup).toContain('<option value="canonical" selected="">');
-  expect(markup).toContain('<option value="extended">Extended · 40 lines');
+  expect(markup).toContain("<span>extended:40</span>");
+  expect(markup).toContain('<option value="extended" selected="">');
+  expect(markup).toContain('<option value="canonical">Canonical · 17 lines');
 });

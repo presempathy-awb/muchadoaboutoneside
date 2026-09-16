@@ -154,7 +154,8 @@ function defineVersion(
   return { ...version, title: POEM_TITLE, lines, loop: lines.join("  ") };
 }
 
-export const DEFAULT_POEM_VERSION_ID: PoemVersionId = "canonical";
+/** The wording the site shows unless a visitor picks another. */
+export const DEFAULT_POEM_VERSION_ID: PoemVersionId = "extended";
 
 export const POEM_VERSIONS: readonly PoemVersion[] = [
   defineVersion({
@@ -199,7 +200,7 @@ export function isPoemVersionId(value: unknown): value is PoemVersionId {
   return POEM_VERSIONS.some((version) => version.id === value);
 }
 
-/** Falls back to the canonical version for unknown ids. */
+/** Falls back to the default version for unknown ids. */
 export function poemVersionById(id: string | null | undefined): PoemVersion {
   return (
     POEM_VERSIONS.find((version) => version.id === id) ??
@@ -209,7 +210,11 @@ export function poemVersionById(id: string | null | undefined): PoemVersion {
   );
 }
 
-export const CANONICAL_POEM = poemVersionById(DEFAULT_POEM_VERSION_ID);
+/** The wording every marking master and foil kit was generated from. */
+export const CANONICAL_POEM = POEM_VERSIONS.find(
+  (version) => version.id === "canonical",
+) as PoemVersion;
+export const DEFAULT_POEM = poemVersionById(DEFAULT_POEM_VERSION_ID);
 
 // The canonical wording keeps its original names for the generators and tests.
 export const POEM_LINES = POEM_STANZAS.flat();

@@ -80,11 +80,6 @@ export function PoemVersionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(POEM_VERSION_STORAGE_KEY, id);
-    } catch {}
-  }, [id]);
-  useEffect(() => {
-    try {
       window.localStorage.setItem(
         DRAFT_PREVIEW_STORAGE_KEY,
         JSON.stringify([...draftPreview]),
@@ -122,7 +117,13 @@ export function PoemVersionProvider({ children }: { children: ReactNode }) {
   }, [draftPreview]);
 
   const setVersionId = useCallback((next: PoemVersionId) => {
-    if (isPoemVersionId(next)) setId(next);
+    if (!isPoemVersionId(next)) return;
+    setId(next);
+    // Only an explicit choice is remembered, so a new site default still
+    // reaches browsers that never picked one.
+    try {
+      window.localStorage.setItem(POEM_VERSION_STORAGE_KEY, next);
+    } catch {}
   }, []);
   const setDraftPreview = useCallback(
     (target: PoemVersionId, enabled: boolean) => {

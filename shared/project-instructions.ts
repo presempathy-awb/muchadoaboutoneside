@@ -1,5 +1,5 @@
 import { FABRICATION_DOWNLOADS } from "./fabrication-downloads";
-import { CANONICAL_POEM, type PoemVersion } from "./poem";
+import { DEFAULT_POEM, type PoemVersion } from "./poem";
 
 export const INSTRUCTION_SECTIONS = [
   { id: "dimensions", label: "Dimensions" },
@@ -19,7 +19,7 @@ export interface ProjectPath {
 
 /** The three production paths, with downloads for the chosen poem wording. */
 export function projectPaths(
-  version: PoemVersion = CANONICAL_POEM,
+  version: PoemVersion = DEFAULT_POEM,
 ): readonly ProjectPath[] {
   return [
     {
@@ -106,7 +106,7 @@ export function projectPaths(
   ];
 }
 
-export const PROJECT_PATHS = projectPaths(CANONICAL_POEM);
+export const PROJECT_PATHS = projectPaths(DEFAULT_POEM);
 
 export const PACKING_GROUPS = [
   {
