@@ -3,6 +3,7 @@ import { basename, dirname, resolve } from "node:path";
 import {
   isPublicSourcePath,
   PRIVATE_REFERENCE_SHA256,
+  REQUIRED_PUBLIC_FILES,
 } from "../shared/publication";
 
 const root = await realpath(resolve(import.meta.dir, ".."));
@@ -44,14 +45,7 @@ for (const path of paths.filter(isPublicSourcePath).sort()) {
     throw new Error(`Private reference bytes found in public source: ${path}`);
   inventory.push({ path, bytes: bytes.byteLength, sha256 });
 }
-for (const required of [
-  "LICENSE",
-  "LICENSE-MIT",
-  "LICENSE-APACHE",
-  "REUSE.md",
-  "package.json",
-  ".github/workflows/site.yml",
-])
+for (const required of REQUIRED_PUBLIC_FILES)
   if (!inventory.some((entry) => entry.path === required))
     throw new Error(`Required public source file is missing: ${required}`);
 

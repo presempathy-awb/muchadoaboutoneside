@@ -12,6 +12,12 @@ Poem and website created with help from Claude and ChatGPT.
 - Public foil edition: [muchadoaboutoneside.com](https://muchadoaboutoneside.com) (`/foil` remains an alias)
 - Source conversation: [Claude share](https://claude.ai/share/f424ef86-dcac-4e63-aecb-a017ed781b5b)
 
+## Project and contributor guide
+
+Start with the [project intent](INTENT.md), [roadmap](ROADMAP.md), [recorded decisions](docs/decisions.md), and [development runbook](docs/runbook/development.md). Contributions follow [CONTRIBUTING.md](CONTRIBUTING.md) and the [conduct policy](CODE_OF_CONDUCT.md); current data behavior and reporting limits are described in [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md). Notable changes are recorded in [CHANGELOG.md](CHANGELOG.md). The [instruction runbook](docs/runbook/instructions.md) explains managed agent guidance and its verification.
+
+Today's studio works without an account. Poem drafts are browser-local by default, with an optional explicitly enabled publicly editable relay. Accounts, separate projects/organizations, access-controlled uploads, project URLs, and procurement integration are future platform proposals. The new repository setup does not activate those services.
+
 ## Make something of your own
 
 Artists, makers, teachers, and curious people are welcome to use any part of the project: remix the poem, change the geometry, build a sculpture, exhibit it, sell your work, or use the code in another project. Commercial use is welcome. Linking back is appreciated, but is not an extra license condition.
@@ -20,7 +26,7 @@ Project-authored code, poem, designs, artwork, fabrication files, and documentat
 
 - [Download the complete public source](https://github.com/presempathy-awb/muchadoaboutoneside/archive/refs/heads/main.zip)
 - [Large sculpture foil kit](https://muchadoaboutoneside.com/fabrication/laser/panel-kit.zip?v=0a253226337f873b23fd82ac9a43844e39f2dbc516a8b2a1a0fce2f38d66184e)
-- [180 mm foil kit](https://muchadoaboutoneside.com/fabrication/small-foil/foil-kit-180mm.zip?v=9d99556ff16a270cd652e0a79ca71421394e6b156c155a502ecc9af135ea1f71)
+- [180 mm foil kit](https://muchadoaboutoneside.com/fabrication/small-foil/foil-kit-180mm.zip?v=ab69099f9f614deea28edba126df0f069e663b09b7d58bb0c53c61494ccc984a)
 - [Printable 180 mm STL](https://muchadoaboutoneside.com/fabrication/print/muchado-maquette-180mm.stl)
 - [Editable sculpture OBJ](https://muchadoaboutoneside.com/api/assets/snake_build.obj)
 - [Poem text](https://muchadoaboutoneside.com/editions/much-ado-about-one-side.txt) · [extended version](https://muchadoaboutoneside.com/editions/much-ado-about-one-side-extended.txt)

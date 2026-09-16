@@ -1,0 +1,18 @@
+id: no-server-console
+language: TypeScript
+severity: error
+message: Use the approved structured logger for server logging.
+rule:
+  all:
+    - pattern: console.log($$$ARGS)
+    # Exact existing startup expression, pending the structured telemetry phase.
+    # Additional calls and changes to the message are still rejected.
+    - not:
+        pattern: |
+          console.log(
+            `Much Ado About One Side API listening on http://${host}:${port}${
+              collabDir ? ` · live poem drafts in ${collabDir}` : ""
+            }`,
+          )
+files:
+  - server/**/*.ts

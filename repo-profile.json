@@ -1,0 +1,85 @@
+{
+  "schema": "codex-concierge.repo-profile.v1",
+  "generated_at": "2026-09-16T00:00:00Z",
+  "generated_by": "Phase 0 repository configuration review",
+  "repo": {
+    "name": "muchadoaboutoneside",
+    "purpose": "Sculpture, poem, fabrication reference, and collaborative making website."
+  },
+  "stack": [
+    "Bun",
+    "Vite",
+    "React",
+    "Elysia",
+    "TypeScript 7",
+    "Biome",
+    "Docker Compose",
+    "just",
+    "mise",
+    "jj"
+  ],
+  "package_manager": "Bun; bun.lock with frozen installs",
+  "commands": {
+    "install": ["just setup"],
+    "test": ["bun test"],
+    "check": ["just check", "just security-check"],
+    "build": ["just build"],
+    "dev": ["just dev"],
+    "release": ["just release-package <output>"],
+    "deploy": []
+  },
+  "ports": [
+    {
+      "port": 5173,
+      "service": "Vite development frontend",
+      "command": "just dev"
+    },
+    {
+      "port": 3001,
+      "service": "Elysia API and production frontend",
+      "command": "bun run start"
+    }
+  ],
+  "env_templates": [".env.example"],
+  "generated_dirs": ["node_modules", "dist", ".jj", ".cache"],
+  "risky_paths": [
+    ".env",
+    ".env.*",
+    "!.env.example",
+    "source/reference/",
+    "data/",
+    "*.pem",
+    "*.key"
+  ],
+  "owners": ["personal:awb"],
+  "test_ladder": [
+    {
+      "scope": "focused",
+      "commands": ["bun test"]
+    },
+    {
+      "scope": "site",
+      "commands": ["just check", "just build", "just smoke"]
+    },
+    {
+      "scope": "security",
+      "commands": ["just security-check"]
+    }
+  ],
+  "release_commands": ["just release-package <output>"],
+  "deployment_targets": [
+    {
+      "name": "public-site",
+      "domain": "muchadoaboutoneside.com",
+      "status": "Scoped release procedure; local setup does not deploy."
+    }
+  ],
+  "codegraph": {
+    "initialized": false
+  },
+  "review_molds": [],
+  "notes": {
+    "canonical_source_of_truth": "INTENT.md and ROADMAP.md",
+    "phase_status": "Phase 0 local development and public source setup; identity, storage, and project authorization remain future work."
+  }
+}

@@ -29,8 +29,11 @@
     "generate:small-foil": "bun scripts/generate-small-foil.ts",
     "generate:guide": "bun scripts/generate-calligraphy-guide.tsx",
     "export:public": "bun scripts/export-public.ts",
-    "check": "bun run lint && bun run typecheck && bun test && bun run verify:assets && bun scripts/generate-inscription.ts --check && bun scripts/generate-calligraphy-guide.tsx --check",
-    "smoke": "bun scripts/smoke.ts"
+    "check": "bun run lint && bun run typecheck && bun test && bun run verify:assets && bun scripts/generate-inscription.ts --check && bun scripts/generate-calligraphy-guide.tsx --check && bun run verify:instructions && bun run verify:publication",
+    "smoke": "bun scripts/smoke.ts",
+    "verify:instructions": "bun scripts/verify-instructions.ts",
+    "verify:publication": "bun scripts/verify-publication.ts",
+    "generate:instructions": "bun scripts/generate-instructions.ts"
   },
   "dependencies": {
     "@babylonjs/core": "9.26.1",

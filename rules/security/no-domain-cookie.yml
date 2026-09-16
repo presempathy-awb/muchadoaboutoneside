@@ -1,0 +1,17 @@
+id: no-domain-cookie
+language: TypeScript
+severity: error
+message: Cookies must be host-only; omit the Domain attribute.
+rule:
+  any:
+    - pattern:
+        context: 'const cookie = { domain: $DOMAIN }'
+        selector: pair
+    - pattern: $COOKIE.domain = $DOMAIN
+    - all:
+        - any:
+            - kind: string
+            - kind: template_string
+        - regex: '(?i)\bdomain\s*='
+files:
+  - server/**/*.ts

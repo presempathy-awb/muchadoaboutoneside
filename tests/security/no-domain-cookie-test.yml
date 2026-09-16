@@ -1,0 +1,9 @@
+id: no-domain-cookie
+valid:
+  - 'const cookie = { httpOnly: true, secure: true }'
+  - 'const cookie = "session=value; Secure; HttpOnly; SameSite=Lax"'
+invalid:
+  - 'const cookie = { domain: ".example.com", secure: true }'
+  - 'const cookie = "session=value; Domain=.example.com; Secure"'
+  - 'cookie.session.domain = ".example.com"'
+  - 'const cookie = `session=${value}; Domain=.example.com; Secure`'

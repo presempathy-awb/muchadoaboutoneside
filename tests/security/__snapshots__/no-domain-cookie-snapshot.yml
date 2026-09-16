@@ -1,0 +1,26 @@
+id: no-domain-cookie
+snapshots:
+  const cookie = "session=value; Domain=.example.com; Secure":
+    labels:
+    - source: '"session=value; Domain=.example.com; Secure"'
+      style: primary
+      start: 15
+      end: 59
+  const cookie = `session=${value}; Domain=.example.com; Secure`:
+    labels:
+    - source: '`session=${value}; Domain=.example.com; Secure`'
+      style: primary
+      start: 15
+      end: 62
+  'const cookie = { domain: ".example.com", secure: true }':
+    labels:
+    - source: 'domain: ".example.com"'
+      style: primary
+      start: 17
+      end: 39
+  cookie.session.domain = ".example.com":
+    labels:
+    - source: cookie.session.domain = ".example.com"
+      style: primary
+      start: 0
+      end: 38

@@ -1,0 +1,20 @@
+id: no-server-console
+snapshots:
+  console.log("ready"):
+    labels:
+    - source: console.log("ready")
+      style: primary
+      start: 0
+      end: 20
+  console.log(`API listening on ${host}:${port}`):
+    labels:
+    - source: console.log(`API listening on ${host}:${port}`)
+      style: primary
+      start: 0
+      end: 47
+  console.log(user, token):
+    labels:
+    - source: console.log(user, token)
+      style: primary
+      start: 0
+      end: 24
