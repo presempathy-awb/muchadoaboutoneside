@@ -33,6 +33,16 @@ export default function CalligraphyGuide({ chapter }: { chapter: string }) {
             <p className="guide-lede">{guide.subtitle}</p>
           </div>
           <div className="guide-header-aside">
+            <Link className="guide-download" to="/calligraphy/practice">
+              <FileDown size={18} strokeWidth={1.5} aria-hidden="true" />
+              <span className="guide-download-copy">
+                <strong>Calligraphy worksheet studio</strong>
+                <small>
+                  Landscape practice sheets, your own text, saved templates, and
+                  PDF or print
+                </small>
+              </span>
+            </Link>
             <a className="guide-download" href={guide.pdfPath} download>
               <FileDown size={18} strokeWidth={1.5} aria-hidden="true" />
               <span className="guide-download-copy">

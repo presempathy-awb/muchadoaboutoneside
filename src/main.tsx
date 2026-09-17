@@ -65,6 +65,12 @@ const calligraphyRoute = createRoute({
     </Suspense>
   ),
 });
+const copperplateRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/calligraphy/practice",
+  component: lazyRouteComponent(() => import("@/pages/copperplate")),
+  pendingComponent: RouteLoading,
+});
 const calligraphyChapterRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/calligraphy/$chapter",
@@ -119,6 +125,7 @@ const router = createRouter({
     assemblyRoute,
     archiveRoute,
     calligraphyRoute,
+    copperplateRoute,
     calligraphyChapterRoute,
     foilRoute,
     instructionsRoute,

@@ -7,6 +7,7 @@ import {
   FolderOpen,
   GitFork,
   MoveUpRight,
+  NotebookPen,
   PenLine,
   Projector,
   Ruler,
@@ -43,34 +44,40 @@ const links = [
     index: "04",
   },
   {
+    to: "/calligraphy/practice" as const,
+    icon: NotebookPen,
+    label: "Practice sheets",
+    index: "05",
+  },
+  {
     to: "/projection" as const,
     icon: Projector,
     label: "Projection & score",
-    index: "05",
+    index: "06",
   },
   {
     to: "/six-foot" as const,
     icon: Ruler,
     label: "6-foot indoor",
-    index: "06",
+    index: "07",
   },
   {
     to: "/studio" as const,
     icon: Box,
     label: "Sculpture studio",
-    index: "07",
+    index: "08",
   },
   {
     to: "/assembly" as const,
     icon: GitFork,
     label: "Assembly map",
-    index: "08",
+    index: "09",
   },
   {
     to: "/archive" as const,
     icon: FolderOpen,
     label: "Files & source",
-    index: "09",
+    index: "10",
   },
 ];
 
@@ -78,11 +85,13 @@ export function AppShell() {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
-  const currentPage = links.find(({ to }) =>
-    to === "/"
-      ? pathname === "/" || pathname === "/foil"
-      : pathname === to || pathname.startsWith(`${to}/`),
-  );
+  const currentPage =
+    links.find(({ to }) => pathname === to) ??
+    links.find(({ to }) =>
+      to === "/"
+        ? pathname === "/" || pathname === "/foil"
+        : pathname === to || pathname.startsWith(`${to}/`),
+    );
   useEffect(() => {
     document.title = `${currentPage?.label ?? "Page not found"} · Much Ado About One Side`;
   }, [currentPage]);
@@ -108,10 +117,7 @@ export function AppShell() {
         <p className="sidebar-caption">A STUDY IN CONNECTION</p>
         <nav aria-label="Main navigation" className="main-nav">
           {links.map(({ to, icon: Icon, label, index }) => {
-            const active =
-              pathname === to ||
-              (to === "/" && pathname === "/foil") ||
-              (to === "/calligraphy" && pathname.startsWith("/calligraphy/"));
+            const active = currentPage?.to === to;
             return (
               <Link
                 key={to}

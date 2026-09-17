@@ -50,6 +50,7 @@ export const REQUIRED_PUBLIC_FILES = [
   "repo-profile.json",
   ".github/workflows/site.yml",
   "docs/decisions.md",
+  "docs/calligraphy-studio.md",
   "docs/runbook/development.md",
   "docs/runbook/containers.md",
   "docs/runbook/instructions.md",

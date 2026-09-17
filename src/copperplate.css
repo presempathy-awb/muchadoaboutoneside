@@ -1,0 +1,214 @@
+.copperplate-maker {
+  --copperplate-ink: #284939;
+  --copperplate-muted: #596755;
+  --copperplate-border: #cbd2c3;
+  box-sizing: border-box;
+  max-width: 1180px;
+  padding: 38px 32px 48px;
+  margin: 0 auto;
+  color: #2f3d31;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.copperplate-maker *,
+.copperplate-maker *::before,
+.copperplate-maker *::after {
+  box-sizing: border-box;
+}
+.copperplate-kicker {
+  color: var(--copperplate-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+.copperplate-heading h1 {
+  margin: 12px 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-size: clamp(32px, 4vw, 51px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -1.4px;
+}
+.copperplate-heading p {
+  max-width: 610px;
+  margin: 0 0 30px;
+  color: var(--copperplate-muted);
+}
+.copperplate-workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 330px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.copperplate-controls {
+  padding: 24px;
+  background: #fbfbf6;
+  border: 1px solid var(--copperplate-border);
+  border-radius: 8px;
+}
+.copperplate-controls h2 {
+  margin: 0 0 18px;
+  font-size: 19px;
+  font-weight: 600;
+}
+.copperplate-controls label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 16px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.copperplate-controls input,
+.copperplate-controls select,
+.copperplate-controls button {
+  font: inherit;
+}
+.copperplate-controls input:not([type="range"]),
+.copperplate-controls select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  color: #2f3d31;
+  background: #fff;
+  border: 1px solid #aab6a0;
+  border-radius: 4px;
+}
+.copperplate-controls input[type="range"] {
+  width: 100%;
+  min-height: 32px;
+  margin: 0;
+  accent-color: var(--copperplate-ink);
+}
+.copperplate-controls :focus-visible {
+  outline: 2px solid #557664;
+  outline-offset: 3px;
+}
+.copperplate-controls small {
+  display: block;
+  margin-top: 7px;
+  color: var(--copperplate-muted);
+  font-size: 12px;
+}
+.copperplate-field-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.copperplate-range-labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--copperplate-muted);
+  font-size: 11px;
+}
+.copperplate-controls button {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.copperplate-download {
+  margin-top: 24px;
+  border: 1px solid var(--copperplate-ink);
+  background: var(--copperplate-ink);
+  color: #fff;
+  font-weight: 600;
+}
+.copperplate-download:hover:not(:disabled) {
+  background: #173326;
+}
+.copperplate-download:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.copperplate-reset {
+  margin-top: 8px;
+  border: 1px solid var(--copperplate-border);
+  color: var(--copperplate-ink);
+  background: transparent;
+}
+.copperplate-reset:hover {
+  background: #eef1e7;
+}
+.copperplate-print-note {
+  margin: 20px 0 0;
+  color: var(--copperplate-muted);
+  font-size: 12px;
+}
+.copperplate-error {
+  color: #973c27;
+  font-size: 13px;
+}
+.copperplate-preview {
+  min-width: 0;
+  margin: 0;
+  padding: 22px;
+  border: 1px solid var(--copperplate-border);
+  border-radius: 8px;
+  background: #e9eddf;
+}
+.copperplate-preview figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 5px 16px;
+  margin-bottom: 18px;
+  font-size: 12px;
+  color: var(--copperplate-muted);
+}
+.copperplate-preview figcaption strong {
+  color: #2f3d31;
+  font-weight: 600;
+}
+.copperplate-paper {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 690px;
+  margin: auto;
+  filter: drop-shadow(0 3px 5px #34452a20);
+}
+.copperplate-preview > p {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--copperplate-muted);
+}
+.copperplate-preview-empty {
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  color: var(--copperplate-muted);
+  text-align: center;
+}
+.copperplate-back {
+  display: block;
+  max-width: 1180px;
+  padding: 24px 32px 0;
+  margin: auto;
+  color: #355641;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 740px) {
+  .copperplate-maker {
+    padding: 28px 18px;
+  }
+  .copperplate-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .copperplate-controls,
+  .copperplate-preview {
+    padding: 20px;
+  }
+  .copperplate-back {
+    padding-inline: 18px;
+  }
+}

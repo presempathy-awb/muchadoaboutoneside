@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "0ae9c0721d150fe5df121f1615975693ef790332",
+  "sourceCommit": "d08ab8b2f388729486d3bb55f86ef8093e1e8ee8",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -65,8 +65,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1504,
-      "sha256": "5fc42be9dcdf412477e0b7376d4a21aaff0646d1f77cfa1728d0de919e28a19b"
+      "bytes": 1815,
+      "sha256": "0a6885dbfa1ef304d5ce3c55b8457ad4d378439b9dec6b6269a6fd44e4d27ae3"
     },
     {
       "path": "CLAUDE.md",
@@ -110,13 +110,13 @@
     },
     {
       "path": "PRIVACY.md",
-      "bytes": 2338,
-      "sha256": "a3792e2c2759d66284f4b207d1dd53559f23aca058f0f036f4da67aa3aa2be51"
+      "bytes": 2869,
+      "sha256": "8d60727f8c70800ec6e7210120809e29788867710927c4791fd9a0ce0335244f"
     },
     {
       "path": "README.md",
-      "bytes": 28577,
-      "sha256": "c7106b36c246e3da29378f8e90d4838c60a66405660656cdf346f6e895548d84"
+      "bytes": 29988,
+      "sha256": "3da8a5143d2d28756edf95d3a9ed3476d13a1f6b330896bbc99f5a113a8bf79b"
     },
     {
       "path": "REUSE.md",
@@ -135,8 +135,8 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 150357,
-      "sha256": "763ae8101bd362828cfc24a3d3824047d9de5d3c594299d0e73d44e58c89b4e0"
+      "bytes": 156602,
+      "sha256": "cc8f1808651cd52cadf6b09c94c73bce01897d0aeb7b26bc6cb493840083e26c"
     },
     {
       "path": "agents.toml",
@@ -150,8 +150,8 @@
     },
     {
       "path": "bun.lock",
-      "bytes": 91623,
-      "sha256": "50d4ea23ff277af1e2d8f00a46ad1ea1caef0bac6988deedc03e84aa11441689"
+      "bytes": 93631,
+      "sha256": "46e89a2efc554f8f2151cbf50523b39462f47cc2faa42fb2b653da5e45115819"
     },
     {
       "path": "components.json",
@@ -167,6 +167,11 @@
       "path": "deploy/package-release.ts",
       "bytes": 4514,
       "sha256": "b7ebe053e69ef2dc0139b0f0fb09db31828a939a6614b7943acfd23eb163376e"
+    },
+    {
+      "path": "docs/calligraphy-studio.md",
+      "bytes": 3551,
+      "sha256": "1251ae8398ffc4998908078c10269fd9d4de0383b8b33a5f222bdb1c7bdbdf9d"
     },
     {
       "path": "docs/decisions.md",
@@ -215,8 +220,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 2627,
-      "sha256": "3e2cc2b7f0a8062dbb2291611a57f053090efa88843bb05ec498f72ab3e806a1"
+      "bytes": 2799,
+      "sha256": "dec7aad757206b7e6f54638f0b5d07eced39cc034babc7672a5eb4f7721ef601"
     },
     {
       "path": "public/editions/endless-inscription-study-extended.svg",
@@ -4909,6 +4914,16 @@
       "sha256": "9d4e05d6fed80a1ca1f50112de27eb1ec15327534a066960908bf5d3fa997507"
     },
     {
+      "path": "public/guide/copperplate-24-lines.pdf",
+      "bytes": 1442,
+      "sha256": "38767bf21a52865e3d9cb50d76c36d67cdae6021fe3f6afee09bf8e4592b1302"
+    },
+    {
+      "path": "public/guide/copperplate-maker.html",
+      "bytes": 239228,
+      "sha256": "499374bf2847147b09245902713bd2c13432d70b8460698c6918a9e780e69f21"
+    },
+    {
       "path": "public/licenses/LICENSE-APACHE.txt",
       "bytes": 11358,
       "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
@@ -4925,8 +4940,8 @@
     },
     {
       "path": "public/licenses/THIRD-PARTY-NOTICES.txt",
-      "bytes": 150357,
-      "sha256": "763ae8101bd362828cfc24a3d3824047d9de5d3c594299d0e73d44e58c89b4e0"
+      "bytes": 156602,
+      "sha256": "cc8f1808651cd52cadf6b09c94c73bce01897d0aeb7b26bc6cb493840083e26c"
     },
     {
       "path": "repo-profile.json",
@@ -4967,6 +4982,11 @@
       "path": "scripts/generate-calligraphy-guide.tsx",
       "bytes": 4696,
       "sha256": "19970172d42c241cd73c8abb899fc743657955fa0ca34a83aee74a0aa909eaf6"
+    },
+    {
+      "path": "scripts/generate-copperplate.ts",
+      "bytes": 5071,
+      "sha256": "ae175bbad4dfea5f4d54a4c45d2a74dec6e208dfd80ec6c05b58beaf9367a09d"
     },
     {
       "path": "scripts/generate-inscription.ts",
@@ -5030,8 +5050,8 @@
     },
     {
       "path": "scripts/smoke.ts",
-      "bytes": 6825,
-      "sha256": "10e92f94aa7aaa54aa148170db7b4c3d15eae71c4339cc6b5626050e3acdc6e8"
+      "bytes": 6963,
+      "sha256": "786a803845a49a6ea4f6dd700105a0359ab1bd908a4789b0120b9472da7dbe7d"
     },
     {
       "path": "scripts/toolchain-check.ts",
@@ -5107,6 +5127,21 @@
       "path": "shared/calligraphy-guide.ts",
       "bytes": 53531,
       "sha256": "ee2d2b7ab01c7010cc13751f908cb26c565c8d29d0de2c0568a850fab484ec68"
+    },
+    {
+      "path": "shared/copperplate-maker.test.tsx",
+      "bytes": 1308,
+      "sha256": "d4852609c6c542232d39c667379198672c70da7fc1952692880474a10789179f"
+    },
+    {
+      "path": "shared/copperplate-sheet.test.ts",
+      "bytes": 5081,
+      "sha256": "e81de3acee8cc094f3b961c16c5f5e1dbf480ec03eb496fc4b17c41f82aa0517"
+    },
+    {
+      "path": "shared/copperplate-sheet.ts",
+      "bytes": 4661,
+      "sha256": "63c98c02a66cdc7edbb4724138b4c97aa4a18464502510524c6ac719e76d6638"
     },
     {
       "path": "shared/dimensions.test.ts",
@@ -5220,8 +5255,8 @@
     },
     {
       "path": "shared/publication.ts",
-      "bytes": 3042,
-      "sha256": "76c3b8be5477483581c91befed3fea580b0f3ba30de60449022003d0622658de"
+      "bytes": 3074,
+      "sha256": "58518ee39a5f67eaf7056415a418bd0edbe9c9bda5806a0b5441b3a4740de08c"
     },
     {
       "path": "shared/script-metrics.test.ts",
@@ -5262,6 +5297,16 @@
       "path": "shared/small-foil-manifest.test.ts",
       "bytes": 3614,
       "sha256": "6bb0bca17a83797b2d0b866b05b8008edc59b9354bb5e8ab995314d0fed83069"
+    },
+    {
+      "path": "shared/worksheet.test.ts",
+      "bytes": 9841,
+      "sha256": "9e37c9b9bd08e8ec07b49c4b899acc8a8a56ae784688027125aa55aa81f86444"
+    },
+    {
+      "path": "shared/worksheet.ts",
+      "bytes": 18536,
+      "sha256": "9dbc2fe1ae38ed7e79a5921700a005eff72ee9fed0d9fb84edff950584ffbe4d"
     },
     {
       "path": "source/README.md",
@@ -5310,8 +5355,8 @@
     },
     {
       "path": "src/components/app-shell.tsx",
-      "bytes": 5829,
-      "sha256": "0c6de01ab4d9ec359a8617ee1c6dfe2eb0ebbce551208adf400843adbed87205"
+      "bytes": 5882,
+      "sha256": "0dd4c7f6d4847dfd8387bc659d91cfb9d2dd0b12b2e094c7a89782f560c46008"
     },
     {
       "path": "src/components/artist-reuse.tsx",
@@ -5327,6 +5372,11 @@
       "path": "src/components/calligraphy/blocks.tsx",
       "bytes": 7217,
       "sha256": "6243700190f395661c2667716bcf3c7693dfd530a45df98444276c3fdcb735df"
+    },
+    {
+      "path": "src/components/calligraphy/copperplate-maker.tsx",
+      "bytes": 9042,
+      "sha256": "16dfc3d66c8596871d489c8a962c9ba387a0351b02b5be1652c6be5a1876dd39"
     },
     {
       "path": "src/components/calligraphy/guide-context.tsx",
@@ -5347,6 +5397,31 @@
       "path": "src/components/calligraphy/templates.tsx",
       "bytes": 25241,
       "sha256": "16eaf4a0f3deb0cba10edd0911f563c9ae08fa7218ad2bfb0fa1d10a143ab900"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-editor.tsx",
+      "bytes": 4583,
+      "sha256": "822b8a3839ca66ec30a73cacd7a7dc7d1d547b169c1b996a7bd3e2ceb89b7777"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-photo.tsx",
+      "bytes": 15794,
+      "sha256": "c4c49765dfcfd9de09e46a304c6deea607520e4d59bfc950b6c4aaff7564ec20"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-preview.test.tsx",
+      "bytes": 2910,
+      "sha256": "ed92f3d7dc26902251712965e6955fe3ecb8c4075079a472c6321f26b9bb4583"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-preview.tsx",
+      "bytes": 4240,
+      "sha256": "62dfc29a1c1654afc4dcc0a8be780d2d3b38fcd657e5f1631ab25045d6e28d4b"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-techniques.tsx",
+      "bytes": 6794,
+      "sha256": "2ce5a9fa7485fe26695309fb2bb5ec64d110b8c2519692eb8dbd361677d2a8a1"
     },
     {
       "path": "src/components/design-credit.tsx",
@@ -5402,6 +5477,16 @@
       "path": "src/components/ui/card.tsx",
       "bytes": 1986,
       "sha256": "39480d5b63e46554f1cfcedaa91052c848bda5c45d7a5dda80fe91e7be604fb0"
+    },
+    {
+      "path": "src/copperplate-standalone.tsx",
+      "bytes": 230,
+      "sha256": "843e4d75a7d5bab9ab13a119e53428f778faeeeccc527d79782b5691fa6d4313"
+    },
+    {
+      "path": "src/copperplate.css",
+      "bytes": 4557,
+      "sha256": "c217ab301e4c660b99839a1caa97549b0b7034861e2f0cf30cebc39f47fa11de"
     },
     {
       "path": "src/dimensions.css",
@@ -5504,9 +5589,49 @@
       "sha256": "4acbc7165a8d54738ff62b51414e772c08fe78434e524e6d8770180d3ba2925f"
     },
     {
+      "path": "src/lib/worksheet-export.test.ts",
+      "bytes": 11057,
+      "sha256": "5f6f7261b83605fc94d6390d2a3a61d38ea4b3f3d4dc6cc876ee2232addde2ad"
+    },
+    {
+      "path": "src/lib/worksheet-export.ts",
+      "bytes": 20933,
+      "sha256": "e66618a590cf434fe003dff4218d312e24029160bf5fa90ab47091c71cfdf680"
+    },
+    {
+      "path": "src/lib/worksheet-fonts.test.ts",
+      "bytes": 1479,
+      "sha256": "cb96c7ce208d93fa9982334a9884b04bc11e6f45991dbad38e0425e449beec92"
+    },
+    {
+      "path": "src/lib/worksheet-fonts.ts",
+      "bytes": 7632,
+      "sha256": "35ef0caa514bf37a0892e65617d8083a7a88ed6684057fd4d9380e313359015d"
+    },
+    {
+      "path": "src/lib/worksheet-photo.test.ts",
+      "bytes": 1960,
+      "sha256": "eea9db1e763aa3e540484be48fe35317f8165f4f89cc5947d9af59d5bf54c597"
+    },
+    {
+      "path": "src/lib/worksheet-photo.ts",
+      "bytes": 5645,
+      "sha256": "ce10b8f16a1f6871118bd8cfda4e0dff3c47e080fd47c9098e6e9b7c759065bb"
+    },
+    {
+      "path": "src/lib/worksheet-store.test.ts",
+      "bytes": 8346,
+      "sha256": "cd36611d88caa784fd73a254dbe30662803f9d02b42e95292f433ea15cce7512"
+    },
+    {
+      "path": "src/lib/worksheet-store.ts",
+      "bytes": 49909,
+      "sha256": "44c6fa9c6a306975b5fce2e1f2c0a5d49d9eed5866065ed7e1494e7832dd314e"
+    },
+    {
       "path": "src/main.tsx",
-      "bytes": 4398,
-      "sha256": "14909b4fc37a8b577694b5607dcbdd60327ea4ae8859b53d2e04fd4c0ddceded"
+      "bytes": 4635,
+      "sha256": "107fe5074098bd9d9ebb53a4aaf8a331d968bc0fe4a5b481b9573b378c22f2d2"
     },
     {
       "path": "src/pages/archive.tsx",
@@ -5520,8 +5645,13 @@
     },
     {
       "path": "src/pages/calligraphy.tsx",
-      "bytes": 6068,
-      "sha256": "d3ee3deef96554e07788be601f823d21c47a065a66befe2b0405cc5b1f2523da"
+      "bytes": 6533,
+      "sha256": "1c9700de81b70a5d926993ea2b5916d87ac0cb174ee9d15eb846c987e805f784"
+    },
+    {
+      "path": "src/pages/copperplate.tsx",
+      "bytes": 46,
+      "sha256": "9ea9e91b7555fa8f0441aa8d1749d19d27763895b93096c39567d134747d1f2b"
     },
     {
       "path": "src/pages/foil.tsx",
@@ -5559,6 +5689,11 @@
       "sha256": "476a1925e25406df50aed3de9cb922038322d15219bf5b9059b9c3dd237539f8"
     },
     {
+      "path": "src/pages/worksheet-studio.tsx",
+      "bytes": 48130,
+      "sha256": "873ed844cc278aedf3b864a31afa83ed34162558dbd1862f8079e9eb13c7f10c"
+    },
+    {
       "path": "src/poem-editor.css",
       "bytes": 6138,
       "sha256": "88d8ab1a2de53f0da80f5eb5d8d925a3885076c0b1bdeb03a1eb036275074c37"
@@ -5582,6 +5717,11 @@
       "path": "src/styles.css",
       "bytes": 27599,
       "sha256": "f8a002e439012af619a0eb95bf19342a677747f40c284515120ae52337e1164e"
+    },
+    {
+      "path": "src/worksheet-studio.css",
+      "bytes": 17917,
+      "sha256": "e8a14fb923ddfd4a9868270d38fd72fef2a9cc6febbe480412c02bf95a9c6915"
     },
     {
       "path": "tests/security/__snapshots__/no-domain-cookie-snapshot.yml",
