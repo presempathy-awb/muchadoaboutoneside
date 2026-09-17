@@ -71,6 +71,13 @@ The production server serves the Vite build and the API together at [127.0.0.1:3
 - **Assembly map** (`/assembly`): React Flow shows the seven named component groups. Drag nodes, select a component, and open it in the studio. Edges represent model membership, not engineering connections or construction order.
 - **Files & source** (`/archive`): download each original file and inspect its SHA-256 checksum. The standalone HTML viewer is served as an attachment.
 - **Calligraphy guide** (`/calligraphy`, with `/calligraphy/steps`, `/calligraphy/templates`, `/calligraphy/quick`, and `/calligraphy/details`): the hand-lettering brief for Jill in five chapters, with a downloadable printable PDF (`/guide/calligraphy-guide.pdf`) that contains the same content plus Letter-landscape template sheets.
+- **Copperplate practice studio** (`/calligraphy/practice`): a live, horizontal-first worksheet maker with 24 evenly spaced blank rules on US Letter landscape by default. Choose paper dimensions, margins, exact spacing, line zones, slants and grids, guide colors/opacity/weight, pagination, text font/size/color/alignment, and paper, ink and tool notes. The separate Yjs writing panel starts empty and can load either poem wording, estimate rows and sheets, and preserve manual breaks. Import a local reference photo for sizing calibration (a known measurement is required; it does not OCR), save named templates and local autosave backups, and export either a visible print PDF or an explicitly editable template PDF. Print at Actual size / 100%. The studio includes practical underlay, light-pad, vellum, graphite-transfer and materials-testing guidance. The standalone `/guide/copperplate-maker.html` remains a portable basic alternative; `/guide/copperplate-24-lines.pdf` is ready to print.
+
+Regenerate the default practice sheet and offline maker with `bun run generate:copperplate`;
+verify they match their source with `bun run generate:copperplate --check`.
+Generate a custom sheet from the command line with
+`bun run generate:copperplate --lines 32 --paper a4 --margin 15 --output /tmp/copperplate-32.pdf`.
+Spacing is measured between rule centers: `(page height − 2 × margin) / (line count − 1)`.
 
 TanStack Router handles navigation and TanStack Query retrieves project metadata from Elysia. The UI uses generated shadcn Button, Badge, and Card components, Radix primitives, and Tailwind 4.
 

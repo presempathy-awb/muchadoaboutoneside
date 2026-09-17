@@ -34,6 +34,7 @@ try {
     "/projection",
     "/six-foot",
     "/calligraphy",
+    "/calligraphy/practice",
     "/calligraphy/steps",
     "/calligraphy/templates",
     "/calligraphy/quick",
@@ -105,6 +106,8 @@ try {
     ["/fabrication/small-foil/manifest.json", "application/json"],
     ["/fabrication/small-foil/README.txt", "text/plain"],
     ["/guide/calligraphy-guide.pdf", "application/pdf"],
+    ["/guide/copperplate-24-lines.pdf", "application/pdf"],
+    ["/guide/copperplate-maker.html", "text/html"],
     ["/guide/calligraphy-guide.html", "text/html"],
     ["/guide/calligraphy-guide-extended.pdf", "application/pdf"],
     ["/guide/calligraphy-guide-extended.html", "text/html"],
@@ -157,7 +160,7 @@ try {
   )
     throw new Error("API fallback is incorrect");
   console.log(
-    "Production HTTP smoke passed: 14 routes, bundled entries, metadata, 4 original downloads, 34 inscription/fabrication/guide/license assets, private-path rejection, drafts off, API 404.",
+    "Production HTTP smoke passed: page routes, bundled entries, metadata, original downloads, inscription/fabrication/guide/license assets, private-path rejection, drafts off, API 404.",
   );
 } finally {
   await app.stop();

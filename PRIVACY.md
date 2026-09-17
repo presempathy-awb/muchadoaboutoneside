@@ -2,9 +2,11 @@
 
 This is an implementation description, not a retention promise for every hosting provider. It should be updated before accounts, uploads, or telemetry are introduced.
 
-## Browser-local poem drafts
+## Browser-local studio work
 
-The poem editor stores drafts in the browser's IndexedDB and can coordinate the same browser's open tabs. These drafts can remain after a tab closes; browser-local does not mean automatically erased. The editor can reset a draft to fixed wording and download text. Browser site-data controls can remove local storage. Draft preview can affect other studio views in that browser without changing committed poem source.
+The calligraphy studio stores templates, autosaves, writing drafts and digital backups in the browser. Its Yjs editor can coordinate the same browser's open tabs. These drafts can remain after a tab closes; browser-local does not mean automatically erased. The editor can reset a draft to fixed wording and download text. Browser site-data controls can remove local storage. Draft preview can affect other studio views in that browser without changing committed poem source. Accounts and cross-device sync are not implemented.
+
+Imported reference photos and user-selected fonts are processed locally and are not uploaded by the studio. A digital backup may include those assets. An ordinary print PDF contains only selected visible content; an editable template PDF includes the template and material/text notes but omits the original photo and uploaded font file. Photo sizing is calibration assistance, not OCR or handwriting-font identification.
 
 ## Optional shared relay
 

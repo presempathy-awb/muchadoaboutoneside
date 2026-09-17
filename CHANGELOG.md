@@ -7,6 +7,7 @@ This log records notable project changes. Repository history and pull requests c
 - Phase 0 repository foundations: generated agent instructions, development/security checks, container development setup and public contributor documents.
 - Upgraded the small-foil generator to Pillow 12.3.0 to resolve HIGH vulnerability findings; regenerated provenance and compressed preview while preserving geometry, marking artwork and decoded texture pixels.
 - Public snapshot selection and verification extended to include the reviewed setup files and documentation.
+- Added the horizontal-first calligraphy practice studio at `/calligraphy/practice`: configurable rules, zones, slants, grids, text, local photo calibration, row/sheet estimates, named local templates, autosave/backups, and visible or editable PDF export. The default is a blank 24-rule Letter-landscape sheet.
 
 These additions prepare development and public source distribution. Future accounts, projects, organizations, versioned uploads and procurement remain proposed.
 
