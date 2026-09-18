@@ -1,3 +1,49 @@
+import type { ScaleModelId } from "../../shared/scale-models";
+
+/** The archival hardware keeps its size while leaving, and arrives at its final size. */
+export function hardwareScaleTarget(
+  previousModel: ScaleModelId | undefined,
+  model: ScaleModelId,
+  currentFactor: number,
+  targetFactor: number,
+) {
+  return {
+    factor: model === "archival" ? targetFactor : currentFactor,
+    animate: previousModel === "archival" && model === "archival",
+    opacity: model === "archival" ? 1 : 0,
+  };
+}
+
+interface HardwareMesh {
+  visibility: number;
+  setEnabled(enabled: boolean): void;
+}
+
+/** Hidden parts stay hidden; an outgoing visible part is disabled only at zero. */
+export function applyHardwareOpacity<T extends HardwareMesh>(
+  groups: ReadonlyMap<string, readonly T[]>,
+  allowed: (part: string) => boolean,
+  opacity: number,
+) {
+  for (const [part, meshes] of groups) {
+    const value = allowed(part) ? Math.max(0, Math.min(1, opacity)) : 0;
+    for (const mesh of meshes) {
+      mesh.visibility = value;
+      mesh.setEnabled(value > 0);
+    }
+  }
+}
+
+/** Framing follows destination intent even while departing meshes are enabled. */
+export function hardwareForBounds<T>(
+  groups: ReadonlyMap<string, readonly T[]>,
+  destinationVisible: (part: string) => boolean,
+): T[] {
+  return [...groups].flatMap(([part, meshes]) =>
+    destinationVisible(part) ? [...meshes] : [],
+  );
+}
+
 export interface CameraPose {
   alpha: number;
   beta: number;

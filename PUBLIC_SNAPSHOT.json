@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "5f039f17e24b7f5128fdc1a7453f1cae9541c198",
+  "sourceCommit": "0b16e067b23eab26f00047eac44c1b2f1d1ff6ad",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -205,8 +205,8 @@
     },
     {
       "path": "docs/scale-studio.md",
-      "bytes": 9194,
-      "sha256": "3e2e3cab735f87b686d598e5cc04bfed8f6ff9065f82637d16cea18d4aaf1c83"
+      "bytes": 9342,
+      "sha256": "1a4d76dd17e854d8737ed7c091d2415656e77a441f57c16cc194155d09c04c28"
     },
     {
       "path": "index.html",
@@ -5875,18 +5875,18 @@
     },
     {
       "path": "src/lib/scene-transition.test.ts",
-      "bytes": 2210,
-      "sha256": "51eb77622a9aefa902f648fa92b10a8e7e09a8fd1e2a0e9e90bed4c8d8c6915c"
+      "bytes": 6071,
+      "sha256": "5fe3c15fcf978a61621532f3a65870098515c86a6ad3ec984a7e73ebf1f56a8b"
     },
     {
       "path": "src/lib/scene-transition.ts",
-      "bytes": 1712,
-      "sha256": "aa87480aad71264f805e1b14cfb56d32d536aa32e6810bfab48e040b26006293"
+      "bytes": 3111,
+      "sha256": "741a7292c254367eb2f26e5bd8c1e36d14539a5e9825128dfa008ec35a5c947a"
     },
     {
       "path": "src/lib/sculpture-scene.ts",
-      "bytes": 18226,
-      "sha256": "0e535bae430c119b66ea2b34f553fb49f5cc7a5f5a0ecf5c0bb7197d2745d51a"
+      "bytes": 19885,
+      "sha256": "48b86e173d3b796d35ada35fcde8648d533c2ffe93c4fcf937497125211a9d53"
     },
     {
       "path": "src/lib/studio-reflection.ts",

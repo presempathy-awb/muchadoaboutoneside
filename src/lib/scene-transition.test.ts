@@ -1,10 +1,111 @@
 import { expect, test } from "bun:test";
+import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
+import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+import { Scene } from "@babylonjs/core/scene";
 import {
+  applyHardwareOpacity,
   type CameraPose,
+  hardwareForBounds,
+  hardwareScaleTarget,
   interpolateCameraPose,
   sameCameraPose,
   transitionProgress,
 } from "./scene-transition";
+
+test("hardware scales only between archival sizes and preserves the leaving model's factor", () => {
+  expect(hardwareScaleTarget("archival", "maquette", 0.35, 4)).toEqual({
+    factor: 0.35,
+    animate: false,
+    opacity: 0,
+  });
+  expect(hardwareScaleTarget("maquette", "archival", 1, 0.175)).toEqual({
+    factor: 0.175,
+    animate: false,
+    opacity: 1,
+  });
+  expect(hardwareScaleTarget("archival", "archival", 0.35, 0.7)).toEqual({
+    factor: 0.7,
+    animate: true,
+    opacity: 1,
+  });
+  expect(hardwareScaleTarget("maquette", "maquette", 0.35, 8)).toEqual({
+    factor: 0.35,
+    animate: false,
+    opacity: 0,
+  });
+  expect(hardwareScaleTarget(undefined, "archival", 1, 0.35).animate).toBe(
+    false,
+  );
+});
+
+test("hardware crossfades at the correct size and destination bounds ignore departing fittings", () => {
+  const engine = new NullEngine();
+  const scene = new Scene(engine);
+  try {
+    const root = new TransformNode("archival-root", scene);
+    const meshes = new Map<string, Mesh[]>();
+    for (const part of ["base", "eyes", "ribs"]) {
+      const mesh = new Mesh(part, scene);
+      const data = new VertexData();
+      data.positions = [0, 0, 0, 1, 0, 0, 0, 1, 0];
+      data.indices = [0, 1, 2];
+      data.applyToMesh(mesh);
+      mesh.parent = root;
+      meshes.set(part, [mesh]);
+    }
+    const base = meshes.get("base")?.[0];
+    if (!base) throw new Error("Expected fixture base");
+    const allowed = (part: string) => part !== "eyes" && part !== "ribs";
+    const outgoing = hardwareScaleTarget("archival", "maquette", 0.35, 1);
+    root.scaling.setAll(outgoing.factor);
+    for (const elapsed of [0, 160, 320]) {
+      const opacity = 1 - transitionProgress(0, elapsed, 320);
+      applyHardwareOpacity(meshes, allowed, opacity);
+      expect(base.visibility).toBe(opacity);
+      expect(base.isEnabled()).toBe(opacity > 0);
+      expect(meshes.get("eyes")?.[0]?.isEnabled()).toBe(false);
+      expect(meshes.get("ribs")?.[0]?.isEnabled()).toBe(false);
+      base.computeWorldMatrix(true);
+      expect(base.getBoundingInfo().boundingBox.maximumWorld.x).toBeCloseTo(
+        0.35,
+      );
+      // Departing hardware may still be enabled, but the maquette frame excludes it.
+      expect(hardwareForBounds(meshes, () => false)).toEqual([]);
+    }
+    const incoming = hardwareScaleTarget(
+      "maquette",
+      "archival",
+      outgoing.factor,
+      0.175,
+    );
+    root.scaling.setAll(incoming.factor);
+    // Fit the arriving base even at zero opacity, before it becomes enabled.
+    expect(base.isEnabled()).toBe(false);
+    expect(hardwareForBounds(meshes, allowed)).toEqual([base]);
+    for (const elapsed of [0, 160, 320]) {
+      const opacity = transitionProgress(0, elapsed, 320);
+      applyHardwareOpacity(meshes, allowed, opacity);
+      expect(base.visibility).toBe(opacity);
+      expect(base.isEnabled()).toBe(opacity > 0);
+      base.computeWorldMatrix(true);
+      expect(base.getBoundingInfo().boundingBox.maximumWorld.x).toBeCloseTo(
+        0.175,
+      );
+      expect(meshes.get("eyes")?.[0]?.isEnabled()).toBe(false);
+    }
+    // Reduced motion uses the same endpoint setter and hidden parts remain hidden.
+    applyHardwareOpacity(meshes, allowed, 0);
+    expect(base.isEnabled()).toBe(false);
+    applyHardwareOpacity(meshes, allowed, 1);
+    expect(base.isEnabled()).toBe(true);
+    expect(meshes.get("eyes")?.[0]?.isEnabled()).toBe(false);
+  } finally {
+    scene.dispose();
+    engine.dispose();
+  }
+});
 
 test("camera easing is bounded, frame-rate independent, and immediate for reduced motion", () => {
   expect(transitionProgress(100, 90, 400)).toBe(0);

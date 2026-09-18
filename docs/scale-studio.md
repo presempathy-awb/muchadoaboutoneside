@@ -69,7 +69,9 @@ relief, type size, and margins remain in physical units.
 
 Camera movement uses a short eased transition and preserves orbit and relative
 zoom during ordinary edits. Pointer, wheel, or keyboard input interrupts camera
-animation. The renderer prepares each replacement before retiring the current
+animation. Archival fittings fade with the model: outgoing fittings retain their
+previous size, and incoming fittings use the destination size from the start.
+The renderer prepares each replacement before retiring the current
 surface, with at most two skins during a short crossfade. Failed preparation
 retains the previous skin. Rapid selections keep the active fade continuous and
 coalesce to the latest requested replacement. Reduced-motion preferences complete transitions

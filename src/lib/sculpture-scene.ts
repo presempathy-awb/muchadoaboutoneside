@@ -16,7 +16,10 @@ import type { FoilSkinController } from "./foil-skin";
 import { inscriptionView } from "./inscription-view";
 import type { ScalePreview, ScaleSkinController } from "./scale-skin";
 import {
+  applyHardwareOpacity,
   type CameraPose,
+  hardwareForBounds,
+  hardwareScaleTarget,
   interpolateCameraPose,
   sameCameraPose,
   transitionProgress,
@@ -164,6 +167,9 @@ export function createSculptureScene(
     started: number;
   } | null = null;
   let sourceScale = 1;
+  let hardwareOpacity = 1;
+  let hardwareTransition: { from: number; to: number; started: number } | null =
+    null;
   let sourceTransition: { from: number; to: number; started: number } | null =
     null;
   let disposed = false;
@@ -182,10 +188,16 @@ export function createSculptureScene(
   const foilEdition = options.edition === "inscription";
   const scaleEdition = options.edition === "scales";
   const coveredStructure = new Set<string>(["ribs", "slats", "spine", "head"]);
-  const partVisible = (part: string) =>
-    !(scaleEdition && scalePreview?.study.modelId === "maquette") &&
+  const partAllowed = (part: string) =>
     !hiddenParts.has(part) &&
     !((foilEdition || scaleEdition) && coveredStructure.has(part));
+  const partVisible = (part: string) =>
+    !(scaleEdition && scalePreview?.study.modelId === "maquette") &&
+    partAllowed(part);
+  const updateHardwareOpacity = (opacity: number) => {
+    hardwareOpacity = opacity;
+    applyHardwareOpacity(meshesByPart, partAllowed, opacity);
+  };
   let fittedTarget = new Vector3(0, 103, 0);
   let fittedRadius = 420;
 
@@ -324,22 +336,43 @@ export function createSculptureScene(
   const applyScalePreview = (preview: ScalePreview) => {
     if (!scaleSkin || !sourceRoot) return;
     scalePreview = preview;
-    const factor =
-      scalePreview.study.modelId === "maquette"
-        ? 1
-        : (scalePreview.study.modelScale ?? 1);
     // This callback runs only after a skin commits, never for a queued request.
     const previousSourceScale = sourceScale;
     const previousModel = framedScaleStudy?.modelId;
     const changedStudy = framedScaleStudy !== scalePreview.study;
+    const committedAt = performance.now();
+    if (previousModel && previousModel !== scalePreview.study.modelId) {
+      // The skin scheduler has finished the prior fade before this commit.
+      // Set its exact hardware endpoint before repositioning an incoming root.
+      hardwareTransition = null;
+      updateHardwareOpacity(previousModel === "archival" ? 1 : 0);
+    }
+    const target = hardwareScaleTarget(
+      previousModel,
+      scalePreview.study.modelId,
+      sourceScale,
+      scalePreview.study.modelScale ?? 1,
+    );
+    const factor = target.factor;
+    // Only an archival→archival resize can visibly scale the hardware. Leaving
+    // it keeps the old factor; entering positions it before the fade from zero.
     updateSourceScale(changedStudy ? factor : sourceScale);
-    for (const [part, meshes] of meshesByPart)
-      for (const mesh of meshes) mesh.setEnabled(partVisible(part));
+    if (changedStudy && hardwareOpacity !== target.opacity) {
+      if (previousModel && !reducedMotion) {
+        hardwareTransition = {
+          from: hardwareOpacity,
+          to: target.opacity,
+          started: committedAt,
+        };
+      } else {
+        hardwareTransition = null;
+        updateHardwareOpacity(target.opacity);
+      }
+    }
+    updateHardwareOpacity(hardwareOpacity);
     if (changedStudy) {
       // Exclude fading-out skins when measuring the new model's bounds.
-      const hardware = [...meshesByPart.values()]
-        .flat()
-        .filter((mesh) => mesh.isEnabled());
+      const hardware = hardwareForBounds(meshesByPart, partVisible);
       fitCamera(
         [...scaleSkin.getMeshes(), ...hardware],
         Boolean(framedScaleStudy),
@@ -349,7 +382,7 @@ export function createSculptureScene(
     }
     if (
       changedStudy &&
-      previousModel &&
+      target.animate &&
       !reducedMotion &&
       previousSourceScale !== factor
     ) {
@@ -389,6 +422,14 @@ export function createSculptureScene(
       if (amount === 1) cameraTransition = null;
     } else if (autoRotate && !reducedMotion)
       camera.alpha += Math.min(engine.getDeltaTime(), 64) * 0.00012;
+    if (hardwareTransition) {
+      const amount = transitionProgress(hardwareTransition.started, now, 320);
+      updateHardwareOpacity(
+        hardwareTransition.from +
+          (hardwareTransition.to - hardwareTransition.from) * amount,
+      );
+      if (amount === 1) hardwareTransition = null;
+    }
     if (sourceTransition) {
       const amount = transitionProgress(sourceTransition.started, now, 320);
       updateSourceScale(
@@ -482,9 +523,7 @@ export function createSculptureScene(
     },
     setHiddenParts(parts) {
       hiddenParts = new Set(parts);
-      for (const [part, meshes] of meshesByPart) {
-        for (const mesh of meshes) mesh.setEnabled(partVisible(part));
-      }
+      updateHardwareOpacity(scaleEdition ? hardwareOpacity : 1);
     },
     setSelectedPart(part) {
       selectedPart = part;
@@ -524,6 +563,10 @@ export function createSculptureScene(
         applyPose(cameraTransition.to);
         cameraTransition = null;
       }
+      if (enabled && hardwareTransition) {
+        updateHardwareOpacity(hardwareTransition.to);
+        hardwareTransition = null;
+      }
       if (enabled && sourceTransition) {
         updateSourceScale(sourceTransition.to);
         sourceTransition = null;
@@ -540,7 +583,7 @@ export function createSculptureScene(
       if (disposed) return;
       disposed = true;
       visibilityObserver?.disconnect();
-      cameraTransition = sourceTransition = null;
+      cameraTransition = sourceTransition = hardwareTransition = null;
       requestedScalePreview = undefined;
       canvas.removeEventListener("pointerdown", cancelCameraTransition);
       canvas.removeEventListener("wheel", cancelCameraTransition);
