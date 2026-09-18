@@ -13,6 +13,7 @@ import type { WorksheetSettings } from "./worksheet";
 import { isWorksheetBundledFontId } from "./worksheet-font-catalog";
 
 export type ScaleDensityMode = "fixed" | "adaptive";
+export type ScaleLetteringQuality = "balanced" | "crisp";
 
 /** A stable physical anchor prevents rounding drift during repeated resizing. */
 export type ScaleDensityReference = Pick<
@@ -40,6 +41,8 @@ export interface ScaleDesign {
   marginMm: number;
   autoFit: boolean;
   showLettering: boolean;
+  /** Preview texture detail only; physical lettering dimensions stay unchanged. */
+  letteringQuality?: ScaleLetteringQuality;
   inkColor: string;
   plateColor: string;
 }
@@ -64,6 +67,7 @@ export const DEFAULT_SCALE_DESIGN: ScaleDesign = {
   marginMm: 2,
   autoFit: true,
   showLettering: true,
+  letteringQuality: "crisp",
   inkColor: "#17201c",
   plateColor: "#d9dcd8",
 };
@@ -300,6 +304,8 @@ export function normalizeScaleDesign(input: unknown): ScaleDesign {
     autoFit: typeof value.autoFit === "boolean" ? value.autoFit : true,
     showLettering:
       typeof value.showLettering === "boolean" ? value.showLettering : true,
+    letteringQuality:
+      value.letteringQuality === "balanced" ? "balanced" : "crisp",
     inkColor: color(value.inkColor, DEFAULT_SCALE_DESIGN.inkColor),
     plateColor: color(value.plateColor, DEFAULT_SCALE_DESIGN.plateColor),
   };

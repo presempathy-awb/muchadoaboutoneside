@@ -33,8 +33,13 @@ the algorithm cannot prove that arbitrary cursive handwriting says those words.
 
 Original image bytes and their SHA-256 digest are retained separately from the
 transparent ink image. Input is limited to 12 MB, 24 million pixels, and 12,000
-pixels on a side. The working image is uniformly reduced to at most four million
-pixels and 4,096 pixels on a side. The scan library is bounded to 20 scans and
+pixels on a side. The selected rotated crop is drawn directly from the decoded
+original, then uniformly limited to four million pixels and 4,096 pixels on a side.
+Cropping a small region therefore retains its native detail when it fits those
+limits; discarded paper no longer consumes the analysis budget. Crop percentages
+still refer to the full rotated image. Existing accepted scans keep their saved
+ink and mapping; new imports use `projection-occurrences-2`.
+The scan library is bounded to 20 scans and
 128 MiB of serialized data; browser quota may be lower. Import errors leave the
 existing poem and displayed sculpture available.
 

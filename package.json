@@ -34,6 +34,7 @@
     "export:public": "bun scripts/export-public.ts",
     "check": "bun run lint && bun run typecheck && bun test && bun run verify:assets && bun run verify:worksheet-fonts && bun scripts/generate-inscription.ts --check && bun scripts/generate-calligraphy-guide.tsx --check && bun scripts/generate-copperplate.ts --check && bun run verify:instructions && bun run verify:publication",
     "smoke": "bun scripts/smoke.ts",
+    "test:browser": "bun scripts/browser-smoke.ts",
     "verify:instructions": "bun scripts/verify-instructions.ts",
     "verify:publication": "bun scripts/verify-publication.ts",
     "generate:instructions": "bun scripts/generate-instructions.ts"

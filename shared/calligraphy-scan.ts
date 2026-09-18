@@ -44,7 +44,7 @@ export type CalligraphyScanSummary = Pick<
   | "confirmed"
 >;
 
-export const SCAN_ALGORITHM_VERSION = "projection-occurrences-1";
+export const SCAN_ALGORITHM_VERSION = "projection-occurrences-2";
 export const MAX_SCAN_FILE_BYTES = 12 * 1024 * 1024;
 export const MAX_SCAN_PIXELS = 4_000_000;
 export const MAX_SCAN_SOURCE_PIXELS = 24_000_000;

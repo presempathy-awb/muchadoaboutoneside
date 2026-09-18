@@ -1,7 +1,9 @@
 # 3D scale studio and reference images
 
-`/scales` is a separate surface study with resizable source models and physical
-construction allowances. `/references` preserves the three supplied reference originals, with
+The homepage puts the scale surface, model resizer, working versions, and lettering
+proof together. `/scales` opens the same study with the detailed construction
+controls; both use the same browser draft. The continuous foil edition remains at
+`/foil`. `/references` preserves the three supplied reference originals, with
 download links and an inventory of byte counts and SHA-256 fingerprints.
 
 ## Geometry and lettering
@@ -80,7 +82,9 @@ on device, texture load, and the chosen density.
 
 ## Lettering
 
-Text starts empty. A poem selection copies its wording into the study without
+On a first homepage visit, the selected poem supplies the wording. A saved draft,
+including intentionally empty wording, takes precedence. The detailed studio's
+new draft starts empty. A poem selection copies its wording into the study without
 editing the canonical poem. Whole words flow through ordered body and jaw
 faces, within each face's safe rectangle and the chosen physical margins.
 Automatic fitting uses the loaded embedded font's shaped outlines and ink bounds,
@@ -99,11 +103,48 @@ current font and wording; an infinite catalog of font/text/size combinations is
 not precomputed. A font's successful load does not imply that it covers every script.
 
 Only lettered faces receive texture space. Rectangular atlas slots follow the
-physical face proportions and target 24 pixels per em. The allocator respects
-GPU texture size, limits total base texels to 16 million, and reports when it
-cannot retain 12 pixels per em. The close-up proof uses the same canvas drawing
-function as the 3D texture. Atlas resolution and material appearance do not
-establish physical legibility or the behavior of a particular ink or tool.
+physical face proportions. Crisp detail targets 64 pixels per em; Balanced targets
+24. The allocator respects the device's texture size, permits pages up to 4096
+pixels on a side, and retains the existing 16,777,216 base-pixel total budget per
+skin. It reports the achieved density when the target cannot fit that budget.
+Mipmaps and anisotropic filtering reduce shimmer at oblique angles. A quality
+change rebuilds the matching UV coordinates without changing physical lettering.
+
+The close-up proof redraws the same font outlines or retained scan pixels used by
+the texture. Fit, 100%, and 200% views, an expanded proof, and lettered-face
+navigation make close inspection possible. The backing canvas follows device
+pixel ratio within an eight-million-pixel cap. Zooming a source scan cannot recover
+detail missing from its saved pixels.
+
+## Measurements without AI
+
+The visibility report uses deterministic arithmetic and ink measurements, with no
+model, OCR judgment, or external image upload. It checks the current wording's
+placement count, measured safe-area overflow, configured ink/paper color contrast,
+and available texture detail. Vector fonts use measured outline bounds; a font's
+em size or line spacing is never substituted for lowercase x-height. Scans use the
+retained alpha image to measure ink instead of assuming that a word's rectangular
+selection is filled with writing.
+
+The project's proof targets are 4.5:1 color contrast and 12 pixels of measured ink
+or lowercase x-height. A measured stroke sample, when available, uses a 1.5-pixel
+target. These are explicit diagnostic thresholds, not a guarantee that every
+script is readable or a claim of WCAG compliance for a lit 3D object. Unknown
+measurements are identified as such. Proof-color contrast does not model metallic
+reflections, real lighting, transparent ink, or paper texture. Native scan detail
+is reported separately because increasing an atlas cannot restore absent pixels.
+
+Physical fit, texture detail, and screen size answer different questions. Making
+the sculpture larger can provide more writing room while camera auto-framing makes
+the same physical letters occupy fewer screen pixels. Use the close-up proof or
+zoom for inspection, and make an actual-size material sample before fabrication.
+
+**Enlarge until the words fit** searches supported sizes while keeping the requested
+physical type size, margins, layer stack, and density policy. It tests a bounded
+series of sizes, refines below a successful trial, and reports the smallest size it
+successfully tested. It does not claim a global minimum: changes in chart topology
+or adaptive plate density can make fit non-monotonic. Cancel or edit the study to
+stop the search; an unsuccessful search retains the current design.
 
 ## Dimensions and added layers
 

@@ -4,6 +4,7 @@ import {
   matchingCalligraphyFaces,
   useCalligraphyFaces,
 } from "../lib/calligraphy-faces";
+import type { ScaleAtlasPlan } from "../lib/scale-atlas";
 import type { ScalePreview } from "../lib/scale-skin";
 import type { ScaleTypography } from "../lib/scale-typography";
 import {
@@ -27,7 +28,11 @@ export interface SculptureViewerProps {
   autoRotate?: boolean;
   resetKey?: number;
   onSelectPart?: (id: string | null) => void;
-  onScalePreviewReady?: (preview: ScalePreview) => void;
+  /** Exact committed preview and the atlas plan built with this device's limits. */
+  onScalePreviewReady?: (
+    preview: ScalePreview,
+    atlasPlan: ScaleAtlasPlan,
+  ) => void;
   onScalePreviewError?: (
     preview: ScalePreview | undefined,
     message: string,
@@ -289,12 +294,12 @@ export default function SculptureViewer({
     try {
       const controller = createSculptureScene(canvas, {
         edition,
-        onScalePreviewReady: (preview) => {
+        onScalePreviewReady: (preview, atlasPlan) => {
           if (!active) return;
           setUpdateError("");
           setErrorMessage("");
           setStatus("ready");
-          onScalePreviewReadyRef.current?.(preview);
+          onScalePreviewReadyRef.current?.(preview, atlasPlan);
         },
         onScalePreviewError: (preview, message) => {
           if (!active) return;

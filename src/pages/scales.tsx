@@ -19,18 +19,30 @@ import {
 } from "react";
 import { PoemVersionControls } from "@/components/poem-version-controls";
 import { ScaleBuildUpPanel } from "@/components/scale-build-up";
+import { ScalePlateProof } from "@/components/scale-plate-proof";
 import { ScaleVersionBrowser } from "@/components/scale-version-browser";
 import {
   matchingCalligraphyFaces,
   useCalligraphyFaces,
 } from "@/lib/calligraphy-faces";
-import { planScaleAtlases } from "@/lib/scale-atlas";
-import { drawScalePlate } from "@/lib/scale-plate-canvas";
+import { usePoemVersion } from "@/lib/poem-version";
+import type { ScaleAtlasPlan } from "@/lib/scale-atlas";
+import {
+  measureScaleLetteringPhysicalFit,
+  measureScaleLetteringVisibilityMetrics,
+  measureScanInkVisibility,
+  type ScanInkVisibility,
+} from "@/lib/scale-lettering-visibility";
 import { scalePreviewReadiness } from "@/lib/scale-preview-readiness";
+import { searchScaleSizeForText } from "@/lib/scale-size-search";
 import type { ScalePreview } from "@/lib/scale-skin";
 import type { ScaleTypography } from "@/lib/scale-typography";
 import { createScaleTypographyResources } from "@/lib/scale-typography-resources";
 import { useScaleStudy } from "@/lib/use-scale-study";
+import type { CalligraphyScan } from "../../shared/calligraphy-scan";
+import { evaluateLetteringVisibility } from "../../shared/lettering-visibility";
+import type { PoemVersion } from "../../shared/poem";
+import { draftSource } from "../../shared/poem-drafts";
 import {
   DEFAULT_SCALE_DESIGN,
   MAX_SCALE_DESIGN_BYTES,
@@ -48,9 +60,12 @@ import {
 import {
   allocateScaleLettering,
   fitScaleLettering,
-  type ScaleLetteringPlacement,
 } from "../../shared/scale-lettering";
-import { modelScaleForHeight, SCALE_MODELS } from "../../shared/scale-models";
+import {
+  modelScaleForHeight,
+  SCALE_MODELS,
+  scaledModelDimensions,
+} from "../../shared/scale-models";
 import {
   MAX_SCALE_STUDY_FILE_BYTES,
   parseScaleStudyFile,
@@ -78,15 +93,37 @@ const STORAGE_KEY = "muchado.scale-study.v1";
 const MAX_DESIGN_BYTES = MAX_SCALE_DESIGN_BYTES;
 const EMPTY_PLATES: ScalePlate[] = [];
 
-function initialDesign() {
+export function initialScaleDraft(stored: string | null) {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
     if (stored && stored.length <= MAX_DESIGN_BYTES)
-      return normalizeScaleDesign(JSON.parse(stored));
+      return { design: normalizeScaleDesign(JSON.parse(stored)), saved: true };
   } catch {
-    // The page stays usable when browser storage is unavailable or outdated.
+    /* An unreadable draft does not stop the studio opening. */
   }
-  return DEFAULT_SCALE_DESIGN;
+  return { design: DEFAULT_SCALE_DESIGN, saved: false };
+}
+
+function readInitialDraft() {
+  try {
+    return initialScaleDraft(localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return initialScaleDraft(null);
+  }
+}
+
+export function seedFreshScaleDraft(
+  current: ScaleDesign,
+  initial: ScaleDesign,
+  poem: PoemVersion,
+) {
+  // An edit made while the poem library loads takes precedence over seeding.
+  return current === initial
+    ? {
+        ...current,
+        text: draftSource(poem),
+        calligraphyFaceId: poem.calligraphyScanId ?? "auto",
+      }
+    : current;
 }
 
 function initialHistory(): ScaleShapeVersion[] {
@@ -165,115 +202,31 @@ function RangeField({
         max={max}
         step={step}
         value={value}
+        aria-valuetext={display}
         onChange={(event) => onChange(Number(event.target.value))}
       />
     </div>
   );
 }
 
-function PlateProof({
-  plate,
-  placement,
-  design,
-  family,
-  typography,
+export default function Scales({
+  presentation = "studio",
 }: {
-  plate: ScalePlate;
-  placement: ScaleLetteringPlacement | undefined;
-  design: ScaleDesign;
-  family: string;
-  typography?: ScaleTypography;
-}) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [proofError, setProofError] = useState("");
-  const lines = placement?.lines ?? [];
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
-    if (!canvas || !context) {
-      setProofError("The browser could not draw the close-up proof.");
-      return;
-    }
-    setProofError("");
-    try {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      const widthMm = plate.widthInches * 25.4;
-      const heightMm = plate.heightInches * 25.4;
-      const scale = Math.min(1500 / widthMm, 620 / heightMm);
-      const width = widthMm * scale;
-      const height = heightMm * scale;
-      const target = {
-        x: (1600 - width) / 2,
-        y: (720 - height) / 2,
-        width,
-        height,
-      };
-      context.save();
-      context.beginPath();
-      plate.outline.forEach(([x, y], index) => {
-        if (index === 0)
-          context.moveTo(target.x + x * width, target.y + y * height);
-        else context.lineTo(target.x + x * width, target.y + y * height);
-      });
-      context.closePath();
-      context.strokeStyle = "#5b625b";
-      context.lineWidth = 2;
-      context.stroke();
-      context.clip();
-      drawScalePlate(
-        context,
-        plate,
-        placement,
-        design,
-        family,
-        target,
-        typography,
-      );
-      context.restore();
-      const safe = plate.safeRect;
-      context.save();
-      context.strokeStyle = "#6b786b";
-      context.lineWidth = 2;
-      context.setLineDash([8, 8]);
-      context.strokeRect(
-        target.x + safe.x * width + design.marginMm * scale,
-        target.y + safe.y * height + design.marginMm * scale,
-        Math.max(0, safe.width * width - design.marginMm * scale * 2),
-        Math.max(0, safe.height * height - design.marginMm * scale * 2),
-      );
-      context.restore();
-    } catch (error) {
-      canvas.width = 1600;
-      setProofError(
-        error instanceof Error
-          ? error.message
-          : "The close-up proof could not be drawn.",
-      );
-    }
-  }, [plate, placement, design, family, typography]);
-  return (
-    <div className="scale-proof-drawing">
-      {proofError && (
-        <p className="scales-error" role="alert">
-          Proof unavailable: {proofError}
-        </p>
-      )}
-      <canvas
-        hidden={Boolean(proofError)}
-        ref={canvasRef}
-        width={1600}
-        height={720}
-        role="img"
-        aria-label={`Lettering proof for ${plate.id}. ${lines.join(" ") || "No lettering assigned."}`}
-      >
-        {plate.id}: {lines.join(" ") || "No lettering assigned."}
-      </canvas>
-    </div>
+  presentation?: "home" | "studio";
+} = {}) {
+  const { base: selectedPoem, ready: poemReady } = usePoemVersion();
+  const [initialDraft] = useState(readInitialDraft);
+  const [design, setDesign] = useState<ScaleDesign>(initialDraft.design);
+  const [draftReady, setDraftReady] = useState(
+    presentation !== "home" || initialDraft.saved,
   );
-}
-
-export default function Scales() {
-  const [design, setDesign] = useState<ScaleDesign>(initialDesign);
+  useEffect(() => {
+    if (draftReady || !poemReady) return;
+    setDesign((current) =>
+      seedFreshScaleDraft(current, initialDraft.design, selectedPoem),
+    );
+    setDraftReady(true);
+  }, [draftReady, poemReady, initialDraft.design, selectedPoem]);
   const [saveStatus, setSaveStatus] = useState("Saving this browser’s draft…");
   const [saveFailed, setSaveFailed] = useState(false);
   const [importError, setImportError] = useState("");
@@ -304,6 +257,11 @@ export default function Scales() {
   const fontInputRef = useRef<HTMLInputElement>(null);
   const [sizeUnit, setSizeUnit] = useState<"in" | "mm">("in");
   const [heightInput, setHeightInput] = useState("");
+  const [heightError, setHeightError] = useState("");
+  const [fitStatus, setFitStatus] = useState("");
+  const [fitting, setFitting] = useState(false);
+  const [fitState, setFitState] = useState("idle");
+  const fitRequest = useRef<AbortController | null>(null);
   const [fontError, setFontError] = useState("");
   const [fontRetry, setFontRetry] = useState(0);
   const [autoRotate, setAutoRotate] = useState(false);
@@ -313,12 +271,25 @@ export default function Scales() {
   const [shapeHistory, setShapeHistory] = useState(initialHistory);
   const [historyError, setHistoryError] = useState("");
   const [scalePreview, setScalePreview] = useState<ScalePreview>();
-  const [renderedPreview, setRenderedPreview] = useState<ScalePreview>();
+  const [committedPreview, setCommittedPreview] = useState<{
+    preview: ScalePreview;
+    atlasPlan: ScaleAtlasPlan;
+  }>();
+  const renderedPreview = committedPreview?.preview;
+  const scanVisibility = useRef(
+    new WeakMap<
+      ScaleTypography,
+      { scan: CalligraphyScan; ink?: ScanInkVisibility }
+    >(),
+  );
   const [previewError, setPreviewError] = useState("");
-  const handlePreviewReady = useCallback((preview: ScalePreview) => {
-    setRenderedPreview(preview);
-    setPreviewError("");
-  }, []);
+  const handlePreviewReady = useCallback(
+    (preview: ScalePreview, atlasPlan: ScaleAtlasPlan) => {
+      setCommittedPreview({ preview, atlasPlan });
+      setPreviewError("");
+    },
+    [],
+  );
   const handlePreviewError = useCallback(
     (_preview: ScalePreview | undefined, message: string) => {
       setPreviewError(message);
@@ -368,6 +339,7 @@ export default function Scales() {
   }, [design.fontFeatures]);
 
   useEffect(() => {
+    if (!draftReady) return;
     setSaveStatus("Saving this browser’s draft…");
     const timer = window.setTimeout(() => {
       try {
@@ -382,7 +354,7 @@ export default function Scales() {
       }
     }, 250);
     return () => window.clearTimeout(timer);
-  }, [design]);
+  }, [design, draftReady]);
 
   const customFontName = design.customFont?.name;
   const customFontDataUrl = design.customFont?.dataUrl;
@@ -425,7 +397,11 @@ export default function Scales() {
     void fontRetry;
     setFontError("");
     if (!settledFontRequest.scansReady) return;
-    const load = async () => {
+    const load = async (): Promise<{
+      typography: ScaleTypography;
+      scan?: CalligraphyScan;
+      ink?: ScanInkVisibility;
+    }> => {
       if (settledFontRequest.missingFace)
         throw new Error(
           "This handwriting is unavailable or its original transcription no longer matches. Restore the original wording, import its scan, or choose another face.",
@@ -441,19 +417,32 @@ export default function Scales() {
           throw new Error(
             "The selected scan is no longer saved in this browser. Import its saved scan file to restore it.",
           );
-        return loadScannedScaleTypography(scan, settledFontRequest.scanText);
+        const scanTypography = await loadScannedScaleTypography(
+          scan,
+          settledFontRequest.scanText,
+        );
+        const ink = await measureScanInkVisibility(scan);
+        return { typography: scanTypography, scan, ink };
       }
       const { loadScaleTypography } = await import("@/lib/scale-typography");
-      return loadScaleTypography(settledFontRequest);
+      return { typography: await loadScaleTypography(settledFontRequest) };
     };
     void load().then(
       (loaded) => {
         if (active && typographyResources.current) {
           // Hold the result even before React commits the queued state update.
-          resolvingFont.current = loaded;
-          typographyResources.current.own(loaded);
-          setLoadedFont({ request: settledFontRequest, typography: loaded });
-        } else loaded.dispose?.();
+          if (loaded.scan)
+            scanVisibility.current.set(loaded.typography, {
+              scan: loaded.scan,
+              ink: loaded.ink,
+            });
+          resolvingFont.current = loaded.typography;
+          typographyResources.current.own(loaded.typography);
+          setLoadedFont({
+            request: settledFontRequest,
+            typography: loaded.typography,
+          });
+        } else loaded.typography.dispose?.();
       },
       (error: unknown) => {
         if (active)
@@ -469,9 +458,36 @@ export default function Scales() {
     };
   }, [settledFontRequest, fontRetry]);
 
+  useEffect(() => {
+    void design;
+    void typography;
+    return () => {
+      if (fitRequest.current) {
+        fitRequest.current.abort();
+        fitRequest.current = null;
+        setFitting(false);
+        setFitState("cancelled");
+        setFitStatus(
+          "Settings changed. Start a new size search when you are ready.",
+        );
+      }
+    };
+  }, [design, typography]);
+
   const sourceHeightInches = SCALE_MODELS[design.geometry.modelId].heightInches;
+  const targetDimensions = scaledModelDimensions(
+    design.geometry.modelId,
+    design.geometry.modelScale,
+  );
+  const sizeFactor = sizeUnit === "mm" ? 25.4 : 1;
+  const sizeStep = sizeUnit === "mm" ? 1 : 0.1;
+  const sizeValue = (inches: number) =>
+    (inches * sizeFactor).toLocaleString(undefined, {
+      maximumFractionDigits: sizeUnit === "mm" ? 1 : 2,
+    });
   const targetHeightInches = sourceHeightInches * design.geometry.modelScale;
   useEffect(() => {
+    setHeightError("");
     setHeightInput(
       (targetHeightInches * (sizeUnit === "mm" ? 25.4 : 1)).toFixed(2),
     );
@@ -579,6 +595,7 @@ export default function Scales() {
       inkColor: design.inkColor,
       plateColor: design.plateColor,
       showLettering: design.showLettering,
+      letteringQuality: design.letteringQuality,
     }),
     [
       previewGeometry,
@@ -588,6 +605,7 @@ export default function Scales() {
       design.inkColor,
       design.plateColor,
       design.showLettering,
+      design.letteringQuality,
       design.customFont,
       design.shapingEngine,
       design.fontFeatures,
@@ -671,30 +689,74 @@ export default function Scales() {
     design,
   ]);
 
-  const atlasQuality = useMemo(() => {
-    if (!renderedPreview) return { plan: null, error: "" };
-    try {
-      return {
-        plan: planScaleAtlases(
-          renderedPreview.study,
-          renderedPreview.lettering,
-          renderedPreview.design.showLettering,
-          2048,
-        ),
-        error: "",
-      };
-    } catch (error) {
-      return {
-        plan: null,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Preview detail could not be estimated.",
-      };
-    }
-  }, [renderedPreview]);
+  const atlasPlan = committedPreview?.atlasPlan;
+  const visibility = useMemo(() => {
+    if (!renderedPreview) return null;
+    const {
+      design: shown,
+      lettering,
+      study: shownStudy,
+      typography: shownTypography,
+    } = renderedPreview;
+    const original = shownTypography
+      ? scanVisibility.current.get(shownTypography)
+      : undefined;
+    const metrics = shownTypography
+      ? measureScaleLetteringVisibilityMetrics(
+          shownTypography,
+          lettering.placements,
+          original?.scan,
+          original?.ink,
+        )
+      : {};
+    const verticalPixels = atlasPlan?.minVerticalPixelsPerEm;
+    return evaluateLetteringVisibility({
+      text: shown.text,
+      physical: shownTypography
+        ? measureScaleLetteringPhysicalFit(
+            shownStudy.plates,
+            lettering,
+            shownTypography,
+            shown.marginMm,
+          )
+        : undefined,
+      colors: { ink: shown.inkColor, paper: shown.plateColor },
+      texture: {
+        inkHeightPx:
+          verticalPixels && metrics.inkHeightEm
+            ? verticalPixels * metrics.inkHeightEm
+            : undefined,
+        xHeightPx:
+          verticalPixels && metrics.xHeightEm
+            ? verticalPixels * metrics.xHeightEm
+            : undefined,
+      },
+      source: {
+        kind: shownTypography?.engine === "scan" ? "scan" : "vector",
+        inkHeightPx: metrics.sourceInkHeightPx,
+      },
+    });
+  }, [renderedPreview, atlasPlan]);
+  const letteredPlates = plates.filter((plate) =>
+    displayedLettering?.placements.some(
+      (placement) =>
+        placement.plateId === plate.id && placement.lines.length > 0,
+    ),
+  );
+  const proofPlates = letteredPlates.length ? letteredPlates : plates;
   const selectedPlate =
-    plates.find((plate) => plate.id === selectedPlateId) ?? plates[0];
+    proofPlates.find((plate) => plate.id === selectedPlateId) ?? proofPlates[0];
+  const selectedProofIndex = proofPlates.findIndex(
+    (plate) => plate.id === selectedPlate?.id,
+  );
+  function stepProof(direction: number) {
+    const next =
+      proofPlates[
+        (selectedProofIndex + direction + proofPlates.length) %
+          proofPlates.length
+      ];
+    if (next) setSelectedPlateId(next.id);
+  }
   const selectedPlacement = displayedLettering?.placements.find(
     (placement) => placement.plateId === selectedPlate?.id,
   );
@@ -743,24 +805,87 @@ export default function Scales() {
 
   function applyHeight() {
     const value = Number(heightInput);
-    if (!Number.isFinite(value) || value <= 0) {
-      setHeightInput(
-        (targetHeightInches * (sizeUnit === "mm" ? 25.4 : 1)).toFixed(2),
+    const min = sourceHeightInches * 0.02 * sizeFactor;
+    const max = sourceHeightInches * 30 * sizeFactor;
+    if (
+      !heightInput.trim() ||
+      !Number.isFinite(value) ||
+      value < min ||
+      value > max
+    ) {
+      setHeightError(
+        `Enter a height from ${min.toFixed(2)} to ${max.toFixed(2)} ${sizeUnit}.`,
       );
       return;
     }
-    const modelScale = modelScaleForHeight(
-      design.geometry.modelId,
-      value / (sizeUnit === "mm" ? 25.4 : 1),
+    setHeightError("");
+    setDesign((current) =>
+      resizeScaleDesign(
+        current,
+        modelScaleForHeight(current.geometry.modelId, value / sizeFactor),
+      ),
     );
-    setHeightInput(
-      (
-        sourceHeightInches *
-        modelScale *
-        (sizeUnit === "mm" ? 25.4 : 1)
-      ).toFixed(2),
+  }
+
+  function stepHeight(direction: number) {
+    setHeightError("");
+    setDesign((current) =>
+      resizeScaleDesign(
+        current,
+        modelScaleForHeight(
+          current.geometry.modelId,
+          (SCALE_MODELS[current.geometry.modelId].heightInches *
+            current.geometry.modelScale *
+            sizeFactor +
+            direction * sizeStep) /
+            sizeFactor,
+        ),
+      ),
     );
-    setDesign((current) => resizeScaleDesign(current, modelScale));
+  }
+
+  async function fitSize() {
+    if (!typography || !design.text.trim()) return;
+    fitRequest.current?.abort();
+    const controller = new AbortController();
+    fitRequest.current = controller;
+    setFitting(true);
+    setFitState("searching");
+    setFitStatus(
+      "Testing larger sizes with your current type and scale pattern…",
+    );
+    try {
+      const result = await searchScaleSizeForText(design, typography, {
+        signal: controller.signal,
+        onTrial: (trial) => {
+          if (!controller.signal.aborted)
+            setFitStatus(
+              `Testing ${(sourceHeightInches * trial.modelScale * sizeFactor).toFixed(1)} ${sizeUnit}: ${trial.placedWordCount} of ${trial.totalWordCount} words placed.`,
+            );
+        },
+      });
+      if (controller.signal.aborted || fitRequest.current !== controller)
+        return;
+      fitRequest.current = null;
+      setFitStatus(result.reason);
+      setFitState(result.status);
+      if (result.status === "fit" && result.candidate)
+        setDesign(result.candidate);
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        setFitState("error");
+        setFitStatus(
+          error instanceof Error
+            ? error.message
+            : "Size search could not finish. Your previous size is kept.",
+        );
+      }
+    } finally {
+      if (fitRequest.current === controller || fitRequest.current === null) {
+        fitRequest.current = null;
+        setFitting(false);
+      }
+    }
   }
 
   function cancelFontUpload() {
@@ -851,18 +976,18 @@ export default function Scales() {
   }
 
   return (
-    <div className="scales-page">
+    <div className={`scales-page scales-${presentation}`}>
       <header className="scales-intro">
         <div>
           <p className="scales-eyebrow">
             MUCH ADO ABOUT ONE SIDE / SURFACE STUDY
           </p>
           <h1>
-            A surface for <em>every word.</em>
+            A sculpture for <em>every word.</em>
           </h1>
           <p className="scales-lede">
-            Shape a field of raised aluminum plates. Change the scales, and the
-            calligraphy finds its place again.
+            Choose a form, set its size, and find room for the poem. Inspect the
+            original lettering as the scales follow the sculpture.
           </p>
         </div>
         <nav aria-label="Related studios" className="scales-page-links">
@@ -872,7 +997,16 @@ export default function Scales() {
         </nav>
       </header>
 
-      <div className="scales-workbench">
+      <div
+        className="scales-workbench"
+        data-testid="scales-workbench"
+        data-preview-ready={Boolean(
+          renderedPreview && !updating && !previewBlocked,
+        )}
+        data-font-id={renderedPreview?.design.fontId}
+        data-model-scale={renderedPreview?.design.geometry.modelScale}
+        data-fit-state={fitState}
+      >
         <div className="scales-display-column">
           <section
             className="scales-model-card"
@@ -928,12 +1062,22 @@ export default function Scales() {
             <div className="scales-camera-bar">
               <span>Drag to orbit · Scroll or pinch to zoom</span>
               <div className="scales-button-group">
-                <a
+                <button
+                  type="button"
                   className="scales-font-shortcut"
-                  href="#scales-lettering-title"
+                  onClick={() => {
+                    const panel = document.querySelector<HTMLDetailsElement>(
+                      ".scales-lettering-disclosure",
+                    );
+                    if (panel) {
+                      panel.open = true;
+                      panel.querySelector("summary")?.focus();
+                      panel.scrollIntoView({ block: "start" });
+                    }
+                  }}
                 >
                   Font &amp; words ↓
-                </a>
+                </button>
                 <button
                   type="button"
                   aria-pressed={autoRotate}
@@ -960,7 +1104,7 @@ export default function Scales() {
                     setResetKey((value) => value + 1);
                   }}
                 >
-                  <RotateCcw size={14} aria-hidden="true" /> View
+                  <RotateCcw size={14} aria-hidden="true" /> Reset view
                 </button>
               </div>
             </div>
@@ -1060,18 +1204,58 @@ export default function Scales() {
               smaller than your requested relief.
             </p>
           )}
-          {atlasQuality.plan && !atlasQuality.plan.readable && (
-            <p className="scales-quality-note" role="status">
-              Very small lettering may look soft in the 3D preview (estimated{" "}
-              {atlasQuality.plan.minPixelsPerEm?.toFixed(1)} pixels per em). The
-              close-up proof keeps the original text detail. A larger type size
-              or fewer lettered faces can improve preview clarity; device
-              graphics limits can reduce it further.
-            </p>
+          {visibility && (
+            <details
+              className="scales-visibility"
+              data-testid="scales-visibility"
+              data-status={visibility.status}
+            >
+              <summary>
+                Lettering checks ·{" "}
+                {visibility.status === "empty"
+                  ? "add wording"
+                  : visibility.status === "needs-attention"
+                    ? "needs attention"
+                    : visibility.status === "meets-targets"
+                      ? "measured targets met"
+                      : "measurements incomplete"}
+              </summary>
+              <p>{visibility.summary}</p>
+              <p>
+                Checks describe the displayed version using local geometry, ink,
+                and color measurements. Screen projection and stroke width
+                remain unmeasured; inspect a face below.
+              </p>
+              {atlasPlan?.qualityLimited && (
+                <p>
+                  The device’s texture budget limits the requested detail. The
+                  face proof draws directly from the original lettering.
+                </p>
+              )}
+              <ul>
+                {visibility.checks.map((check) => (
+                  <li
+                    key={check.id}
+                    data-check={check.id}
+                    data-check-status={check.status}
+                  >
+                    <strong>
+                      {check.label}: {check.status.replaceAll("-", " ")}
+                    </strong>
+                    <br />
+                    {check.reason}
+                  </li>
+                ))}
+              </ul>
+            </details>
           )}
-          {atlasQuality.error && (
-            <p className="scales-error" role="alert">
-              {atlasQuality.error}
+          {atlasPlan && !atlasPlan.readable && (
+            <p className="scales-quality-note" role="status">
+              The displayed 3D textures provide{" "}
+              {atlasPlan.minPixelsPerEm?.toFixed(1)} pixels per em. Small
+              lettering may look soft. Use the face proof for closer inspection,
+              or increase the type size. Changing texture detail preserves every
+              original stroke.
             </p>
           )}
           {layout.error && (
@@ -1123,15 +1307,21 @@ export default function Scales() {
               </section>
             )}
 
-          <ScaleBuildUpPanel
-            layers={design.layers}
-            onChange={(layers) => updateDesign({ layers })}
-            study={study ?? null}
-            reliefInches={design.geometry.relief}
-            pending={updating || previewBlocked}
-            modelId={design.geometry.modelId}
-            modelScale={design.geometry.modelScale}
-          />
+          <details
+            className="scales-disclosure scales-material-disclosure"
+            open={presentation === "studio"}
+          >
+            <summary>Material layers & girth</summary>
+            <ScaleBuildUpPanel
+              layers={design.layers}
+              onChange={(layers) => updateDesign({ layers })}
+              study={study ?? null}
+              reliefInches={design.geometry.relief}
+              pending={updating || previewBlocked}
+              modelId={design.geometry.modelId}
+              modelScale={design.geometry.modelScale}
+            />
+          </details>
 
           {selectedPlate && displayedDesign && renderedPreview && (
             <section
@@ -1143,13 +1333,13 @@ export default function Scales() {
                 <h2 id="scales-proof-title">Check the lettering</h2>
               </div>
               <label className="scales-field" htmlFor="scales-proof-plate">
-                Plate
+                {letteredPlates.length ? "Lettered face" : "Face"}
                 <select
                   id="scales-proof-plate"
                   value={selectedPlate.id}
                   onChange={(event) => setSelectedPlateId(event.target.value)}
                 >
-                  {plates.map((plate) => (
+                  {proofPlates.map((plate) => (
                     <option key={plate.id} value={plate.id}>
                       {plate.surface === "body" ? "Body" : "Jaw"} · row{" "}
                       {plate.row + 1}, plate {plate.column + 1}
@@ -1157,7 +1347,29 @@ export default function Scales() {
                   ))}
                 </select>
               </label>
-              <PlateProof
+              <fieldset
+                className="scales-proof-navigation"
+                aria-label="Browse lettered faces"
+              >
+                <button
+                  type="button"
+                  disabled={proofPlates.length < 2}
+                  onClick={() => stepProof(-1)}
+                >
+                  ← Previous face
+                </button>
+                <span>
+                  {selectedProofIndex + 1} / {proofPlates.length}
+                </span>
+                <button
+                  type="button"
+                  disabled={proofPlates.length < 2}
+                  onClick={() => stepProof(1)}
+                >
+                  Next face →
+                </button>
+              </fieldset>
+              <ScalePlateProof
                 plate={selectedPlate}
                 placement={selectedPlacement}
                 design={displayedDesign}
@@ -1201,328 +1413,12 @@ export default function Scales() {
           aria-label="Design your scales and lettering"
         >
           <section
-            className="scales-control-card scales-lettering-card"
-            aria-labelledby="scales-lettering-title"
-          >
-            <div className="scales-section-heading">
-              <span>YOUR HAND, YOUR WORDS</span>
-              <h2 id="scales-lettering-title">Letter the surface</h2>
-            </div>
-            <label className="scales-field" htmlFor="scales-font">
-              Calligraphy font
-              <select
-                id="scales-font"
-                value={
-                  facePreference === "font" ? design.fontId : facePreference
-                }
-                onChange={(event) => {
-                  cancelFontUpload();
-                  const next = event.target.value;
-                  if (
-                    next === "auto" ||
-                    calligraphy.faces.some((face) => face.id === next)
-                  ) {
-                    updateDesign({ calligraphyFaceId: next });
-                    return;
-                  }
-                  if (
-                    isWorksheetBundledFontId(next) ||
-                    next === "serif" ||
-                    next === "sans" ||
-                    next === "mono" ||
-                    next === "custom"
-                  )
-                    updateDesign({ fontId: next, calligraphyFaceId: "font" });
-                }}
-              >
-                <option value="auto">
-                  Prefer original calligraphy · automatic
-                </option>
-                {matchingFaces.map((face) => (
-                  <option key={face.id} value={face.id}>
-                    {face.calligrapher} · {face.name} · scanned ink
-                  </option>
-                ))}
-                {missingFace && (
-                  <option value={facePreference}>
-                    Saved scan · unavailable for this text
-                  </option>
-                )}
-                <option value="serif">Classic serif</option>
-                <option value="sans">Clean sans serif</option>
-                <option value="mono">Monospaced</option>
-                {design.customFont && (
-                  <option value="custom">
-                    Uploaded · {design.customFont.name}
-                  </option>
-                )}
-                {WORKSHEET_FONT_CATALOG.map((entry) => (
-                  <option key={entry.id} value={entry.id}>
-                    {entry.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {selectedFace ? (
-              <p className="scales-help">
-                Original ink by {selectedFace.calligrapher}. Each source
-                occurrence keeps its own strokes and proportions; placement
-                recalculates with the model.
-              </p>
-            ) : (
-              <div
-                className="scales-font-sample"
-                style={{
-                  fontFamily,
-                  color: design.inkColor,
-                }}
-                aria-hidden="true"
-              >
-                The shape of a line
-              </div>
-            )}
-            {calligraphy.error && (
-              <p className="scales-error" role="alert">
-                {calligraphy.error}
-              </p>
-            )}
-            {facePreference === "auto" &&
-              calligraphy.ready &&
-              !selectedFace && (
-                <p className="scales-help">
-                  No saved scan matches this exact wording yet. Using the
-                  selected font until matching calligraphy is imported.
-                </p>
-              )}
-            {fontLoading && (
-              <p className="scales-help" role="status">
-                Loading the selected font and exact shaping metrics…
-              </p>
-            )}
-            {fontError && (
-              <p className="scales-error" role="alert">
-                {fontError} Lettering fit is paused until the selected font is
-                available.{" "}
-                <button
-                  type="button"
-                  onClick={() => setFontRetry((value) => value + 1)}
-                >
-                  Retry font
-                </button>
-                {design.showLettering && /\S/u.test(design.text) && (
-                  <button
-                    type="button"
-                    onClick={() => updateDesign({ showLettering: false })}
-                  >
-                    View shape without lettering
-                  </button>
-                )}
-              </p>
-            )}
-            <div className="scales-font-upload">
-              <button
-                type="button"
-                disabled={fontUploading}
-                onClick={() => fontInputRef.current?.click()}
-              >
-                <Upload size={14} aria-hidden="true" />
-                {fontUploading ? "Checking font…" : "Upload a TTF or OTF"}
-              </button>
-              <input
-                ref={fontInputRef}
-                className="scales-file-input"
-                type="file"
-                accept=".ttf,.otf,font/ttf,font/otf"
-                aria-label="Upload custom font"
-                onChange={(event) => {
-                  void uploadFont(event.target.files?.[0]);
-                  event.target.value = "";
-                }}
-              />
-              <p className="scales-help">
-                Up to 2 MB. Your font stays in this browser and in exported
-                study files. Use a font you have permission to use.
-              </p>
-            </div>
-            {fontUploadError && (
-              <p className="scales-error" role="alert">
-                {fontUploadError}
-              </p>
-            )}
-            <label className="scales-field" htmlFor="scales-shaping">
-              Text shaping
-              <select
-                id="scales-shaping"
-                value={design.shapingEngine}
-                disabled={Boolean(selectedFace)}
-                onChange={(event) =>
-                  updateDesign({
-                    shapingEngine:
-                      event.target.value === "harfbuzz"
-                        ? "harfbuzz"
-                        : "fontkit",
-                  })
-                }
-              >
-                <option value="fontkit">
-                  Fontkit · standard and uploaded fonts
-                </option>
-                <option value="harfbuzz">
-                  HarfBuzz · embedded script and uploaded fonts
-                </option>
-              </select>
-            </label>
-            <label className="scales-field" htmlFor="scales-features">
-              OpenType features
-              <input
-                id="scales-features"
-                type="text"
-                maxLength={256}
-                value={fontFeaturesInput}
-                disabled={Boolean(selectedFace)}
-                placeholder="liga, kern, calt"
-                onChange={(event) => setFontFeaturesInput(event.target.value)}
-                onBlur={applyFontFeatures}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") applyFontFeatures();
-                }}
-                aria-invalid={Boolean(fontFeaturesError)}
-                aria-describedby={
-                  fontFeaturesError ? "scales-features-error" : undefined
-                }
-              />
-            </label>
-            {fontFeaturesError && (
-              <p
-                id="scales-features-error"
-                className="scales-error"
-                role="alert"
-              >
-                {fontFeaturesError} The last applied feature settings remain
-                active.
-              </p>
-            )}
-            <p className="scales-help">
-              Press Enter or leave the field to apply.{" "}
-              {typography?.supportedFeatures.length
-                ? `Available in this font: ${typography.supportedFeatures.join(", ")}`
-                : "Feature support depends on the font. Leave empty for its defaults."}
-            </p>
-            <PoemVersionControls
-              text={design.text}
-              onLoad={(text, poem) =>
-                updateDesign({
-                  text,
-                  calligraphyFaceId: poem.calligraphyScanId ?? "auto",
-                })
-              }
-              onScanImported={(scan) =>
-                updateDesign({ text: scan.text, calligraphyFaceId: scan.id })
-              }
-            />
-            <div className="scales-field">
-              <span>Words to place</span>
-              <Suspense
-                fallback={<p role="status">Opening the poem editor…</p>}
-              >
-                <ScalePoemEditor
-                  value={design.text}
-                  onChange={(text) => updateDesign({ text })}
-                />
-              </Suspense>
-            </div>
-            <p id="scales-text-help" className="scales-help">
-              Complete words flow in row order around the body, then the jaw.
-              Line breaks are reflowed to each face.{" "}
-              {design.text.length.toLocaleString()} / 20,000 characters.
-            </p>
-            <div className="scales-color-row">
-              <label htmlFor="scales-ink">
-                <input
-                  id="scales-ink"
-                  type="color"
-                  value={design.inkColor}
-                  onChange={(event) =>
-                    updateDesign({ inkColor: event.target.value })
-                  }
-                />
-                <span>Ink color</span>
-              </label>
-              <label htmlFor="scales-metal">
-                <input
-                  id="scales-metal"
-                  type="color"
-                  value={design.plateColor}
-                  onChange={(event) =>
-                    updateDesign({ plateColor: event.target.value })
-                  }
-                />
-                <span>Plate color</span>
-              </label>
-            </div>
-            <label className="scales-check">
-              <input
-                type="checkbox"
-                checked={design.showLettering}
-                onChange={(event) =>
-                  updateDesign({ showLettering: event.target.checked })
-                }
-              />
-              Show lettering on the plates
-            </label>
-            <RangeField
-              label="Requested type size"
-              value={design.fontSizeMm}
-              min={2}
-              max={80}
-              step={0.5}
-              display={`${design.fontSizeMm.toFixed(1)} mm`}
-              onChange={(fontSizeMm) => updateDesign({ fontSizeMm })}
-            />
-            <RangeField
-              label="Extra edge margin"
-              value={design.marginMm}
-              min={0}
-              max={20}
-              step={0.25}
-              display={`${design.marginMm.toFixed(2)} mm`}
-              onChange={(marginMm) => updateDesign({ marginMm })}
-            />
-            <label className="scales-check">
-              <input
-                type="checkbox"
-                checked={design.autoFit}
-                onChange={(event) =>
-                  updateDesign({ autoFit: event.target.checked })
-                }
-              />
-              Auto-fit the full text
-            </label>
-            {design.autoFit && (
-              <RangeField
-                label="Smallest permitted type"
-                value={design.minFontSizeMm}
-                min={2}
-                max={design.fontSizeMm}
-                step={0.5}
-                display={`${design.minFontSizeMm.toFixed(1)} mm`}
-                onChange={(minFontSizeMm) => updateDesign({ minFontSizeMm })}
-              />
-            )}
-            <p className="scales-help">
-              Auto-fit reduces type only as far as your minimum. A script font
-              previews the composition; hand lettering and swashes still need a
-              practice test.
-            </p>
-          </section>
-
-          <section
             className="scales-control-card scales-size-card"
             aria-labelledby="scales-size-title"
           >
             <div className="scales-section-heading">
               <span>REAL SIZE, REAL MATERIAL</span>
-              <h2 id="scales-size-title">Choose the build</h2>
+              <h2 id="scales-size-title">Size the sculpture</h2>
             </div>
             <label className="scales-field" htmlFor="scales-model-source">
               Source model · open a starting shape
@@ -1560,14 +1456,20 @@ export default function Scales() {
                     sourceHeightInches * 0.02 * (sizeUnit === "mm" ? 25.4 : 1)
                   }
                   max={sourceHeightInches * 30 * (sizeUnit === "mm" ? 25.4 : 1)}
-                  step="any"
+                  step={sizeStep}
+                  aria-invalid={Boolean(heightError)}
+                  aria-describedby={
+                    heightError ? "scales-height-error" : "scales-height-help"
+                  }
                   value={heightInput}
-                  onChange={(event) => setHeightInput(event.target.value)}
+                  onChange={(event) => {
+                    setHeightInput(event.target.value);
+                    setHeightError("");
+                  }}
                   onBlur={applyHeight}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
                       applyHeight();
-                      event.currentTarget.blur();
                     }
                   }}
                 />
@@ -1577,300 +1479,777 @@ export default function Scales() {
                 <select
                   id="scales-size-unit"
                   value={sizeUnit}
-                  onChange={(event) =>
-                    setSizeUnit(event.target.value === "mm" ? "mm" : "in")
-                  }
+                  onChange={(event) => {
+                    setHeightError("");
+                    setSizeUnit(event.target.value === "mm" ? "mm" : "in");
+                  }}
                 >
                   <option value="in">inches</option>
                   <option value="mm">mm</option>
                 </select>
               </label>
             </div>
+            {heightError && (
+              <p className="scales-error" id="scales-height-error" role="alert">
+                {heightError}
+              </p>
+            )}
+            <fieldset
+              className="scales-height-steps"
+              aria-label="Fine height adjustment"
+            >
+              <button
+                type="button"
+                aria-label={`Decrease height by ${sizeStep} ${sizeUnit}`}
+                onClick={() => stepHeight(-1)}
+              >
+                − {sizeStep} {sizeUnit}
+              </button>
+              <button
+                type="button"
+                aria-label={`Increase height by ${sizeStep} ${sizeUnit}`}
+                onClick={() => stepHeight(1)}
+              >
+                + {sizeStep} {sizeUnit}
+              </button>
+            </fieldset>
+            <p id="scales-height-help" className="scales-help">
+              Enter an exact height and press Enter, or use the fine
+              adjustments.
+            </p>
             <RangeField
-              label="Model scale"
+              label="Overall size"
               value={Math.log2(design.geometry.modelScale)}
               min={Math.log2(0.02)}
               max={Math.log2(30)}
-              step={0.02}
-              display={`${(design.geometry.modelScale * 100).toFixed(1)}%`}
+              step={0.002}
+              display={`${sizeValue(targetHeightInches)} ${sizeUnit} high · ${(design.geometry.modelScale * 100).toFixed(1)}%`}
               onChange={(value) =>
                 setDesign((current) => resizeScaleDesign(current, 2 ** value))
               }
             />
+            <dl
+              className="scales-size-dimensions"
+              aria-label="Target model dimensions"
+            >
+              <div>
+                <dt>Width</dt>
+                <dd>
+                  {sizeValue(targetDimensions.width)} <small>{sizeUnit}</small>
+                </dd>
+              </div>
+              <div>
+                <dt>Height</dt>
+                <dd>
+                  {sizeValue(targetDimensions.height)} <small>{sizeUnit}</small>
+                </dd>
+              </div>
+              <div>
+                <dt>Depth</dt>
+                <dd>
+                  {sizeValue(targetDimensions.depth)} <small>{sizeUnit}</small>
+                </dd>
+              </div>
+            </dl>
             <p className="scales-help">
-              {design.geometry.modelId === "maquette"
-                ? "This source is the actual printable maquette and its connected surface charts."
-                : "This source is the archived 206.3-inch model, including its base."}{" "}
-              Target height scales the source before added layers. Metal,
-              backing, adhesive, relief, and lettering keep their real sizes;
-              review those allowances before making a small model.
+              Target source dimensions, before the added layers and raised
+              plates.
             </p>
-            <label className="scales-field" htmlFor="scales-build-method">
-              Build method
-              <select
-                id="scales-build-method"
-                value={design.buildMethod}
-                onChange={(event) =>
-                  updateDesign({
-                    buildMethod:
-                      event.target.value === "printed"
-                        ? "printed"
-                        : event.target.value === "hybrid"
-                          ? "hybrid"
-                          : "wood",
-                  })
+            <div className="scales-size-fit">
+              <button
+                type="button"
+                disabled={
+                  fitting ||
+                  !typography ||
+                  !design.text.trim() ||
+                  !design.showLettering
                 }
+                onClick={() => void fitSize()}
               >
-                <option value="wood">Wood construction</option>
-                <option value="printed">3D-printed construction</option>
-                <option value="hybrid">Wood + printed parts</option>
-              </select>
-            </label>
-            <p className="scales-help">
-              {design.buildMethod === "wood"
-                ? "Record the wood blocks, slats, and support that extend beyond the chosen model."
-                : design.buildMethod === "printed"
-                  ? "Record printed wall thickness, supports, joining clearances, and the printer/material settings you intend to test."
-                  : "Record which parts are wood or printed and how their joining surfaces, fasteners, and spacers meet."}{" "}
-              The build method is a planning note; it does not generate
-              structural joints or certify fit.
-            </p>
-            <label className="scales-field" htmlFor="scales-build-notes">
-              Materials, tools & joining notes
-              <textarea
-                id="scales-build-notes"
-                rows={4}
-                maxLength={4000}
-                value={design.notes}
-                placeholder="Wood / filament, actual stock thickness, nib or marking tool, spacers, fasteners, adhesive, clearance tests…"
-                onChange={(event) =>
-                  updateDesign({ notes: event.target.value })
-                }
-              />
-            </label>
-          </section>
-
-          <section
-            className="scales-control-card scales-shape-card"
-            aria-labelledby="scales-shape-title"
-          >
-            <div className="scales-section-heading">
-              <span>SHAPE &amp; RHYTHM</span>
-              <h2 id="scales-shape-title">Build the scales</h2>
-            </div>
-            <label className="scales-field" htmlFor="scales-surface-mode">
-              How plates follow the form
-              <select
-                id="scales-surface-mode"
-                value={design.geometry.surfaceMode}
-                onChange={(event) =>
-                  updateGeometry({
-                    surfaceMode:
-                      event.target.value === "planar" ? "planar" : "conforming",
-                  })
-                }
-              >
-                <option value="conforming">
-                  Curved · follow the body and girth
-                </option>
-                <option
-                  value="planar"
-                  disabled={design.geometry.modelId === "maquette"}
+                {fitting ? "Finding a size…" : "Enlarge until the words fit"}
+              </button>
+              {fitting && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    fitRequest.current?.abort();
+                    fitRequest.current = null;
+                    setFitting(false);
+                    setFitState("cancelled");
+                    setFitStatus(
+                      "Size search cancelled. Your size is unchanged.",
+                    );
+                  }}
                 >
-                  Flat facets · archival comparison
-                </option>
-              </select>
-            </label>
-            <label className="scales-field" htmlFor="scales-density-mode">
-              When the sculpture changes size
-              <select
-                id="scales-density-mode"
-                value={design.densityMode ?? "fixed"}
-                onChange={(event) =>
-                  setDesign((current) =>
-                    setScaleDensityMode(
-                      current,
-                      event.target.value === "adaptive" ? "adaptive" : "fixed",
-                    ),
-                  )
-                }
-              >
-                <option value="fixed">Keep the same scale pattern</option>
-                <option value="adaptive">
-                  Adapt the number of scales to the size
-                </option>
-              </select>
-            </label>
-            <p className="scales-help">
-              Adaptive density uses this shape as a reference: larger forms gain
-              scales and smaller forms lose them to keep their size similar.
-              Moving a density slider sets a new reference. Real stock thickness
-              and lettering sizes remain under your control.
-            </p>
-            {densityStatus.limited && (
-              <p className="scales-quality-note" role="status">
-                Adaptive density reached the preview limit. This size requested{" "}
-                {densityStatus.requestedColumns} × {densityStatus.requestedRows}{" "}
-                cells; the bounded pattern below keeps the preview manageable.
+                  Cancel search
+                </button>
+              )}
+              {fitStatus && (
+                <p className="scales-help" role="status">
+                  {fitStatus}
+                </p>
+              )}
+              <p className="scales-help">
+                Tests larger forms with your current lettering and density
+                settings. Applies a tested fit only; your type size stays
+                unchanged.
               </p>
-            )}
-            <RangeField
-              label={
-                design.geometry.modelId === "maquette"
-                  ? "Target lengthwise density"
-                  : "Plates around the body loop"
-              }
-              value={design.geometry.columns}
-              min={4}
-              max={240}
-              onChange={(columns) =>
-                setDesign((current) => updateScaleDensity(current, { columns }))
-              }
-            />
-            <RangeField
-              label={
-                design.geometry.modelId === "maquette"
-                  ? "Target crosswise density"
-                  : "Rows across each surface"
-              }
-              value={design.geometry.rows}
-              min={2}
-              max={Math.min(12, Math.floor(600 / design.geometry.columns))}
-              onChange={(rows) =>
-                setDesign((current) => updateScaleDensity(current, { rows }))
-              }
-            />
-            <RangeField
-              label="Space between plates"
-              value={design.geometry.gap}
-              min={0}
-              max={0.3}
-              step={0.01}
-              display={`${Math.round(design.geometry.gap * 100)}% of a cell`}
-              onChange={(gap) => updateGeometry({ gap })}
-            />
-            <RangeField
-              label="Raised relief"
-              value={design.geometry.relief}
-              min={0}
-              max={6}
-              step={0.05}
-              display={`${design.geometry.relief.toFixed(2)} in / ${(design.geometry.relief * 25.4).toFixed(1)} mm`}
-              onChange={(relief) => updateGeometry({ relief })}
-            />
-            <RangeField
-              label="Irregularity"
-              value={design.geometry.variation}
-              min={0}
-              max={1}
-              step={0.05}
-              display={`${Math.round(design.geometry.variation * 100)}%`}
-              onChange={(variation) => updateGeometry({ variation })}
-            />
-            <div className="scales-seed-row">
-              <label className="scales-field" htmlFor="scales-seed">
-                Pattern seed
-                <input
-                  id="scales-seed"
-                  type="number"
-                  min={0}
-                  max={0xffff_ffff}
-                  step={1}
-                  value={design.geometry.seed}
+            </div>
+            <details
+              className="scales-size-notes"
+              open={presentation === "studio"}
+            >
+              <summary>Source & construction notes</summary>
+              <p className="scales-help">
+                {design.geometry.modelId === "maquette"
+                  ? "This source is the actual printable maquette and its connected surface charts."
+                  : "This source is the archived 206.3-inch model, including its base."}{" "}
+                Target height scales the source before added layers. Metal,
+                backing, adhesive, relief, and lettering keep their real sizes;
+                review those allowances before making a small model.
+              </p>
+              <label className="scales-field" htmlFor="scales-build-method">
+                Build method
+                <select
+                  id="scales-build-method"
+                  value={design.buildMethod}
                   onChange={(event) =>
-                    updateGeometry({ seed: event.target.valueAsNumber })
+                    updateDesign({
+                      buildMethod:
+                        event.target.value === "printed"
+                          ? "printed"
+                          : event.target.value === "hybrid"
+                            ? "hybrid"
+                            : "wood",
+                    })
+                  }
+                >
+                  <option value="wood">Wood construction</option>
+                  <option value="printed">3D-printed construction</option>
+                  <option value="hybrid">Wood + printed parts</option>
+                </select>
+              </label>
+              <p className="scales-help">
+                {design.buildMethod === "wood"
+                  ? "Record the wood blocks, slats, and support that extend beyond the chosen model."
+                  : design.buildMethod === "printed"
+                    ? "Record printed wall thickness, supports, joining clearances, and the printer/material settings you intend to test."
+                    : "Record which parts are wood or printed and how their joining surfaces, fasteners, and spacers meet."}{" "}
+                The build method is a planning note; it does not generate
+                structural joints or certify fit.
+              </p>
+              <label className="scales-field" htmlFor="scales-build-notes">
+                Materials, tools & joining notes
+                <textarea
+                  id="scales-build-notes"
+                  rows={4}
+                  maxLength={4000}
+                  value={design.notes}
+                  placeholder="Wood / filament, actual stock thickness, nib or marking tool, spacers, fasteners, adhesive, clearance tests…"
+                  onChange={(event) =>
+                    updateDesign({ notes: event.target.value })
                   }
                 />
               </label>
-              <button
-                type="button"
-                onClick={() => {
-                  const values = new Uint32Array(1);
-                  crypto.getRandomValues(values);
-                  updateGeometry({ seed: values[0] ?? 1 });
-                }}
-              >
-                <Shuffle size={15} aria-hidden="true" /> New pattern
-              </button>
-            </div>
-            <p className="scales-help">
-              The seed makes the same irregular pattern repeatable.{" "}
-              {design.geometry.modelId === "maquette"
-                ? "Print-mesh charts and sharp creases add seams; density is a target, not a fixed piece count. Its plates always conform to that mesh."
-                : "The jaw uses a proportional number of plates for its shorter loop."}{" "}
-              Geometry and layer changes rebuild the faces in the background and
-              map the words again.
-            </p>
+            </details>
           </section>
 
-          <section
-            className="scales-control-card scales-save-card"
-            aria-labelledby="scales-save-title"
+          <details
+            className="scales-disclosure scales-lettering-disclosure"
+            open={presentation === "studio"}
           >
-            <div className="scales-section-heading">
-              <span>KEEP THE STUDY</span>
-              <h2 id="scales-save-title">Return to this idea</h2>
-            </div>
-            <p
-              className={saveFailed ? "scales-error" : "scales-save-status"}
-              role="status"
+            <summary>Words & handwriting</summary>
+            <section
+              className="scales-control-card scales-lettering-card"
+              aria-labelledby="scales-lettering-title"
             >
-              {saveStatus}
-            </p>
-            <p className="scales-help">
-              This draft belongs to this browser. Download a study file to move
-              it to another device or keep a durable backup.
-            </p>
-            <div className="scales-save-actions">
-              <button
-                type="button"
-                disabled={exportWaiting}
-                title={
-                  exportWaiting
-                    ? "Wait for the handwriting library before exporting a complete study."
-                    : undefined
-                }
-                onClick={() => {
-                  setImportError("");
-                  void downloadDesign(design, selectedFace?.id).catch(
-                    (error: unknown) =>
-                      setImportError(
-                        error instanceof Error
-                          ? error.message
-                          : "This study could not be exported.",
-                      ),
-                  );
-                }}
-              >
-                <Download size={16} aria-hidden="true" /> Save study
-              </button>
-              <button type="button" onClick={() => importRef.current?.click()}>
-                <Upload size={16} aria-hidden="true" /> Load study
-              </button>
-              <input
-                ref={importRef}
-                type="file"
-                accept=".json,application/json"
-                aria-label="Load scale study JSON"
-                className="scales-file-input"
-                onChange={(event) => {
-                  void importDesign(event.target.files?.[0]);
-                  event.target.value = "";
-                }}
-              />
-            </div>
-            {importError && (
-              <p className="scales-error" role="alert">
-                {importError}
+              <div className="scales-section-heading">
+                <span>YOUR HAND, YOUR WORDS</span>
+                <h2 id="scales-lettering-title">Letter the surface</h2>
+              </div>
+              <label className="scales-field" htmlFor="scales-font">
+                Calligraphy font
+                <select
+                  id="scales-font"
+                  value={
+                    facePreference === "font" ? design.fontId : facePreference
+                  }
+                  onChange={(event) => {
+                    cancelFontUpload();
+                    const next = event.target.value;
+                    if (
+                      next === "auto" ||
+                      calligraphy.faces.some((face) => face.id === next)
+                    ) {
+                      updateDesign({ calligraphyFaceId: next });
+                      return;
+                    }
+                    if (
+                      isWorksheetBundledFontId(next) ||
+                      next === "serif" ||
+                      next === "sans" ||
+                      next === "mono" ||
+                      next === "custom"
+                    )
+                      updateDesign({ fontId: next, calligraphyFaceId: "font" });
+                  }}
+                >
+                  <option value="auto">
+                    Prefer original calligraphy · automatic
+                  </option>
+                  {matchingFaces.map((face) => (
+                    <option key={face.id} value={face.id}>
+                      {face.calligrapher} · {face.name} · scanned ink
+                    </option>
+                  ))}
+                  {missingFace && (
+                    <option value={facePreference}>
+                      Saved scan · unavailable for this text
+                    </option>
+                  )}
+                  <option value="serif">Classic serif</option>
+                  <option value="sans">Clean sans serif</option>
+                  <option value="mono">Monospaced</option>
+                  {design.customFont && (
+                    <option value="custom">
+                      Uploaded · {design.customFont.name}
+                    </option>
+                  )}
+                  {WORKSHEET_FONT_CATALOG.map((entry) => (
+                    <option key={entry.id} value={entry.id}>
+                      {entry.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {selectedFace ? (
+                <p className="scales-help">
+                  Original ink by {selectedFace.calligrapher}. Each source
+                  occurrence keeps its own strokes and proportions; placement
+                  recalculates with the model.
+                </p>
+              ) : (
+                <div
+                  className="scales-font-sample"
+                  style={{
+                    fontFamily,
+                    color: design.inkColor,
+                  }}
+                  aria-hidden="true"
+                >
+                  The shape of a line
+                </div>
+              )}
+              {calligraphy.error && (
+                <p className="scales-error" role="alert">
+                  {calligraphy.error}
+                </p>
+              )}
+              {facePreference === "auto" &&
+                calligraphy.ready &&
+                !selectedFace && (
+                  <p className="scales-help">
+                    No saved scan matches this exact wording yet. Using the
+                    selected font until matching calligraphy is imported.
+                  </p>
+                )}
+              {fontLoading && (
+                <p className="scales-help" role="status">
+                  Loading the selected font and exact shaping metrics…
+                </p>
+              )}
+              {fontError && (
+                <p className="scales-error" role="alert">
+                  {fontError} Lettering fit is paused until the selected font is
+                  available.{" "}
+                  <button
+                    type="button"
+                    onClick={() => setFontRetry((value) => value + 1)}
+                  >
+                    Retry font
+                  </button>
+                  {design.showLettering && /\S/u.test(design.text) && (
+                    <button
+                      type="button"
+                      onClick={() => updateDesign({ showLettering: false })}
+                    >
+                      View shape without lettering
+                    </button>
+                  )}
+                </p>
+              )}
+              <div className="scales-font-upload">
+                <button
+                  type="button"
+                  disabled={fontUploading}
+                  onClick={() => fontInputRef.current?.click()}
+                >
+                  <Upload size={14} aria-hidden="true" />
+                  {fontUploading ? "Checking font…" : "Upload a TTF or OTF"}
+                </button>
+                <input
+                  ref={fontInputRef}
+                  className="scales-file-input"
+                  type="file"
+                  accept=".ttf,.otf,font/ttf,font/otf"
+                  aria-label="Upload custom font"
+                  onChange={(event) => {
+                    void uploadFont(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
+                <p className="scales-help">
+                  Up to 2 MB. Your font stays in this browser and in exported
+                  study files. Use a font you have permission to use.
+                </p>
+              </div>
+              {fontUploadError && (
+                <p className="scales-error" role="alert">
+                  {fontUploadError}
+                </p>
+              )}
+              <label className="scales-field" htmlFor="scales-shaping">
+                Text shaping
+                <select
+                  id="scales-shaping"
+                  value={design.shapingEngine}
+                  disabled={Boolean(selectedFace)}
+                  onChange={(event) =>
+                    updateDesign({
+                      shapingEngine:
+                        event.target.value === "harfbuzz"
+                          ? "harfbuzz"
+                          : "fontkit",
+                    })
+                  }
+                >
+                  <option value="fontkit">
+                    Fontkit · standard and uploaded fonts
+                  </option>
+                  <option value="harfbuzz">
+                    HarfBuzz · embedded script and uploaded fonts
+                  </option>
+                </select>
+              </label>
+              <label className="scales-field" htmlFor="scales-features">
+                OpenType features
+                <input
+                  id="scales-features"
+                  type="text"
+                  maxLength={256}
+                  value={fontFeaturesInput}
+                  disabled={Boolean(selectedFace)}
+                  placeholder="liga, kern, calt"
+                  onChange={(event) => setFontFeaturesInput(event.target.value)}
+                  onBlur={applyFontFeatures}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") applyFontFeatures();
+                  }}
+                  aria-invalid={Boolean(fontFeaturesError)}
+                  aria-describedby={
+                    fontFeaturesError ? "scales-features-error" : undefined
+                  }
+                />
+              </label>
+              {fontFeaturesError && (
+                <p
+                  id="scales-features-error"
+                  className="scales-error"
+                  role="alert"
+                >
+                  {fontFeaturesError} The last applied feature settings remain
+                  active.
+                </p>
+              )}
+              <p className="scales-help">
+                Press Enter or leave the field to apply.{" "}
+                {typography?.supportedFeatures.length
+                  ? `Available in this font: ${typography.supportedFeatures.join(", ")}`
+                  : "Feature support depends on the font. Leave empty for its defaults."}
               </p>
-            )}
-            <p className="scales-help">
-              JSON includes the source model, size, layer assumptions, build
-              notes, text, font, colors, and fit settings. Uploaded fonts are
-              embedded. Your reference photographs are available separately in
-              the <Link to="/references">reference library</Link>.
-            </p>
-          </section>
+              <PoemVersionControls
+                text={design.text}
+                onLoad={(text, poem) =>
+                  updateDesign({
+                    text,
+                    calligraphyFaceId: poem.calligraphyScanId ?? "auto",
+                  })
+                }
+                onScanImported={(scan) =>
+                  updateDesign({ text: scan.text, calligraphyFaceId: scan.id })
+                }
+              />
+              <div className="scales-field">
+                <span>Words to place</span>
+                <Suspense
+                  fallback={<p role="status">Opening the poem editor…</p>}
+                >
+                  <ScalePoemEditor
+                    value={design.text}
+                    onChange={(text) => updateDesign({ text })}
+                  />
+                </Suspense>
+              </div>
+              <p id="scales-text-help" className="scales-help">
+                Complete words flow in row order around the body, then the jaw.
+                Line breaks are reflowed to each face.{" "}
+                {design.text.length.toLocaleString()} / 20,000 characters.
+              </p>
+              <div className="scales-color-row">
+                <label htmlFor="scales-ink">
+                  <input
+                    id="scales-ink"
+                    type="color"
+                    value={design.inkColor}
+                    onChange={(event) =>
+                      updateDesign({ inkColor: event.target.value })
+                    }
+                  />
+                  <span>Ink color</span>
+                </label>
+                <label htmlFor="scales-metal">
+                  <input
+                    id="scales-metal"
+                    type="color"
+                    value={design.plateColor}
+                    onChange={(event) =>
+                      updateDesign({ plateColor: event.target.value })
+                    }
+                  />
+                  <span>Plate color</span>
+                </label>
+              </div>
+              <label
+                className="scales-field"
+                htmlFor="scales-lettering-quality"
+              >
+                3D lettering detail
+                <select
+                  id="scales-lettering-quality"
+                  value={design.letteringQuality ?? "crisp"}
+                  onChange={(event) =>
+                    updateDesign({
+                      letteringQuality:
+                        event.target.value === "balanced"
+                          ? "balanced"
+                          : "crisp",
+                    })
+                  }
+                >
+                  <option value="crisp">
+                    Crisp · more detail where lettering appears
+                  </option>
+                  <option value="balanced">
+                    Balanced · lower texture detail
+                  </option>
+                </select>
+              </label>
+              <p className="scales-help">
+                Both settings preserve the original strokes. Inspect individual
+                faces in the proof for closer detail.
+              </p>
+              <label className="scales-check">
+                <input
+                  type="checkbox"
+                  checked={design.showLettering}
+                  onChange={(event) =>
+                    updateDesign({ showLettering: event.target.checked })
+                  }
+                />
+                Show lettering on the plates
+              </label>
+              <RangeField
+                label="Requested type size"
+                value={design.fontSizeMm}
+                min={2}
+                max={80}
+                step={0.5}
+                display={`${design.fontSizeMm.toFixed(1)} mm`}
+                onChange={(fontSizeMm) => updateDesign({ fontSizeMm })}
+              />
+              <RangeField
+                label="Extra edge margin"
+                value={design.marginMm}
+                min={0}
+                max={20}
+                step={0.25}
+                display={`${design.marginMm.toFixed(2)} mm`}
+                onChange={(marginMm) => updateDesign({ marginMm })}
+              />
+              <label className="scales-check">
+                <input
+                  type="checkbox"
+                  checked={design.autoFit}
+                  onChange={(event) =>
+                    updateDesign({ autoFit: event.target.checked })
+                  }
+                />
+                Auto-fit the full text
+              </label>
+              {design.autoFit && (
+                <RangeField
+                  label="Smallest permitted type"
+                  value={design.minFontSizeMm}
+                  min={2}
+                  max={design.fontSizeMm}
+                  step={0.5}
+                  display={`${design.minFontSizeMm.toFixed(1)} mm`}
+                  onChange={(minFontSizeMm) => updateDesign({ minFontSizeMm })}
+                />
+              )}
+              <p className="scales-help">
+                Auto-fit reduces type only as far as your minimum. A script font
+                previews the composition; hand lettering and swashes still need
+                a practice test.
+              </p>
+            </section>
+          </details>
+
+          <details
+            className="scales-disclosure scales-shape-disclosure"
+            open={presentation === "studio"}
+          >
+            <summary>Scale pattern & density</summary>
+            <section
+              className="scales-control-card scales-shape-card"
+              aria-labelledby="scales-shape-title"
+            >
+              <div className="scales-section-heading">
+                <span>SHAPE &amp; RHYTHM</span>
+                <h2 id="scales-shape-title">Build the scales</h2>
+              </div>
+              <label className="scales-field" htmlFor="scales-surface-mode">
+                How plates follow the form
+                <select
+                  id="scales-surface-mode"
+                  value={design.geometry.surfaceMode}
+                  onChange={(event) =>
+                    updateGeometry({
+                      surfaceMode:
+                        event.target.value === "planar"
+                          ? "planar"
+                          : "conforming",
+                    })
+                  }
+                >
+                  <option value="conforming">
+                    Curved · follow the body and girth
+                  </option>
+                  <option
+                    value="planar"
+                    disabled={design.geometry.modelId === "maquette"}
+                  >
+                    Flat facets · archival comparison
+                  </option>
+                </select>
+              </label>
+              <label className="scales-field" htmlFor="scales-density-mode">
+                When the sculpture changes size
+                <select
+                  id="scales-density-mode"
+                  value={design.densityMode ?? "fixed"}
+                  onChange={(event) =>
+                    setDesign((current) =>
+                      setScaleDensityMode(
+                        current,
+                        event.target.value === "adaptive"
+                          ? "adaptive"
+                          : "fixed",
+                      ),
+                    )
+                  }
+                >
+                  <option value="fixed">Keep the same scale pattern</option>
+                  <option value="adaptive">
+                    Adapt the number of scales to the size
+                  </option>
+                </select>
+              </label>
+              <p className="scales-help">
+                Adaptive density uses this shape as a reference: larger forms
+                gain scales and smaller forms lose them to keep their size
+                similar. Moving a density slider sets a new reference. Real
+                stock thickness and lettering sizes remain under your control.
+              </p>
+              {densityStatus.limited && (
+                <p className="scales-quality-note" role="status">
+                  Adaptive density reached the preview limit. This size
+                  requested {densityStatus.requestedColumns} ×{" "}
+                  {densityStatus.requestedRows} cells; the bounded pattern below
+                  keeps the preview manageable.
+                </p>
+              )}
+              <RangeField
+                label={
+                  design.geometry.modelId === "maquette"
+                    ? "Target lengthwise density"
+                    : "Plates around the body loop"
+                }
+                value={design.geometry.columns}
+                min={4}
+                max={240}
+                onChange={(columns) =>
+                  setDesign((current) =>
+                    updateScaleDensity(current, { columns }),
+                  )
+                }
+              />
+              <RangeField
+                label={
+                  design.geometry.modelId === "maquette"
+                    ? "Target crosswise density"
+                    : "Rows across each surface"
+                }
+                value={design.geometry.rows}
+                min={2}
+                max={Math.min(12, Math.floor(600 / design.geometry.columns))}
+                onChange={(rows) =>
+                  setDesign((current) => updateScaleDensity(current, { rows }))
+                }
+              />
+              <RangeField
+                label="Space between plates"
+                value={design.geometry.gap}
+                min={0}
+                max={0.3}
+                step={0.01}
+                display={`${Math.round(design.geometry.gap * 100)}% of a cell`}
+                onChange={(gap) => updateGeometry({ gap })}
+              />
+              <RangeField
+                label="Raised relief"
+                value={design.geometry.relief * sizeFactor}
+                min={0}
+                max={6 * sizeFactor}
+                step={sizeUnit === "mm" ? 0.1 : 0.005}
+                display={`${design.geometry.relief.toFixed(2)} in / ${(design.geometry.relief * 25.4).toFixed(1)} mm`}
+                onChange={(relief) =>
+                  updateGeometry({ relief: relief / sizeFactor })
+                }
+              />
+              <RangeField
+                label="Irregularity"
+                value={design.geometry.variation}
+                min={0}
+                max={1}
+                step={0.05}
+                display={`${Math.round(design.geometry.variation * 100)}%`}
+                onChange={(variation) => updateGeometry({ variation })}
+              />
+              <div className="scales-seed-row">
+                <label className="scales-field" htmlFor="scales-seed">
+                  Pattern seed
+                  <input
+                    id="scales-seed"
+                    type="number"
+                    min={0}
+                    max={0xffff_ffff}
+                    step={1}
+                    value={design.geometry.seed}
+                    onChange={(event) =>
+                      updateGeometry({ seed: event.target.valueAsNumber })
+                    }
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const values = new Uint32Array(1);
+                    crypto.getRandomValues(values);
+                    updateGeometry({ seed: values[0] ?? 1 });
+                  }}
+                >
+                  <Shuffle size={15} aria-hidden="true" /> New pattern
+                </button>
+              </div>
+              <p className="scales-help">
+                The seed makes the same irregular pattern repeatable.{" "}
+                {design.geometry.modelId === "maquette"
+                  ? "Print-mesh charts and sharp creases add seams; density is a target, not a fixed piece count. Its plates always conform to that mesh."
+                  : "The jaw uses a proportional number of plates for its shorter loop."}{" "}
+                Geometry and layer changes rebuild the faces in the background
+                and map the words again.
+              </p>
+            </section>
+          </details>
+
+          <details
+            className="scales-disclosure scales-save-disclosure"
+            open={presentation === "studio"}
+          >
+            <summary>Save & restore study</summary>
+            <section
+              className="scales-control-card scales-save-card"
+              aria-labelledby="scales-save-title"
+            >
+              <div className="scales-section-heading">
+                <span>KEEP THE STUDY</span>
+                <h2 id="scales-save-title">Return to this idea</h2>
+              </div>
+              <p
+                className={saveFailed ? "scales-error" : "scales-save-status"}
+                role="status"
+              >
+                {saveStatus}
+              </p>
+              <p className="scales-help">
+                This draft belongs to this browser. Download a study file to
+                move it to another device or keep a durable backup.
+              </p>
+              <div className="scales-save-actions">
+                <button
+                  type="button"
+                  disabled={exportWaiting}
+                  title={
+                    exportWaiting
+                      ? "Wait for the handwriting library before exporting a complete study."
+                      : undefined
+                  }
+                  onClick={() => {
+                    setImportError("");
+                    void downloadDesign(design, selectedFace?.id).catch(
+                      (error: unknown) =>
+                        setImportError(
+                          error instanceof Error
+                            ? error.message
+                            : "This study could not be exported.",
+                        ),
+                    );
+                  }}
+                >
+                  <Download size={16} aria-hidden="true" /> Save study
+                </button>
+                <button
+                  type="button"
+                  onClick={() => importRef.current?.click()}
+                >
+                  <Upload size={16} aria-hidden="true" /> Load study
+                </button>
+                <input
+                  ref={importRef}
+                  type="file"
+                  accept=".json,application/json"
+                  aria-label="Load scale study JSON"
+                  className="scales-file-input"
+                  onChange={(event) => {
+                    void importDesign(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
+              </div>
+              {importError && (
+                <p className="scales-error" role="alert">
+                  {importError}
+                </p>
+              )}
+              <p className="scales-help">
+                JSON includes the source model, size, layer assumptions, build
+                notes, text, font, colors, and fit settings. Uploaded fonts are
+                embedded. Your reference photographs are available separately in
+                the <Link to="/references">reference library</Link>.
+              </p>
+            </section>
+          </details>
         </aside>
       </div>
     </div>
