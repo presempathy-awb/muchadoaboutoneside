@@ -185,7 +185,7 @@ function FeatureSample({
   );
 }
 
-function BundledFontGallery({
+export function WorksheetFontGallery({
   selected,
   onSelect,
 }: {
@@ -269,6 +269,50 @@ function BundledFontGallery({
   );
 }
 
+export function WorksheetFontPicker({
+  settings,
+  customFontName,
+  onChange,
+}: {
+  settings: WorksheetSettings;
+  customFontName?: string;
+  onChange: (patch: Partial<WorksheetSettings>) => void;
+}) {
+  return (
+    <label className="ws-field">
+      <span>Lettering font</span>
+      <select
+        value={settings.fontId}
+        onChange={(event) =>
+          onChange({
+            fontId: event.target.value as WorksheetSettings["fontId"],
+          })
+        }
+      >
+        <optgroup label="Calligraphy scripts">
+          {WORKSHEET_FONT_CATALOG.map((entry) => (
+            <option key={entry.id} value={entry.id}>
+              {entry.name} · {FONT_GROUP[entry.id].toLowerCase()}
+            </option>
+          ))}
+        </optgroup>
+        <optgroup label="Simple references">
+          <option value="serif">Classic serif</option>
+          <option value="sans">Simple sans serif</option>
+          <option value="mono">Monospace</option>
+        </optgroup>
+        {(customFontName || settings.fontId === "custom") && (
+          <optgroup label="Your font">
+            <option value="custom">
+              {customFontName ?? "Custom font · please re-import"}
+            </option>
+          </optgroup>
+        )}
+      </select>
+    </label>
+  );
+}
+
 export function WorksheetFontTools({
   settings,
   font,
@@ -327,43 +371,6 @@ export function WorksheetFontTools({
 
   return (
     <>
-      <label className="ws-field">
-        <span>Font</span>
-        <select
-          value={settings.fontId}
-          onChange={(event) =>
-            onChange({
-              fontId: event.target.value as WorksheetSettings["fontId"],
-            })
-          }
-        >
-          <optgroup label="Calligraphy scripts">
-            {WORKSHEET_FONT_CATALOG.map((entry) => (
-              <option key={entry.id} value={entry.id}>
-                {entry.name} · {FONT_GROUP[entry.id].toLowerCase()}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="Simple references">
-            <option value="serif">Classic serif</option>
-            <option value="sans">Simple sans serif</option>
-            <option value="mono">Monospace</option>
-          </optgroup>
-          {(customFontName || settings.fontId === "custom") && (
-            <optgroup label="Your font">
-              <option value="custom">
-                {customFontName ?? "Custom font · please re-import"}
-              </option>
-            </optgroup>
-          )}
-        </select>
-      </label>
-
-      <BundledFontGallery
-        selected={settings.fontId}
-        onSelect={(fontId) => onChange({ fontId })}
-      />
-
       <label className="ws-file">
         Import your TTF / OTF font
         <input

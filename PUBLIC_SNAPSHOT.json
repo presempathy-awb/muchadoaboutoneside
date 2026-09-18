@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "3736bb011136b00a111bed78275311196498352e",
+  "sourceCommit": "e5010c2bf83c9b8eda35f5dda9e20f98b7b10119",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -65,8 +65,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 2210,
-      "sha256": "1a77511bcfc413d31e3260225ced8d3cba05acb2f5eefc46a4a44fa6c029c1de"
+      "bytes": 2384,
+      "sha256": "7f0f070d5a64543ccea9ea5615331b3fd957ff26facade0d9df4b0148d031fd5"
     },
     {
       "path": "CLAUDE.md",
@@ -5490,8 +5490,8 @@
     },
     {
       "path": "src/components/calligraphy/worksheet-font-tools.tsx",
-      "bytes": 17562,
-      "sha256": "c39fe1268b94a10c46f5b6f256c1d7937fdcf853da4c5fc59154b970b31733d2"
+      "bytes": 17619,
+      "sha256": "39eba5d4b1e5acf21c76a43c3c48ecb5671ba5dab0fb64d2a5a5b2638db8f0f0"
     },
     {
       "path": "src/components/calligraphy/worksheet-photo.tsx",
@@ -5800,8 +5800,8 @@
     },
     {
       "path": "src/pages/worksheet-studio.tsx",
-      "bytes": 49038,
-      "sha256": "574b844595ef60f9e5d1d7a681f973760ab212954eee151035fbd202bf88cdca"
+      "bytes": 50050,
+      "sha256": "92414d0357d5a0e920c88f2c9bbe2c7f94789edc0f3eff2f43640e3d60904015"
     },
     {
       "path": "src/poem-editor.css",
@@ -5830,8 +5830,8 @@
     },
     {
       "path": "src/worksheet-studio.css",
-      "bytes": 22303,
-      "sha256": "10ecc7ae8da1fc3ff035e48277a1eb66aa87ea48f922454abfc9929f39d86b79"
+      "bytes": 23022,
+      "sha256": "dd9b0d9fea20ac2b87fc700486c485e5dd2156c10c1ab94da4451209127522b2"
     },
     {
       "path": "tests/security/__snapshots__/no-domain-cookie-snapshot.yml",
