@@ -99,7 +99,7 @@ function verifyRemapping(
         8,
       );
       const shaped = typography.shape(line, placement.fontSizeMm);
-      expect(shaped.engine).toBe(typography.engine);
+      expect(typography.engine).toBe(shaped.engine);
       expect(shaped.glyphs.some(({ path }) => Boolean(path))).toBe(true);
       expect(shaped.inkBoundsMm?.width ?? 0).toBeLessThanOrEqual(
         measured.widthMm + 1e-7,

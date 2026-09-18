@@ -3,6 +3,7 @@ import {
   allocateScaleLettering,
   fitScaleLettering,
   type ScaleLetteringPlate,
+  type ScaleTextRange,
 } from "./scale-lettering";
 
 const characterMeasure = (text: string, fontSizeMm: number) =>
@@ -201,4 +202,99 @@ test("rejects invalid measured heights rather than reporting a false fit", () =>
       }),
     ).toThrow("positive height");
   }
+});
+
+test("keeps identical word occurrences distinct through measurement and reflow", () => {
+  const seen: ScaleTextRange[] = [];
+  const options = {
+    fontSizeMm: 1,
+    marginMm: 0,
+    measureLine: (_text: string, size: number, range?: ScaleTextRange) => {
+      if (!range) throw new Error("Missing occurrence range");
+      seen.push(range);
+      const widths = [5, 12, 7];
+      return {
+        widthMm:
+          widths.slice(range.wordStart, range.wordEnd).reduce((a, b) => a + b) *
+          size,
+        heightMm: size * 2,
+      };
+    },
+  };
+  const narrow = allocateScaleLettering(
+    [plate("narrow", 12, 7)],
+    "echo echo echo",
+    options,
+  );
+  expect(narrow.placements[0]?.lines).toEqual(["echo", "echo", "echo"]);
+  expect(narrow.placements[0]?.lineRanges).toEqual([
+    { wordStart: 0, wordEnd: 1 },
+    { wordStart: 1, wordEnd: 2 },
+    { wordStart: 2, wordEnd: 3 },
+  ]);
+  const wide = allocateScaleLettering(
+    [plate("wide", 24, 7)],
+    "echo echo echo",
+    options,
+  );
+  expect(wide.placements[0]?.lineRanges).toEqual([
+    { wordStart: 0, wordEnd: 3 },
+  ]);
+  expect(narrow.unplacedText).toBe("");
+  expect(wide.unplacedText).toBe("");
+  expect(seen).toContainEqual({ wordStart: 1, wordEnd: 2 });
+});
+
+test("joined handwriting cannot split across lines or plates, including autofit", () => {
+  const options = {
+    fontSizeMm: 1,
+    marginMm: 0,
+    measure: characterMeasure,
+    segments: [
+      { wordStart: 0, wordEnd: 2 },
+      { wordStart: 2, wordEnd: 3 },
+    ],
+  };
+  const result = allocateScaleLettering(
+    [plate("short", 6, 20), plate("wide", 12, 20)],
+    "one two three",
+    options,
+  );
+  expect(result.placements[0]?.lines).toEqual([]);
+  expect(result.placements[1]?.lines).toEqual(["one two", "three"]);
+  expect(result.placements[1]?.lineRanges).toEqual(options.segments);
+  const fit = fitScaleLettering([plate("fit", 6, 20)], "one two three", {
+    ...options,
+    minFontSizeMm: 0.5,
+  });
+  expect(fit.placements[0]?.lines).toEqual(["one two", "three"]);
+  expect(fit.placements[0]?.lineRanges).toEqual(options.segments);
+  expect(fit.unplacedText).toBe("");
+});
+
+test("rejects incomplete, overlapping, unordered and fractional source segments", () => {
+  const invalid = [
+    [],
+    [{ wordStart: 0, wordEnd: 1 }],
+    [{ wordStart: 1, wordEnd: 2 }],
+    [{ wordStart: 0, wordEnd: 3 }],
+    [{ wordStart: 0, wordEnd: 0 }],
+    [{ wordStart: 0, wordEnd: 1.5 }],
+    [
+      { wordStart: 0, wordEnd: 1 },
+      { wordStart: 0, wordEnd: 2 },
+    ],
+    [
+      { wordStart: 1, wordEnd: 2 },
+      { wordStart: 0, wordEnd: 1 },
+    ],
+  ];
+  for (const segments of invalid)
+    expect(() =>
+      allocateScaleLettering([plate("face", 100, 100)], "one two", {
+        fontSizeMm: 1,
+        marginMm: 0,
+        segments,
+      }),
+    ).toThrow("segments must cover");
 });

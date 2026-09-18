@@ -1,0 +1,128 @@
+.poem-version-controls {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  border: 1px solid #d7d2c9;
+  border-radius: 0.5rem;
+  background: #fcfaf6;
+  color: #322e28;
+  font-family: var(--font-sans);
+}
+
+.poem-version-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.poem-version-field {
+  display: grid;
+  flex: 1 1 11rem;
+  gap: 0.35rem;
+  min-width: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.poem-version-field input,
+.poem-version-field select {
+  width: 100%;
+  min-height: 2.65rem;
+  border: 1px solid #aaa49a;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.6rem;
+  background: white;
+  color: inherit;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.poem-version-field input:focus-visible,
+.poem-version-field select:focus-visible,
+.poem-version-controls button:focus-visible {
+  outline: 2px solid #66543d;
+  outline-offset: 3px;
+}
+
+.poem-version-actions,
+.poem-version-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.poem-version-controls button {
+  min-height: 2.6rem;
+  border: 1px solid #aaa49a;
+  border-radius: 0.25rem;
+  padding: 0.45rem 0.8rem;
+  background: #fff;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.poem-version-controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.poem-version-controls .poem-version-help,
+.poem-version-controls .poem-version-error,
+.poem-version-controls .poem-version-notice,
+.poem-version-confirm p {
+  margin: 0.7rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.poem-version-controls .poem-version-error {
+  color: #a32525;
+}
+
+.poem-version-name input[aria-invalid="true"] {
+  border: 2px solid #b12f2f;
+  background: #fff0ee;
+}
+
+.poem-version-name input[data-invalid-attempt="0"] {
+  animation: poem-version-invalid-even 450ms ease-out;
+}
+
+.poem-version-name input[data-invalid-attempt="1"] {
+  animation: poem-version-invalid-odd 450ms ease-out;
+}
+
+@keyframes poem-version-invalid-even {
+  0%,
+  60% {
+    background: #f6c1bc;
+  }
+  100% {
+    background: #fff0ee;
+  }
+}
+
+@keyframes poem-version-invalid-odd {
+  0%,
+  60% {
+    background: #f6c1bc;
+  }
+  100% {
+    background: #fff0ee;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poem-version-name input[data-invalid-attempt] {
+    animation: none;
+  }
+}
+
+@media print {
+  .poem-version-controls {
+    display: none;
+  }
+}

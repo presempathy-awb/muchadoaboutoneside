@@ -20,6 +20,8 @@ import {
 } from "../../shared/poem";
 import { generateFoilGeometry } from "./foil-geometry";
 import { foilVertexData } from "./foil-mesh";
+import type { ScaleTypography } from "./scale-typography";
+import { drawScannedFoilRows } from "./scanned-foil-layout";
 import { makeStudioReflection } from "./studio-reflection";
 
 const outlinedMasters = new Map<string, Promise<HTMLImageElement>>();
@@ -93,7 +95,14 @@ export interface FoilSkinController {
   setLettering(visible: boolean): void;
   setSeams(visible: boolean): void;
   setWireframe(enabled: boolean): void;
-  setPoemVersion(version: PoemVersion): void;
+  /** Takes ownership of a newly loaded scan renderer, including failed updates. */
+  setPoemVersion(
+    version: PoemVersion,
+    typography?: ScaleTypography,
+  ): Promise<void>;
+  /** Invalidates an unfinished update without releasing the currently shown ink. */
+  cancelPendingPoemVersion(): void;
+  dispose(): void;
 }
 
 export async function createFoilSkin(
@@ -111,6 +120,8 @@ export async function createFoilSkin(
   let showLettering = true;
   let showSeams = false;
   let version = initialVersion;
+  let scanTypography: ScaleTypography | undefined;
+  let letteringRequest = 0;
   const createAtlas = (
     surface: SurfaceId,
     artwork: HTMLImageElement,
@@ -135,39 +146,81 @@ export async function createFoilSkin(
     texture.wrapU = Texture.WRAP_ADDRESSMODE;
     texture.wrapV = Texture.CLAMP_ADDRESSMODE;
     texture.anisotropicFilteringLevel = Math.max(1, caps.maxAnisotropy);
-    context.scale(canvas.width / layout.width, canvas.height / layout.height);
-
-    const drawAtlas = () => {
-      context.fillStyle = "#d9dcd8";
-      context.fillRect(0, 0, layout.width, layout.height);
-      if (showLettering && version.fabricationArtwork) {
-        context.drawImage(artwork, 0, 0, layout.width, layout.height);
-      } else if (showLettering) {
-        const fitted = surfaceRows(surface, version);
-        drawLoopRows(context, fitted.rowText, fitted.layout);
+    const prepareAtlas = (
+      nextVersion: PoemVersion,
+      typography?: ScaleTypography,
+    ) => {
+      const prepared = document.createElement("canvas");
+      prepared.width = canvas.width;
+      prepared.height = canvas.height;
+      const nextContext = prepared.getContext("2d");
+      if (!nextContext)
+        throw new Error(
+          "The browser could not prepare the inscription update.",
+        );
+      nextContext.scale(
+        canvas.width / layout.width,
+        canvas.height / layout.height,
+      );
+      nextContext.fillStyle = "#d9dcd8";
+      nextContext.fillRect(0, 0, layout.width, layout.height);
+      try {
+        if (showLettering && typography) {
+          nextContext.fillStyle = "#17201c";
+          drawScannedFoilRows(
+            nextContext,
+            surface,
+            nextVersion.loop,
+            typography,
+          );
+        } else if (showLettering && nextVersion.fabricationArtwork) {
+          nextContext.drawImage(artwork, 0, 0, layout.width, layout.height);
+        } else if (showLettering) {
+          const fitted = surfaceRows(surface, nextVersion);
+          drawLoopRows(nextContext, fitted.rowText, fitted.layout);
+        }
+        if (showSeams) {
+          nextContext.setLineDash([12, 14]);
+          nextContext.lineWidth = 5;
+          nextContext.strokeStyle = "#bd6546";
+          nextContext.strokeRect(18, 65, 8192 - 36, 2048 - 130);
+          nextContext.beginPath();
+          nextContext.moveTo(8192 / 2, 65);
+          nextContext.lineTo(8192 / 2, 2048 - 65);
+          nextContext.stroke();
+          nextContext.setLineDash([]);
+        }
+        return prepared;
+      } catch (error) {
+        prepared.width = prepared.height = 0;
+        throw error;
       }
-      if (showSeams) {
-        context.setLineDash([12, 14]);
-        context.lineWidth = 5;
-        context.strokeStyle = "#bd6546";
-        context.strokeRect(18, 65, 8192 - 36, 2048 - 130);
-        context.beginPath();
-        context.moveTo(8192 / 2, 65);
-        context.lineTo(8192 / 2, 2048 - 65);
-        context.stroke();
-        context.setLineDash([]);
-      }
+    };
+    const commitAtlas = (prepared: HTMLCanvasElement) => {
+      context.drawImage(prepared, 0, 0);
       // The laser projection uses SVG top-left coordinates directly: v=0 is top.
       texture.update(false);
+      prepared.width = prepared.height = 0;
     };
-    drawAtlas();
-    return { texture, drawAtlas };
+    commitAtlas(prepareAtlas(version));
+    return { texture, prepareAtlas, commitAtlas };
   };
   const bodyAtlas = createAtlas("body", bodyArtwork, layout.width);
   const jawAtlas = createAtlas("jaw", jawArtwork, 4096);
-  const drawAtlases = () => {
-    bodyAtlas.drawAtlas();
-    jawAtlas.drawAtlas();
+  const drawAtlases = (
+    nextVersion: PoemVersion,
+    typography?: ScaleTypography,
+  ) => {
+    const body = bodyAtlas.prepareAtlas(nextVersion, typography);
+    let jaw: HTMLCanvasElement;
+    try {
+      jaw = jawAtlas.prepareAtlas(nextVersion, typography);
+    } catch (error) {
+      body.width = body.height = 0;
+      throw error;
+    }
+    bodyAtlas.commitAtlas(body);
+    jawAtlas.commitAtlas(jaw);
   };
 
   scene.environmentTexture = makeStudioReflection(scene);
@@ -212,34 +265,51 @@ export async function createFoilSkin(
     setLettering(visible) {
       if (showLettering === visible) return;
       showLettering = visible;
-      drawAtlases();
+      drawAtlases(version, scanTypography);
     },
     setSeams(visible) {
       if (showSeams === visible) return;
       showSeams = visible;
-      drawAtlases();
+      drawAtlases(version, scanTypography);
     },
     setWireframe(enabled) {
       foil.wireframe = enabled;
       jawFoil.wireframe = enabled;
       details.wireframe = enabled;
     },
-    setPoemVersion(next) {
+    async setPoemVersion(next, typography) {
+      const request = ++letteringRequest;
       // A draft keeps its version id but changes the text.
       if (
         version.id === next.id &&
         version.loop === next.loop &&
-        version.fabricationArtwork === next.fabricationArtwork
+        version.fabricationArtwork === next.fabricationArtwork &&
+        scanTypography === typography
       )
         return;
-      version = next;
-      if (next.fabricationArtwork) {
-        drawAtlases();
-        return;
+      try {
+        if (!typography && !next.fabricationArtwork) await ensureScriptFont();
+        if (scene.isDisposed || request !== letteringRequest) {
+          if (typography !== scanTypography) typography?.dispose?.();
+          return;
+        }
+        drawAtlases(next, typography);
+        const previous = scanTypography;
+        version = next;
+        scanTypography = typography;
+        if (previous !== typography) previous?.dispose?.();
+      } catch (error) {
+        if (typography !== scanTypography) typography?.dispose?.();
+        throw error;
       }
-      ensureScriptFont().then(() => {
-        if (!scene.isDisposed && version.id === next.id) drawAtlases();
-      });
+    },
+    cancelPendingPoemVersion() {
+      letteringRequest++;
+    },
+    dispose() {
+      letteringRequest++;
+      scanTypography?.dispose?.();
+      scanTypography = undefined;
     },
   };
 }

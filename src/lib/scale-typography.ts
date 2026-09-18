@@ -1,5 +1,8 @@
 import type { ScaleDesign } from "../../shared/scale-design";
-import type { ScaleLineMetrics } from "../../shared/scale-lettering";
+import type {
+  ScaleLineMetrics,
+  ScaleTextRange,
+} from "../../shared/scale-lettering";
 import {
   DEFAULT_WORKSHEET_SETTINGS,
   type WorksheetSettings,
@@ -26,12 +29,19 @@ export type ScaleTypographyRequest = Pick<
 export interface ScaleTypography {
   /** Complete CSS family expression, including any necessary quoting. */
   family: string;
-  engine: WorksheetShapingEngine;
+  engine: WorksheetShapingEngine | "scan";
   supportedFeatures: readonly string[];
+  /** Complete source ranges that must remain whole during reflow. */
+  segments?: readonly ScaleTextRange[];
   hasGlyph(text: string): boolean;
+  /** Font outlines only; raster scan implementations reject this operation. */
   shape(text: string, sizeMm: number): WorksheetShapedRun;
-  measure(text: string, sizeMm: number): number;
-  measureLine(text: string, sizeMm: number): ScaleLineMetrics;
+  measure(text: string, sizeMm: number, range?: ScaleTextRange): number;
+  measureLine(
+    text: string,
+    sizeMm: number,
+    range?: ScaleTextRange,
+  ): ScaleLineMetrics;
   /** Draws the exact measured ink centered at a physical-mm point. */
   draw(
     context: CanvasRenderingContext2D,
@@ -39,7 +49,10 @@ export interface ScaleTypography {
     sizeMm: number,
     centerXmm: number,
     centerYmm: number,
+    range?: ScaleTextRange,
   ): void;
+  /** Releases optional decoded raster resources after all previews release them. */
+  dispose?(): void;
 }
 
 function checkedSize(sizeMm: number) {

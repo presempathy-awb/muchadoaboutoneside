@@ -43,35 +43,45 @@ export default function CalligraphyGuide({ chapter }: { chapter: string }) {
                 </small>
               </span>
             </Link>
-            <a className="guide-download" href={guide.pdfPath} download>
-              <FileDown size={18} strokeWidth={1.5} aria-hidden="true" />
-              <span className="guide-download-copy">
-                <strong>Printable guide (PDF)</strong>
-                <small>
-                  All five chapters and every template sheet · version{" "}
-                  {guide.guideVersion}
-                </small>
-              </span>
-            </a>
-            <a className="guide-download" href={guide.htmlPath}>
-              <FileText size={18} strokeWidth={1.5} aria-hidden="true" />
-              <span className="guide-download-copy">
-                <strong>Print-ready web version</strong>
-                <small>
-                  Same document as one page; print it from the browser
-                </small>
-              </span>
-            </a>
-            <a className="guide-download" href={version.scriptPdfPath} download>
-              <FileDown size={18} strokeWidth={1.5} aria-hidden="true" />
-              <span className="guide-download-copy">
-                <strong>Poem sheet in the substitute script (PDF)</strong>
-                <small>
-                  The {version.label.toLowerCase()} wording set in Great Vibes
-                  for reading; not a lettering target
-                </small>
-              </span>
-            </a>
+            {guide.pdfPath && (
+              <a className="guide-download" href={guide.pdfPath} download>
+                <FileDown size={18} strokeWidth={1.5} aria-hidden="true" />
+                <span className="guide-download-copy">
+                  <strong>Printable guide (PDF)</strong>
+                  <small>
+                    All five chapters and every template sheet · version{" "}
+                    {guide.guideVersion}
+                  </small>
+                </span>
+              </a>
+            )}
+            {guide.htmlPath && (
+              <a className="guide-download" href={guide.htmlPath}>
+                <FileText size={18} strokeWidth={1.5} aria-hidden="true" />
+                <span className="guide-download-copy">
+                  <strong>Print-ready web version</strong>
+                  <small>
+                    Same document as one page; print it from the browser
+                  </small>
+                </span>
+              </a>
+            )}
+            {version.scriptPdfPath && (
+              <a
+                className="guide-download"
+                href={version.scriptPdfPath}
+                download
+              >
+                <FileDown size={18} strokeWidth={1.5} aria-hidden="true" />
+                <span className="guide-download-copy">
+                  <strong>Poem sheet in the substitute script (PDF)</strong>
+                  <small>
+                    The {version.label.toLowerCase()} wording set in Great Vibes
+                    for reading; not a lettering target
+                  </small>
+                </span>
+              </a>
+            )}
             <p className="guide-spec-strip">
               {guide.masterRows.length} rows · your own copperplate · x-height
               about {WORKING.xHeightMm} mm · hairlines thickened after the scan

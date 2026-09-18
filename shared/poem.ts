@@ -26,6 +26,9 @@ export const JAW_INSCRIPTION_LAYOUT = {
 } as const;
 
 export type PoemVersionId = "canonical" | "extended";
+/** Private saved versions are separate from the two public collaboration rooms. */
+export type SavedPoemId = `saved-${string}`;
+export type PoemId = PoemVersionId | SavedPoemId;
 
 /**
  * One wording of the poem and every file that carries it. The canonical
@@ -33,7 +36,7 @@ export type PoemVersionId = "canonical" | "extended";
  * versions are previewed live in the browser until their own artwork exists.
  */
 export interface PoemVersion {
-  id: PoemVersionId;
+  id: PoemId;
   /** Short name shown in the version picker. */
   label: string;
   /** One sentence describing what distinguishes the version. */
@@ -66,7 +69,16 @@ export interface PoemVersion {
   fabricationArtwork: boolean;
   /** Set on a wording edited in the browser; never a fixed version. */
   draft?: boolean;
+  /** Immutable wording saved privately in this browser. */
+  saved?: boolean;
+  savedAt?: string;
+  calligrapher?: string;
+  calligraphyScanId?: string;
+  /** Exact editable text, including line and stanza formatting. */
+  sourceText?: string;
 }
+
+export type BuiltinPoemVersion = PoemVersion & { id: PoemVersionId };
 
 export const POEM_STANZAS = [
   ["Come, palindove, let edges twine;", "thy side is mine, and mine is thine."],
@@ -148,8 +160,8 @@ export const EXTENDED_POEM_STANZAS = [
 ] as const;
 
 function defineVersion(
-  version: Omit<PoemVersion, "lines" | "loop" | "title">,
-): PoemVersion {
+  version: Omit<BuiltinPoemVersion, "lines" | "loop" | "title">,
+): BuiltinPoemVersion {
   const lines = version.stanzas.flat();
   return { ...version, title: POEM_TITLE, lines, loop: lines.join("  ") };
 }
@@ -157,7 +169,7 @@ function defineVersion(
 /** The wording the site shows unless a visitor picks another. */
 export const DEFAULT_POEM_VERSION_ID: PoemVersionId = "extended";
 
-export const POEM_VERSIONS: readonly PoemVersion[] = [
+export const POEM_VERSIONS: readonly BuiltinPoemVersion[] = [
   defineVersion({
     id: "canonical",
     label: "Canonical",
@@ -200,20 +212,41 @@ export function isPoemVersionId(value: unknown): value is PoemVersionId {
   return POEM_VERSIONS.some((version) => version.id === value);
 }
 
+export function isSavedPoemId(value: unknown): value is SavedPoemId {
+  return (
+    typeof value === "string" && /^saved-[a-zA-Z0-9_-]{1,100}$/.test(value)
+  );
+}
+
+export function isPoemId(value: unknown): value is PoemId {
+  return isPoemVersionId(value) || isSavedPoemId(value);
+}
+
+/** A plain-text download generated from the wording, never executable markup. */
+export function poemTextDownloadUrl(text: string, title = POEM_TITLE): string {
+  // UTF-8 conversion repairs lone surrogate code units before URI encoding.
+  const content = new TextDecoder().decode(
+    new TextEncoder().encode(`${title}\n\n${text}\n`),
+  );
+  return `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`;
+}
+
 /** Falls back to the default version for unknown ids. */
-export function poemVersionById(id: string | null | undefined): PoemVersion {
+export function poemVersionById(
+  id: string | null | undefined,
+): BuiltinPoemVersion {
   return (
     POEM_VERSIONS.find((version) => version.id === id) ??
     (POEM_VERSIONS.find(
       (version) => version.id === DEFAULT_POEM_VERSION_ID,
-    ) as PoemVersion)
+    ) as BuiltinPoemVersion)
   );
 }
 
 /** The wording every marking master and foil kit was generated from. */
 export const CANONICAL_POEM = POEM_VERSIONS.find(
   (version) => version.id === "canonical",
-) as PoemVersion;
+) as BuiltinPoemVersion;
 export const DEFAULT_POEM = poemVersionById(DEFAULT_POEM_VERSION_ID);
 
 // The canonical wording keeps its original names for the generators and tests.

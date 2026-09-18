@@ -541,13 +541,15 @@ export default function FoilEdition() {
         >
           <ArrowLeft size={15} aria-hidden="true" /> Original model
         </Link>
-        <a href={version.studyPath} download className="foil-download-link">
-          <ArrowDownToLine size={15} aria-hidden="true" />
-          Download vector layout study
-          <small>
-            {version.label} poem · for design review · not machine-ready
-          </small>
-        </a>
+        {version.studyPath && (
+          <a href={version.studyPath} download className="foil-download-link">
+            <ArrowDownToLine size={15} aria-hidden="true" />
+            Download vector layout study
+            <small>
+              {version.label} poem · for design review · not machine-ready
+            </small>
+          </a>
+        )}
       </footer>
     </div>
   );

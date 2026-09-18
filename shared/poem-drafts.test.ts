@@ -67,3 +67,13 @@ test("an edited draft becomes a preview wording without fabrication artwork", ()
   expect(drafted.textPath).toBe(CANONICAL_POEM.textPath);
   expect(CANONICAL_POEM.draft).toBeUndefined();
 });
+
+test("stanza-only changes remain visible as draft changes", () => {
+  const source = draftSource(CANONICAL_POEM);
+  const changed = source.replace("\n\n", "\n");
+  const draft = applyDraft(CANONICAL_POEM, changed);
+  expect(draft.draft).toBe(true);
+  expect(draft.loop).toBe(CANONICAL_POEM.loop);
+  expect(draft.stanzas.length).toBe(CANONICAL_POEM.stanzas.length - 1);
+  expect(draftSource(draft)).toBe(changed);
+});

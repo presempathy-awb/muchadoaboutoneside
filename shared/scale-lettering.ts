@@ -5,6 +5,12 @@ const LINE_HEIGHT_FACTOR = 1.4;
 const MAX_TEXT_LENGTH = 20_000;
 const AUTOFIT_ITERATIONS = 24;
 
+/** Word occurrence indices in the complete transcript; end is exclusive. */
+export interface ScaleTextRange {
+  wordStart: number;
+  wordEnd: number;
+}
+
 export interface ScaleLetteringPlate {
   id: string;
   surface: "body" | "jaw";
@@ -21,6 +27,7 @@ export interface ScaleLetteringPlate {
 export type ScaleLetteringMeasurer = (
   text: string,
   fontSizeMm: number,
+  range?: ScaleTextRange,
 ) => number;
 
 export interface ScaleLineMetrics {
@@ -32,6 +39,7 @@ export interface ScaleLineMetrics {
 export type ScaleLineMeasurer = (
   text: string,
   fontSizeMm: number,
+  range?: ScaleTextRange,
 ) => ScaleLineMetrics;
 
 export interface ScaleLetteringOptions {
@@ -39,6 +47,8 @@ export interface ScaleLetteringOptions {
   marginMm: number;
   measure?: ScaleLetteringMeasurer;
   measureLine?: ScaleLineMeasurer;
+  /** Ordered, complete transcript coverage whose joined ink cannot be split. */
+  segments?: readonly ScaleTextRange[];
 }
 
 export interface FitScaleLetteringOptions extends ScaleLetteringOptions {
@@ -51,6 +61,8 @@ export interface ScaleLetteringPlacement {
   fontSizeMm: number;
   /** Per-line physical heights, measured with the exact rendering font. */
   lineHeightsMm?: number[];
+  /** Source occurrence identity survives reflow, including repeated words. */
+  lineRanges?: ScaleTextRange[];
 }
 
 export interface ScaleLetteringResult {
@@ -123,12 +135,13 @@ function measuredLine(
   text: string,
   fontSizeMm: number,
   options: ScaleLetteringOptions,
+  range: ScaleTextRange,
 ): ScaleLineMetrics {
   const metrics = options.measureLine
-    ? options.measureLine(text, fontSizeMm)
+    ? options.measureLine(text, fontSizeMm, range)
     : {
         widthMm: options.measure
-          ? options.measure(text, fontSizeMm)
+          ? options.measure(text, fontSizeMm, range)
           : textWidthEm(text) * fontSizeMm,
         heightMm: fontSizeMm * LINE_HEIGHT_FACTOR,
       };
@@ -139,6 +152,34 @@ function measuredLine(
   return metrics;
 }
 
+function segmentBoundaries(
+  wordCount: number,
+  segments: readonly ScaleTextRange[] | undefined,
+): number[] {
+  if (segments === undefined)
+    return Array.from({ length: wordCount + 1 }, (_, index) => index);
+  if (!Array.isArray(segments))
+    throw new TypeError("segments must be an ordered array of word ranges");
+  const boundaries = [0];
+  for (const segment of segments) {
+    if (
+      !segment ||
+      !Number.isInteger(segment.wordStart) ||
+      !Number.isInteger(segment.wordEnd) ||
+      segment.wordStart !== boundaries[boundaries.length - 1] ||
+      segment.wordEnd <= segment.wordStart ||
+      segment.wordEnd > wordCount
+    )
+      throw new RangeError(
+        "segments must cover the transcript in order without gaps or overlaps",
+      );
+    boundaries.push(segment.wordEnd);
+  }
+  if (boundaries[boundaries.length - 1] !== wordCount)
+    throw new RangeError("segments must cover every word in the transcript");
+  return boundaries;
+}
+
 /**
  * Finds the longest word prefix that fits one line. Exponential probing keeps
  * narrow lines cheap; binary refinement avoids measuring every growing prefix
@@ -146,6 +187,7 @@ function measuredLine(
  */
 function fittingLineEnd(
   words: readonly string[],
+  boundaries: readonly number[],
   start: number,
   maxWidthMm: number,
   maxHeightMm: number,
@@ -153,10 +195,15 @@ function fittingLineEnd(
   options: ScaleLetteringOptions,
 ): number {
   const fits = (end: number) => {
+    const range = {
+      wordStart: boundaries[start] ?? 0,
+      wordEnd: boundaries[end] ?? words.length,
+    };
     const metrics = measuredLine(
-      words.slice(start, end).join(" "),
+      words.slice(range.wordStart, range.wordEnd).join(" "),
       fontSizeMm,
       options,
+      range,
     );
     return metrics.widthMm <= maxWidthMm && metrics.heightMm <= maxHeightMm;
   };
@@ -165,9 +212,10 @@ function fittingLineEnd(
 
   let low = start + 1;
   let step = 1;
-  let high = words.length;
-  while (low < words.length) {
-    const candidate = Math.min(words.length, low + step);
+  const segmentCount = boundaries.length - 1;
+  let high = segmentCount;
+  while (low < segmentCount) {
+    const candidate = Math.min(segmentCount, low + step);
     if (!fits(candidate)) {
       high = candidate;
       break;
@@ -175,7 +223,7 @@ function fittingLineEnd(
     low = candidate;
     step *= 2;
   }
-  if (low === words.length) return low;
+  if (low === segmentCount) return low;
 
   while (high - low > 1) {
     const middle = low + Math.floor((high - low) / 2);
@@ -193,7 +241,8 @@ export function allocateScaleLettering(
 ): ScaleLetteringResult {
   validateInputs(plates, text, options);
   const words = text.match(/\S+/gu) ?? [];
-  let wordIndex = 0;
+  const boundaries = segmentBoundaries(words.length, options.segments);
+  let segmentIndex = 0;
 
   const placements = plates.map((plate): ScaleLetteringPlacement => {
     const maxWidthMm = Math.max(
@@ -208,34 +257,48 @@ export function allocateScaleLettering(
     );
     const lines: string[] = [];
     const lineHeightsMm: number[] = [];
+    const lineRanges: ScaleTextRange[] = [];
     let usedHeightMm = 0;
 
-    while (usedHeightMm < maxHeightMm && wordIndex < words.length) {
+    while (usedHeightMm < maxHeightMm && segmentIndex < boundaries.length - 1) {
       const end = fittingLineEnd(
         words,
-        wordIndex,
+        boundaries,
+        segmentIndex,
         maxWidthMm,
         maxHeightMm - usedHeightMm,
         options.fontSizeMm,
         options,
       );
-      if (end === wordIndex) break;
-      const line = words.slice(wordIndex, end).join(" ");
-      const { heightMm } = measuredLine(line, options.fontSizeMm, options);
+      if (end === segmentIndex) break;
+      const range = {
+        wordStart: boundaries[segmentIndex] ?? 0,
+        wordEnd: boundaries[end] ?? words.length,
+      };
+      const line = words.slice(range.wordStart, range.wordEnd).join(" ");
+      const { heightMm } = measuredLine(
+        line,
+        options.fontSizeMm,
+        options,
+        range,
+      );
       lines.push(line);
       lineHeightsMm.push(heightMm);
+      lineRanges.push(range);
       usedHeightMm += heightMm;
-      wordIndex = end;
+      segmentIndex = end;
     }
 
     return {
       plateId: plate.id,
       lines,
       lineHeightsMm,
+      lineRanges,
       fontSizeMm: options.fontSizeMm,
     };
   });
 
+  const wordIndex = boundaries[segmentIndex] ?? 0;
   return {
     placements,
     unplacedText: words.slice(wordIndex).join(" "),

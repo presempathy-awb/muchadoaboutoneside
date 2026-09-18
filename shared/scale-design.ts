@@ -30,6 +30,8 @@ export interface ScaleDesign {
   notes: string;
   text: string;
   fontId: WorksheetSettings["fontId"];
+  /** Prefer matching original handwriting, a particular local scan, or fonts. */
+  calligraphyFaceId?: string;
   customFont?: { name: string; dataUrl: string };
   shapingEngine: "fontkit" | "harfbuzz";
   fontFeatures: string;
@@ -54,6 +56,7 @@ export const DEFAULT_SCALE_DESIGN: ScaleDesign = {
   notes: "",
   text: "",
   fontId: "great-vibes",
+  calligraphyFaceId: "auto",
   shapingEngine: "fontkit",
   fontFeatures: "",
   fontSizeMm: 16,
@@ -278,6 +281,11 @@ export function normalizeScaleDesign(input: unknown): ScaleDesign {
     notes: typeof value.notes === "string" ? value.notes.slice(0, 4000) : "",
     text: value.text,
     fontId,
+    calligraphyFaceId:
+      typeof value.calligraphyFaceId === "string" &&
+      /^[a-zA-Z0-9_-]{1,160}$/.test(value.calligraphyFaceId)
+        ? value.calligraphyFaceId
+        : "auto",
     ...(embeddedFont ? { customFont: embeddedFont } : {}),
     shapingEngine: value.shapingEngine === "harfbuzz" ? "harfbuzz" : "fontkit",
     fontFeatures: features,

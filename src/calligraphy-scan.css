@@ -1,0 +1,164 @@
+.scan-import {
+  margin-block: 1rem;
+}
+.scan-import-panel {
+  display: grid;
+  gap: 1rem;
+  max-width: 64rem;
+  margin-block: 1rem;
+  padding: 1rem;
+  border: 1px solid #c7b89e;
+  border-radius: 0.5rem;
+  background: #fffdf7;
+  color: #29251f;
+}
+.scan-import-panel fieldset {
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #d6cebf;
+}
+.scan-import-panel legend {
+  padding-inline: 0.4rem;
+  font-weight: 650;
+}
+.scan-import-panel label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+.scan-import-panel input:not([type="checkbox"]),
+.scan-import-panel textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  border: 1px solid #aba18d;
+  border-radius: 0.25rem;
+  background: white;
+  color: #29251f;
+  font: inherit;
+}
+.scan-import-panel textarea {
+  resize: vertical;
+}
+.scan-import-panel small {
+  font-size: 0.85rem;
+  color: #615747;
+}
+.scan-import-panel button {
+  padding: 0.5rem 0.8rem;
+}
+.scan-import-panel button:disabled {
+  opacity: 0.6;
+}
+.scan-import-adjustments {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.8rem;
+}
+.scan-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.scan-import-panel .scan-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-block: 0.6rem;
+}
+.scan-checkbox input {
+  flex: 0 0 auto;
+  margin-top: 0.3rem;
+}
+.scan-import-preview {
+  display: block;
+  width: 100%;
+  max-height: 36rem;
+  background: white;
+  border: 1px solid #c7b89e;
+}
+.scan-import-preview rect {
+  fill: none;
+  stroke: #a04320;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.scan-import-preview text {
+  fill: #b42e0a;
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 2px;
+  font-family: sans-serif;
+}
+.scan-import-review img {
+  display: block;
+  max-width: 100%;
+  max-height: 40rem;
+  object-fit: contain;
+}
+.scan-import-error {
+  color: #912719;
+  border-left: 3px solid #b93620;
+  padding-inline-start: 0.7rem;
+}
+.scan-import-warning {
+  color: #73531b;
+}
+.scan-region-list {
+  max-height: 18rem;
+  overflow: auto;
+  padding-inline-start: 2rem;
+}
+.scan-region-list li {
+  padding: 0.3rem;
+}
+.scan-region-list small {
+  display: block;
+}
+.scan-file-name {
+  overflow-wrap: anywhere;
+}
+
+.scan-library summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.scan-library-list {
+  display: grid;
+  gap: 0.8rem;
+  list-style: none;
+  padding: 0;
+}
+.scan-library-list li {
+  border-top: 1px solid #d6cebf;
+  padding-top: 0.8rem;
+}
+.scan-library-list small {
+  display: block;
+  margin-block: 0.2rem 0.5rem;
+}
+.scan-remove-confirm {
+  border: 1px solid #b93620;
+  padding: 0.7rem;
+  margin-top: 0.7rem;
+}
+.scan-import-panel input.scan-invalid {
+  border-color: #b93620;
+  outline: 2px solid #b93620;
+  animation: scan-name-flash 0.7s ease-out;
+}
+@keyframes scan-name-flash {
+  from {
+    background: #ffd7d1;
+  }
+  to {
+    background: white;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan-import-panel input.scan-invalid {
+    animation: none;
+  }
+}

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { yCollab, yUndoManagerKeymap } from "y-codemirror.next";
+import { PoemVersionControls } from "@/components/poem-version-controls";
 import { keyed } from "@/lib/keyed";
 import {
   type DraftSession,
@@ -129,6 +130,9 @@ function SurfaceRow({
 }
 
 function storageLabel(status: DraftStatus) {
+  if (status.deleted)
+    return `This version was deleted. Choose another version.${status.error ? ` ${status.error}` : ""}`;
+  if (status.error) return status.error;
   if (status.storage === "loading") return "Opening your draft…";
   if (status.storage === "memory")
     return "Kept in memory only: this browser could not store it.";
@@ -172,8 +176,7 @@ function useUndoState(session: DraftSession) {
 }
 
 export default function PoemEditor() {
-  const { base, versions, setVersionId, draftPreview, setDraftPreview } =
-    usePoemVersion();
+  const { base, draftPreview, setDraftPreview } = usePoemVersion();
   const session = useMemo(() => draftSession(base), [base]);
   const text = useDraftText(session);
   const status = useDraftStatus(session);
@@ -181,7 +184,8 @@ export default function PoemEditor() {
   const parsed = useMemo(() => parseDraft(text), [text]);
   const limits = useMemo(() => measure(text), [text]);
   const hostRef = useRef<HTMLDivElement>(null);
-  const [ready, setReady] = useState(false);
+  const [readySession, setReadySession] = useState<DraftSession>();
+  const ready = readySession === session;
   const [confirmReset, setConfirmReset] = useState(false);
   const [copied, setCopied] = useState(false);
   const [stopped, setStopped] = useState<string | null>(null);
@@ -193,9 +197,8 @@ export default function PoemEditor() {
 
   useEffect(() => {
     let active = true;
-    setReady(false);
     session.ready.then(() => {
-      if (active) setReady(true);
+      if (active) setReadySession(session);
     });
     return () => {
       active = false;
@@ -271,11 +274,10 @@ export default function PoemEditor() {
         </div>
         <div className="foil-intro-note">
           <p>
-            Each fixed wording has its own working draft. Edits are saved as you
-            type, undo and redo follow the draft, and when this site relays
-            drafts between browsers everyone in the room sees the same text. The
-            fixed wordings in the repository only change when a draft is
-            committed there.
+            Each wording has its own working draft. Edits are saved as you type,
+            and undo and redo follow the draft. Give your wording a new name to
+            save a separate version in this browser. The Canonical and Extended
+            originals stay protected.
           </p>
           <span>
             Preview a draft on the sculpture ·{" "}
@@ -286,25 +288,15 @@ export default function PoemEditor() {
         </div>
       </header>
 
-      <div
-        className="poem-editor-tabs"
-        role="tablist"
-        aria-label="Poem version to edit"
-      >
-        {versions.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            aria-selected={item.id === base.id}
-            className={item.id === base.id ? "is-active" : undefined}
-            onClick={() => setVersionId(item.id)}
-          >
-            <strong>{item.label}</strong>
-            <small>{item.lines.length} lines</small>
-          </button>
-        ))}
-      </div>
+      <PoemVersionControls
+        loadSelected={false}
+        text={text}
+        disabled={!ready}
+        onLoad={() => {
+          // Selection switches to its own Yjs session above. Existing drafts
+          // resume after session.ready; new copies seed from their exact text.
+        }}
+      />
 
       <div className="poem-editor-grid">
         <section

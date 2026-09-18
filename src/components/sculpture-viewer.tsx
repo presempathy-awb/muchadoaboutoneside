@@ -1,6 +1,11 @@
 import { useEffect, useId, useRef, useState } from "react";
-import type { PoemVersion } from "../../shared/poem";
+import { CANONICAL_POEM, type PoemVersion } from "../../shared/poem";
+import {
+  matchingCalligraphyFaces,
+  useCalligraphyFaces,
+} from "../lib/calligraphy-faces";
 import type { ScalePreview } from "../lib/scale-skin";
+import type { ScaleTypography } from "../lib/scale-typography";
 import {
   createSculptureScene,
   SCULPTURE_ASSET_URL,
@@ -30,6 +35,200 @@ export interface SculptureViewerProps {
 }
 
 type ViewerStatus = "loading" | "ready" | "error";
+
+const INSCRIPTION_FACE_KEY = "muchado.inscription-face.v1:";
+
+function savedInscriptionFace(poemId: string) {
+  try {
+    const saved = localStorage.getItem(`${INSCRIPTION_FACE_KEY}${poemId}`);
+    return saved && /^[\w-]{1,160}$/.test(saved) ? saved : "auto";
+  } catch {
+    return "auto";
+  }
+}
+
+function InscriptionFaceControls({
+  controller,
+  version,
+}: {
+  controller: SculptureSceneController | null;
+  version: PoemVersion;
+}) {
+  const library = useCalligraphyFaces();
+  const matching = matchingCalligraphyFaces(library.faces, version.loop);
+  const [selection, setSelection] = useState(() => ({
+    poemId: version.id,
+    faceId: savedInscriptionFace(version.id),
+  }));
+  const choice =
+    selection.poemId === version.id
+      ? selection.faceId
+      : savedInscriptionFace(version.id);
+  const face =
+    choice === "auto"
+      ? (matching.find((item) => item.id === version.calligraphyScanId) ??
+        matching[0])
+      : matching.find((item) => item.id === choice);
+  const faceId = face?.id;
+  const [pending, setPending] = useState(false);
+  const [faceError, setFaceError] = useState("");
+  const [storageError, setStorageError] = useState("");
+  const [shown, setShown] = useState<{ text: string; label: string }>();
+  const [retry, setRetry] = useState(0);
+  const selectId = useId();
+
+  useEffect(() => {
+    let active = true;
+    const cancel = () => {
+      active = false;
+      controller?.cancelPendingPoemVersion();
+    };
+    if (!controller || (choice !== "font" && !library.ready)) return cancel;
+    setFaceError("");
+    if (choice !== "font" && library.error) {
+      setFaceError(library.error);
+      setPending(false);
+      return cancel;
+    }
+    if (choice !== "auto" && choice !== "font" && !faceId) {
+      setFaceError(
+        "That saved handwriting is unavailable or does not match these exact words. Select matching handwriting or generated script.",
+      );
+      setPending(false);
+      return cancel;
+    }
+    setPending(true);
+    void retry;
+    void (async () => {
+      let loaded: ScaleTypography | undefined;
+      try {
+        let label = "Generated script";
+        if (faceId && choice !== "font") {
+          const [{ getCalligraphyScan }, { loadScannedScaleTypography }] =
+            await Promise.all([
+              import("../lib/calligraphy-scan-store"),
+              import("../lib/scanned-scale-typography"),
+            ]);
+          if (!active) return;
+          const scan = await getCalligraphyScan(faceId);
+          if (!active) return;
+          if (!scan)
+            throw new Error(
+              "This saved handwriting is no longer available. Choose another face or generated script.",
+            );
+          loaded = await loadScannedScaleTypography(scan, version.loop);
+          label = `${scan.name} · ${scan.calligrapher}`;
+        }
+        if (!active) {
+          loaded?.dispose?.();
+          return;
+        }
+        // The controller owns submitted ink until it is replaced or disposed.
+        const submitted = loaded;
+        loaded = undefined;
+        await controller.setPoemVersion(version, submitted);
+        if (active) setShown({ text: version.loop, label });
+      } catch (error) {
+        loaded?.dispose?.();
+        if (active)
+          setFaceError(
+            error instanceof Error
+              ? error.message
+              : "This handwriting could not be shown.",
+          );
+      } finally {
+        if (active) setPending(false);
+      }
+    })();
+    return cancel;
+  }, [
+    controller,
+    choice,
+    faceId,
+    library.ready,
+    library.error,
+    version,
+    retry,
+  ]);
+
+  const unavailable = choice !== "auto" && choice !== "font" && !face;
+  return (
+    <div className="absolute top-3 left-3 z-10 max-w-[min(28rem,calc(100%-1.5rem))] rounded-lg bg-stone-50/95 p-3 text-sm text-stone-900 shadow">
+      <label className="block font-medium" htmlFor={selectId}>
+        Inscription lettering
+      </label>
+      <select
+        id={selectId}
+        className="mt-1 max-w-full rounded border border-stone-400 bg-white px-2 py-1"
+        value={choice}
+        onChange={(event) => {
+          const faceId = event.currentTarget.value;
+          setSelection({ poemId: version.id, faceId });
+          try {
+            localStorage.setItem(
+              `${INSCRIPTION_FACE_KEY}${version.id}`,
+              faceId,
+            );
+            setStorageError("");
+          } catch {
+            setStorageError(
+              "This lettering choice could not be saved in this browser.",
+            );
+          }
+        }}
+      >
+        <option value="auto">Automatic · prefer matching handwriting</option>
+        {matching.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.name} · {item.calligrapher}
+          </option>
+        ))}
+        {unavailable && (
+          <option value={choice}>Unavailable saved handwriting</option>
+        )}
+        <option value="font">Generated script</option>
+      </select>
+      {pending || (!library.ready && choice !== "font") ? (
+        <p className="mt-1 text-xs" role="status">
+          Loading lettering; the current view stays visible.
+        </p>
+      ) : (
+        shown && (
+          <p className="mt-1 text-xs">
+            Showing {shown.label}
+            {shown.text !== version.loop ? " for the previous wording" : ""}.
+          </p>
+        )
+      )}
+      {choice === "auto" && library.ready && !face && !library.error && (
+        <p className="mt-1 text-xs">
+          No saved handwriting matches this wording. Generated script is used.
+        </p>
+      )}
+      {faceError && (
+        <div className="mt-2 text-xs text-amber-950" role="alert">
+          <p>The last working inscription remains visible. {faceError}</p>
+          <button
+            type="button"
+            className="mt-1 underline"
+            onClick={() => setRetry((value) => value + 1)}
+          >
+            Retry lettering
+          </button>
+        </div>
+      )}
+      {storageError && (
+        <p className="mt-1 text-xs" role="alert">
+          {storageError}
+        </p>
+      )}
+      <p className="mt-1 text-xs text-stone-600">
+        Saved handwriting changes this preview. Fabrication downloads keep their
+        published artwork.
+      </p>
+    </div>
+  );
+}
 
 export default function SculptureViewer({
   className,
@@ -194,11 +393,6 @@ export default function SculptureViewer({
   }, [showSeams, edition]);
 
   useEffect(() => {
-    if (edition === "inscription" && poemVersion)
-      controllerRef.current?.setPoemVersion(poemVersion);
-  }, [poemVersion, edition]);
-
-  useEffect(() => {
     if (edition === "inscription")
       controllerRef.current?.setReadingView(readingView);
   }, [readingView, edition]);
@@ -247,6 +441,13 @@ export default function SculptureViewer({
         Drag to orbit the sculpture; scroll or pinch to zoom.
         {onSelectPart && " Select a piece to inspect it."}
       </p>
+
+      {edition === "inscription" && (
+        <InscriptionFaceControls
+          controller={status === "ready" ? controllerRef.current : null}
+          version={poemVersion ?? CANONICAL_POEM}
+        />
+      )}
 
       {status === "loading" && (
         <div

@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "0b16e067b23eab26f00047eac44c1b2f1d1ff6ad",
+  "sourceCommit": "4bf053a83ba8b3d57880c40c8ff128f508ef41a7",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -115,8 +115,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 31202,
-      "sha256": "25f323d16c8fdaa9434ca5e7cad6bc7092274672b45ce3508317fb94e6819097"
+      "bytes": 31856,
+      "sha256": "7bc28e0a45b9e40b5bbf019578511d3328c7c0036f5301b2cfe8c76929c50664"
     },
     {
       "path": "REUSE.md",
@@ -207,6 +207,11 @@
       "path": "docs/scale-studio.md",
       "bytes": 9342,
       "sha256": "1a4d76dd17e854d8737ed7c091d2415656e77a441f57c16cc194155d09c04c28"
+    },
+    {
+      "path": "docs/scanned-calligraphy.md",
+      "bytes": 5339,
+      "sha256": "16d29d86e48371ff80a92d6392da225c2061d68e37360f6b734aeb167bd98e33"
     },
     {
       "path": "index.html",
@@ -5230,8 +5235,18 @@
     },
     {
       "path": "shared/calligraphy-guide.ts",
-      "bytes": 53531,
-      "sha256": "ee2d2b7ab01c7010cc13751f908cb26c565c8d29d0de2c0568a850fab484ec68"
+      "bytes": 54081,
+      "sha256": "4cbeb0c405b38d138cdbba441b243192100c34210a95e81eb02e6e0f458801a7"
+    },
+    {
+      "path": "shared/calligraphy-scan.test.ts",
+      "bytes": 7985,
+      "sha256": "bdbf40bbb0d3ba77f413fe1b057432ecd711c79ac7b680bb1f415e7194e5b349"
+    },
+    {
+      "path": "shared/calligraphy-scan.ts",
+      "bytes": 16334,
+      "sha256": "8e53b73f5de3aa496002e3734a629e249a8b4388e55cc4807052745a6109a854"
     },
     {
       "path": "shared/copperplate-maker.test.tsx",
@@ -5305,13 +5320,23 @@
     },
     {
       "path": "shared/poem-drafts.test.ts",
-      "bytes": 2623,
-      "sha256": "6dfe7e0f26d00fc3857f7b7ef22ebb4f30ad84eeb09faed047338a8bf7c1b876"
+      "bytes": 3041,
+      "sha256": "96fb73dc24be368563c6a75be3d2bfc72b79ac992004643ba41381e526f0571b"
     },
     {
       "path": "shared/poem-drafts.ts",
-      "bytes": 2549,
-      "sha256": "50ab95cb0c822465e936daffad8435eb6cae669e0affa5e93c0806d3363c3581"
+      "bytes": 2794,
+      "sha256": "9ad1e7866fac64895461377a15fd21d84a96ec5ee494245b226180d6db65ae7d"
+    },
+    {
+      "path": "shared/poem-library.test.ts",
+      "bytes": 5440,
+      "sha256": "c3626248182e7a8c5df616413f75164f8a73779f7f33d2b7e5fdcb057ea7c81e"
+    },
+    {
+      "path": "shared/poem-library.ts",
+      "bytes": 5785,
+      "sha256": "e1f5c8e82c15c991d03378f3eba3b3ca802cb08d51e99cc428761b1da0d5d09f"
     },
     {
       "path": "shared/poem.test.ts",
@@ -5320,8 +5345,8 @@
     },
     {
       "path": "shared/poem.ts",
-      "bytes": 8196,
-      "sha256": "fcb4a676e59c9e9978cd6f8d3e1e066f756b258272e4c6c4d7ea9cec62a8a5fa"
+      "bytes": 9435,
+      "sha256": "caa0be7abc016e89b37071cedbfed47e89b16e48b485ff1824412b4f4ff2b984"
     },
     {
       "path": "shared/print-manifest.json",
@@ -5360,8 +5385,8 @@
     },
     {
       "path": "shared/publication.ts",
-      "bytes": 5041,
-      "sha256": "8fafbf1978ff058af36e81378f55efc884447c7244b3d6a6d742a2bbb010bcae"
+      "bytes": 5074,
+      "sha256": "f43b6bd3a1535277e7f3e3943146d07e190e14a258aa53b37eefb56d7e92ff2b"
     },
     {
       "path": "shared/reference-gallery.test.ts",
@@ -5380,8 +5405,8 @@
     },
     {
       "path": "shared/scale-design.ts",
-      "bytes": 9890,
-      "sha256": "2c4b934302312e92d179a4fa3b9828e518957e80ae2521970a901947048ada93"
+      "bytes": 10220,
+      "sha256": "dc6fef3e90b3a51ceee85ede2d0bb5bf9b8761d7fadf7efe155aef9dad7594cc"
     },
     {
       "path": "shared/scale-history.test.ts",
@@ -5395,13 +5420,13 @@
     },
     {
       "path": "shared/scale-lettering.test.ts",
-      "bytes": 6595,
-      "sha256": "384c3f4cbe15e12b569f8b207c40b335c07776530087ccb7fb7c386c3e79ed3c"
+      "bytes": 9465,
+      "sha256": "0d6046a56fe6085fe44b1ff5ff2f22cabc09b4e38cf479aef1b6c2e237f073d8"
     },
     {
       "path": "shared/scale-lettering.ts",
-      "bytes": 8250,
-      "sha256": "d9d6ff5a1807de8afe2ee3d1b77601cf888c3d8638a4d6b3b5c387425513bfa9"
+      "bytes": 10381,
+      "sha256": "07ec3eee50b84d81931130c29f4c80f9479923c9d47a2ec9e2b1bf2498294a53"
     },
     {
       "path": "shared/scale-maquette.json",
@@ -5437,6 +5462,16 @@
       "path": "shared/scale-models.ts",
       "bytes": 1710,
       "sha256": "6d196b1bec0c9ac5b83e7f226eeb9ab165a2a4a53f55e2bcdf649e8c2c1f9a11"
+    },
+    {
+      "path": "shared/scale-scan-file.test.ts",
+      "bytes": 4174,
+      "sha256": "07b6638f7deb15d174b722a4911ecb1a7ac1e6b98ed9c4b7eff86159a17db18f"
+    },
+    {
+      "path": "shared/scale-scan-file.ts",
+      "bytes": 1921,
+      "sha256": "0fd79b1363573816c3ce9ae5a410b6a756c0cea52e23316d556d84590658faf3"
     },
     {
       "path": "shared/scale-study.test.ts",
@@ -5564,6 +5599,11 @@
       "sha256": "9558601540ebdbd5e0998ce2736108b968f06ad857daf75f5e5f2e625388381e"
     },
     {
+      "path": "src/calligraphy-scan.css",
+      "bytes": 3037,
+      "sha256": "b8edfd55db02b9fd7405ea77b523cc9c85455c36daf2872b6ce5745655beef05"
+    },
+    {
       "path": "src/calligraphy.css",
       "bytes": 10073,
       "sha256": "973ec775348dac509639d13db7a45706cbac20669cc0c11547a39d8f97162ab9"
@@ -5582,6 +5622,11 @@
       "path": "src/components/assistance-credit.tsx",
       "bytes": 174,
       "sha256": "9ededf14170f449c8aa1e4adc9f8e732c5d1d58ff2e49449d4bbfcf382b8b493"
+    },
+    {
+      "path": "src/components/calligraphy-scan-import.tsx",
+      "bytes": 26702,
+      "sha256": "c9e7987cb350ccb083f0de70e3172ba548efdbb90fce0c8beefbb6475afe1743"
     },
     {
       "path": "src/components/calligraphy/blocks.tsx",
@@ -5669,9 +5714,19 @@
       "sha256": "dde11689e7c8531473440c4681fbd7eedeff89a151c2553fb93bc23dfd887944"
     },
     {
+      "path": "src/components/poem-version-controls.test.tsx",
+      "bytes": 2285,
+      "sha256": "79ae796bb5387bf5854c9cdc56a8890a482883505fbf3acf4dea4ea506320d86"
+    },
+    {
+      "path": "src/components/poem-version-controls.tsx",
+      "bytes": 11137,
+      "sha256": "af685204cb5b29a9dcf26d524ecd16ad4ead274c8801c84d2af3b354118eb5a6"
+    },
+    {
       "path": "src/components/poem-version-picker.tsx",
-      "bytes": 868,
-      "sha256": "f4195ce64f2de316905912ccd0edf56543866a572bfa6e7e99c21b40fda26ec8"
+      "bytes": 878,
+      "sha256": "59cbae198cea5918424f29806e512c6014652566553885a18c3cd3e294d0c958"
     },
     {
       "path": "src/components/project-state.tsx",
@@ -5684,14 +5739,19 @@
       "sha256": "6cfc11f0d8aa0006e257c75da43c27b2ec25b4a9484fc02f26f4ae2e0b63dd0b"
     },
     {
+      "path": "src/components/scale-poem-editor.tsx",
+      "bytes": 4082,
+      "sha256": "12d7b45b178f6f504937498207e2bbaa8807f5be1fcef7e959e0a0833942d881"
+    },
+    {
       "path": "src/components/scale-version-browser.tsx",
       "bytes": 5337,
       "sha256": "1eb24501d4898e3c9a125af23e3f517b9b3bb531b68d4e016977f3a74b44f490"
     },
     {
       "path": "src/components/sculpture-viewer.tsx",
-      "bytes": 9713,
-      "sha256": "3d8f443eccfaa82ff8f2505e77a9f880a740834d8c6bd367b76d0a3bf6c43fde"
+      "bytes": 16269,
+      "sha256": "c3e0cb51dd768a6a57417f4d00dfc1bef9935159a9b21f98364cdc48a9a4397b"
     },
     {
       "path": "src/components/ui/badge.tsx",
@@ -5734,6 +5794,31 @@
       "sha256": "03013422641148dba60ee1240c44a4d0cc875ebf7bbe5a7c60b0a91ba648756e"
     },
     {
+      "path": "src/lib/calligraphy-faces.ts",
+      "bytes": 1908,
+      "sha256": "dccb5ea04c585906f07fc3aa4197e4f1281527debbf9f5baa178ecb779fb1d35"
+    },
+    {
+      "path": "src/lib/calligraphy-scan-import.ts",
+      "bytes": 3979,
+      "sha256": "1fe146ba7205064494e195e32b587b61ff0aed22b1781de2df11ded5166d788c"
+    },
+    {
+      "path": "src/lib/calligraphy-scan-store.test.ts",
+      "bytes": 9494,
+      "sha256": "9cb6d9dc4148f0096e8dc0fb5ee0de29d66f5e448cd899bdde4e35298becf28e"
+    },
+    {
+      "path": "src/lib/calligraphy-scan-store.ts",
+      "bytes": 6992,
+      "sha256": "4afc6f079772e5eca5f0d8f8f4d24ef27fe2bf46223477bdd8f06ca0bbf389d3"
+    },
+    {
+      "path": "src/lib/calligraphy-scan.worker.ts",
+      "bytes": 5639,
+      "sha256": "cb1eb783553e449fc6b64467e97be2f19d23a17f2a6cd661f61b501912fdf9c2"
+    },
+    {
       "path": "src/lib/foil-geometry.test.ts",
       "bytes": 8550,
       "sha256": "23d6da12a6911f85307c5812897680d997ccb1f822c8d2d34092e8a27eafe527"
@@ -5754,9 +5839,14 @@
       "sha256": "08771ef6615ea7af60205e346089f76ae638fbdc7a2d6396b0710af682d9e18b"
     },
     {
+      "path": "src/lib/foil-skin.test.ts",
+      "bytes": 5286,
+      "sha256": "dad17589428f5e8cb2c59aee2fc6493c9b01a42050dd6103f8a53a3327676117"
+    },
+    {
       "path": "src/lib/foil-skin.ts",
-      "bytes": 8120,
-      "sha256": "9952345c93d9ad5c6a40f2a97fac0944cf80f2bf08290c6a7fa6e83e0d4631ea"
+      "bytes": 10682,
+      "sha256": "3fb6e6de39a3f76b5d5f5f7f7653fb2230b2891dccd60f48eb185e9f16c6de06"
     },
     {
       "path": "src/lib/inscription-view.test.ts",
@@ -5779,9 +5869,24 @@
       "sha256": "f75d45368376f3bdc5fe3561561bf3fe76ba349556ec15b101685181ff5a58ed"
     },
     {
+      "path": "src/lib/poem-drafts.test.ts",
+      "bytes": 4846,
+      "sha256": "61c112ed8523e401ff74791155b6b42b4ef9236ca8d2f3c50489043e5dc5ff18"
+    },
+    {
       "path": "src/lib/poem-drafts.ts",
-      "bytes": 6705,
-      "sha256": "be71170542e350aa6cd9c3c12b7db84e786e48ee54dd4498ac83feef01feb425"
+      "bytes": 9903,
+      "sha256": "588cf849d7d9ea9e66dc44cc77feecaa764f2196fd0e7c5f064e4b7b15d43e9e"
+    },
+    {
+      "path": "src/lib/poem-library.test.ts",
+      "bytes": 7404,
+      "sha256": "9232058edea8dc1428b0efa958b1002ec7310946c9ab46da156dcbb5f5a3daee"
+    },
+    {
+      "path": "src/lib/poem-library.ts",
+      "bytes": 12936,
+      "sha256": "bcc0a3107bd9c59e65655e3873e6b441d9ea177e1c23329e6ed79f70a3b7605e"
     },
     {
       "path": "src/lib/poem-version.test.tsx",
@@ -5790,8 +5895,8 @@
     },
     {
       "path": "src/lib/poem-version.tsx",
-      "bytes": 5128,
-      "sha256": "cae5b91d999b7b5973676748fee7200f93c3759ac073745a29efc62f3e802a77"
+      "bytes": 7737,
+      "sha256": "32277986659379117d6dbb2ea8f58f3d643d57899dfb547405b1b56afc3cd6d5"
     },
     {
       "path": "src/lib/project-query.test.ts",
@@ -5814,9 +5919,14 @@
       "sha256": "2091f92b1cdab239c747222a65e6d0f70412fab8e325600ffea808645fcfefa1"
     },
     {
+      "path": "src/lib/scale-plate-canvas.test.ts",
+      "bytes": 1946,
+      "sha256": "09e955176deed2369f84e09496426554befb7749905316d2077da36b386a41af"
+    },
+    {
       "path": "src/lib/scale-plate-canvas.ts",
-      "bytes": 2863,
-      "sha256": "b8d9a4de9d1297d96cf3e2b06d019ef64ec4873e0837d4fe4f2d32ec44482e18"
+      "bytes": 2906,
+      "sha256": "c912103317598f661c40e38b848d20553d02f32f6844ee5b5d71ba792c4fb788"
     },
     {
       "path": "src/lib/scale-preview-readiness.test.ts",
@@ -5831,7 +5941,7 @@
     {
       "path": "src/lib/scale-remapping.test.ts",
       "bytes": 6919,
-      "sha256": "b4b21a39057e5a6f2e38955d67479eece2118bc5957e067628e3c4da7e300136"
+      "sha256": "cb13e02b995211928917d4aea4f728c144a2c2a5c5e81fd13d34b77cb554ad28"
     },
     {
       "path": "src/lib/scale-skin.test.ts",
@@ -5864,14 +5974,44 @@
       "sha256": "5bf197ec72b55bfbe6b0974109135295dd84f66bb76df53d54f798b3c9bdc1c7"
     },
     {
+      "path": "src/lib/scale-typography-resources.test.ts",
+      "bytes": 4861,
+      "sha256": "7e6fc2dce33123376daa4bac0cf0463b646facdbee3a0a92414e37207729f401"
+    },
+    {
+      "path": "src/lib/scale-typography-resources.ts",
+      "bytes": 1913,
+      "sha256": "fd1b4e9be2ca0580d5447c0415f2375206c3e481edca0ec6f3994513cf9b45ff"
+    },
+    {
       "path": "src/lib/scale-typography.test.ts",
       "bytes": 9059,
       "sha256": "fdf8b50c767451528079005285716aab5b4ceb515ee6522f0c4c3ff6a342e1bb"
     },
     {
       "path": "src/lib/scale-typography.ts",
-      "bytes": 9720,
-      "sha256": "cb3ee031890c9c34b496552422433548940f4c7918bebc4bbf0a8390edd7f539"
+      "bytes": 10138,
+      "sha256": "3062b515ceaccaf62c9756b8d7d138fc8c77eac793f93837a889c713514d45f4"
+    },
+    {
+      "path": "src/lib/scanned-foil-layout.test.ts",
+      "bytes": 3538,
+      "sha256": "f61b70524d6bc7dcb5f90a1d4c5452caa0c939d71322ed5ef80bd55a59979a4c"
+    },
+    {
+      "path": "src/lib/scanned-foil-layout.ts",
+      "bytes": 3902,
+      "sha256": "0ea08527bbbb827588537eeb1495f13dc291c3d4642eb944c5766404b084c84a"
+    },
+    {
+      "path": "src/lib/scanned-scale-typography.test.ts",
+      "bytes": 10306,
+      "sha256": "7df2a0b962ab98b872a2278730a24c87dd79f43bb295df337c5b87175f0d01e5"
+    },
+    {
+      "path": "src/lib/scanned-scale-typography.ts",
+      "bytes": 8996,
+      "sha256": "8819d854602d0fe269f01c3289d76eb486b674b1b833ea3ff84ca8f65737ee76"
     },
     {
       "path": "src/lib/scene-transition.test.ts",
@@ -5885,8 +6025,8 @@
     },
     {
       "path": "src/lib/sculpture-scene.ts",
-      "bytes": 19885,
-      "sha256": "48b86e173d3b796d35ada35fcde8648d533c2ffe93c4fcf937497125211a9d53"
+      "bytes": 20627,
+      "sha256": "1e544cf19b001fbb8000bd549c3a3f33db2844c1fb67966a7b10cf7cb5feeff8"
     },
     {
       "path": "src/lib/studio-reflection.ts",
@@ -5980,8 +6120,8 @@
     },
     {
       "path": "src/pages/calligraphy.tsx",
-      "bytes": 6533,
-      "sha256": "1c9700de81b70a5d926993ea2b5916d87ac0cb174ee9d15eb846c987e805f784"
+      "bytes": 6804,
+      "sha256": "f873f4e6e44df815a0e221963def80fbf5b8af17562d28ba4af7ad29b12bb2a5"
     },
     {
       "path": "src/pages/copperplate.tsx",
@@ -5990,23 +6130,28 @@
     },
     {
       "path": "src/pages/foil.tsx",
-      "bytes": 21531,
-      "sha256": "06a7d76861d120b187b7df0bb0a45f08b125652cedf33b1aeb990d7ff6c9dd80"
+      "bytes": 21588,
+      "sha256": "768fba37da3892126d4f937a3a7727380b919be269b5c1d40deb97c0e0e90b8a"
+    },
+    {
+      "path": "src/pages/instructions.test.tsx",
+      "bytes": 1158,
+      "sha256": "7381d458fd103db991ecd551eae344a08c0d81a26b5739059d71e8e44a8d7b73"
     },
     {
       "path": "src/pages/instructions.tsx",
-      "bytes": 11688,
-      "sha256": "375a7b5810d9d58a7129062915908f82e88e8517fbf6c627d084bfb852af079d"
+      "bytes": 11867,
+      "sha256": "1c9dd2a9a76c83022c1af8eeb2933bf1c9e4f9912c3790fda16d2a827f1c4b35"
     },
     {
       "path": "src/pages/poem.test.tsx",
-      "bytes": 854,
-      "sha256": "f800bcc9d3fe7dac93c3e33c086a4a78bd3ee7cf0adb04b5b412446f5b9b924e"
+      "bytes": 1059,
+      "sha256": "f255a3c5e921e425bf1db9b2ccba97b5d81f92c615b8f9a653a97288eaecd717"
     },
     {
       "path": "src/pages/poem.tsx",
-      "bytes": 18099,
-      "sha256": "cc5ca376749416a24481798081ec6d7ecd7364b8ab88133173c1503c5da6752b"
+      "bytes": 18042,
+      "sha256": "5892be051aac047b3e2cbc6df4aca370e520eae2d084948767f64785edf0215b"
     },
     {
       "path": "src/pages/projection.tsx",
@@ -6020,8 +6165,8 @@
     },
     {
       "path": "src/pages/scales.tsx",
-      "bytes": 61980,
-      "sha256": "d82e737321d5ecb7741f0df4f059529eea1a54e2463e244e9e650498c226e7de"
+      "bytes": 67901,
+      "sha256": "511646611b239bd5dd26113e190f50dc1398db278a86b72dea967783ece920ab"
     },
     {
       "path": "src/pages/six-foot.tsx",
@@ -6035,13 +6180,18 @@
     },
     {
       "path": "src/pages/worksheet-studio.tsx",
-      "bytes": 50050,
-      "sha256": "92414d0357d5a0e920c88f2c9bbe2c7f94789edc0f3eff2f43640e3d60904015"
+      "bytes": 50041,
+      "sha256": "5c7480e9ab9ce8ab33c674853cf5d18ad00e02552d2824219d007919adedc511"
     },
     {
       "path": "src/poem-editor.css",
       "bytes": 6138,
       "sha256": "88d8ab1a2de53f0da80f5eb5d8d925a3885076c0b1bdeb03a1eb036275074c37"
+    },
+    {
+      "path": "src/poem-version-controls.css",
+      "bytes": 2352,
+      "sha256": "9bafc4f1ff262d4852006900b84dfc63c44d9d20cf18636cfae63c973013a174"
     },
     {
       "path": "src/projection.css",
@@ -6060,8 +6210,8 @@
     },
     {
       "path": "src/scales.css",
-      "bytes": 14315,
-      "sha256": "e777d42b18d364963b59a06a1a987993a57180b7cebf8809623d9ce93041dc61"
+      "bytes": 14793,
+      "sha256": "5320be7c7a4d16e20390b90aa9d4a7eaed9de690028f10c44e446a791d14f2f0"
     },
     {
       "path": "src/site-guide.css",
