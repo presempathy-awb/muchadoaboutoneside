@@ -45,6 +45,34 @@ describe("worksheet settings", () => {
     expect(layout.contentX2Mm).toBe(194);
   });
 
+  test("older templates receive compatible typography defaults", () => {
+    const settings = normalizeWorksheetSettings({
+      fontId: "great-vibes",
+      fontSizePt: 32,
+      textEnabled: true,
+      textRepeat: true,
+    });
+    expect(settings.fontSizePt).toBe(32);
+    expect(settings.fontSizeMode).toBe("points");
+    expect(settings.textXHeightMm).toBe(5);
+    expect(settings.fontFeatures).toBe("");
+    expect(settings.shapingEngine).toBe("fontkit");
+    expect(settings.practicePattern).toBe("continuous");
+    expect(settings.textRepeat).toBe(true);
+  });
+
+  test("typography settings survive normalization together", () => {
+    const typography = {
+      fontId: "pinyon-script",
+      fontSizeMode: "xheight",
+      textXHeightMm: 4.5,
+      fontFeatures: "liga=0,ss01=1,dlig",
+      shapingEngine: "harfbuzz",
+      practicePattern: "model-trace-blank",
+    } as const;
+    expect(normalizeWorksheetSettings(typography)).toMatchObject(typography);
+  });
+
   test.each([
     ["landscape", 300, 100, 300, 100],
     ["landscape", 100, 300, 300, 100],
@@ -70,6 +98,16 @@ describe("worksheet settings", () => {
     ["non-object input", null],
     ["unknown fields", { futureSetting: true }],
     ["invalid enum", { mode: "music" }],
+    ["unknown font", { fontId: "https://example.com/font.ttf" }],
+    ["unknown shaper", { shapingEngine: "remote" }],
+    ["invalid lowercase height", { textXHeightMm: 0 }],
+    ["invalid sizing mode", { fontSizeMode: "pixels" }],
+    ["invalid practice pattern", { practicePattern: "unknown" }],
+    ["duplicate features", { fontFeatures: "liga=0,liga=1" }],
+    ["empty feature item", { fontFeatures: "liga," }],
+    ["feature string injection", { fontFeatures: 'liga;url("x")' }],
+    ["out-of-range feature value", { fontFeatures: "ss01=999" }],
+    ["oversized feature string", { fontFeatures: "x".repeat(257) }],
     ["fractional count", { lineCount: 2.5 }],
     ["non-finite number", { spacingMm: Number.NaN }],
     ["negative measurement", { xHeightMm: -1 }],

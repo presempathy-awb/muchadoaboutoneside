@@ -9,6 +9,7 @@ COPY server ./server
 COPY public ./public
 COPY source/assets ./source/assets
 COPY source/poem ./source/poem
+COPY scripts/verify-typography-bundle.ts ./scripts/verify-typography-bundle.ts
 RUN bun run build && bun build server/index.ts --target=bun --outdir=/bundle/server --define 'process.env.NODE_ENV="production"'
 
 FROM oven/bun:1.4.2-distroless@sha256:1a0c31c7c5f9d193aedf60fe1cebdeb76ac8f6e29f24be8dd8cbd6df72df26ec AS runtime

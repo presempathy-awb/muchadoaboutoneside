@@ -3,6 +3,7 @@ import {
   normalizeWorksheetSettings,
   type WorksheetEstimate,
   type WorksheetLayout,
+  type WorksheetSettings,
   wrapText,
 } from "../../shared/worksheet";
 import {
@@ -10,6 +11,7 @@ import {
   type WorksheetFont,
   worksheetFontBacking,
 } from "./worksheet-fonts";
+import type { WorksheetShapedRun } from "./worksheet-shaping";
 import {
   parseWorksheetSnapshot,
   type WorksheetPhoto,
@@ -20,12 +22,30 @@ const POINTS_PER_MM = 72 / 25.4;
 const TEMPLATE_FILENAME = "muchado-worksheet-template.json";
 const MAX_IMPORT_PDF_BYTES = 15 * 1024 * 1024;
 const MAX_TEMPLATE_SUBJECT_LENGTH = 512 * 1024;
+const COMPARISON_FONT_COUNT = 6;
+const MAX_COMPARISON_TEXT_LENGTH = 2_000;
+const COMPARISON_HEADER_HEIGHT_MM = 14 / POINTS_PER_MM;
+const COMPARISON_INK_PADDING_MM = 1.5;
+const COMPARISON_ROW_GAP_MM = 2;
 
 export interface WorksheetTextPages {
   layout: WorksheetLayout;
   lines: string[];
   pages: string[][];
+  placedPages: WorksheetPlacedText[][];
   estimate: WorksheetEstimate;
+  warnings: string[];
+}
+
+export type WorksheetPracticeRole = "model" | "trace" | "blank";
+
+export interface WorksheetPlacedText {
+  text: string;
+  role: WorksheetPracticeRole;
+  opacity: number;
+  xMm: number;
+  baselineMm: number;
+  run?: WorksheetShapedRun;
 }
 
 function assertNonnegativeTextSpacing(snapshot: WorksheetSnapshot) {
@@ -63,6 +83,20 @@ export function worksheetTextPages(
   assertNonnegativeTextSpacing({ ...snapshot, settings });
   const layout = getWorksheetLayout(settings);
   const availableWidth = layout.contentX2Mm - layout.contentX1Mm;
+  const unsupported = Array.from(
+    new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(
+      snapshot.text,
+    ),
+    ({ segment }) => segment,
+  ).find(
+    (grapheme) =>
+      grapheme !== "\n" && grapheme !== "\r" && !font.hasGlyph(grapheme),
+  );
+  if (unsupported) {
+    throw new Error(
+      `The selected font cannot print “${unsupported}”. Choose another font or remove the unsupported character.`,
+    );
+  }
   // A paragraph repeatedly measures the same words and individual glyphs.
   // Keep the cache local to this model so edits never reuse stale font settings.
   const widths = new Map<string, number>();
@@ -87,12 +121,16 @@ export function worksheetTextPages(
   }
 
   const rowsPerPage = layout.baselineYsMm.length;
+  const patterned = settings.practicePattern === "model-trace-blank";
+  const sourceRowsPerPage = patterned
+    ? Math.floor(rowsPerPage / 3)
+    : rowsPerPage;
   const pagesNeeded =
     lines.length === 0
       ? 0
-      : rowsPerPage === 0
+      : sourceRowsPerPage === 0
         ? Number.POSITIVE_INFINITY
-        : Math.ceil(lines.length / rowsPerPage);
+        : Math.ceil(lines.length / sourceRowsPerPage);
   const estimate: WorksheetEstimate = {
     lines,
     lineCount: lines.length,
@@ -101,41 +139,154 @@ export function worksheetTextPages(
     overflow: pagesNeeded > settings.pageCount,
   };
   const pages = Array.from({ length: settings.pageCount }, (_, pageIndex) => {
-    if (lines.length === 0 || rowsPerPage === 0) return [];
+    if (lines.length === 0 || sourceRowsPerPage === 0) return [];
+    let sourceLines: string[];
     if (settings.textRepeat && !estimate.overflow) {
-      return Array.from(
-        { length: rowsPerPage },
+      sourceLines = Array.from(
+        { length: sourceRowsPerPage },
         (_, rowIndex) =>
-          lines[(pageIndex * rowsPerPage + rowIndex) % lines.length] ?? "",
+          lines[(pageIndex * sourceRowsPerPage + rowIndex) % lines.length] ??
+          "",
+      );
+    } else {
+      sourceLines = lines.slice(
+        pageIndex * sourceRowsPerPage,
+        (pageIndex + 1) * sourceRowsPerPage,
       );
     }
-    return lines.slice(pageIndex * rowsPerPage, (pageIndex + 1) * rowsPerPage);
+    return patterned
+      ? sourceLines.flatMap((line) => [line, line, ""])
+      : sourceLines;
   });
-  return { layout, lines, pages, estimate };
+
+  const placedPages = pages.map((page) =>
+    page.map((text, rowIndex): WorksheetPlacedText => {
+      const role: WorksheetPracticeRole = patterned
+        ? rowIndex % 3 === 0
+          ? "model"
+          : rowIndex % 3 === 1
+            ? "trace"
+            : "blank"
+        : "model";
+      const baselineMm = layout.baselineYsMm[rowIndex] ?? 0;
+      if (!text || role === "blank") {
+        return {
+          text: "",
+          role,
+          opacity: 0,
+          xMm: layout.contentX1Mm,
+          baselineMm,
+        };
+      }
+      const run = font.shape(text, settings);
+      const available = layout.contentX2Mm - layout.contentX1Mm;
+      const xMm =
+        layout.contentX1Mm +
+        (settings.textAlign === "center"
+          ? (available - run.widthMm) / 2
+          : settings.textAlign === "right"
+            ? available - run.widthMm
+            : 0);
+      return {
+        text,
+        role,
+        opacity:
+          role === "trace" ? settings.textOpacity * 0.25 : settings.textOpacity,
+        xMm,
+        baselineMm,
+        run,
+      };
+    }),
+  );
+  const warnings = worksheetTextWarnings(layout, placedPages);
+  return { layout, lines, pages, placedPages, estimate, warnings };
 }
 
-function ensureTextFitsVertically(
+function placedBounds(row: WorksheetPlacedText) {
+  const bounds = row.run?.inkBoundsMm;
+  if (!bounds) return undefined;
+  return {
+    xMin: row.xMm + bounds.xMin,
+    xMax: row.xMm + bounds.xMax,
+    yMin: row.baselineMm - bounds.yMax,
+    yMax: row.baselineMm - bounds.yMin,
+  };
+}
+
+function worksheetTextWarnings(
   layout: WorksheetLayout,
-  snapshot: WorksheetSnapshot,
-  model: WorksheetTextPages,
-) {
-  if (!snapshot.settings.textEnabled || snapshot.text === "") return;
-  const usedRows = model.pages.flatMap((page) =>
-    page.flatMap((line, index) => (line === "" ? [] : [index])),
+  pages: WorksheetPlacedText[][],
+): string[] {
+  let outsideWritingArea = false;
+  let overlappingRows = false;
+  for (const page of pages) {
+    const occupied = page.flatMap((row) => {
+      const bounds = placedBounds(row);
+      return bounds ? [{ row, bounds }] : [];
+    });
+    outsideWritingArea ||= occupied.some(
+      ({ bounds }) =>
+        bounds.xMin < layout.contentX1Mm - 1e-8 ||
+        bounds.xMax > layout.contentX2Mm + 1e-8 ||
+        bounds.yMin < layout.contentY1Mm - 1e-8 ||
+        bounds.yMax > layout.contentY2Mm + 1e-8,
+    );
+    const verticallySorted = occupied.toSorted(
+      (left, right) => left.bounds.yMin - right.bounds.yMin,
+    );
+    for (
+      let left = 0;
+      left < verticallySorted.length && !overlappingRows;
+      left += 1
+    ) {
+      const a = verticallySorted[left];
+      if (!a) continue;
+      for (let right = left + 1; right < verticallySorted.length; right += 1) {
+        const b = verticallySorted[right];
+        if (!b || a.row.baselineMm === b.row.baselineMm) continue;
+        if (b.bounds.yMin >= a.bounds.yMax - 1e-8) break;
+        if (
+          a.bounds.xMin < b.bounds.xMax - 1e-8 &&
+          a.bounds.xMax > b.bounds.xMin + 1e-8 &&
+          a.bounds.yMin < b.bounds.yMax - 1e-8 &&
+          a.bounds.yMax > b.bounds.yMin + 1e-8
+        ) {
+          overlappingRows = true;
+          break;
+        }
+      }
+    }
+  }
+  const warnings: string[] = [];
+  if (outsideWritingArea) {
+    warnings.push(
+      "Some flourishes extend beyond the writing area, but they remain on the physical page.",
+    );
+  }
+  if (overlappingRows) {
+    warnings.push(
+      "Some example strokes overlap another occupied practice row. Increase row spacing or reduce the text size.",
+    );
+  }
+  return warnings;
+}
+
+function ensureTextFitsPhysicalPage(model: WorksheetTextPages) {
+  const clipped = model.placedPages.some((page) =>
+    page.some((row) => {
+      const bounds = placedBounds(row);
+      return (
+        bounds !== undefined &&
+        (bounds.xMin < -1e-8 ||
+          bounds.xMax > model.layout.widthMm + 1e-8 ||
+          bounds.yMin < -1e-8 ||
+          bounds.yMax > model.layout.heightMm + 1e-8)
+      );
+    }),
   );
-  const firstIndex = usedRows.length === 0 ? undefined : Math.min(...usedRows);
-  const lastIndex = usedRows.length === 0 ? undefined : Math.max(...usedRows);
-  const first =
-    firstIndex === undefined ? undefined : layout.baselineYsMm[firstIndex];
-  const last =
-    lastIndex === undefined ? undefined : layout.baselineYsMm[lastIndex];
-  if (first === undefined || last === undefined) return;
-  const sizeMm = snapshot.settings.fontSizePt * (25.4 / 72);
-  const top = first - sizeMm * 0.85;
-  const bottom = last + sizeMm * 0.3;
-  if (top < 0 || bottom > layout.heightMm) {
+  if (clipped) {
     throw new RangeError(
-      "The example text can extend off the page at this font size. Increase the top/bottom margins or reduce the font size.",
+      "The example text extends off the physical page. Increase the margins, reduce the text size, or choose a less expansive alternate.",
     );
   }
 }
@@ -148,11 +299,16 @@ export function validateWorksheetTextFit(
   assertNonnegativeTextSpacing(snapshot);
   if (!snapshot.settings.textEnabled || snapshot.text === "") return;
   if (model.estimate.overflow) {
+    if (!Number.isFinite(model.estimate.pagesNeeded)) {
+      throw new RangeError(
+        "The model/trace/blank pattern requires at least three writing rows on each page. Increase the row count or switch to continuous text.",
+      );
+    }
     throw new RangeError(
       `The example text needs ${model.estimate.pagesNeeded} pages, but the worksheet is set to ${snapshot.settings.pageCount}. Add pages, shorten the text, or reduce its size before printing.`,
     );
   }
-  ensureTextFitsVertically(model.layout, snapshot, model);
+  ensureTextFitsPhysicalPage(model);
 }
 
 async function embedSelectedFont(
@@ -163,10 +319,7 @@ async function embedSelectedFont(
   if (backing.kind === "standard" && backing.standardName) {
     return document.embedFont(backing.standardName);
   }
-  if (!backing.bytes) throw new Error("The selected font data is unavailable.");
-  const fontkitModule = await import("@pdf-lib/fontkit");
-  document.registerFontkit(fontkitModule.default);
-  return document.embedFont(backing.bytes, { subset: true });
+  return undefined;
 }
 
 function imageBytes(dataUrl: string): Uint8Array<ArrayBuffer> {
@@ -228,6 +381,10 @@ export async function createWorksheetPdf(
           layout,
           lines: [],
           pages: Array.from({ length: valid.settings.pageCount }, () => []),
+          placedPages: Array.from(
+            { length: valid.settings.pageCount },
+            () => [],
+          ),
           estimate: {
             lines: [],
             lineCount: 0,
@@ -235,6 +392,7 @@ export async function createWorksheetPdf(
             rowsPerPage: layout.baselineYsMm.length,
             overflow: false,
           },
+          warnings: [],
         };
       })();
   validateWorksheetTextFit(valid, model);
@@ -358,32 +516,55 @@ export async function createWorksheetPdf(
       });
     }
 
-    if (settings.textEnabled && font && pdfFont) {
-      const fontKey = page.node.newFontDictionary(pdfFont.name, pdfFont.ref);
-      const opacityKey = page.node.newExtGState(
-        "GS",
-        document.context.obj({
-          Type: "ExtGState",
-          ca: settings.textOpacity,
-        }),
-      );
-      const pageLines = model.pages[pageIndex] ?? [];
-      for (let rowIndex = 0; rowIndex < pageLines.length; rowIndex += 1) {
-        const text = pageLines[rowIndex] ?? "";
-        const baseline = model.layout.baselineYsMm[rowIndex];
-        if (baseline === undefined || text === "") continue;
-        const widthMm = font.measure(text, settings);
-        const xMm =
-          settings.textAlign === "center"
-            ? (model.layout.contentX1Mm + model.layout.contentX2Mm - widthMm) /
-              2
-            : settings.textAlign === "right"
-              ? model.layout.contentX2Mm - widthMm
-              : model.layout.contentX1Mm;
-        const sizePt = settings.fontSizePt;
-        const anchorXPt = xMm * POINTS_PER_MM;
-        const baselinePt = (model.layout.heightMm - baseline) * POINTS_PER_MM;
+    if (settings.textEnabled && font) {
+      const fontKey = pdfFont
+        ? page.node.newFontDictionary(pdfFont.name, pdfFont.ref)
+        : undefined;
+      const pageRows = model.placedPages[pageIndex] ?? [];
+      for (const row of pageRows) {
+        const { run, text } = row;
+        if (!run || text === "") continue;
+        const sizePt = run.sizePt;
+        const anchorXPt = row.xMm * POINTS_PER_MM;
+        const baselinePt =
+          (model.layout.heightMm - row.baselineMm) * POINTS_PER_MM;
         try {
+          if (
+            run.glyphs.length > 0 &&
+            run.glyphs.every((glyph) => glyph.path !== undefined)
+          ) {
+            for (const glyph of run.glyphs) {
+              if (!glyph.path) continue;
+              page.pushOperators(
+                pushGraphicsState(),
+                scale(run.writingScale, -1),
+              );
+              page.drawSvgPath(glyph.path, {
+                x: ((row.xMm + glyph.xMm) * POINTS_PER_MM) / run.writingScale,
+                y: -(
+                  (model.layout.heightMm - row.baselineMm + glyph.yMm) *
+                  POINTS_PER_MM
+                ),
+                scale: run.pathScaleMm * POINTS_PER_MM,
+                color: textRgb,
+                opacity: row.opacity,
+              });
+              page.pushOperators(popGraphicsState());
+            }
+            continue;
+          }
+          if (!pdfFont || !fontKey) {
+            throw new Error(
+              "The selected font did not provide printable vector outlines.",
+            );
+          }
+          const opacityKey = page.node.newExtGState(
+            "GS",
+            document.context.obj({
+              Type: "ExtGState",
+              ca: row.opacity,
+            }),
+          );
           const backing = worksheetFontBacking(font);
           const encodedHex = pdfFont.encodeText(text).asString();
           const fontkitFont = backing.fontkitFont;
@@ -502,6 +683,203 @@ export async function createWorksheetPdf(
 
   const saved = await document.save();
   return new Uint8Array(saved);
+}
+
+export interface WorksheetComparisonFont {
+  label: string;
+  font: WorksheetFont;
+}
+
+const COMPARISON_SAMPLE =
+  "minimum alphabet flourishing hand\nThe quick brown fox jumps over the lazy dog.";
+
+function comparisonFontFeatures(
+  settings: WorksheetSettings,
+  font: WorksheetFont,
+) {
+  const supported = new Set(font.supportedFeatures);
+  return settings.fontFeatures
+    .split(",")
+    .map((part) => part.trim().toLowerCase())
+    .filter((part) => supported.has(part.split("=")[0] ?? ""))
+    .join(",");
+}
+
+function settingsForComparisonFont(
+  common: WorksheetSettings,
+  font: WorksheetFont,
+): WorksheetSettings {
+  return {
+    ...common,
+    fontFeatures: comparisonFontFeatures(common, font),
+    shapingEngine: font.engine,
+  };
+}
+
+function comparisonRuns(
+  text: string,
+  settings: WorksheetSettings,
+  entries: readonly WorksheetComparisonFont[],
+) {
+  const layout = getWorksheetLayout(settings);
+  const availableWidth = layout.contentX2Mm - layout.contentX1Mm;
+  return entries.flatMap(({ font }) => {
+    const fontSettings = settingsForComparisonFont(settings, font);
+    const lines = wrapText(text, availableWidth, (line) =>
+      font.measure(line, fontSettings),
+    );
+    return lines.flatMap((line) => {
+      const run = font.shape(line, fontSettings);
+      return run.inkBoundsMm ? [{ run, bounds: run.inkBoundsMm }] : [];
+    });
+  });
+}
+
+function comparisonLayout(
+  base: WorksheetSnapshot,
+  text: string,
+  entries: readonly WorksheetComparisonFont[],
+): WorksheetSettings {
+  let common = normalizeWorksheetSettings({
+    ...base.settings,
+    mode: "plain",
+    spacingMode: "fixed",
+    spacingMm: Math.max(0.5, base.settings.spacingMm),
+    textEnabled: true,
+    fontSizeMode: "xheight",
+    practicePattern: "continuous",
+    textRepeat: false,
+    pageCount: 1,
+  });
+
+  // Ink overhang can change wrapping, which can in turn change the extrema.
+  // Two bounded passes converge the content width without an open-ended loop.
+  for (let pass = 0; pass < 2; pass += 1) {
+    const runs = comparisonRuns(text, common, entries);
+    const leftOverhang = Math.max(
+      0,
+      ...runs.map(({ bounds }) => Math.max(0, -bounds.xMin)),
+    );
+    const rightOverhang = Math.max(
+      0,
+      ...runs.map(({ run, bounds }) => Math.max(0, bounds.xMax - run.widthMm)),
+    );
+    common = normalizeWorksheetSettings({
+      ...common,
+      marginLeftMm: Math.max(
+        base.settings.marginLeftMm,
+        leftOverhang + COMPARISON_INK_PADDING_MM,
+      ),
+      marginRightMm: Math.max(
+        base.settings.marginRightMm,
+        rightOverhang + COMPARISON_INK_PADDING_MM,
+      ),
+    });
+  }
+
+  const runs = comparisonRuns(text, common, entries);
+  const ascentMm = Math.max(0, ...runs.map(({ bounds }) => bounds.yMax));
+  const descentMm = Math.max(0, ...runs.map(({ bounds }) => -bounds.yMin));
+  const rowPitchMm = ascentMm + descentMm + COMPARISON_ROW_GAP_MM;
+  if (rowPitchMm > 100) {
+    throw new RangeError(
+      "The requested physical lowercase height makes the comparison rows too tall. Reduce the lowercase height before exporting.",
+    );
+  }
+  return normalizeWorksheetSettings({
+    ...common,
+    marginTopMm: Math.max(
+      base.settings.marginTopMm,
+      COMPARISON_HEADER_HEIGHT_MM + COMPARISON_INK_PADDING_MM + ascentMm,
+    ),
+    marginBottomMm: Math.max(
+      base.settings.marginBottomMm,
+      COMPARISON_INK_PADDING_MM + descentMm,
+    ),
+    spacingMm: Math.max(0.5, rowPitchMm),
+  });
+}
+
+/** Builds one independently shaped page per font at the same physical x-height. */
+export async function createWorksheetComparisonPdf(
+  snapshot: WorksheetSnapshot,
+  entries: readonly WorksheetComparisonFont[],
+): Promise<Uint8Array<ArrayBuffer>> {
+  if (entries.length !== COMPARISON_FONT_COUNT) {
+    throw new RangeError(
+      `The comparison sheet requires exactly ${COMPARISON_FONT_COUNT} fonts.`,
+    );
+  }
+  const base = parseWorksheetSnapshot(snapshot);
+  const comparisonText = base.text.trim() ? base.text : COMPARISON_SAMPLE;
+  if (comparisonText.length > MAX_COMPARISON_TEXT_LENGTH) {
+    throw new RangeError(
+      `Comparison text must be ${MAX_COMPARISON_TEXT_LENGTH.toLocaleString()} characters or fewer. Shorten the passage before exporting the six-font comparison.`,
+    );
+  }
+  const commonSettings = comparisonLayout(base, comparisonText, entries);
+  const { PDFDocument, rgb } = await import("pdf-lib");
+  const comparison = await PDFDocument.create();
+  comparison.setTitle("Calligraphy font comparison");
+  comparison.setCreator("muchadoaboutoneside.com/calligraphy/practice");
+  comparison.setProducer("Much Ado About One Side worksheet maker");
+  const labelFont = await comparison.embedFont("Helvetica");
+
+  for (const entry of entries) {
+    if (!entry.label.trim()) {
+      throw new TypeError("Every comparison font needs a label.");
+    }
+    const candidate: WorksheetSnapshot = {
+      ...base,
+      settings: settingsForComparisonFont(commonSettings, entry.font),
+      text: comparisonText,
+    };
+    const measured = worksheetTextPages(candidate, entry.font);
+    if (measured.estimate.overflow) {
+      throw new RangeError(
+        `The comparison passage needs ${measured.estimate.pagesNeeded} pages in ${entry.label}. Shorten the passage or reduce its physical x-height so every font fits on one clearly labeled page.`,
+      );
+    }
+    const headerOverlap = measured.placedPages.some((pageRows) =>
+      pageRows.some((row) => {
+        const bounds = placedBounds(row);
+        return (
+          bounds !== undefined &&
+          bounds.yMin <
+            COMPARISON_HEADER_HEIGHT_MM + COMPARISON_INK_PADDING_MM - 1e-8
+        );
+      }),
+    );
+    if (headerOverlap) {
+      throw new RangeError(
+        `The requested physical lowercase height leaves no safe header space in ${entry.label}. Reduce the lowercase height before exporting.`,
+      );
+    }
+    const source = await PDFDocument.load(
+      await createWorksheetPdf(candidate, { font: entry.font }),
+    );
+    const [page] = await comparison.copyPages(source, [0]);
+    if (!page) throw new Error("A comparison page could not be created.");
+    comparison.addPage(page);
+    const size = page.getSize();
+    page.drawRectangle({
+      x: 0,
+      y: size.height - 14,
+      width: size.width,
+      height: 14,
+      color: rgb(1, 1, 1),
+      opacity: 0.88,
+    });
+    page.drawText(entry.label.trim().slice(0, 120), {
+      x: base.settings.marginLeftMm * POINTS_PER_MM,
+      y: size.height - 10,
+      size: 7,
+      font: labelFont,
+      color: rgb(0.267, 0.267, 0.267),
+    });
+  }
+
+  return new Uint8Array(await comparison.save());
 }
 
 /** Reopens PDFs created with the explicit “include editable template” option. */

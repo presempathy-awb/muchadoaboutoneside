@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { WORKSHEET_FONT_CATALOG } from "../shared/worksheet-font-catalog";
 import { createApp } from "./app";
 import { project } from "./project";
 
@@ -94,13 +95,66 @@ describe("production static site", () => {
       join(staticDir, "assets", "stable.js"),
       "globalThis.stableFixture = true;",
     );
+    await writeFile(
+      join(staticDir, "assets", "hb-Abc12345.wasm"),
+      new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]),
+    );
+    await writeFile(
+      join(staticDir, "assets", "script-Abc12345.woff2"),
+      new Uint8Array([119, 79, 70, 50]),
+    );
     await mkdir(join(staticDir, "fabrication"));
+    await mkdir(join(staticDir, "fonts"));
+    await writeFile(
+      join(staticDir, "fonts", "GreatVibes-Regular.ttf"),
+      "font fixture",
+    );
     await writeFile(join(staticDir, "fabrication", "fresh.zip"), "fresh zip");
   });
 
   afterAll(async () => {
     await rm(staticDir, { recursive: true, force: true });
   });
+
+  test("only caches a curated TTF immutably when its exact digest is requested", async () => {
+    const font = WORKSHEET_FONT_CATALOG[0];
+    const staticApp = createApp({ staticDir });
+    for (const [query, expectedCache] of [
+      [`?sha256=${font.sha256}`, "public, max-age=31536000, immutable"],
+      ["", "no-store"],
+      [`?v=${font.sha256}`, "no-store"],
+      [`?sha256=${"0".repeat(64)}`, "no-store"],
+    ] as const) {
+      const response = await staticApp.handle(
+        new Request(`http://local${font.path}${query}`),
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get("content-type")).toBe("font/ttf");
+      expect(response.headers.get("cache-control")).toBe(expectedCache);
+    }
+    const html = await staticApp.handle(
+      new Request(`http://local/guide.html?sha256=${font.sha256}`),
+    );
+    expect(html.headers.get("cache-control")).toBe("no-store");
+  });
+
+  test.each([
+    ["hb-Abc12345.wasm", "application/wasm", 8],
+    ["script-Abc12345.woff2", "font/woff2", 4],
+  ])(
+    "serves lazy typography asset %s with the correct MIME",
+    async (name, type, bytes) => {
+      const response = await createApp({ staticDir }).handle(
+        new Request(`http://local/assets/${name}`),
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get("content-type")).toBe(type);
+      expect(response.headers.get("cache-control")).toBe(
+        "public, max-age=31536000, immutable",
+      );
+      expect((await response.arrayBuffer()).byteLength).toBe(bytes);
+    },
+  );
 
   test("serves static files and falls back to the SPA for client routes", async () => {
     const staticApp = createApp({ staticDir });

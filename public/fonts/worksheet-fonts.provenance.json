@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "runtimePolicy": {
+    "source": "bundled same-origin assets only",
+    "maximumFontBytes": 2097152,
+    "pdfFormat": "static TTF",
+    "pickerPreviewFormat": "Latin-only WOFF2 loaded on selection"
+  },
+  "googleFonts": {
+    "repository": "https://github.com/google/fonts",
+    "commit": "a54f7446f84a1125ef6bf08baa46f3639e8905e0"
+  },
+  "fontsource": {
+    "repository": "https://github.com/fontsource/font-files",
+    "packageVersion": "5.3.0",
+    "note": "The Fontsource previews and Google Fonts TTFs have matching internal family and version records. The WOFF2 files are Latin-only subsets used only for ordinary picker samples and may omit discretionary or stylistic OpenType features; PDF, selected-text preview, glyph browsing, and worksheet rendering use the complete TTF files."
+  },
+  "harfbuzz": {
+    "package": "harfbuzzjs",
+    "packageVersion": "1.6.1",
+    "embeddedHarfBuzzVersion": "14.4.0",
+    "runtimeWasmBytes": 426620,
+    "runtimeWasmSha256": "37777ced92a2ba10279c33e1dbacf08835ddcacc215b7fcb3131e558dd01ce71",
+    "note": "The full subset WASM is not imported or shipped. HarfBuzz and every Fontsource package have no runtime package dependencies; exact npm tarball integrity is pinned in bun.lock."
+  },
+  "fonts": [
+    {
+      "id": "great-vibes",
+      "version": "Version 1.103; ttfautohint (v1.8.4.7-5d5b)",
+      "ttfPath": "/fonts/GreatVibes-Regular.ttf",
+      "ttfSource": "https://raw.githubusercontent.com/google/fonts/a54f7446f84a1125ef6bf08baa46f3639e8905e0/ofl/greatvibes/GreatVibes-Regular.ttf",
+      "ttfBytes": 457588,
+      "ttfSha256": "8d509802186f1b51572531ecf313e8098f9a5bfdfaca93f0c9b34467f9982d15",
+      "fontsourcePackage": "@fontsource/great-vibes",
+      "fontsourceRevision": "v21",
+      "woff2Path": "files/great-vibes-latin-400-normal.woff2",
+      "woff2Bytes": 42800,
+      "woff2Sha256": "c59dc73d29daf142ef2431f455d21464172374aa750d793a79d608735db2d856",
+      "licensePath": "/fonts/licenses/GreatVibes-OFL.txt",
+      "licenseSha256": "61093a21f5e63dedf54222b3c09997e54c0fe43e3851d21386e02ddcbc246d49"
+    },
+    {
+      "id": "pinyon-script",
+      "version": "Version 1.008; ttfautohint (v1.8.4.7-5d5b)",
+      "ttfPath": "/fonts/PinyonScript-Regular.ttf",
+      "ttfSource": "https://raw.githubusercontent.com/google/fonts/a54f7446f84a1125ef6bf08baa46f3639e8905e0/ofl/pinyonscript/PinyonScript-Regular.ttf",
+      "ttfBytes": 151412,
+      "ttfSha256": "4aab130a6ed27f8b8117738c84a5602edf9300cdcc0651a9a65bf96f451ac29a",
+      "fontsourcePackage": "@fontsource/pinyon-script",
+      "fontsourceRevision": "v24",
+      "woff2Path": "files/pinyon-script-latin-400-normal.woff2",
+      "woff2Bytes": 39044,
+      "woff2Sha256": "3e1f69a201572cad4aabea7ccf720f093a7dbc005380b2a1b89e0b94476d3e42",
+      "licensePath": "/fonts/licenses/PinyonScript-OFL.txt",
+      "licenseSha256": "61d07cb0eaa943943648df2b11d0c2210e772053c192871e13f680b53fe0b77e"
+    },
+    {
+      "id": "imperial-script",
+      "version": "Version 1.010; ttfautohint (v1.8.3)",
+      "ttfPath": "/fonts/ImperialScript-Regular.ttf",
+      "ttfSource": "https://raw.githubusercontent.com/google/fonts/a54f7446f84a1125ef6bf08baa46f3639e8905e0/ofl/imperialscript/ImperialScript-Regular.ttf",
+      "ttfBytes": 154824,
+      "ttfSha256": "fa040ae596cde82559c3bcf056ac216a94efa904b848382ab85740d38df4bab7",
+      "fontsourcePackage": "@fontsource/imperial-script",
+      "fontsourceRevision": "v8",
+      "woff2Path": "files/imperial-script-latin-400-normal.woff2",
+      "woff2Bytes": 36100,
+      "woff2Sha256": "a7efc19b6f513e909bf2413ccabc2748e5461f89deaba5b6e6bfe2d11096918f",
+      "licensePath": "/fonts/licenses/ImperialScript-OFL.txt",
+      "licenseSha256": "42b758018a3f0fa429f9aaf7cafaa273ce922ea7dfba30f50cc828b8aa3e1717"
+    },
+    {
+      "id": "italianno",
+      "version": "Version 1.100; ttfautohint (v1.8.3)",
+      "ttfPath": "/fonts/Italianno-Regular.ttf",
+      "ttfSource": "https://raw.githubusercontent.com/google/fonts/a54f7446f84a1125ef6bf08baa46f3639e8905e0/ofl/italianno/Italianno-Regular.ttf",
+      "ttfBytes": 223708,
+      "ttfSha256": "f6ae96dea0da46c73370eb0575848ab0eda190315bdfda3f5b252bba3dc9173c",
+      "fontsourcePackage": "@fontsource/italianno",
+      "fontsourceRevision": "v18",
+      "woff2Path": "files/italianno-latin-400-normal.woff2",
+      "woff2Bytes": 36948,
+      "woff2Sha256": "518325fe367d195cd5e8e120a219f5d83440eddd4c9b6be9321a8c44f7450a9b",
+      "licensePath": "/fonts/licenses/Italianno-OFL.txt",
+      "licenseSha256": "bce79721f0203586872bbd7016922baf449980bdd1c44550a821112a3b547185"
+    },
+    {
+      "id": "herr-von-muellerhoff",
+      "version": "Version 1.000",
+      "ttfPath": "/fonts/HerrVonMuellerhoff-Regular.ttf",
+      "ttfSource": "https://raw.githubusercontent.com/google/fonts/a54f7446f84a1125ef6bf08baa46f3639e8905e0/ofl/herrvonmuellerhoff/HerrVonMuellerhoff-Regular.ttf",
+      "ttfBytes": 46624,
+      "ttfSha256": "ba8ac10807a79462b7c8265b2eebb8419e5017fdc1a5828b1a071d9e8478772e",
+      "fontsourcePackage": "@fontsource/herr-von-muellerhoff",
+      "fontsourceRevision": "v23",
+      "woff2Path": "files/herr-von-muellerhoff-latin-400-normal.woff2",
+      "woff2Bytes": 17720,
+      "woff2Sha256": "180aa0b738448f1055012eae583406e825ed4dc63be55329e6f97e484c755cb5",
+      "licensePath": "/fonts/licenses/HerrVonMuellerhoff-OFL.txt",
+      "licenseSha256": "50265d2b41f8ad2dd350532d2286509aa694021b4aa0490b06f0068e4ed78c27"
+    },
+    {
+      "id": "mrs-saint-delafield",
+      "version": "Version 1.001",
+      "ttfPath": "/fonts/MrsSaintDelafield-Regular.ttf",
+      "ttfSource": "https://raw.githubusercontent.com/google/fonts/a54f7446f84a1125ef6bf08baa46f3639e8905e0/ofl/mrssaintdelafield/MrsSaintDelafield-Regular.ttf",
+      "ttfBytes": 49140,
+      "ttfSha256": "67a7abc298ce9d368b2c00fcbff52ec54be948889b8a59032ae80ca3322e5b34",
+      "fontsourcePackage": "@fontsource/mrs-saint-delafield",
+      "fontsourceRevision": "v14",
+      "woff2Path": "files/mrs-saint-delafield-latin-400-normal.woff2",
+      "woff2Bytes": 18812,
+      "woff2Sha256": "0672851f27cedde6c894e109ddce4d329a2d28f605d54e7208b5c84d836512da",
+      "licensePath": "/fonts/licenses/MrsSaintDelafield-OFL.txt",
+      "licenseSha256": "f354ef1e7256644b320c5e1d9a07a819c2e2b930166003c96680894f9fba81be"
+    }
+  ]
+}

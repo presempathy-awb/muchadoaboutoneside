@@ -8,6 +8,7 @@ This log records notable project changes. Repository history and pull requests c
 - Upgraded the small-foil generator to Pillow 12.3.0 to resolve HIGH vulnerability findings; regenerated provenance and compressed preview while preserving geometry, marking artwork and decoded texture pixels.
 - Public snapshot selection and verification extended to include the reviewed setup files and documentation.
 - Added the horizontal-first calligraphy practice studio at `/calligraphy/practice`: configurable rules, zones, slants, grids, text, local photo calibration, row/sheet estimates, named local templates, autosave/backups, and visible or editable PDF export. The default is a blank 24-rule Letter-landscape sheet.
+- Expanded the practice studio with six verified script fonts, lazy Fontsource gallery previews, optional HarfBuzz shaping, physical lowercase-height sizing, supported alternate-letter controls, exact flourish bounds, model/trace/blank practice rows, and a six-font comparison PDF. Added font provenance, dependency security evidence, and build checks for optional asset sizes and lazy loading.
 
 These additions prepare development and public source distribution. Future accounts, projects, organizations, versioned uploads and procurement remain proposed.
 
