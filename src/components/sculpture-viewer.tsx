@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { PoemVersion } from "../../shared/poem";
+import type { ScalePreview } from "../lib/scale-skin";
 import {
   createSculptureScene,
   SCULPTURE_ASSET_URL,
@@ -8,7 +9,8 @@ import {
 
 export interface SculptureViewerProps {
   className?: string;
-  edition?: "construction" | "inscription";
+  edition?: "construction" | "inscription" | "scales";
+  scalePreview?: ScalePreview;
   showLettering?: boolean;
   showSeams?: boolean;
   /** Wording drawn on the foil; defaults to the canonical inscription. */
@@ -30,6 +32,7 @@ export default function SculptureViewer({
   showLettering = true,
   showSeams = false,
   poemVersion,
+  scalePreview,
   readingView = false,
   selectedPart = null,
   hiddenParts = [],
@@ -118,6 +121,21 @@ export default function SculptureViewer({
   }, [edition]);
 
   useEffect(() => {
+    if (edition === "scales" && scalePreview) {
+      try {
+        controllerRef.current?.setScalePreview(scalePreview);
+      } catch (error) {
+        setStatus("error");
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "The scales could not be updated.",
+        );
+      }
+    }
+  }, [scalePreview, edition]);
+
+  useEffect(() => {
     controllerRef.current?.setSelectedPart(selectedPart);
   }, [selectedPart]);
 
@@ -168,9 +186,11 @@ export default function SculptureViewer({
         ref={canvasRef}
         className="block size-full min-h-[28rem] touch-none cursor-grab outline-none active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-amber-800 focus-visible:ring-inset"
         aria-label={
-          edition === "inscription"
-            ? "Interactive 3D foil inscription edition of Much Ado About One Side"
-            : "Interactive 3D model of the Much Ado About One Side snake sculpture"
+          edition === "scales"
+            ? "Interactive 3D calligraphy scale study with raised polygonal plates"
+            : edition === "inscription"
+              ? "Interactive 3D foil inscription edition of Much Ado About One Side"
+              : "Interactive 3D model of the Much Ado About One Side snake sculpture"
         }
         aria-describedby={instructionsId}
         tabIndex={0}

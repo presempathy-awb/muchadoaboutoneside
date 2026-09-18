@@ -1,3 +1,5 @@
+# Reuse this project
+
 MAKE SOMETHING OF YOUR OWN
 
 Artists, makers, teachers, and curious people are welcome to download the models
@@ -30,8 +32,11 @@ Great Vibes font software remains under the SIL Open Font License 1.1; its
 copyright and license are supplied in public/fonts/OFL.txt (OFL.txt in relevant
 fabrication archives). Artwork made using its outlines is covered by the
 project license above, except for any separately identified third-party work.
-Private reference photographs and browser-retrieval captures are not part of
-the public project or this license grant.
+The reference gallery contains complete originals explicitly approved for public
+display on 2026-09-18. Publication does not grant rights in third-party photographs,
+lyrics, app interfaces, or other depicted material. Unpublished reference files
+and browser-retrieval captures remain outside the public project and this license
+grant.
 
 FABRICATION
 The files are design and fit-test references, not a certification of physical

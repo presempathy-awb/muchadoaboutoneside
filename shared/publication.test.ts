@@ -1,5 +1,9 @@
 import { expect, test } from "bun:test";
-import { isPublicSourcePath } from "./publication";
+import {
+  APPROVED_REFERENCE_PUBLICATIONS,
+  assertReferencePublication,
+  isPublicSourcePath,
+} from "./publication";
 
 test("public source selection excludes private archives, history, credentials, and host configuration", () => {
   for (const path of [
@@ -47,11 +51,85 @@ test("public source selection excludes private archives, history, credentials, a
     "server/app.ts",
     "scripts/generate-small-foil.py",
     "public/fabrication/small-foil/foil-kit-180mm.zip",
+    "public/references/jill-calligraphy.jpg",
     "source/assets/snake_build.stl",
     "source/poem/much-ado-about-one-side.txt",
     "deploy/package-release.ts",
   ])
     expect(isPublicSourcePath(path)).toBeTrue();
+});
+
+for (const [sourcePath, expectedHash] of Object.entries(
+  APPROVED_REFERENCE_PUBLICATIONS,
+)) {
+  const filename = sourcePath.split("/").at(-1);
+  const releasePath = sourcePath.replace(/^public\//, "dist/");
+  test(`${filename}: the complete original can enter only its exact gallery paths`, async () => {
+    expect(isPublicSourcePath(sourcePath)).toBeTrue();
+    const bytes = await Bun.file(
+      new URL(`../${sourcePath}`, import.meta.url),
+    ).arrayBuffer();
+    const hash = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
+    expect(hash).toBe(expectedHash);
+    expect(() =>
+      assertReferencePublication(sourcePath, hash, "source"),
+    ).not.toThrow();
+    expect(() =>
+      assertReferencePublication(releasePath, hash, "release"),
+    ).not.toThrow();
+    for (const [path, format] of [
+      [sourcePath, "release"],
+      [releasePath, "source"],
+      ["public/references/renamed.jpg", "source"],
+      ["dist/references/renamed.jpg", "release"],
+      [`public/${filename}`, "source"],
+      [`dist/${filename}`, "release"],
+      [`source/reference/${filename}`, "source"],
+      [`source/reference/${filename}`, "release"],
+      [`dist/source/reference/${filename}`, "release"],
+      [`dist/public/references/${filename}`, "release"],
+      [`public/references/../references/${filename}`, "source"],
+    ] as const)
+      expect(() => assertReferencePublication(path, hash, format)).toThrow();
+  });
+
+  test(`${filename}: approval cannot substitute bytes or widen source selection`, () => {
+    const otherHash = "0".repeat(64);
+    for (const [path, format] of [
+      [sourcePath, "source"],
+      [releasePath, "release"],
+    ] as const) {
+      for (const hash of [
+        otherHash,
+        ...Object.values(APPROVED_REFERENCE_PUBLICATIONS),
+      ]) {
+        if (hash === expectedHash) continue;
+        expect(() => assertReferencePublication(path, hash, format)).toThrow(
+          "Approved reference bytes changed",
+        );
+      }
+    }
+    for (const path of [
+      `public/${filename}`,
+      `public/references/other/${filename}`,
+      `source/reference/${filename}`,
+    ]) {
+      expect(isPublicSourcePath(path)).toBeFalse();
+      expect(() =>
+        assertReferencePublication(path, otherHash, "source"),
+      ).toThrow();
+    }
+  });
+}
+
+test("unrelated public content is unaffected by gallery restrictions", () => {
+  expect(() =>
+    assertReferencePublication(
+      "public/fonts/GreatVibes-Regular.ttf",
+      "0".repeat(64),
+      "source",
+    ),
+  ).not.toThrow();
 });
 
 test("website license downloads preserve the project license texts", async () => {

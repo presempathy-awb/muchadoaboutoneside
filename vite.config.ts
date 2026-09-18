@@ -7,6 +7,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   build: { manifest: true },
+  // Keep the exact print-mesh adapter out of archival-only worker requests.
+  worker: { format: "es" },
   server: {
     host: "127.0.0.1",
     port: 5173,

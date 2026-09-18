@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { createApp } from "../server/app";
 import { project } from "../server/project";
 import { FABRICATION_DOWNLOADS } from "../shared/fabrication-downloads";
+import { REFERENCE_IMAGES } from "../shared/reference-gallery";
 
 const app = createApp({
   staticDir: resolve(import.meta.dir, "../dist"),
@@ -26,6 +27,8 @@ try {
   for (const route of [
     "/",
     "/foil",
+    "/scales",
+    "/references",
     "/studio",
     "/assembly",
     "/archive",
@@ -139,6 +142,18 @@ try {
   ]) {
     if ((await fetch(`${origin}${path}`)).status !== 404)
       throw new Error(`Private source path exposed: ${path}`);
+  }
+  for (const reference of REFERENCE_IMAGES) {
+    const response = await fetch(`${origin}${reference.path}`);
+    const bytes = await response.arrayBuffer();
+    const hash = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
+    if (
+      !response.ok ||
+      hash !== reference.sha256 ||
+      bytes.byteLength !== reference.bytes ||
+      !response.headers.get("content-type")?.includes(reference.mediaType)
+    )
+      throw new Error(`Reference original mismatch: ${reference.file}`);
   }
   const collab = await fetch(`${origin}/api/collab/status`);
   if (

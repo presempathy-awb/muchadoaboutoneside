@@ -14,6 +14,7 @@ import "@babylonjs/loaders/glTF/2.0/glTFLoader";
 import { CANONICAL_POEM, type PoemVersion } from "../../shared/poem";
 import type { FoilSkinController } from "./foil-skin";
 import { inscriptionView } from "./inscription-view";
+import type { ScalePreview, ScaleSkinController } from "./scale-skin";
 
 export const SCULPTURE_ASSET_URL = "/api/assets/snake_build.glb";
 
@@ -39,6 +40,7 @@ export interface SculptureSceneController {
   setSeams(visible: boolean): void;
   setPoemVersion(version: PoemVersion): void;
   setReadingView(enabled: boolean): void;
+  setScalePreview(preview: ScalePreview): void;
   resetCamera(): void;
   resize(): void;
   dispose(): void;
@@ -46,7 +48,7 @@ export interface SculptureSceneController {
 
 interface CreateSculptureSceneOptions {
   onSelectPart?: (part: SculpturePart | null) => void;
-  edition?: "construction" | "inscription";
+  edition?: "construction" | "inscription" | "scales";
 }
 
 const PART_COLORS: Record<SculpturePart, string> = {
@@ -148,15 +150,23 @@ export function createSculptureScene(
   let autoRotate = false;
   let disposed = false;
   let foilSkin: FoilSkinController | null = null;
+  let scaleSkin: ScaleSkinController | null = null;
+  let scalePreview: ScalePreview | undefined;
+  let sourceRoot: AbstractMesh | null = null;
+  let originalRootScale = Vector3.One();
+  let framedScaleStudy: ScalePreview["study"] | null = null;
   let showLettering = true;
   let showSeams = false;
   let poemVersion: PoemVersion = CANONICAL_POEM;
   let wireframe = false;
   let readingView = false;
   const foilEdition = options.edition === "inscription";
+  const scaleEdition = options.edition === "scales";
   const coveredStructure = new Set<string>(["ribs", "slats", "spine", "head"]);
   const partVisible = (part: string) =>
-    !hiddenParts.has(part) && !(foilEdition && coveredStructure.has(part));
+    !(scaleEdition && scalePreview?.study.modelId === "maquette") &&
+    !hiddenParts.has(part) &&
+    !((foilEdition || scaleEdition) && coveredStructure.has(part));
   let fittedTarget = new Vector3(0, 103, 0);
   let fittedRadius = 420;
 
@@ -204,7 +214,7 @@ export function createSculptureScene(
     camera.radius = fittedRadius;
     camera.lowerRadiusLimit = fittedRadius * 0.18;
     camera.upperRadiusLimit = fittedRadius * 3.2;
-    camera.minZ = Math.max(0.1, fittedRadius / 1_000);
+    camera.minZ = Math.max(0.0001, fittedRadius / 1_000);
     camera.maxZ = fittedRadius * 8;
   };
 
@@ -227,6 +237,22 @@ export function createSculptureScene(
       camera.beta = START_BETA;
       camera.radius = fittedRadius;
       camera.target.copyFrom(fittedTarget);
+    }
+  };
+
+  const applyScalePreview = () => {
+    if (!scaleSkin || !scalePreview || !sourceRoot) return;
+    const factor =
+      scalePreview.study.modelId === "maquette"
+        ? 1
+        : (scalePreview.study.modelScale ?? 1);
+    sourceRoot.scaling.copyFrom(originalRootScale.scale(factor));
+    for (const [part, meshes] of meshesByPart)
+      for (const mesh of meshes) mesh.setEnabled(partVisible(part));
+    scaleSkin.update(scalePreview);
+    if (framedScaleStudy !== scalePreview.study) {
+      fitCamera(scene.meshes.filter((mesh) => mesh.isEnabled()));
+      framedScaleStudy = scalePreview.study;
     }
   };
 
@@ -274,6 +300,19 @@ export function createSculptureScene(
     }
     fitCamera(meshes);
     updateSelection();
+    if (scaleEdition) {
+      const [{ createScaleSkin }, { makeStudioReflection }] = await Promise.all(
+        [import("./scale-skin"), import("./studio-reflection")],
+      );
+      if (disposed) return;
+      scene.environmentTexture = makeStudioReflection(scene);
+      scene.environmentIntensity = 0.85;
+      sourceRoot = meshes[0] ?? null;
+      originalRootScale = sourceRoot?.scaling.clone() ?? Vector3.One();
+      scaleSkin = createScaleSkin(scene, meshes[0] ?? null);
+      scaleSkin.setWireframe(wireframe);
+      applyScalePreview();
+    }
     if (foilEdition) {
       const { createFoilSkin } = await import("./foil-skin");
       if (disposed) return;
@@ -313,6 +352,7 @@ export function createSculptureScene(
       for (const material of materialsByPart.values())
         material.wireframe = enabled;
       foilSkin?.setWireframe(enabled);
+      scaleSkin?.setWireframe(enabled);
     },
     setLettering(visible) {
       showLettering = visible;
@@ -330,6 +370,10 @@ export function createSculptureScene(
       readingView = foilEdition && enabled;
       applyCameraView();
     },
+    setScalePreview(preview) {
+      scalePreview = preview;
+      applyScalePreview();
+    },
     resetCamera() {
       readingView = false;
       applyCameraView();
@@ -343,6 +387,7 @@ export function createSculptureScene(
       visibilityObserver?.disconnect();
       camera.detachControl();
       engine.stopRenderLoop();
+      scaleSkin?.dispose();
       scene.dispose();
       engine.dispose();
     },

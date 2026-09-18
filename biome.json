@@ -10,6 +10,7 @@
       "!public/fabrication",
       "!public/guide",
       "!shared/print-manifest.json",
+      "!shared/scale-maquette.json",
       "!src/components/ui"
     ]
   },

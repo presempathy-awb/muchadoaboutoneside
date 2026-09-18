@@ -1,0 +1,168 @@
+.scale-build-up {
+  margin-block: 2rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid #d8cbb6;
+  border-radius: 1rem;
+  background: #fcf9f2;
+  color: #30291f;
+}
+
+.scale-build-up-heading,
+.scale-build-up-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.scale-build-up h2 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+}
+
+.scale-build-up-eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.scale-build-up label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.scale-build-up :is(input, select) {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ab9e88;
+  border-radius: 0.4rem;
+  background: white;
+  color: #30291f;
+  font: inherit;
+}
+
+.scale-build-up :is(input, select, summary):focus-visible {
+  outline: 3px solid #8b632d;
+  outline-offset: 3px;
+}
+
+.scale-build-up-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.85rem 1rem;
+  border: 0;
+  padding: 0;
+  margin: 1.5rem 0 1rem;
+}
+
+.scale-build-up-inputs legend {
+  padding: 0 0 0.75rem;
+  font-weight: 700;
+}
+
+.scale-build-up-note,
+.scale-build-up figcaption {
+  color: #685f51;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.scale-build-up-section-picker {
+  max-width: 24rem;
+  margin-block: 1.5rem 0.5rem;
+}
+
+.scale-build-up figure {
+  flex: 1 1 15rem;
+  max-width: 25rem;
+  margin: 0;
+}
+
+.scale-build-up svg {
+  display: block;
+  width: 100%;
+}
+
+.scale-build-up-layer {
+  fill: #e7b45f16;
+  stroke: #b98531;
+  stroke-width: 1;
+}
+
+.scale-build-up-original {
+  fill: #393f46;
+  stroke: #20252b;
+  stroke-width: 1.5;
+}
+
+.scale-build-up dl {
+  flex: 1 1 16rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.scale-build-up dt {
+  color: #685f51;
+  font-size: 0.8rem;
+}
+
+.scale-build-up dd {
+  margin: 0.2rem 0 0;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.scale-build-up-summary dd {
+  font-size: 1.2rem;
+}
+
+.scale-build-up-table-scroll {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.scale-build-up table {
+  border-collapse: collapse;
+  min-width: 38rem;
+  width: 100%;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.scale-build-up caption {
+  padding-block: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.scale-build-up :is(th, td) {
+  padding: 0.6rem;
+  border-bottom: 1px solid #e1d7c6;
+  text-align: right;
+}
+
+.scale-build-up tr > :first-child {
+  text-align: left;
+}
+
+.scale-build-up tbody tr:last-child {
+  background: #f0e3cb;
+  font-weight: 700;
+}
+
+.scale-build-up details {
+  margin-top: 1.5rem;
+  border-top: 1px solid #d8cbb6;
+  padding-top: 1rem;
+}
+
+.scale-build-up summary {
+  cursor: pointer;
+  font-weight: 650;
+}

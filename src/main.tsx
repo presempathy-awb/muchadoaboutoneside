@@ -132,6 +132,18 @@ const router = createRouter({
     poemRoute,
     projectionRoute,
     sixFootRoute,
+    createRoute({
+      getParentRoute: () => rootRoute,
+      path: "/scales",
+      component: lazyRouteComponent(() => import("@/pages/scales")),
+      pendingComponent: RouteLoading,
+    }),
+    createRoute({
+      getParentRoute: () => rootRoute,
+      path: "/references",
+      component: lazyRouteComponent(() => import("@/pages/references")),
+      pendingComponent: RouteLoading,
+    }),
   ]),
   defaultNotFoundComponent: () => (
     <div className="empty-state">

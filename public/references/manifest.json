@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "title": "Much Ado About One Side — supplied reference images",
+  "publicationApprovedOn": "2026-09-18",
+  "preservation": "Complete original files, without cropping, resizing, or recompression.",
+  "rights": "Reference images are reproduced as supplied. Third-party artwork and interface content retain their respective rights.",
+  "images": [
+    {
+      "id": "sculpture-blocks-front",
+      "file": "iani-sculpture-video-reference-01.png",
+      "title": "Sculpture construction · front view",
+      "category": "sculpture",
+      "caption": "A supplied screenshot of the sculpture video at 0:04. The curved form has irregular wooden blocks, varied exposed faces, and visible gaps. This is the reference for the adjustable aluminum scale study.",
+      "alt": "Complete supplied screenshot with a sculpture video showing stepped wooden blocks around the front of the curved form.",
+      "suppliedOn": "2026-09-15",
+      "width": 1405,
+      "height": 1760,
+      "mediaType": "image/png",
+      "sourceUrl": "https://www.facebook.com/share/v/19QV86yaDy/",
+      "path": "/references/iani-sculpture-video-reference-01.png",
+      "bytes": 1238253,
+      "sha256": "f7ddeef71331dbee8100f35c8ae4a130495451eafa829f9ec4f3e87dcb109e21",
+      "provenance": "Project image supplied 2026-09-15. Complete original preserved without edits."
+    },
+    {
+      "id": "sculpture-blocks-side",
+      "file": "iani-sculpture-video-reference-02.png",
+      "title": "Sculpture construction · side view",
+      "category": "sculpture",
+      "caption": "A second supplied screenshot of the same video at 0:11. The side view shows the uneven block sizes, changing directions, and open joints around the bend.",
+      "alt": "Complete supplied screenshot with a sculpture video showing irregular wooden blocks and gaps around the side of the curved form.",
+      "suppliedOn": "2026-09-15",
+      "width": 1440,
+      "height": 1719,
+      "mediaType": "image/png",
+      "sourceUrl": "https://www.facebook.com/share/v/19QV86yaDy/",
+      "path": "/references/iani-sculpture-video-reference-02.png",
+      "bytes": 1168840,
+      "sha256": "836062958b46de2532fffefbf96df7bfdd3b3c6c76ac9726931b7cdf29292b85",
+      "provenance": "Project image supplied 2026-09-15. Complete original preserved without edits."
+    },
+    {
+      "id": "jill-calligraphy",
+      "file": "jill-calligraphy.jpg",
+      "title": "Jill’s calligraphy sample",
+      "category": "calligraphy",
+      "caption": "The original photograph supplied as a lettering reference: flowing script, fine connecting strokes, and generous flourishes. The writing shown in this photograph is a style sample; the sculpture uses its own poem.",
+      "alt": "Photograph of Jill’s flowing handwritten calligraphy on a softly colored background.",
+      "suppliedOn": "2026-09-14",
+      "width": 1450,
+      "height": 1926,
+      "mediaType": "image/jpeg",
+      "path": "/references/jill-calligraphy.jpg",
+      "bytes": 262677,
+      "sha256": "904edf635f229cf4bcc98efe61849cf3e113e0efa9eae040a126b3de73e94625",
+      "provenance": "Project image supplied 2026-09-14. Complete original preserved without edits."
+    }
+  ]
+}

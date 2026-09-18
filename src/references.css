@@ -1,0 +1,221 @@
+.reference-gallery-page {
+  --reference-ink: #273532;
+  --reference-muted: #5d6965;
+  --reference-accent: #285c4f;
+  color: var(--reference-ink);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 72px) clamp(16px, 4vw, 56px);
+}
+
+.reference-gallery-intro {
+  max-width: 760px;
+  margin-bottom: 52px;
+}
+
+.reference-gallery-kicker,
+.reference-gallery-category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.73rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--reference-accent);
+}
+
+.reference-gallery-intro h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.5rem, 5.5vw, 4.8rem);
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  margin: 18px 0 22px;
+}
+
+.reference-gallery-intro > p {
+  font-size: 1.1rem;
+  line-height: 1.75;
+  color: var(--reference-muted);
+  max-width: 660px;
+}
+
+.reference-gallery-links,
+.reference-gallery-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px 24px;
+  flex-wrap: wrap;
+}
+
+.reference-gallery-links {
+  margin-top: 26px;
+}
+
+.reference-gallery-links a,
+.reference-gallery-actions a,
+.reference-gallery-note > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--reference-accent);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-underline-offset: 4px;
+  min-height: 44px;
+}
+
+.reference-gallery-page a:focus-visible,
+.reference-gallery-page summary:focus-visible {
+  outline: 3px solid #a07432;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+.reference-gallery-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #d6dbd5;
+  margin-bottom: 26px;
+}
+
+.reference-gallery-heading h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.reference-gallery-heading > span {
+  color: var(--reference-muted);
+  font-size: 0.8rem;
+}
+
+.reference-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.reference-gallery-card {
+  margin: 0;
+  min-width: 0;
+  border: 1px solid #d8ddd7;
+  border-radius: 12px;
+  background: #fffefa;
+  overflow: hidden;
+}
+
+.reference-gallery-image {
+  display: block;
+  background: #e9ebe5;
+  text-decoration: none;
+}
+
+.reference-gallery-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: contain;
+}
+
+.reference-gallery-image > span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-size: 0.77rem;
+  color: var(--reference-ink);
+  background: #f0f1eb;
+}
+
+.reference-gallery-card figcaption {
+  padding: 24px 20px;
+}
+
+.reference-gallery-card h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: 1.35rem;
+  line-height: 1.3;
+  margin: 12px 0;
+}
+
+.reference-gallery-card p {
+  color: var(--reference-muted);
+  font-size: 0.87rem;
+  line-height: 1.7;
+  margin: 0 0 18px;
+}
+
+.reference-gallery-card .reference-gallery-meta {
+  font-size: 0.75rem;
+  line-height: 1.8;
+}
+
+.reference-gallery-actions {
+  gap: 4px 18px;
+}
+
+.reference-gallery-actions a {
+  font-size: 0.77rem;
+}
+
+.reference-gallery-checksum {
+  margin-top: 16px;
+  border-top: 1px solid #e4e7e1;
+  padding-top: 10px;
+  color: var(--reference-muted);
+  font-size: 0.72rem;
+}
+
+.reference-gallery-checksum summary {
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.reference-gallery-checksum p {
+  font-size: 0.7rem;
+  margin: 8px 0 4px;
+}
+
+.reference-gallery-checksum code {
+  display: block;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+
+.reference-gallery-note {
+  max-width: 800px;
+  margin-top: 44px;
+  color: var(--reference-muted);
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+
+.reference-gallery-note p {
+  margin: 0 0 12px;
+}
+
+@media (max-width: 1000px) {
+  .reference-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .reference-gallery-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .reference-gallery-intro {
+    margin-bottom: 36px;
+  }
+}
