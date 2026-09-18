@@ -14,6 +14,7 @@ import "@babylonjs/loaders/glTF/2.0/glTFLoader";
 import { CANONICAL_POEM, type PoemVersion } from "../../shared/poem";
 import type { FoilSkinController } from "./foil-skin";
 import { inscriptionView } from "./inscription-view";
+import type { ScaleAtlasPlan } from "./scale-atlas";
 import type { ScalePreview, ScaleSkinController } from "./scale-skin";
 import type { ScaleTypography } from "./scale-typography";
 import {
@@ -64,7 +65,10 @@ export interface SculptureSceneController {
 
 interface CreateSculptureSceneOptions {
   onSelectPart?: (part: SculpturePart | null) => void;
-  onScalePreviewReady?: (preview: ScalePreview) => void;
+  onScalePreviewReady?: (
+    preview: ScalePreview,
+    atlasPlan: ScaleAtlasPlan,
+  ) => void;
   onScalePreviewError?: (preview: ScalePreview, message: string) => void;
   edition?: "construction" | "inscription" | "scales";
 }
@@ -179,6 +183,8 @@ export function createSculptureScene(
   let sourceTransition: { from: number; to: number; started: number } | null =
     null;
   let disposed = false;
+  // The observer may report hidden before the lazy scale skin finishes loading.
+  let visible = true;
   let foilSkin: FoilSkinController | null = null;
   let scaleSkin: ScaleSkinController | null = null;
   let scalePreview: ScalePreview | undefined;
@@ -246,7 +252,7 @@ export function createSculptureScene(
     // inertia, or an existing animation already heading to the same framing.
     if (sameCameraPose(to, cameraTransition?.to ?? cameraPose())) return;
     clearInertia();
-    if (!animate || reducedMotion) {
+    if (!animate || reducedMotion || !visible) {
       cameraTransition = null;
       applyPose(to);
     } else
@@ -340,7 +346,10 @@ export function createSculptureScene(
     }
   };
 
-  const applyScalePreview = (preview: ScalePreview) => {
+  const applyScalePreview = (
+    preview: ScalePreview,
+    atlasPlan: ScaleAtlasPlan,
+  ) => {
     if (!scaleSkin || !sourceRoot) return;
     scalePreview = preview;
     // This callback runs only after a skin commits, never for a queued request.
@@ -365,7 +374,7 @@ export function createSculptureScene(
     // it keeps the old factor; entering positions it before the fade from zero.
     updateSourceScale(changedStudy ? factor : sourceScale);
     if (changedStudy && hardwareOpacity !== target.opacity) {
-      if (previousModel && !reducedMotion) {
+      if (previousModel && !reducedMotion && visible) {
         hardwareTransition = {
           from: hardwareOpacity,
           to: target.opacity,
@@ -391,6 +400,7 @@ export function createSculptureScene(
       changedStudy &&
       target.animate &&
       !reducedMotion &&
+      visible &&
       previousSourceScale !== factor
     ) {
       sourceTransition = {
@@ -400,7 +410,7 @@ export function createSculptureScene(
       };
       updateSourceScale(previousSourceScale);
     } else if (changedStudy) sourceTransition = null;
-    options.onScalePreviewReady?.(scalePreview);
+    options.onScalePreviewReady?.(scalePreview, atlasPlan);
   };
 
   const cancelCameraTransition = () => {
@@ -450,14 +460,32 @@ export function createSculptureScene(
   const render = () => {
     if (!disposed) scene.render();
   };
+  const settleSceneTransitions = () => {
+    if (cameraTransition) {
+      applyPose(cameraTransition.to);
+      cameraTransition = null;
+    }
+    if (hardwareTransition) {
+      updateHardwareOpacity(hardwareTransition.to);
+      hardwareTransition = null;
+    }
+    if (sourceTransition) {
+      updateSourceScale(sourceTransition.to);
+      sourceTransition = null;
+    }
+  };
   engine.runRenderLoop(render);
   const visibilityObserver =
     typeof IntersectionObserver === "undefined"
       ? null
       : new IntersectionObserver((entries) => {
           if (disposed) return;
-          if (entries.some((entry) => entry.isIntersecting))
-            engine.runRenderLoop(render);
+          visible = entries.some((entry) => entry.isIntersecting);
+          if (!visible) settleSceneTransitions();
+          // Completing a hidden fade can commit the latest queued proof. It
+          // must not depend on the render loop that is about to be stopped.
+          scaleSkin?.setVisible(visible);
+          if (visible) engine.runRenderLoop(render);
           else engine.stopRenderLoop(render);
         });
   visibilityObserver?.observe(canvas);
@@ -502,6 +530,7 @@ export function createSculptureScene(
       });
       scaleSkin.setWireframe(wireframe);
       scaleSkin.setReducedMotion(reducedMotion);
+      scaleSkin.setVisible(visible);
       if (requestedScalePreview) scaleSkin.update(requestedScalePreview);
     }
     if (foilEdition) {
@@ -581,18 +610,7 @@ export function createSculptureScene(
     setReducedMotion(enabled) {
       reducedMotion = enabled;
       scaleSkin?.setReducedMotion(enabled);
-      if (enabled && cameraTransition) {
-        applyPose(cameraTransition.to);
-        cameraTransition = null;
-      }
-      if (enabled && hardwareTransition) {
-        updateHardwareOpacity(hardwareTransition.to);
-        hardwareTransition = null;
-      }
-      if (enabled && sourceTransition) {
-        updateSourceScale(sourceTransition.to);
-        sourceTransition = null;
-      }
+      if (enabled) settleSceneTransitions();
     },
     resetCamera() {
       readingView = false;

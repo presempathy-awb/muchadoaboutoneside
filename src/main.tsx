@@ -21,14 +21,11 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
 });
 const rootRoute = createRootRoute({ component: AppShell });
-const foilHomeRoute = createRoute({
+const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: () => (
-    <Suspense fallback={<RouteLoading />}>
-      <Foil />
-    </Suspense>
-  ),
+  component: lazyRouteComponent(() => import("@/pages/home")),
+  pendingComponent: RouteLoading,
 });
 const studioRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -120,7 +117,7 @@ const sixFootRoute = createRoute({
 const router = createRouter({
   scrollRestoration: true,
   routeTree: rootRoute.addChildren([
-    foilHomeRoute,
+    homeRoute,
     studioRoute,
     assemblyRoute,
     archiveRoute,
@@ -148,7 +145,7 @@ const router = createRouter({
   defaultNotFoundComponent: () => (
     <div className="empty-state">
       <h1>Page not found</h1>
-      <a href="/">Return to the foil edition</a>
+      <a href="/">Return to the sculpture</a>
     </div>
   ),
 });

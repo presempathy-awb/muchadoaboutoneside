@@ -1,0 +1,57 @@
+.home-workshop {
+  margin: 0 clamp(1rem, 3vw, 3rem) 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 2rem;
+}
+
+.home-workshop h2 {
+  margin: 0.75rem 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.home-workshop p,
+.home-workshop-links span {
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}
+
+.home-workshop-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.home-workshop-links a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  text-decoration: none;
+}
+
+.home-workshop-links a:hover,
+.home-workshop-links a:focus-visible {
+  background: var(--secondary);
+}
+
+.home-workshop-links span {
+  font-size: 0.85rem;
+}
+
+@media (max-width: 800px) {
+  .home-workshop {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .home-workshop-links {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

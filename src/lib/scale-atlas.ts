@@ -1,7 +1,9 @@
+import type { ScaleLetteringQuality } from "../../shared/scale-design";
 import type { ScaleLetteringResult } from "../../shared/scale-lettering";
 import type { ScaleStudy } from "../../shared/scale-study";
 
-export const SCALE_ATLAS_TARGET_PIXELS_PER_EM = 24;
+export const SCALE_ATLAS_TARGET_PIXELS_PER_EM = 64;
+export const SCALE_ATLAS_BALANCED_PIXELS_PER_EM = 24;
 export const SCALE_ATLAS_READABLE_PIXELS_PER_EM = 12;
 export const SCALE_ATLAS_MAX_PIXELS = 16 * 1024 * 1024;
 export const SCALE_ATLAS_MAX_COUNT = 23;
@@ -27,7 +29,21 @@ export interface ScaleAtlasPlan {
   plainPlateIds: string[];
   totalPixels: number;
   minPixelsPerEm: number | null;
+  /** Actual vertical density, for measured ink/x-height resolution. */
+  minVerticalPixelsPerEm: number | null;
+  targetPixelsPerEm: number;
+  /** True when memory or device limits prevent the requested minimum density. */
+  qualityLimited: boolean;
+  /** Measured ink height at the lowest vertical density; not a legibility claim. */
+  minInkHeightPixels: number | null;
+  /** Legacy em-density floor; measured ink determines actual letter visibility. */
   readable: boolean;
+}
+
+export interface ScaleAtlasOptions {
+  quality?: ScaleLetteringQuality;
+  /** Measured ink height at one em; omit when exact ink metrics are unavailable. */
+  inkHeightEm?: number;
 }
 
 interface Face {
@@ -68,6 +84,7 @@ function pack(faces: Face[], pixelsPerEm: number, size: number) {
     slots: ScaleAtlasSlot[];
   }[] = [];
   let minimum = Number.POSITIVE_INFINITY;
+  let minimumVertical = Number.POSITIVE_INFINITY;
   for (const rectangle of rectangles) {
     const width = rectangle.width + 2 * PADDING;
     const height = rectangle.height + 2 * PADDING;
@@ -104,6 +121,10 @@ function pack(faces: Face[], pixelsPerEm: number, size: number) {
       rectangle.width / rectangle.widthEm,
       rectangle.height / rectangle.heightEm,
     );
+    minimumVertical = Math.min(
+      minimumVertical,
+      rectangle.height / rectangle.heightEm,
+    );
   }
   // Power-of-two pages also avoid implicit canvas resizing on WebGL 1 engines.
   const atlases = pages.map((page) => ({
@@ -116,7 +137,12 @@ function pack(faces: Face[], pixelsPerEm: number, size: number) {
     0,
   );
   if (totalPixels > SCALE_ATLAS_MAX_PIXELS) return null;
-  return { atlases, totalPixels, minPixelsPerEm: minimum };
+  return {
+    atlases,
+    totalPixels,
+    minPixelsPerEm: minimum,
+    minVerticalPixelsPerEm: minimumVertical,
+  };
 }
 
 /**
@@ -129,7 +155,18 @@ export function planScaleAtlases(
   lettering: ScaleLetteringResult,
   showLettering: boolean,
   maxTextureSize = 2048,
+  options: ScaleAtlasOptions = {},
 ): ScaleAtlasPlan {
+  const targetPixelsPerEm =
+    options.quality === "balanced"
+      ? SCALE_ATLAS_BALANCED_PIXELS_PER_EM
+      : SCALE_ATLAS_TARGET_PIXELS_PER_EM;
+  const inkHeightEm = options.inkHeightEm;
+  if (
+    inkHeightEm !== undefined &&
+    (!Number.isFinite(inkHeightEm) || inkHeightEm <= 0)
+  )
+    throw new Error("Measured ink height must be finite and positive.");
   const placements = new Map(
     lettering.placements
       .filter((placement) => showLettering && placement.lines.some(Boolean))
@@ -160,26 +197,54 @@ export function planScaleAtlases(
       plainPlateIds,
       totalPixels: 0,
       minPixelsPerEm: null,
+      minVerticalPixelsPerEm: null,
+      targetPixelsPerEm,
+      qualityLimited: false,
+      minInkHeightPixels: null,
       readable: true,
     };
   if (!Number.isFinite(maxTextureSize) || maxTextureSize < 16)
     throw new Error("This graphics device cannot draw scale lettering.");
-  const size = 2 ** Math.floor(Math.log2(Math.min(2048, maxTextureSize)));
+  const size = 2 ** Math.floor(Math.log2(Math.min(4096, maxTextureSize)));
+  // A larger power-of-two page can waste budget. Keep the smaller-page option
+  // so enabling crisp detail never removes a viable balanced-density packing.
+  const pageSizes = size > 2048 ? [size, 2048] : [size];
   // Bounded retries reduce density only when page count or memory requires it.
-  let pixelsPerEm = SCALE_ATLAS_TARGET_PIXELS_PER_EM;
+  let pixelsPerEm = targetPixelsPerEm;
+  let best: NonNullable<ReturnType<typeof pack>> | null = null;
   for (let attempt = 0; attempt < 32; attempt += 1) {
-    const packed = pack(faces, pixelsPerEm, size);
-    if (packed)
+    for (const pageSize of pageSizes) {
+      const packed = pack(faces, pixelsPerEm, pageSize);
+      if (
+        packed &&
+        (!best ||
+          packed.minPixelsPerEm > best.minPixelsPerEm ||
+          (packed.minPixelsPerEm === best.minPixelsPerEm &&
+            packed.totalPixels < best.totalPixels))
+      )
+        best = packed;
+    }
+    // A long face may hit a page dimension before the memory budget. Compare
+    // those capped candidates with the next density before committing a plan.
+    if (best && (best.minPixelsPerEm >= pixelsPerEm || attempt === 31))
       return {
-        ...packed,
+        ...best,
         plainPlateIds,
-        readable: packed.minPixelsPerEm >= SCALE_ATLAS_READABLE_PIXELS_PER_EM,
+        targetPixelsPerEm,
+        qualityLimited: best.minPixelsPerEm < targetPixelsPerEm,
+        minInkHeightPixels:
+          inkHeightEm === undefined
+            ? null
+            : best.minVerticalPixelsPerEm * inkHeightEm,
+        readable: best.minPixelsPerEm >= SCALE_ATLAS_READABLE_PIXELS_PER_EM,
       };
-    // Always try the readability threshold before falling below it.
+    // Try the complete balanced sequence before falling below its thresholds.
     pixelsPerEm =
-      pixelsPerEm > SCALE_ATLAS_READABLE_PIXELS_PER_EM
-        ? Math.max(SCALE_ATLAS_READABLE_PIXELS_PER_EM, pixelsPerEm * 0.75)
-        : pixelsPerEm * 0.75;
+      pixelsPerEm > SCALE_ATLAS_BALANCED_PIXELS_PER_EM
+        ? Math.max(SCALE_ATLAS_BALANCED_PIXELS_PER_EM, pixelsPerEm * 0.75)
+        : pixelsPerEm > SCALE_ATLAS_READABLE_PIXELS_PER_EM
+          ? Math.max(SCALE_ATLAS_READABLE_PIXELS_PER_EM, pixelsPerEm * 0.75)
+          : pixelsPerEm * 0.75;
   }
   throw new Error("This graphics device cannot fit the scale lettering.");
 }

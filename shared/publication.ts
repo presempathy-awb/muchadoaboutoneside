@@ -70,6 +70,7 @@ export const REQUIRED_PUBLIC_FILES = [
   "docs/calligraphy-font-security.md",
   "docs/scale-studio.md",
   "docs/scanned-calligraphy.md",
+  "docs/browser-testing.md",
   "docs/runbook/development.md",
   "docs/runbook/containers.md",
   "docs/runbook/instructions.md",

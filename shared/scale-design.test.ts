@@ -9,6 +9,26 @@ import {
 } from "./scale-design";
 
 describe("portable scale study settings", () => {
+  test("preview quality defaults old designs to crisp and preserves balanced through resize and reload", () => {
+    const { letteringQuality: _quality, ...legacy } = DEFAULT_SCALE_DESIGN;
+    for (const letteringQuality of [undefined, null, "unknown", {}, 64]) {
+      expect(
+        normalizeScaleDesign({ ...legacy, letteringQuality }).letteringQuality,
+      ).toBe("crisp");
+    }
+    const balanced = normalizeScaleDesign({
+      ...legacy,
+      letteringQuality: "balanced",
+    });
+    const resized = normalizeScaleDesign(
+      JSON.parse(JSON.stringify(resizeScaleDesign(balanced, 2))),
+    );
+    expect(resized.letteringQuality).toBe("balanced");
+    expect(resized.fontSizeMm).toBe(balanced.fontSizeMm);
+    expect(resized.minFontSizeMm).toBe(balanced.minFontSizeMm);
+    expect(resized.text).toBe(balanced.text);
+  });
+
   test("round trips a blank or custom study without altering wording", () => {
     for (const text of [
       "",

@@ -9,7 +9,7 @@ import type { ScaleDesign } from "../../shared/scale-design";
 import type { ScaleLetteringResult } from "../../shared/scale-lettering";
 import type { ScaleStudy } from "../../shared/scale-study";
 import { foilVertexData } from "./foil-mesh";
-import { planScaleAtlases } from "./scale-atlas";
+import { planScaleAtlases, type ScaleAtlasPlan } from "./scale-atlas";
 import { drawScalePlate } from "./scale-plate-canvas";
 import type { ScaleTypography } from "./scale-typography";
 import { transitionProgress } from "./scene-transition";
@@ -26,13 +26,15 @@ export interface ScaleSkinController {
   update(preview: ScalePreview): void;
   setWireframe(enabled: boolean): void;
   setReducedMotion(enabled: boolean): void;
+  /** Hidden viewers commit queued updates without waiting for animation frames. */
+  setVisible(visible: boolean): void;
   setModelScale(factor: number): void;
   getMeshes(): readonly Mesh[];
   dispose(): void;
 }
 
 interface ScaleSkinOptions {
-  onCommit?: (preview: ScalePreview) => void;
+  onCommit?: (preview: ScalePreview, atlasPlan: ScaleAtlasPlan) => void;
   onError?: (preview: ScalePreview, error: unknown) => void;
 }
 
@@ -48,12 +50,13 @@ export function createScaleSkin(
     textures: DynamicTexture[];
     canvases: HTMLCanvasElement[];
   }
-  let current: SkinResources | null = null;
+  let current: (SkinResources & { atlasPlan: ScaleAtlasPlan }) | null = null;
   let retiring: SkinResources | null = null;
   let currentPreview: ScalePreview | null = null;
   let pendingPreview: ScalePreview | null = null;
   let wireframe = false;
   let reducedMotion = false;
+  let visible = true;
   let disposed = false;
   let coordinateScale = 1;
   let fadeStarted = 0;
@@ -113,7 +116,9 @@ export function createScaleSkin(
       const sameStudy = currentPreview?.study === study;
       const sameLayout =
         currentPreview?.lettering === lettering &&
-        currentPreview?.design.showLettering === design.showLettering;
+        currentPreview?.design.showLettering === design.showLettering &&
+        (currentPreview?.design.letteringQuality ?? "crisp") ===
+          (design.letteringQuality ?? "crisp");
       const reusable =
         sameStudy &&
         (sameLayout ||
@@ -137,17 +142,18 @@ export function createScaleSkin(
       return mesh;
     };
     const existingTextures = new Set(scene.textures);
+    const plan = planScaleAtlases(
+      study,
+      lettering,
+      design.showLettering,
+      scene.getEngine().getCaps().maxTextureSize,
+      { quality: design.letteringQuality },
+    );
     try {
       const placements = new Map(
         lettering.placements.map((item) => [item.plateId, item]),
       );
       const plates = new Map(study.plates.map((plate) => [plate.id, plate]));
-      const plan = planScaleAtlases(
-        study,
-        lettering,
-        design.showLettering,
-        scene.getEngine().getCaps().maxTextureSize,
-      );
       const edgePositions: number[] = [];
       const edgeIndices: number[] = [];
       for (const plate of study.plates) {
@@ -257,7 +263,7 @@ export function createScaleSkin(
       }
       throw error;
     }
-    return resources;
+    return { ...resources, atlasPlan: plan };
   };
   const commit = (preview: ScalePreview) => {
     const previous = currentPreview;
@@ -270,7 +276,9 @@ export function createScaleSkin(
       previous.design.plateColor === preview.design.plateColor &&
       previous.design.inkColor === preview.design.inkColor &&
       previous.design.marginMm === preview.design.marginMm &&
-      previous.design.showLettering === preview.design.showLettering;
+      previous.design.showLettering === preview.design.showLettering &&
+      (previous.design.letteringQuality ?? "crisp") ===
+        (preview.design.letteringQuality ?? "crisp");
     if (!unchanged) {
       const candidate = build(preview);
       retiring = current;
@@ -282,14 +290,14 @@ export function createScaleSkin(
       for (const group of [current, retiring])
         for (const mesh of group?.meshes ?? [])
           mesh.scaling.setAll(coordinateScale);
-      if (reducedMotion || !retiring) settle();
+      if (reducedMotion || !visible || !retiring) settle();
       else {
         fadeStarted = performance.now();
         opacity(current, 0);
       }
     }
     currentPreview = preview;
-    options.onCommit?.(preview);
+    if (current) options.onCommit?.(preview, current.atlasPlan);
   };
   const flushPending = () => {
     if (disposed || scene.isDisposed || retiring || !pendingPreview) return;
@@ -322,6 +330,14 @@ export function createScaleSkin(
     setReducedMotion(enabled) {
       reducedMotion = enabled;
       if (enabled) {
+        settle();
+        flushPending();
+      }
+    },
+    setVisible(enabled) {
+      if (disposed || scene.isDisposed) return;
+      visible = enabled;
+      if (!visible) {
         settle();
         flushPending();
       }

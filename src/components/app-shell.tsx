@@ -21,8 +21,8 @@ import { PoemVersionPicker } from "@/components/poem-version-picker";
 const links = [
   {
     to: "/" as const,
-    icon: Feather,
-    label: "Foil edition",
+    icon: Box,
+    label: "Sculpture & scales",
     index: "01",
   },
   {
@@ -91,6 +91,12 @@ const links = [
     label: "Reference images",
     index: "12",
   },
+  {
+    to: "/foil" as const,
+    icon: Feather,
+    label: "Foil edition",
+    index: "13",
+  },
 ];
 
 export function AppShell() {
@@ -99,11 +105,7 @@ export function AppShell() {
   });
   const currentPage =
     links.find(({ to }) => pathname === to) ??
-    links.find(({ to }) =>
-      to === "/"
-        ? pathname === "/" || pathname === "/foil"
-        : pathname === to || pathname.startsWith(`${to}/`),
-    );
+    links.find(({ to }) => to !== "/" && pathname.startsWith(`${to}/`));
   useEffect(() => {
     document.title = `${currentPage?.label ?? "Page not found"} · Much Ado About One Side`;
   }, [currentPage]);
