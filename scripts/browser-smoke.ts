@@ -445,6 +445,20 @@ try {
     "font choices are available",
     `document.querySelector('#scales-font').options.length > 2`,
   );
+  // Pause offscreen 3D rendering before the real geometry-worker size search.
+  // CPU-only CI browsers otherwise spend the search's bounded time rendering
+  // the overview while the worker and yielded allocator need that same CPU.
+  await evaluate(
+    `document.querySelector('.scales-proof-card').scrollIntoView({block:'start'})`,
+  );
+  await waitFor("overview canvas leaves the viewport before fit", () =>
+    evaluate<boolean>(
+      `(() => { const c=document.querySelector('.scales-model-card canvas'); if(!c) return false; const r=c.getBoundingClientRect(); return r.bottom <= 0 || r.top >= innerHeight || r.right <= 0 || r.left >= innerWidth; })()`,
+    ),
+  );
+  await evaluate(
+    `new Promise(resolve => setTimeout(() => setTimeout(resolve, 0), 0))`,
+  );
   await evaluate(
     `Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Enlarge until the words fit').click()`,
   );
@@ -456,6 +470,10 @@ try {
       ),
     120000,
   );
+  const fitDiagnostic = await evaluate(
+    `({ state:document.querySelector('[data-testid="scales-workbench"]')?.getAttribute('data-fit-state'), previewReady:document.querySelector('[data-testid="scales-workbench"]')?.getAttribute('data-preview-ready'), visibilityState:document.visibilityState, messages:Array.from(document.querySelectorAll('.scales-size-card [role="status"]')).map(e=>e.textContent?.trim()) })`,
+  );
+  console.log(`FIT ${JSON.stringify(fitDiagnostic)}`);
   await diagnose("size search terminal state");
   await assert(
     "bounded size search finds a fit",

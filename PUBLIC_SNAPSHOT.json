@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "c5091651e289bb7178f38af88fa6dd48ccd68ec0",
+  "sourceCommit": "2fcb2a4ab28254970d3e74653c3eca3de2aef2f5",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5070,8 +5070,8 @@
     },
     {
       "path": "scripts/browser-smoke.ts",
-      "bytes": 30591,
-      "sha256": "89b54cc7e93cfde3687100df208fe39d44cdc0f7699f2f21a2711e60172d2759"
+      "bytes": 31839,
+      "sha256": "e703662caecf0291df108686b13ab7706cfe6780853c2843620501cef5c7a92b"
     },
     {
       "path": "scripts/container-ci-smoke.ts",
