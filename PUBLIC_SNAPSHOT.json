@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "a34c661ef7330ac17e45972dcc5c84434e385047",
+  "sourceCommit": "9d482d76c0cdbf1f1abec9cdcdfd2cb3440e60b9",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5400,13 +5400,13 @@
     },
     {
       "path": "shared/scale-maquette.test.ts",
-      "bytes": 7187,
-      "sha256": "c5a2458e79a2580fc857e3e243cf87dc58f110ee3310375516648eb742f50f18"
+      "bytes": 8564,
+      "sha256": "74f0fb5332df4c0569d9ab7d6edab9d607eac9592cb819a6828f44b55430d053"
     },
     {
       "path": "shared/scale-maquette.ts",
-      "bytes": 18221,
-      "sha256": "bd3cb2d3955bb1281dd74f94a09ce09e38e619ea5460a3e10fd555171916653a"
+      "bytes": 18686,
+      "sha256": "0fdf526c84a0c89853f77284976a36bd37640db011d87c5271f52f9304a94137"
     },
     {
       "path": "shared/scale-measurements.test.ts",

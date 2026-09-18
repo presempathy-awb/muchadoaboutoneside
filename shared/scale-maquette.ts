@@ -262,7 +262,18 @@ export function maquetteWritingRect(
       }
     }
   }
-  return best;
+  // Clipping tolerances can leave microscopic UV slivers beyond an edge. Take
+  // an intersection, never expand the proven writing region to fill the page.
+  const x = Math.max(0, Math.min(1, best.x));
+  const y = Math.max(0, Math.min(1, best.y));
+  const right = Math.max(0, Math.min(1, best.x + best.width));
+  const bottom = Math.max(0, Math.min(1, best.y + best.height));
+  return {
+    x,
+    y,
+    width: Math.max(0, right - x),
+    height: Math.max(0, bottom - y),
+  };
 }
 
 function faceArea(positions: number[], indices: number[], face: number) {

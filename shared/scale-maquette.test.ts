@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { allocateScaleLettering } from "./scale-lettering";
 import {
   generateMaquetteScaleStudy,
   maquettePatchMetrics,
@@ -22,6 +23,44 @@ const settings = {
 };
 
 describe("actual print maquette scale adapter", () => {
+  test("UV clipping roundoff cannot invalidate the entire lettering remap", () => {
+    const slivers = [
+      [-1e-12, 0.4, -1e-12, 0.6, 0, 0.4],
+      [1, 0.4, 1, 0.6, 1 + 1e-12, 0.4],
+      [0.4, -1e-12, 0.4, 0, 0.6, -1e-12],
+      [0.4, 1, 0.4, 1 + 1e-12, 0.6, 1],
+    ];
+    for (const uvs of slivers) {
+      const safeRect = maquetteWritingRect({ uvs, indices: [0, 1, 2] });
+      expect(safeRect.x).toBeGreaterThanOrEqual(0);
+      expect(safeRect.y).toBeGreaterThanOrEqual(0);
+      expect(safeRect.x + safeRect.width).toBeLessThanOrEqual(1);
+      expect(safeRect.y + safeRect.height).toBeLessThanOrEqual(1);
+      const result = allocateScaleLettering(
+        [
+          {
+            id: "edge",
+            surface: "body",
+            widthInches: 1,
+            heightInches: 1,
+            safeRect,
+          },
+          {
+            id: "next",
+            surface: "body",
+            widthInches: 10,
+            heightInches: 10,
+            safeRect: { x: 0.1, y: 0.1, width: 0.8, height: 0.8 },
+          },
+        ],
+        "Words continue on the next face.",
+        { fontSizeMm: 3, marginMm: 1 },
+      );
+      expect(result.placements[0]?.lines).toEqual([]);
+      expect(result.unplacedText).toBe("");
+      expect(result.placedWordCount).toBe(result.totalWordCount);
+    }
+  });
   test("derived charts remain bound to the exact original STL and fabrication manifest", async () => {
     const stl = await readFile(
       new URL(
