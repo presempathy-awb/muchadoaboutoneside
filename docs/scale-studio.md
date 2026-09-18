@@ -40,6 +40,46 @@ The generator runs in a disposable module worker. A newer request terminates
 the previous worker, and an old response cannot replace the current result.
 The last successful preview remains available while the next one is computed.
 
+## Browsing working versions
+
+The version browser offers eight tested geometry presets: four actual-print
+studies at 180, 240, 360, and 720 mm, plus 36-inch wood, 72-inch curved wood,
+72-inch planar hybrid, and full archival-height studies. Each preset states its
+support, metal, and relief assumptions. Choosing one applies those construction
+settings while preserving the current wording, font, colors, and notes. A valid
+geometry preset does not guarantee that arbitrary lettering will fit or that a
+physical assembly has adequate clearances.
+
+Up to eight recently displayed working shapes are saved in this browser. This
+small history contains shape and construction settings rather than duplicate
+font files or text. Reopening an existing shape preserves the navigation order.
+Only successfully prepared previews enter this history. The current complete
+view remains visible while a new font, layout, or geometry is loading or fails.
+Recent geometry is reused from a page-local cache bounded by both entry count
+and a conservative memory estimate. Reloading preserves the shape settings,
+not the cached meshes.
+
+Optional adaptive plate density uses a saved physical-size reference. Increasing
+the model size requests more rows and columns; decreasing it requests fewer.
+Calculations always use the reference, so repeated size changes do not accumulate
+rounding error. Editing the density deliberately sets a new reference. Minimum
+counts and preview budgets still apply and are reported; the maquette's original
+chart seams still establish a floor on its actual piece count. Material thickness,
+relief, type size, and margins remain in physical units.
+
+Camera movement uses a short eased transition and preserves orbit and relative
+zoom during ordinary edits. Pointer, wheel, or keyboard input interrupts camera
+animation. Archival fittings fade with the model: outgoing fittings retain their
+previous size, and incoming fittings use the destination size from the start.
+The renderer prepares each replacement before retiring the current
+surface, with at most two skins during a short crossfade. Failed preparation
+retains the previous skin. Rapid selections keep the active fade continuous and
+coalesce to the latest requested replacement. Reduced-motion preferences complete transitions
+immediately. These controls improve continuity; actual frame rate still depends
+on device, texture load, and the chosen density.
+
+## Lettering
+
 Text starts empty. A poem selection copies its wording into the study without
 editing the canonical poem. Whole words flow through ordered body and jaw
 faces, within each face's safe rectangle and the chosen physical margins.

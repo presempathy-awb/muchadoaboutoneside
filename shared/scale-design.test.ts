@@ -1,5 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { DEFAULT_SCALE_DESIGN, normalizeScaleDesign } from "./scale-design";
+import {
+  DEFAULT_SCALE_DESIGN,
+  normalizeScaleDesign,
+  resizeScaleDesign,
+  scaleDensityStatus,
+  setScaleDensityMode,
+  updateScaleDensity,
+} from "./scale-design";
 
 describe("portable scale study settings", () => {
   test("round trips a blank or custom study without altering wording", () => {
@@ -108,6 +115,116 @@ describe("portable scale study settings", () => {
           customFont,
         }),
       ).toThrow();
+    }
+  });
+});
+
+describe("physical scale density", () => {
+  test("old schema-1 designs remain fixed density with no stale anchor", () => {
+    const { densityMode: _mode, ...legacy } = DEFAULT_SCALE_DESIGN;
+    const loaded = normalizeScaleDesign(legacy);
+    expect(loaded.densityMode).toBe("fixed");
+    expect(loaded.densityReference).toBeUndefined();
+    const resized = resizeScaleDesign(loaded, 2);
+    expect(resized.geometry.columns).toBe(legacy.geometry.columns);
+    expect(resized.geometry.rows).toBe(legacy.geometry.rows);
+    expect(resized.layers).toEqual(legacy.layers);
+    expect(resized.fontSizeMm).toBe(legacy.fontSizeMm);
+  });
+
+  test("resizing uses a stable anchor through rounding, caps and reloads", () => {
+    const initial = setScaleDensityMode(
+      updateScaleDensity(DEFAULT_SCALE_DESIGN, { columns: 31, rows: 3 }),
+      "adaptive",
+    );
+    let resized = initial;
+    for (const scale of [1.17, 1.43, 2.23, 30, 0.02, 0.731, 1.011, 1]) {
+      resized = normalizeScaleDesign(
+        JSON.parse(JSON.stringify(resizeScaleDesign(resized, scale))),
+      );
+      expect(resized.densityReference).toEqual(initial.densityReference);
+      expect(
+        resized.geometry.columns * resized.geometry.rows,
+      ).toBeLessThanOrEqual(600);
+      expect(resized.layers).toEqual(initial.layers);
+      expect(resized.fontSizeMm).toBe(initial.fontSizeMm);
+      expect(resized).toEqual(resizeScaleDesign(initial, scale));
+    }
+    expect(resized).toEqual(initial);
+    const doubled = resizeScaleDesign(initial, 2);
+    expect(doubled.geometry.columns).toBe(62);
+    expect(doubled.geometry.rows).toBe(6);
+    expect(scaleDensityStatus(doubled).limited).toBe(false);
+    expect(scaleDensityStatus(resizeScaleDesign(initial, 30)).limited).toBe(
+      true,
+    );
+    expect(scaleDensityStatus(resizeScaleDesign(initial, 0.02)).limited).toBe(
+      true,
+    );
+  });
+
+  test("manual density changes and mode changes anchor to the current size", () => {
+    const initial = setScaleDensityMode(DEFAULT_SCALE_DESIGN, "adaptive");
+    const changed = updateScaleDensity(resizeScaleDesign(initial, 2), {
+      columns: 30,
+      rows: 3,
+    });
+    expect(changed.densityReference).toEqual({
+      modelId: "archival",
+      modelScale: 2,
+      columns: 30,
+      rows: 3,
+    });
+    expect(resizeScaleDesign(changed, 4).geometry.columns).toBe(60);
+    const fixed = setScaleDensityMode(changed, "fixed");
+    expect(fixed.densityReference).toBeUndefined();
+    expect(resizeScaleDesign(fixed, 4).geometry.columns).toBe(30);
+    expect(setScaleDensityMode(changed, "adaptive")).toEqual(changed);
+  });
+
+  test("normalization validates untrusted anchors and reanchors a source change", () => {
+    const initial = setScaleDensityMode(DEFAULT_SCALE_DESIGN, "adaptive");
+    const changed = normalizeScaleDesign({
+      ...initial,
+      geometry: {
+        ...initial.geometry,
+        modelId: "maquette",
+        modelScale: 2,
+        columns: 24,
+        rows: 2,
+      },
+    });
+    expect(changed.densityReference).toEqual({
+      modelId: "maquette",
+      modelScale: 2,
+      columns: 24,
+      rows: 2,
+    });
+    for (const densityReference of [
+      null,
+      [],
+      {},
+      { ...initial.densityReference, columns: Infinity },
+    ]) {
+      const loaded = normalizeScaleDesign({ ...initial, densityReference });
+      expect(loaded.densityReference).toEqual(initial.densityReference);
+      expect(loaded.geometry).toEqual(initial.geometry);
+    }
+    const hostile = normalizeScaleDesign({
+      ...initial,
+      densityReference: {
+        modelId: "archival",
+        modelScale: 0,
+        columns: 1e100,
+        rows: 1e100,
+      },
+    });
+    expect(hostile.densityReference?.modelScale).toBe(0.02);
+    expect(
+      hostile.geometry.columns * hostile.geometry.rows,
+    ).toBeLessThanOrEqual(600);
+    for (const scale of [NaN, Infinity, -1, 0]) {
+      expect(() => resizeScaleDesign(initial, scale)).toThrow();
     }
   });
 });

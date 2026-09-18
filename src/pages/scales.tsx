@@ -10,6 +10,7 @@ import {
 import {
   lazy,
   Suspense,
+  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -17,9 +18,12 @@ import {
   useState,
 } from "react";
 import { ScaleBuildUpPanel } from "@/components/scale-build-up";
+import { ScaleVersionBrowser } from "@/components/scale-version-browser";
 import { usePoemVersion } from "@/lib/poem-version";
 import { planScaleAtlases } from "@/lib/scale-atlas";
 import { drawScalePlate } from "@/lib/scale-plate-canvas";
+import { scalePreviewReadiness } from "@/lib/scale-preview-readiness";
+import type { ScalePreview } from "@/lib/scale-skin";
 import type { ScaleTypography } from "@/lib/scale-typography";
 import { useScaleStudy } from "@/lib/use-scale-study";
 import {
@@ -29,12 +33,29 @@ import {
   type ScaleDesign,
 } from "../../shared/scale-design";
 import {
+  applyScaleShapeVersion,
+  captureScaleShapeVersion,
+  parseScaleShapeHistory,
+  rememberScaleShapeVersion,
+  SCALE_HISTORY_STORAGE_KEY,
+  type ScaleShapeVersion,
+} from "../../shared/scale-history";
+import {
   allocateScaleLettering,
   fitScaleLettering,
   type ScaleLetteringPlacement,
 } from "../../shared/scale-lettering";
 import { modelScaleForHeight, SCALE_MODELS } from "../../shared/scale-models";
 import type { ScalePlate, ScaleStudySettings } from "../../shared/scale-study";
+import {
+  applyScaleVersionPreset,
+  matchingScaleVersionPreset,
+  resizeScaleDesign,
+  SCALE_VERSION_PRESETS,
+  scaleDensityStatus,
+  setScaleDensityMode,
+  updateScaleDensity,
+} from "../../shared/scale-versions";
 import {
   isWorksheetBundledFontId,
   WORKSHEET_FONT_CATALOG,
@@ -55,6 +76,16 @@ function initialDesign() {
     // The page stays usable when browser storage is unavailable or outdated.
   }
   return DEFAULT_SCALE_DESIGN;
+}
+
+function initialHistory(): ScaleShapeVersion[] {
+  try {
+    return parseScaleShapeHistory(
+      localStorage.getItem(SCALE_HISTORY_STORAGE_KEY),
+    );
+  } catch {
+    return [];
+  }
 }
 
 function useDebounced<T>(value: T): T {
@@ -240,8 +271,37 @@ export default function Scales() {
   const [wireframe, setWireframe] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [selectedPlateId, setSelectedPlateId] = useState("body-0-0");
+  const [shapeHistory, setShapeHistory] = useState(initialHistory);
+  const [historyError, setHistoryError] = useState("");
+  const [scalePreview, setScalePreview] = useState<ScalePreview>();
+  const [renderedPreview, setRenderedPreview] = useState<ScalePreview>();
+  const [previewError, setPreviewError] = useState("");
+  const handlePreviewReady = useCallback((preview: ScalePreview) => {
+    setRenderedPreview(preview);
+    setPreviewError("");
+  }, []);
+  const handlePreviewError = useCallback(
+    (_preview: ScalePreview | undefined, message: string) => {
+      setPreviewError(message);
+    },
+    [],
+  );
   const importRef = useRef<HTMLInputElement>(null);
   const { version, versions } = usePoemVersion();
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        SCALE_HISTORY_STORAGE_KEY,
+        JSON.stringify(shapeHistory),
+      );
+      setHistoryError("");
+    } catch {
+      setHistoryError(
+        "Recent shapes work for this visit, but browser saving failed. Download your study to keep it.",
+      );
+    }
+  }, [shapeHistory]);
 
   useEffect(
     () => () => {
@@ -297,7 +357,8 @@ export default function Scales() {
     settledFontRequest === fontRequest
       ? loadedFont.typography
       : undefined;
-  const fontFamily = typography?.family ?? "serif";
+  const fontFamily =
+    typography?.family ?? renderedPreview?.fontFamily ?? "serif";
   useEffect(() => {
     let active = true;
     void fontRetry;
@@ -339,8 +400,8 @@ export default function Scales() {
   );
   const geometryInput = useDebounced(geometryRequest);
   const geometry = useScaleStudy(geometryInput);
-  const study = geometry.study;
-  const plates = study?.plates ?? EMPTY_PLATES;
+  const candidateStudy = geometry.study;
+  const candidatePlates = candidateStudy?.plates ?? EMPTY_PLATES;
   const previewGeometry = geometry.snapshot ?? geometryInput;
   const layoutRequest = useMemo(
     () => ({
@@ -361,11 +422,17 @@ export default function Scales() {
   const settledLayout = useDebounced(layoutRequest);
   const layout = useMemo(() => {
     try {
-      if (!typography)
+      if (
+        !design.showLettering ||
+        !/\S/u.test(settledLayout.text) ||
+        !typography
+      )
         return {
           lettering: {
             placements: [],
-            unplacedText: settledLayout.text,
+            unplacedText: /\S/u.test(settledLayout.text)
+              ? settledLayout.text
+              : "",
             placedWordCount: 0,
             totalWordCount: settledLayout.text.match(/\S+/gu)?.length ?? 0,
           },
@@ -377,8 +444,8 @@ export default function Scales() {
         measureLine: typography.measureLine,
       };
       const lettering = settledLayout.autoFit
-        ? fitScaleLettering(plates, settledLayout.text, options)
-        : allocateScaleLettering(plates, settledLayout.text, options);
+        ? fitScaleLettering(candidatePlates, settledLayout.text, options)
+        : allocateScaleLettering(candidatePlates, settledLayout.text, options);
       return { lettering, error: "" };
     } catch (error) {
       return {
@@ -394,15 +461,30 @@ export default function Scales() {
             : "Lettering could not be mapped.",
       };
     }
-  }, [settledLayout, plates, typography]);
-  // Keep the proof margins in step with the debounced layout shown in 3D.
-  const previewDesign = useMemo<ScaleDesign>(
+  }, [settledLayout, candidatePlates, typography, design.showLettering]);
+  const fontLoading = !typography && !fontError;
+  const geometryPending =
+    geometryInput !== geometryRequest || geometry.computing;
+  const readiness = scalePreviewReadiness({
+    text: design.text,
+    showLettering: design.showLettering,
+    hasGeometry: Boolean(candidateStudy),
+    geometryPending,
+    geometryError: geometry.error,
+    layoutPending: settledLayout !== layoutRequest,
+    hasTypography: Boolean(typography),
+    fontError,
+    layoutError: layout.error,
+  });
+  const mappingPending = readiness.pending;
+  // Render metadata excludes planning-only fields so notes and build method
+  // changes do not rebuild the GPU skin or interrupt a transition.
+  const candidateDesign = useMemo<ScaleDesign>(
     () => ({
       schema: 1,
       geometry: previewGeometry.geometry,
       layers: previewGeometry.layers,
-      buildMethod: design.buildMethod,
-      // Freeform build notes do not affect the rendered surface.
+      buildMethod: "wood",
       notes: "",
       customFont: design.customFont,
       shapingEngine: design.shapingEngine,
@@ -420,33 +502,86 @@ export default function Scales() {
       design.inkColor,
       design.plateColor,
       design.showLettering,
-      design.buildMethod,
       design.customFont,
       design.shapingEngine,
       design.fontFeatures,
     ],
   );
-  const scalePreview = useMemo(
+  const candidatePreview = useMemo<ScalePreview | undefined>(
     () =>
-      study
+      candidateStudy && readiness.ready
         ? {
-            study,
+            study: candidateStudy,
             lettering: layout.lettering,
-            design: previewDesign,
-            fontFamily,
+            design: candidateDesign,
+            fontFamily: typography?.family ?? "serif",
             typography,
           }
         : undefined,
-    [study, layout.lettering, previewDesign, fontFamily, typography],
+    [
+      candidateStudy,
+      typography,
+      readiness.ready,
+      layout.lettering,
+      candidateDesign,
+    ],
   );
+  // Never pass a half-ready preview to the renderer: geometry, lettering,
+  // colors and typography travel together until a complete replacement exists.
+  useEffect(() => {
+    if (candidatePreview) {
+      setPreviewError("");
+      setScalePreview(candidatePreview);
+    }
+  }, [candidatePreview]);
+  const updating =
+    !previewError &&
+    (mappingPending ||
+      Boolean(candidatePreview && candidatePreview !== renderedPreview));
+  const previewBlocked = readiness.blocked || Boolean(previewError);
+  const study = renderedPreview?.study;
+  const plates = study?.plates ?? EMPTY_PLATES;
+  const displayedLettering = renderedPreview?.lettering;
+  const displayedDesign = renderedPreview?.design;
+  const densityStatus = scaleDensityStatus(design);
+
+  useEffect(() => {
+    if (
+      !candidatePreview ||
+      renderedPreview !== candidatePreview ||
+      mappingPending ||
+      previewBlocked
+    )
+      return;
+    const timer = window.setTimeout(() => {
+      const preset = matchingScaleVersionPreset(design);
+      const isPrint = design.geometry.modelId === "maquette";
+      const height =
+        SCALE_MODELS[design.geometry.modelId].heightInches *
+        design.geometry.modelScale;
+      const label =
+        preset?.name ??
+        `${isPrint ? "Print" : "Wood"} · ${(height * (isPrint ? 25.4 : 1)).toFixed(1)} ${isPrint ? "mm" : "in"} · ${candidatePreview.study.plates.length} plates`;
+      const version = captureScaleShapeVersion(design, label);
+      setShapeHistory((current) => rememberScaleShapeVersion(current, version));
+    }, 850);
+    return () => window.clearTimeout(timer);
+  }, [
+    candidatePreview,
+    renderedPreview,
+    mappingPending,
+    previewBlocked,
+    design,
+  ]);
+
   const atlasQuality = useMemo(() => {
-    if (!study) return { plan: null, error: "" };
+    if (!renderedPreview) return { plan: null, error: "" };
     try {
       return {
         plan: planScaleAtlases(
-          study,
-          layout.lettering,
-          design.showLettering,
+          renderedPreview.study,
+          renderedPreview.lettering,
+          renderedPreview.design.showLettering,
           2048,
         ),
         error: "",
@@ -460,22 +595,19 @@ export default function Scales() {
             : "Preview detail could not be estimated.",
       };
     }
-  }, [study, layout.lettering, design.showLettering]);
+  }, [renderedPreview]);
   const selectedPlate =
     plates.find((plate) => plate.id === selectedPlateId) ?? plates[0];
-  const selectedPlacement = layout.lettering.placements.find(
+  const selectedPlacement = displayedLettering?.placements.find(
     (placement) => placement.plateId === selectedPlate?.id,
   );
   const actualSize =
-    layout.lettering.placements[0]?.fontSizeMm ?? settledLayout.fontSizeMm;
-  const usedPlates = layout.lettering.placements.filter(
-    (placement) => placement.lines.length > 0,
-  ).length;
-  const fontLoading = !typography && !fontError;
-  const geometryPending =
-    geometryInput !== geometryRequest || geometry.computing;
-  const updating =
-    geometryPending || settledLayout !== layoutRequest || fontLoading;
+    displayedLettering?.placements[0]?.fontSizeMm ??
+    displayedDesign?.fontSizeMm;
+  const usedPlates =
+    displayedLettering?.placements.filter(
+      (placement) => placement.lines.length > 0,
+    ).length ?? 0;
 
   function updateDesign(patch: Partial<ScaleDesign>) {
     setDesign((current) => {
@@ -531,7 +663,7 @@ export default function Scales() {
         (sizeUnit === "mm" ? 25.4 : 1)
       ).toFixed(2),
     );
-    updateGeometry({ modelScale });
+    setDesign((current) => resizeScaleDesign(current, modelScale));
   }
 
   function cancelFontUpload() {
@@ -637,10 +769,25 @@ export default function Scales() {
             className="scales-model-card"
             aria-label="Interactive scale study"
           >
+            <ScaleVersionBrowser
+              design={design}
+              history={shapeHistory}
+              historyError={historyError}
+              onPreset={(id) =>
+                setDesign((current) => applyScaleVersionPreset(current, id))
+              }
+              onHistory={(version) =>
+                setDesign((current) => applyScaleShapeVersion(current, version))
+              }
+            />
             <div className="scales-model-heading">
               <span>01 / THE SCULPTURE</span>
               <span aria-live="polite">
-                {updating ? "Remapping…" : `${plates.length} individual plates`}
+                {previewBlocked
+                  ? "Edit needs attention"
+                  : updating
+                    ? "Remapping…"
+                    : `${plates.length} individual plates`}
               </span>
             </div>
             <Suspense
@@ -655,6 +802,8 @@ export default function Scales() {
                   className="scales-model"
                   edition="scales"
                   scalePreview={scalePreview}
+                  onScalePreviewReady={handlePreviewReady}
+                  onScalePreviewError={handlePreviewError}
                   autoRotate={autoRotate}
                   wireframe={wireframe}
                   resetKey={resetKey}
@@ -707,18 +856,23 @@ export default function Scales() {
               </div>
             </div>
           </section>
+          <p className="scales-preview-status" role="status">
+            {renderedPreview
+              ? `${updating || previewBlocked ? "Keeping the last viewable version. " : ""}The 3D view, fit counts, and face proof show ${renderedPreview.study.modelId === "maquette" ? "the print maquette" : "the archival model"} at ${(renderedPreview.design.geometry.modelScale * 100).toFixed(1)}%.${updating ? " Your latest settings are remapping." : ""}`
+              : "Your first complete preview is preparing. Shapes are remembered after they display successfully."}
+          </p>
           <div className="scales-stats" aria-live="polite" aria-atomic="true">
             <div>
               <strong>
-                {layout.lettering.placedWordCount}
-                <small> / {layout.lettering.totalWordCount}</small>
+                {displayedLettering?.placedWordCount ?? "—"}
+                <small> / {displayedLettering?.totalWordCount ?? "—"}</small>
               </strong>
               <span>
-                {layout.error
-                  ? "fit paused"
-                  : typography
-                    ? "words placed"
-                    : "fit awaiting selected font"}
+                {displayedLettering
+                  ? displayedDesign?.showLettering
+                    ? "words placed in shown version"
+                    : "lettering hidden · fitting paused"
+                  : "fit awaiting complete preview"}
               </span>
             </div>
             <div>
@@ -730,14 +884,14 @@ export default function Scales() {
             </div>
             <div>
               <strong>
-                {actualSize.toFixed(1)}
+                {actualSize?.toFixed(1) ?? "—"}
                 <small> mm</small>
               </strong>
               <span>type size · not x-height</span>
             </div>
           </div>
           <p className="scales-model-note">
-            {previewGeometry.geometry.modelId === "maquette"
+            {displayedDesign?.geometry.modelId === "maquette"
               ? "These plates follow connected surface charts from the actual printable maquette. Its integrated base and joined parts come from that print mesh."
               : "Curved plates follow the archived model’s changing cross-section. The layer allowance adds outward build-up beyond that model; it does not assume the archived model is a bare frame. The reference shows irregular, stepped wooden faces, but provides no measured layer thicknesses."}
           </p>
@@ -746,7 +900,10 @@ export default function Scales() {
               {geometry.error}
               {study
                 ? " The last successful model is still shown."
-                : " Adjust the settings or reload to retry."}
+                : " Choose a starting shape or adjust the settings."}{" "}
+              <button type="button" onClick={geometry.retry}>
+                Retry geometry
+              </button>
             </p>
           )}
           {geometry.error && (
@@ -811,51 +968,63 @@ export default function Scales() {
           {layout.error && (
             <p className="scales-error" role="alert">
               {layout.error}
+              {design.showLettering && (
+                <button
+                  type="button"
+                  onClick={() => updateDesign({ showLettering: false })}
+                >
+                  View shape without lettering
+                </button>
+              )}
             </p>
           )}
-          {study && typography && layout.lettering.unplacedText && (
-            <section
-              className="scales-overflow"
-              aria-labelledby="scales-overflow-title"
-            >
-              <h2 id="scales-overflow-title">Some words still need a home</h2>
-              <p>
-                Try a smaller type size or margin, or fewer, larger plates.
-                Every unplaced word is kept below.
-              </p>
-              <button
-                type="button"
-                onClick={() =>
-                  updateGeometry({
-                    modelScale: Math.min(30, design.geometry.modelScale * 1.1),
-                  })
-                }
+          {displayedDesign?.showLettering &&
+            displayedLettering?.unplacedText && (
+              <section
+                className="scales-overflow"
+                aria-labelledby="scales-overflow-title"
               >
-                Make the sculpture 10% larger
-              </button>
-              <details>
-                <summary>
-                  Read{" "}
-                  {layout.lettering.totalWordCount -
-                    layout.lettering.placedWordCount}{" "}
-                  unplaced words
-                </summary>
-                <p>{layout.lettering.unplacedText}</p>
-              </details>
-            </section>
-          )}
+                <h2 id="scales-overflow-title">Some words still need a home</h2>
+                <p>
+                  Try a smaller type size or margin, or fewer, larger plates.
+                  Every unplaced word is kept below.
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDesign((current) =>
+                      resizeScaleDesign(
+                        current,
+                        Math.min(30, current.geometry.modelScale * 1.1),
+                      ),
+                    )
+                  }
+                >
+                  Make the sculpture 10% larger
+                </button>
+                <details>
+                  <summary>
+                    Read{" "}
+                    {displayedLettering.totalWordCount -
+                      displayedLettering.placedWordCount}{" "}
+                    unplaced words
+                  </summary>
+                  <p>{displayedLettering.unplacedText}</p>
+                </details>
+              </section>
+            )}
 
           <ScaleBuildUpPanel
             layers={design.layers}
             onChange={(layers) => updateDesign({ layers })}
-            study={study}
+            study={study ?? null}
             reliefInches={design.geometry.relief}
-            pending={geometryPending}
+            pending={updating || previewBlocked}
             modelId={design.geometry.modelId}
             modelScale={design.geometry.modelScale}
           />
 
-          {selectedPlate && (
+          {selectedPlate && displayedDesign && renderedPreview && (
             <section
               className="scales-proof-card"
               aria-labelledby="scales-proof-title"
@@ -882,9 +1051,9 @@ export default function Scales() {
               <PlateProof
                 plate={selectedPlate}
                 placement={selectedPlacement}
-                design={previewDesign}
-                family={fontFamily}
-                typography={typography}
+                design={displayedDesign}
+                family={renderedPreview.fontFamily}
+                typography={renderedPreview.typography}
               />
               <p className="scales-proof-dimensions">
                 Approx. source-model width × height:{" "}
@@ -988,6 +1157,14 @@ export default function Scales() {
                 >
                   Retry font
                 </button>
+                {design.showLettering && /\S/u.test(design.text) && (
+                  <button
+                    type="button"
+                    onClick={() => updateDesign({ showLettering: false })}
+                  >
+                    View shape without lettering
+                  </button>
+                )}
               </p>
             )}
             <div className="scales-font-upload">
@@ -1209,19 +1386,20 @@ export default function Scales() {
               <h2 id="scales-size-title">Choose the build</h2>
             </div>
             <label className="scales-field" htmlFor="scales-model-source">
-              Source model
+              Source model · open a starting shape
               <select
                 id="scales-model-source"
                 value={design.geometry.modelId}
-                onChange={(event) =>
-                  updateGeometry({
-                    modelId:
-                      event.target.value === "maquette"
-                        ? "maquette"
-                        : "archival",
-                    modelScale: 1,
-                  })
-                }
+                onChange={(event) => {
+                  const modelId = event.currentTarget.value;
+                  const preset = SCALE_VERSION_PRESETS.find(
+                    (item) => item.geometry.modelId === modelId,
+                  );
+                  if (preset)
+                    setDesign((current) =>
+                      applyScaleVersionPreset(current, preset.id),
+                    );
+                }}
               >
                 <option value="archival">Archived wooden sculpture</option>
                 <option value="maquette">
@@ -1229,6 +1407,10 @@ export default function Scales() {
                 </option>
               </select>
             </label>
+            <p className="scales-help">
+              Switching sources loads a tested starting size, scale pattern, and
+              layer stack for that model. Your lettering and notes stay.
+            </p>
             <div className="scales-size-inputs">
               <label className="scales-field" htmlFor="scales-height">
                 Target model height
@@ -1272,38 +1454,10 @@ export default function Scales() {
               max={Math.log2(30)}
               step={0.02}
               display={`${(design.geometry.modelScale * 100).toFixed(1)}%`}
-              onChange={(value) => updateGeometry({ modelScale: 2 ** value })}
+              onChange={(value) =>
+                setDesign((current) => resizeScaleDesign(current, 2 ** value))
+              }
             />
-            <div className="scales-presets">
-              <button
-                type="button"
-                onClick={() =>
-                  updateGeometry({ modelId: "archival", modelScale: 1 })
-                }
-              >
-                Archived size
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  updateGeometry({
-                    modelId: "archival",
-                    modelScale: modelScaleForHeight("archival", 72),
-                  })
-                }
-              >
-                72 in study
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSizeUnit("mm");
-                  updateGeometry({ modelId: "maquette", modelScale: 1 });
-                }}
-              >
-                180 mm print
-              </button>
-            </div>
             <p className="scales-help">
               {design.geometry.modelId === "maquette"
                 ? "This source is the actual printable maquette and its connected surface charts."
@@ -1388,6 +1542,39 @@ export default function Scales() {
                 </option>
               </select>
             </label>
+            <label className="scales-field" htmlFor="scales-density-mode">
+              When the sculpture changes size
+              <select
+                id="scales-density-mode"
+                value={design.densityMode ?? "fixed"}
+                onChange={(event) =>
+                  setDesign((current) =>
+                    setScaleDensityMode(
+                      current,
+                      event.target.value === "adaptive" ? "adaptive" : "fixed",
+                    ),
+                  )
+                }
+              >
+                <option value="fixed">Keep the same scale pattern</option>
+                <option value="adaptive">
+                  Adapt the number of scales to the size
+                </option>
+              </select>
+            </label>
+            <p className="scales-help">
+              Adaptive density uses this shape as a reference: larger forms gain
+              scales and smaller forms lose them to keep their size similar.
+              Moving a density slider sets a new reference. Real stock thickness
+              and lettering sizes remain under your control.
+            </p>
+            {densityStatus.limited && (
+              <p className="scales-quality-note" role="status">
+                Adaptive density reached the preview limit. This size requested{" "}
+                {densityStatus.requestedColumns} × {densityStatus.requestedRows}{" "}
+                cells; the bounded pattern below keeps the preview manageable.
+              </p>
+            )}
             <RangeField
               label={
                 design.geometry.modelId === "maquette"
@@ -1397,7 +1584,9 @@ export default function Scales() {
               value={design.geometry.columns}
               min={4}
               max={240}
-              onChange={(columns) => updateGeometry({ columns })}
+              onChange={(columns) =>
+                setDesign((current) => updateScaleDensity(current, { columns }))
+              }
             />
             <RangeField
               label={
@@ -1408,7 +1597,9 @@ export default function Scales() {
               value={design.geometry.rows}
               min={2}
               max={Math.min(12, Math.floor(600 / design.geometry.columns))}
-              onChange={(rows) => updateGeometry({ rows })}
+              onChange={(rows) =>
+                setDesign((current) => updateScaleDensity(current, { rows }))
+              }
             />
             <RangeField
               label="Space between plates"

@@ -12,9 +12,19 @@ import {
 import type { WorksheetSettings } from "./worksheet";
 import { isWorksheetBundledFontId } from "./worksheet-font-catalog";
 
+export type ScaleDensityMode = "fixed" | "adaptive";
+
+/** A stable physical anchor prevents rounding drift during repeated resizing. */
+export type ScaleDensityReference = Pick<
+  ScaleStudySettings,
+  "modelId" | "modelScale" | "columns" | "rows"
+>;
+
 export interface ScaleDesign {
   schema: 1;
   geometry: ScaleStudySettings;
+  densityMode?: ScaleDensityMode;
+  densityReference?: ScaleDensityReference;
   layers: ScaleBuildUp;
   buildMethod: "wood" | "printed" | "hybrid";
   notes: string;
@@ -38,6 +48,7 @@ export const DEFAULT_SCALE_DESIGN: ScaleDesign = {
     ...DEFAULT_SCALE_STUDY_SETTINGS,
     supportOffsetInches: buildUpSupportOffsetInches(DEFAULT_SCALE_BUILD_UP),
   },
+  densityMode: "fixed",
   layers: DEFAULT_SCALE_BUILD_UP,
   buildMethod: "wood",
   notes: "",
@@ -64,6 +75,119 @@ function color(value: unknown, fallback: string) {
   return typeof value === "string" && /^#[a-f\d]{6}$/i.test(value)
     ? value.toLowerCase()
     : fallback;
+}
+
+function densityReference(geometry: ScaleStudySettings): ScaleDensityReference {
+  const { modelId, modelScale, columns, rows } = geometry;
+  return { modelId, modelScale, columns, rows };
+}
+
+function normalizeDensityReference(
+  input: unknown,
+  geometry: ScaleStudySettings,
+): ScaleDensityReference {
+  if (!input || typeof input !== "object" || Array.isArray(input))
+    return densityReference(geometry);
+  const value = input as Record<string, unknown>;
+  if (
+    value.modelId !== geometry.modelId ||
+    !["modelScale", "columns", "rows"].every(
+      (key) => typeof value[key] === "number" && Number.isFinite(value[key]),
+    )
+  )
+    return densityReference(geometry);
+  return densityReference(normalizeScaleStudySettings(value));
+}
+
+function adaptiveDensity(reference: ScaleDensityReference, scale: number) {
+  const ratio = scale / reference.modelScale;
+  const requestedColumns = Math.round(reference.columns * ratio);
+  const requestedRows = Math.round(reference.rows * ratio);
+  const columns = Math.max(4, requestedColumns);
+  const rows = Math.max(2, requestedRows);
+  // Preserve the requested aspect ratio when the shared 600-cell budget binds.
+  // Final normalization also enforces the generator's own bounds.
+  const factor = Math.min(
+    1,
+    240 / columns,
+    12 / rows,
+    Math.sqrt(600 / (columns * rows)),
+  );
+  const bounded = normalizeScaleStudySettings({
+    columns: Math.max(4, Math.floor(columns * factor)),
+    rows: Math.max(2, Math.floor(rows * factor)),
+  });
+  return {
+    columns: bounded.columns,
+    rows: bounded.rows,
+    requestedColumns,
+    requestedRows,
+    limited:
+      bounded.columns !== requestedColumns || bounded.rows !== requestedRows,
+  };
+}
+
+/** Whether the requested physical density meets a minimum or preview budget. */
+export function scaleDensityStatus(design: ScaleDesign) {
+  if (design.densityMode !== "adaptive") {
+    return {
+      columns: design.geometry.columns,
+      rows: design.geometry.rows,
+      requestedColumns: design.geometry.columns,
+      requestedRows: design.geometry.rows,
+      limited: false,
+    };
+  }
+  return adaptiveDensity(
+    normalizeDensityReference(design.densityReference, design.geometry),
+    design.geometry.modelScale,
+  );
+}
+
+export function resizeScaleDesign(
+  design: ScaleDesign,
+  scale: number,
+): ScaleDesign {
+  if (!Number.isFinite(scale) || scale <= 0)
+    throw new RangeError("Model scale must be a positive finite number.");
+  return normalizeScaleDesign({
+    ...design,
+    geometry: { ...design.geometry, modelScale: scale },
+  });
+}
+
+export function setScaleDensityMode(
+  design: ScaleDesign,
+  mode: ScaleDensityMode,
+): ScaleDesign {
+  const current = normalizeScaleDesign(design);
+  if (current.densityMode === mode) return current;
+  return normalizeScaleDesign({
+    ...current,
+    densityMode: mode,
+    densityReference:
+      mode === "adaptive" ? densityReference(current.geometry) : undefined,
+  });
+}
+
+/** A deliberate density edit sets a new physical anchor at the current size. */
+export function updateScaleDensity(
+  design: ScaleDesign,
+  patch: Partial<Pick<ScaleStudySettings, "columns" | "rows">>,
+): ScaleDesign {
+  const current = normalizeScaleDesign(design);
+  const geometry = normalizeScaleStudySettings({
+    ...current.geometry,
+    ...patch,
+  });
+  return normalizeScaleDesign({
+    ...current,
+    geometry,
+    densityReference:
+      current.densityMode === "adaptive"
+        ? densityReference(geometry)
+        : undefined,
+  });
 }
 
 export const MAX_SCALE_DESIGN_BYTES = 3 * 1024 * 1024;
@@ -108,6 +232,16 @@ export function normalizeScaleDesign(input: unknown): ScaleDesign {
   const layers = normalizeScaleBuildUp(value.layers);
   const geometry = normalizeScaleStudySettings(value.geometry);
   if (geometry.modelId === "maquette") geometry.surfaceMode = "conforming";
+  const densityMode = value.densityMode === "adaptive" ? "adaptive" : "fixed";
+  const reference =
+    densityMode === "adaptive"
+      ? normalizeDensityReference(value.densityReference, geometry)
+      : undefined;
+  if (reference) {
+    const counts = adaptiveDensity(reference, geometry.modelScale);
+    geometry.columns = counts.columns;
+    geometry.rows = counts.rows;
+  }
   const embeddedFont = customFont(value.customFont);
   const fontId =
     typeof value.fontId === "string" &&
@@ -130,6 +264,8 @@ export function normalizeScaleDesign(input: unknown): ScaleDesign {
     );
   return {
     schema: 1,
+    densityMode,
+    ...(reference ? { densityReference: reference } : {}),
     geometry: {
       ...geometry,
       supportOffsetInches: buildUpSupportOffsetInches(layers),

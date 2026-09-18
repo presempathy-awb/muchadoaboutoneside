@@ -1,0 +1,162 @@
+import { describe, expect, test } from "bun:test";
+import {
+  DEFAULT_SCALE_DESIGN,
+  normalizeScaleDesign,
+  setScaleDensityMode,
+} from "./scale-design";
+import { generateMaquetteScaleStudy } from "./scale-maquette";
+import { buildUpSupportOffsetInches } from "./scale-measurements";
+import { generateScaleStudy } from "./scale-study";
+import {
+  applyScaleVersionPreset,
+  matchingScaleVersionPreset,
+  SCALE_VERSION_PRESETS,
+} from "./scale-versions";
+
+describe("viewable scale versions", () => {
+  test("offers eight distinct construction versions", () => {
+    expect(SCALE_VERSION_PRESETS).toHaveLength(8);
+    expect(new Set(SCALE_VERSION_PRESETS.map(({ id }) => id)).size).toBe(8);
+  });
+  for (const version of SCALE_VERSION_PRESETS) {
+    test(`${version.id} produces finite usable geometry from its real source`, () => {
+      const design = applyScaleVersionPreset(DEFAULT_SCALE_DESIGN, version.id);
+      const study = (
+        design.geometry.modelId === "maquette"
+          ? generateMaquetteScaleStudy
+          : generateScaleStudy
+      )(design.geometry);
+      expect(study.modelId).toBe(design.geometry.modelId);
+      expect(study.modelScale).toBe(design.geometry.modelScale);
+      expect(study.plates.length).toBeGreaterThan(0);
+      expect(study.plates.length).toBeLessThanOrEqual(6000);
+      expect(study.triangleCount).toBeLessThanOrEqual(
+        study.modelId === "maquette" ? 100_000 : 200_000,
+      );
+      expect(
+        study.plates.some(
+          (plate) => plate.safeRect.width > 0 && plate.safeRect.height > 0,
+        ),
+      ).toBe(true);
+      expect(design.geometry.supportOffsetInches).toBeCloseTo(
+        buildUpSupportOffsetInches(version.layers),
+        10,
+      );
+      expect(study.sourceGeometry !== undefined).toBe(
+        study.modelId === "maquette",
+      );
+      for (const plate of study.plates) {
+        expect(
+          [
+            ...plate.positions,
+            ...plate.normals,
+            ...plate.uvs,
+            ...plate.edgePositions,
+          ].every(Number.isFinite),
+        ).toBe(true);
+        expect(
+          plate.indices.every(
+            (index) =>
+              Number.isInteger(index) &&
+              index >= 0 &&
+              index < plate.positions.length / 3,
+          ),
+        ).toBe(true);
+        expect(plate.widthInches > 0 && plate.heightInches > 0).toBe(true);
+        expect(
+          plate.safeRect.x >= 0 &&
+            plate.safeRect.y >= 0 &&
+            plate.safeRect.width >= 0 &&
+            plate.safeRect.height >= 0,
+        ).toBe(true);
+        expect(plate.safeRect.x + plate.safeRect.width).toBeLessThanOrEqual(
+          1 + 1e-10,
+        );
+        expect(plate.safeRect.y + plate.safeRect.height).toBeLessThanOrEqual(
+          1 + 1e-10,
+        );
+      }
+    });
+  }
+
+  test("hopping replaces construction while preserving user text, font and notes", () => {
+    const initial = setScaleDensityMode(
+      normalizeScaleDesign({
+        ...DEFAULT_SCALE_DESIGN,
+        text: "The same words, in every version.\nAnd every font.",
+        notes: "Fountain pen and vellum; printed adapters.",
+        fontId: "custom",
+        customFont: {
+          name: "Personal.ttf",
+          dataUrl: "data:font/ttf;base64,AA==",
+        },
+        fontFeatures: "liga=1",
+        shapingEngine: "harfbuzz",
+        inkColor: "#abcdef",
+        plateColor: "#123456",
+        fontSizeMm: 18,
+        marginMm: 1.5,
+      }),
+      "adaptive",
+    );
+    let design = initial;
+    for (const version of SCALE_VERSION_PRESETS) {
+      design = applyScaleVersionPreset(design, version.id);
+      expect(design.geometry).toEqual(version.geometry);
+      expect(design.layers).toEqual(version.layers);
+      expect(design.buildMethod).toBe(version.buildMethod);
+      expect(design.densityMode).toBe("adaptive");
+      expect(design.densityReference?.modelScale).toBe(
+        version.geometry.modelScale,
+      );
+      expect(design.densityReference?.modelId).toBe(version.geometry.modelId);
+      for (const key of [
+        "text",
+        "notes",
+        "fontId",
+        "customFont",
+        "fontFeatures",
+        "shapingEngine",
+        "fontSizeMm",
+        "minFontSizeMm",
+        "marginMm",
+        "inkColor",
+        "plateColor",
+        "showLettering",
+        "autoFit",
+      ] as const) {
+        expect(design[key]).toEqual(initial[key]);
+      }
+      expect(matchingScaleVersionPreset(design)?.id).toBe(version.id);
+      expect(normalizeScaleDesign(JSON.parse(JSON.stringify(design)))).toEqual(
+        design,
+      );
+    }
+    expect(() => applyScaleVersionPreset(initial, "unknown")).toThrow();
+  });
+
+  test("preset matching distinguishes edited construction from lettering edits", () => {
+    const preset = SCALE_VERSION_PRESETS[0];
+    if (!preset) throw new Error("Expected a version preset.");
+    const initial = applyScaleVersionPreset(DEFAULT_SCALE_DESIGN, preset.id);
+    expect(
+      matchingScaleVersionPreset({ ...initial, text: "Different lettering" })
+        ?.id,
+    ).toBe(preset.id);
+    expect(
+      matchingScaleVersionPreset({
+        ...initial,
+        geometry: { ...initial.geometry, gap: 0.2 },
+      }),
+    ).toBeUndefined();
+    expect(
+      matchingScaleVersionPreset({
+        ...initial,
+        layers: { ...initial.layers, metalMm: 0.2 },
+      }),
+    ).toBeUndefined();
+    expect(
+      matchingScaleVersionPreset({ ...initial, buildMethod: "wood" }),
+    ).toBeUndefined();
+  });
+});

@@ -631,3 +631,128 @@
 .scale-proof-drawing canvas[hidden] {
   display: none;
 }
+
+.scales-version-browser {
+  padding: 21px 22px 18px;
+  background: #fbfcf7;
+  border-bottom: 1px solid var(--scale-border);
+}
+.scales-version-title,
+.scales-history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.scales-version-title .scales-eyebrow {
+  display: block;
+  margin: 0 0 7px;
+}
+.scales-version-title h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+}
+.scales-version-count {
+  color: var(--scale-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.scales-version-navigation {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-top: 20px;
+}
+.scales-version-navigation .scales-field {
+  margin: 0;
+  gap: 7px;
+}
+.scales-version-navigation button {
+  min-height: 43px;
+}
+.scales-version-description {
+  min-height: 2.9em;
+  margin: 12px 0 0;
+  color: var(--scale-ink);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.scales-shape-history {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--scale-border);
+}
+.scales-page .scales-history-heading > span {
+  color: var(--scale-muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+.scales-history-heading button {
+  min-height: 29px;
+  padding: 5px 8px;
+}
+.scales-history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.scales-history-list button {
+  min-height: 31px;
+  padding: 7px 9px;
+  font-size: 10px;
+}
+.scales-preview-status {
+  margin: 12px 2px 0;
+  color: var(--scale-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.scales-history-list button,
+.scales-version-navigation button {
+  transition:
+    background 180ms ease-out,
+    border-color 180ms ease-out,
+    color 180ms ease-out;
+}
+@media (max-width: 740px) {
+  .scales-version-browser {
+    padding: 18px 15px;
+  }
+  .scales-version-title {
+    align-items: flex-start;
+  }
+  .scales-version-title h2 {
+    font-size: 24px;
+  }
+  .scales-version-count {
+    max-width: 70px;
+    white-space: normal;
+    text-align: right;
+    line-height: 1.5;
+  }
+  .scales-version-navigation {
+    gap: 7px;
+  }
+  .scales-version-navigation button > span {
+    display: none;
+  }
+  .scales-version-navigation button {
+    min-height: 44px;
+    min-width: 38px;
+  }
+  .scales-preview-status {
+    order: 1;
+    margin-bottom: -8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scales-history-list button,
+  .scales-version-navigation button {
+    transition: none;
+  }
+}

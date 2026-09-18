@@ -22,6 +22,11 @@ export interface SculptureViewerProps {
   autoRotate?: boolean;
   resetKey?: number;
   onSelectPart?: (id: string | null) => void;
+  onScalePreviewReady?: (preview: ScalePreview) => void;
+  onScalePreviewError?: (
+    preview: ScalePreview | undefined,
+    message: string,
+  ) => void;
 }
 
 type ViewerStatus = "loading" | "ready" | "error";
@@ -40,19 +45,31 @@ export default function SculptureViewer({
   autoRotate = false,
   resetKey = 0,
   onSelectPart,
+  onScalePreviewReady,
+  onScalePreviewError,
 }: SculptureViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const controllerRef = useRef<SculptureSceneController | null>(null);
   const onSelectPartRef = useRef(onSelectPart);
+  const onScalePreviewReadyRef = useRef(onScalePreviewReady);
+  const onScalePreviewErrorRef = useRef(onScalePreviewError);
+  const scalePreviewRef = useRef(scalePreview);
   const previousResetKey = useRef(resetKey);
   const instructionsId = useId();
   const [status, setStatus] = useState<ViewerStatus>("loading");
   const [errorMessage, setErrorMessage] = useState("");
+  const [updateError, setUpdateError] = useState("");
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
     onSelectPartRef.current = onSelectPart;
   }, [onSelectPart]);
+
+  useEffect(() => {
+    onScalePreviewReadyRef.current = onScalePreviewReady;
+    onScalePreviewErrorRef.current = onScalePreviewError;
+    scalePreviewRef.current = scalePreview;
+  }, [onScalePreviewReady, onScalePreviewError, scalePreview]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -73,6 +90,18 @@ export default function SculptureViewer({
     try {
       const controller = createSculptureScene(canvas, {
         edition,
+        onScalePreviewReady: (preview) => {
+          if (!active) return;
+          setUpdateError("");
+          setErrorMessage("");
+          setStatus("ready");
+          onScalePreviewReadyRef.current?.(preview);
+        },
+        onScalePreviewError: (preview, message) => {
+          if (!active) return;
+          setUpdateError(message);
+          onScalePreviewErrorRef.current?.(preview, message);
+        },
         onSelectPart: (part) => {
           controllerRef.current?.setSelectedPart(part);
           onSelectPartRef.current?.(part);
@@ -94,11 +123,12 @@ export default function SculptureViewer({
         },
         (error: unknown) => {
           if (!active) return;
-          setErrorMessage(
+          const message =
             error instanceof Error
               ? error.message
-              : "The model could not be loaded.",
-          );
+              : "The model could not be loaded.";
+          setErrorMessage(message);
+          onScalePreviewErrorRef.current?.(scalePreviewRef.current, message);
           setStatus("error");
         },
       );
@@ -111,11 +141,12 @@ export default function SculptureViewer({
         if (controllerRef.current === controller) controllerRef.current = null;
       };
     } catch (error) {
-      setErrorMessage(
+      const message =
         error instanceof Error
           ? error.message
-          : "The 3D viewer could not start.",
-      );
+          : "The 3D viewer could not start.";
+      setErrorMessage(message);
+      onScalePreviewErrorRef.current?.(scalePreviewRef.current, message);
       setStatus("error");
     }
   }, [edition]);
@@ -125,27 +156,33 @@ export default function SculptureViewer({
       try {
         controllerRef.current?.setScalePreview(scalePreview);
       } catch (error) {
-        setStatus("error");
-        setErrorMessage(
+        const message =
           error instanceof Error
             ? error.message
-            : "The scales could not be updated.",
-        );
+            : "The scales could not be updated.";
+        setUpdateError(message);
+        onScalePreviewErrorRef.current?.(scalePreview, message);
       }
     }
   }, [scalePreview, edition]);
 
   useEffect(() => {
-    controllerRef.current?.setSelectedPart(selectedPart);
-  }, [selectedPart]);
-
-  useEffect(() => {
-    controllerRef.current?.setHiddenParts(hiddenParts);
-  }, [hiddenParts]);
-
-  useEffect(() => {
-    controllerRef.current?.setWireframe(wireframe);
-  }, [wireframe]);
+    // Switching edition replaces the controller, so reapply unchanged controls too.
+    void edition;
+    const controller = controllerRef.current;
+    controller?.setSelectedPart(selectedPart);
+    controller?.setHiddenParts(hiddenParts);
+    controller?.setWireframe(wireframe);
+    controller?.setReducedMotion(prefersReducedMotion);
+    controller?.setAutoRotate(autoRotate && !prefersReducedMotion);
+  }, [
+    selectedPart,
+    hiddenParts,
+    wireframe,
+    autoRotate,
+    prefersReducedMotion,
+    edition,
+  ]);
 
   useEffect(() => {
     if (edition === "inscription")
@@ -162,10 +199,6 @@ export default function SculptureViewer({
   }, [poemVersion, edition]);
 
   useEffect(() => {
-    controllerRef.current?.setAutoRotate(autoRotate && !prefersReducedMotion);
-  }, [autoRotate, prefersReducedMotion]);
-
-  useEffect(() => {
     if (edition === "inscription")
       controllerRef.current?.setReadingView(readingView);
   }, [readingView, edition]);
@@ -175,6 +208,20 @@ export default function SculptureViewer({
     previousResetKey.current = resetKey;
     controllerRef.current?.resetCamera();
   }, [resetKey]);
+
+  const retryScalePreview = () => {
+    if (!scalePreview || !controllerRef.current) return;
+    try {
+      controllerRef.current.setScalePreview(scalePreview);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "The scales could not be updated.";
+      setUpdateError(message);
+      onScalePreviewErrorRef.current?.(scalePreview, message);
+    }
+  };
 
   const classes = ["relative isolate overflow-hidden bg-[#e8e5dc]", className]
     .filter(Boolean)
@@ -207,6 +254,22 @@ export default function SculptureViewer({
           role="status"
         >
           Loading the sculpture…
+        </div>
+      )}
+
+      {updateError && status === "ready" && (
+        <div
+          className="absolute inset-x-4 bottom-4 rounded-lg bg-amber-50/95 p-3 text-sm text-amber-950 shadow"
+          role="alert"
+        >
+          <p>The previous working view is still shown. {updateError}</p>
+          <button
+            type="button"
+            onClick={retryScalePreview}
+            className="mt-2 rounded border border-amber-800 px-3 py-1 font-semibold focus-visible:outline focus-visible:outline-2"
+          >
+            Retry update
+          </button>
         </div>
       )}
 
