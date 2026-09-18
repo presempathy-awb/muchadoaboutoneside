@@ -22,6 +22,9 @@
 !source/assets/snake_build_viewer.html
 !source/poem/
 !source/poem/**
+!scripts/
+scripts/**
+!scripts/verify-typography-bundle.ts
 # Defense in depth against credentials and private references in allowed trees.
 **/.env*
 **/.git

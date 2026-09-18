@@ -1,3 +1,8 @@
+import {
+  WORKSHEET_FONT_CATALOG,
+  type WorksheetBundledFontId,
+} from "./worksheet-font-catalog";
+
 export type WorksheetLineKind =
   | "baseline"
   | "xheight"
@@ -33,8 +38,13 @@ export interface WorksheetSettings {
   slantColor: string;
   slantWidthPt: number;
   textEnabled: boolean;
-  fontId: "great-vibes" | "serif" | "sans" | "mono" | "custom";
+  fontId: WorksheetBundledFontId | "serif" | "sans" | "mono" | "custom";
   fontSizePt: number;
+  fontSizeMode: "points" | "xheight";
+  textXHeightMm: number;
+  fontFeatures: string;
+  shapingEngine: "fontkit" | "harfbuzz";
+  practicePattern: "continuous" | "model-trace-blank";
   textColor: string;
   textOpacity: number;
   textAlign: "left" | "center" | "right";
@@ -111,6 +121,11 @@ export const DEFAULT_WORKSHEET_SETTINGS: WorksheetSettings = {
   textEnabled: false,
   fontId: "great-vibes",
   fontSizePt: 24,
+  fontSizeMode: "points",
+  textXHeightMm: 5,
+  fontFeatures: "",
+  shapingEngine: "fontkit",
+  practicePattern: "continuous",
   textColor: "#56715b",
   textOpacity: 0.65,
   textAlign: "left",
@@ -220,6 +235,22 @@ function boundedString(maximum: number): Validator {
   };
 }
 
+/** A bounded, portable set of four-character OpenType feature overrides. */
+function fontFeatures(value: unknown, name: string) {
+  boundedString(256)(value, name);
+  if (value === "") return;
+  const entries = (value as string).split(",").map((entry) => entry.trim());
+  if (
+    entries.length > 32 ||
+    entries.some((entry) => !/^[a-z][a-z0-9]{3}(?:=[01])?$/.test(entry)) ||
+    new Set(entries.map((entry) => entry.slice(0, 4))).size !== entries.length
+  ) {
+    throw new TypeError(
+      "Font features must be unique four-character tags, optionally followed by =0 or =1, separated by commas.",
+    );
+  }
+}
+
 const VALIDATORS: { [K in keyof WorksheetSettings]: Validator } = {
   paper: oneOf(["letter", "a4", "a5", "legal", "custom"]),
   orientation: oneOf(["landscape", "portrait"]),
@@ -247,8 +278,19 @@ const VALIDATORS: { [K in keyof WorksheetSettings]: Validator } = {
   slantColor: color,
   slantWidthPt: boundedNumber(0.05, 10),
   textEnabled: boolean,
-  fontId: oneOf(["great-vibes", "serif", "sans", "mono", "custom"]),
+  fontId: oneOf([
+    ...WORKSHEET_FONT_CATALOG.map((font) => font.id),
+    "serif",
+    "sans",
+    "mono",
+    "custom",
+  ]),
   fontSizePt: boundedNumber(4, 300),
+  fontSizeMode: oneOf(["points", "xheight"]),
+  textXHeightMm: boundedNumber(0.5, 50),
+  fontFeatures,
+  shapingEngine: oneOf(["fontkit", "harfbuzz"]),
+  practicePattern: oneOf(["continuous", "model-trace-blank"]),
   textColor: color,
   textOpacity: boundedNumber(0, 1),
   textAlign: oneOf(["left", "center", "right"]),

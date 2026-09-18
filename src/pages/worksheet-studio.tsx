@@ -8,10 +8,12 @@ import {
   useSyncExternalStore,
 } from "react";
 import { WorksheetEditor } from "@/components/calligraphy/worksheet-editor";
+import { WorksheetFontTools } from "@/components/calligraphy/worksheet-font-tools";
 import { WorksheetPhotoPanel } from "@/components/calligraphy/worksheet-photo";
 import { WorksheetPreview } from "@/components/calligraphy/worksheet-preview";
 import { WorksheetTechniques } from "@/components/calligraphy/worksheet-techniques";
 import {
+  createWorksheetComparisonPdf,
   createWorksheetPdf,
   importWorksheetPdf,
   validateWorksheetTextFit,
@@ -33,6 +35,7 @@ import {
   normalizeWorksheetSettings,
   type WorksheetSettings,
 } from "../../shared/worksheet";
+import { WORKSHEET_FONT_CATALOG } from "../../shared/worksheet-font-catalog";
 import "../worksheet-studio.css";
 
 function NumberField({
@@ -197,13 +200,17 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
   const fontSnapshot = useMemo(
     () => ({
       version: 1 as const,
-      settings: { ...DEFAULT_WORKSHEET_SETTINGS, fontId: settings.fontId },
+      settings: {
+        ...DEFAULT_WORKSHEET_SETTINGS,
+        fontId: settings.fontId,
+        shapingEngine: settings.shapingEngine,
+      },
       text: "",
       ...(customFontName && customFontData
         ? { customFont: { name: customFontName, dataUrl: customFontData } }
         : {}),
     }),
-    [settings.fontId, customFontName, customFontData],
+    [settings.fontId, settings.shapingEngine, customFontName, customFontData],
   );
   const font =
     loadedFont?.source === fontSnapshot ? loadedFont.font : undefined;
@@ -323,6 +330,48 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
         cause instanceof Error
           ? cause.message
           : "The PDF could not be created.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function exportFontComparison() {
+    if (!form.current?.reportValidity()) return;
+    setBusy(true);
+    setError("");
+    try {
+      const source = session.getSnapshot();
+      const comparisonSource: WorksheetSnapshot = {
+        ...source,
+        settings: { ...source.settings, fontFeatures: "" },
+      };
+      const entries = await Promise.all(
+        WORKSHEET_FONT_CATALOG.map(async (entry) => ({
+          label: `${entry.name} · ${(source.settings.textXHeightMm).toFixed(1)} mm lowercase height`,
+          font: await loadWorksheetFont({
+            ...comparisonSource,
+            settings: { ...comparisonSource.settings, fontId: entry.id },
+          }),
+        })),
+      );
+      const bytes = await createWorksheetComparisonPdf(
+        comparisonSource,
+        entries,
+      );
+      downloadBlob(
+        bytes,
+        "calligraphy-six-font-comparison.pdf",
+        "application/pdf",
+      );
+      setNotice(
+        "Your six-font comparison is ready. Every page uses the same physical lowercase height.",
+      );
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "The font comparison could not be created.",
       );
     } finally {
       setBusy(false);
@@ -822,53 +871,24 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
                   Write or load words in the box beside the page. Keep this off
                   for a blank practice sheet.
                 </p>
-                <label className="ws-field">
-                  <span>Font</span>
-                  <select
-                    value={settings.fontId}
-                    onChange={(event) =>
-                      update({
-                        fontId: event.target
-                          .value as WorksheetSettings["fontId"],
-                      })
-                    }
-                  >
-                    <option value="great-vibes">Great Vibes · script</option>
-                    <option value="serif">Classic serif</option>
-                    <option value="sans">Simple sans serif</option>
-                    <option value="mono">Monospace</option>
-                    {(snapshot.customFont || settings.fontId === "custom") && (
-                      <option value="custom">
-                        {snapshot.customFont?.name ??
-                          "Custom font · please re-import"}
-                      </option>
-                    )}
-                  </select>
-                </label>
-                <label className="ws-file">
-                  Import your TTF / OTF font
-                  <input
-                    type="file"
-                    accept=".ttf,.otf"
-                    onChange={(event) => {
-                      void importFont(event.target.files?.[0]);
-                      event.target.value = "";
-                    }}
-                  />
-                </label>
-                <p className="ws-hint">
-                  Use a font you have permission to embed. Font files stay in
-                  this browser and your digital backups. PDFs embed the glyphs
-                  they print.
-                </p>
+                <WorksheetFontTools
+                  settings={settings}
+                  font={font}
+                  customFontName={snapshot.customFont?.name}
+                  onChange={(patch) => {
+                    update(patch);
+                  }}
+                  onImportFont={(file) => {
+                    void importFont(file);
+                  }}
+                  onInsertGlyph={(glyph) => {
+                    session.setText(`${session.getSnapshot().text}${glyph}`);
+                    setNotice(
+                      `Added “${glyph}” to the end of your practice text.`,
+                    );
+                  }}
+                />
                 <div className="ws-pair">
-                  <NumberField
-                    label="Font size (pt)"
-                    value={settings.fontSizePt}
-                    min={4}
-                    max={300}
-                    onChange={(fontSizePt) => update({ fontSizePt })}
-                  />
                   <label className="ws-field">
                     <span>Text color</span>
                     <input
@@ -1033,6 +1053,16 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
               font={font}
             />
           </div>
+          {model && model.warnings.length > 0 && (
+            <aside className="ws-ink-warnings" aria-live="polite">
+              <strong>Check the flourishes before printing</strong>
+              <ul>
+                {model.warnings.map((warning) => (
+                  <li key={warning}>{warning}</li>
+                ))}
+              </ul>
+            </aside>
+          )}
           {snapshot.photo && !snapshot.photo.print && (
             <p className="ws-hint">
               The photo is a screen reference only. It will not be printed.
@@ -1066,6 +1096,13 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
               onClick={() => void printSheets()}
             >
               Print sheets
+            </button>
+            <button
+              type="button"
+              disabled={!ready || busy}
+              onClick={() => void exportFontComparison()}
+            >
+              {busy ? "Preparing…" : "Download six-font comparison"}
             </button>
             <label className="ws-toggle">
               <input

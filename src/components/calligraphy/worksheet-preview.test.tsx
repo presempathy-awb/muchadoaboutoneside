@@ -4,6 +4,7 @@ import {
   DEFAULT_WORKSHEET_SETTINGS,
   getWorksheetLayout,
 } from "../../../shared/worksheet";
+import type { WorksheetFont } from "../../lib/worksheet-fonts";
 import type { WorksheetSnapshot } from "../../lib/worksheet-store";
 import { WorksheetPreview } from "./worksheet-preview";
 
@@ -89,12 +90,33 @@ test("text preview preserves font height, measured width, color, and opacity", (
       lineStyle: "dotted" as const,
     },
   };
+  const font = {
+    id: "test",
+    family: "Arial",
+    engine: "fontkit",
+    supportedFeatures: [],
+    unitsPerEm: 1_000,
+    xHeightUnits: 500,
+    resolveSizePt: () => 20,
+    hasGlyph: () => true,
+    measure: () => 42,
+    shape: (text: string) => ({
+      engine: "fontkit",
+      text,
+      sizePt: 20,
+      widthMm: 42,
+      inkBoundsMm: null,
+      glyphs: [],
+      pathScaleMm: 0.01,
+      writingScale: 2,
+    }),
+  } satisfies WorksheetFont;
   const html = renderToStaticMarkup(
     <WorksheetPreview
       snapshot={snapshot}
       layout={getWorksheetLayout(snapshot.settings)}
       lines={["Practice"]}
-      font={{ family: "Arial", measure: () => 42 }}
+      font={font}
       printed
     />,
   );
@@ -104,4 +126,79 @@ test("text preview preserves font height, measured width, color, and opacity", (
   expect(html).toContain('opacity="0.4"');
   expect(html).toContain('stroke-linecap="round"');
   expect(html).toContain(`stroke-dasharray="0 ${(2.5 * 0.5 * 25.4) / 72}"`);
+});
+
+test("renders shaped outlines with model and trace opacity on physical rows", () => {
+  const snapshot = {
+    ...initial,
+    text: "Practice",
+    settings: {
+      ...initial.settings,
+      textEnabled: true,
+      practicePattern: "model-trace-blank" as const,
+      textColor: "#123456",
+      textOpacity: 0.4,
+      writingScale: 2,
+    },
+  };
+  const font = {
+    id: "outline-test",
+    family: "Outline Test",
+    engine: "fontkit",
+    supportedFeatures: [],
+    unitsPerEm: 1_000,
+    xHeightUnits: 500,
+    resolveSizePt: () => 20,
+    hasGlyph: () => true,
+    measure: () => 20,
+    shape: (text: string) => ({
+      engine: "fontkit",
+      text,
+      sizePt: 20,
+      widthMm: 20,
+      inkBoundsMm: {
+        xMin: 0,
+        yMin: 0,
+        xMax: 10,
+        yMax: 10,
+        width: 10,
+        height: 10,
+      },
+      glyphs: [
+        {
+          id: 7,
+          cluster: 0,
+          xMm: 1,
+          yMm: 2,
+          advanceMm: 20,
+          path: "M0 0L10 0L10 10Z",
+          inkBoundsMm: {
+            xMin: 0,
+            yMin: 0,
+            xMax: 10,
+            yMax: 10,
+            width: 10,
+            height: 10,
+          },
+        },
+      ],
+      pathScaleMm: 0.01,
+      writingScale: 2,
+    }),
+  } satisfies WorksheetFont;
+  const layout = getWorksheetLayout(snapshot.settings);
+  const html = renderToStaticMarkup(
+    <WorksheetPreview
+      snapshot={snapshot}
+      layout={layout}
+      lines={["Practice", "Practice", ""]}
+      font={font}
+      printed
+    />,
+  );
+  expect(html.match(/<path /g)).toHaveLength(2);
+  expect(html).toContain('opacity="0.4"');
+  expect(html).toContain('opacity="0.1"');
+  expect(html).toContain("scale(0.02 -0.01)");
+  expect(html).not.toContain("<text");
 });

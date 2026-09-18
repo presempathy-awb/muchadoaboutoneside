@@ -51,6 +51,40 @@ describe("worksheet backup format", () => {
     ).toEqual(snapshot);
   });
 
+  test("keeps selected fonts, shaping, physical height and practice rows in backups", () => {
+    const configured: WorksheetSnapshot = {
+      ...snapshot,
+      settings: {
+        ...snapshot.settings,
+        fontId: "italianno",
+        shapingEngine: "harfbuzz",
+        fontSizeMode: "xheight",
+        textXHeightMm: 4.5,
+        fontFeatures: "liga=0,ss01=1",
+        practicePattern: "model-trace-blank",
+      },
+    };
+    expect(
+      parseWorksheetSnapshot(serializeWorksheetSnapshot(configured)),
+    ).toEqual(configured);
+  });
+
+  test("imports an older backup without losing its lettering settings", () => {
+    const restored = parseWorksheetSnapshot({
+      version: 1,
+      settings: { fontId: "great-vibes", fontSizePt: 36, lineCount: 18 },
+      text: "Keep my earlier draft",
+    });
+    expect(restored.settings).toMatchObject({
+      fontSizePt: 36,
+      lineCount: 18,
+      fontSizeMode: "points",
+      shapingEngine: "fontkit",
+      practicePattern: "continuous",
+    });
+    expect(restored.text).toBe("Keep my earlier draft");
+  });
+
   test("rejects future versions with a useful message", () => {
     expect(() => parseWorksheetSnapshot({ ...snapshot, version: 2 })).toThrow(
       "newer version",

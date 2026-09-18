@@ -1,6 +1,7 @@
 import { stat } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { Elysia } from "elysia";
+import { WORKSHEET_FONT_CATALOG } from "../shared/worksheet-font-catalog";
 import { createCollab } from "./collab";
 import { assetNames, project } from "./project";
 
@@ -15,6 +16,9 @@ const defaultAssetDir = resolve(import.meta.dir, "../source/assets");
 const stableCache = "no-store";
 const immutableCache = "public, max-age=31536000, immutable";
 const viteAssetPattern = /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.[^/]+$/;
+const worksheetFontDigests = new Map<string, string>(
+  WORKSHEET_FONT_CATALOG.map((font) => [font.path, font.sha256]),
+);
 
 const contentTypes: Record<string, string> = {
   ".css": "text/css; charset=utf-8",
@@ -30,7 +34,9 @@ const contentTypes: Record<string, string> = {
   ".svg": "image/svg+xml",
   ".ttf": "font/ttf",
   ".txt": "text/plain; charset=utf-8",
+  ".wasm": "application/wasm",
   ".webp": "image/webp",
+  ".woff2": "font/woff2",
   ".zip": "application/zip",
 };
 
@@ -118,7 +124,7 @@ export function createApp(options: AppOptions = {}) {
       return fileResponse(path, headers);
     })
     .get("*", async ({ request }) => {
-      const { pathname } = new URL(request.url);
+      const { pathname, searchParams } = new URL(request.url);
       if (pathname === "/api" || pathname.startsWith("/api/"))
         return notFound();
       if (!staticDir) return notFound();
@@ -126,9 +132,14 @@ export function createApp(options: AppOptions = {}) {
       const requestedPath = safeStaticPath(staticDir, pathname);
       if (!requestedPath) return notFound("Invalid static path");
       if (await isFile(requestedPath)) {
-        const cacheControl = viteAssetPattern.test(pathname)
-          ? immutableCache
-          : stableCache;
+        const expectedFontDigest = worksheetFontDigests.get(pathname);
+        const isVersionedFont =
+          expectedFontDigest !== undefined &&
+          searchParams.get("sha256") === expectedFontDigest;
+        const cacheControl =
+          viteAssetPattern.test(pathname) || isVersionedFont
+            ? immutableCache
+            : stableCache;
         return fileResponse(requestedPath, undefined, cacheControl);
       }
 

@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "d08ab8b2f388729486d3bb55f86ef8093e1e8ee8",
+  "sourceCommit": "3736bb011136b00a111bed78275311196498352e",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -20,8 +20,8 @@
     },
     {
       "path": ".dockerignore",
-      "bytes": 603,
-      "sha256": "fbd67f1e8770034a7b0cbce880c200a5b540ed383ce6caf8b64817382056f7e0"
+      "bytes": 661,
+      "sha256": "c393be1693638ac9757343d1eae7fe9a13d232517cb8c484c0790a0c5286e619"
     },
     {
       "path": ".editorconfig",
@@ -65,8 +65,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1815,
-      "sha256": "0a6885dbfa1ef304d5ce3c55b8457ad4d378439b9dec6b6269a6fd44e4d27ae3"
+      "bytes": 2210,
+      "sha256": "1a77511bcfc413d31e3260225ced8d3cba05acb2f5eefc46a4a44fa6c029c1de"
     },
     {
       "path": "CLAUDE.md",
@@ -85,8 +85,8 @@
     },
     {
       "path": "Dockerfile",
-      "bytes": 1162,
-      "sha256": "4cb35aa7e954f7b81b8b0d0dc588c5be5a915ba2e76bfff35ce7ce47bd3b85df"
+      "bytes": 1241,
+      "sha256": "f769804351c24a85aebdf5fd74b6fe7a29a69ce1407192013f18acfe1a1cf709"
     },
     {
       "path": "INTENT.md",
@@ -135,8 +135,8 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 156602,
-      "sha256": "cc8f1808651cd52cadf6b09c94c73bce01897d0aeb7b26bc6cb493840083e26c"
+      "bytes": 214260,
+      "sha256": "c395be09ed3ee4f3898856abe185c4a90937f7b66f0ede20818479d00956a18a"
     },
     {
       "path": "agents.toml",
@@ -150,8 +150,8 @@
     },
     {
       "path": "bun.lock",
-      "bytes": 93631,
-      "sha256": "46e89a2efc554f8f2151cbf50523b39462f47cc2faa42fb2b653da5e45115819"
+      "bytes": 95181,
+      "sha256": "c27fd032a549631614c194eeb46d7b7bc7325a81f74a4f21463ec5a663504f42"
     },
     {
       "path": "components.json",
@@ -169,9 +169,14 @@
       "sha256": "b7ebe053e69ef2dc0139b0f0fb09db31828a939a6614b7943acfd23eb163376e"
     },
     {
+      "path": "docs/calligraphy-font-security.md",
+      "bytes": 8989,
+      "sha256": "61398bd5847c5a164a2e8c2b882a3f755ff76a7f6b76d28fff22c825442b59e2"
+    },
+    {
       "path": "docs/calligraphy-studio.md",
-      "bytes": 3551,
-      "sha256": "1251ae8398ffc4998908078c10269fd9d4de0383b8b33a5f222bdb1c7bdbdf9d"
+      "bytes": 6616,
+      "sha256": "e2c5367cd321256f9d27b1277a2be882fc4a07690f84ee163e9defaca94510b3"
     },
     {
       "path": "docs/decisions.md",
@@ -220,8 +225,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 2799,
-      "sha256": "dec7aad757206b7e6f54638f0b5d07eced39cc034babc7672a5eb4f7721ef601"
+      "bytes": 3303,
+      "sha256": "e68b0cca0d56e3506e94505734c10b0a921acf8b5df8dbe023b74863b627df0f"
     },
     {
       "path": "public/editions/endless-inscription-study-extended.svg",
@@ -4889,9 +4894,69 @@
       "sha256": "8d509802186f1b51572531ecf313e8098f9a5bfdfaca93f0c9b34467f9982d15"
     },
     {
+      "path": "public/fonts/HerrVonMuellerhoff-Regular.ttf",
+      "bytes": 46624,
+      "sha256": "ba8ac10807a79462b7c8265b2eebb8419e5017fdc1a5828b1a071d9e8478772e"
+    },
+    {
+      "path": "public/fonts/ImperialScript-Regular.ttf",
+      "bytes": 154824,
+      "sha256": "fa040ae596cde82559c3bcf056ac216a94efa904b848382ab85740d38df4bab7"
+    },
+    {
+      "path": "public/fonts/Italianno-Regular.ttf",
+      "bytes": 223708,
+      "sha256": "f6ae96dea0da46c73370eb0575848ab0eda190315bdfda3f5b252bba3dc9173c"
+    },
+    {
+      "path": "public/fonts/MrsSaintDelafield-Regular.ttf",
+      "bytes": 49140,
+      "sha256": "67a7abc298ce9d368b2c00fcbff52ec54be948889b8a59032ae80ca3322e5b34"
+    },
+    {
       "path": "public/fonts/OFL.txt",
       "bytes": 4399,
       "sha256": "61093a21f5e63dedf54222b3c09997e54c0fe43e3851d21386e02ddcbc246d49"
+    },
+    {
+      "path": "public/fonts/PinyonScript-Regular.ttf",
+      "bytes": 151412,
+      "sha256": "4aab130a6ed27f8b8117738c84a5602edf9300cdcc0651a9a65bf96f451ac29a"
+    },
+    {
+      "path": "public/fonts/licenses/GreatVibes-OFL.txt",
+      "bytes": 4399,
+      "sha256": "61093a21f5e63dedf54222b3c09997e54c0fe43e3851d21386e02ddcbc246d49"
+    },
+    {
+      "path": "public/fonts/licenses/HerrVonMuellerhoff-OFL.txt",
+      "bytes": 4410,
+      "sha256": "50265d2b41f8ad2dd350532d2286509aa694021b4aa0490b06f0068e4ed78c27"
+    },
+    {
+      "path": "public/fonts/licenses/ImperialScript-OFL.txt",
+      "bytes": 4404,
+      "sha256": "42b758018a3f0fa429f9aaf7cafaa273ce922ea7dfba30f50cc828b8aa3e1717"
+    },
+    {
+      "path": "public/fonts/licenses/Italianno-OFL.txt",
+      "bytes": 4483,
+      "sha256": "bce79721f0203586872bbd7016922baf449980bdd1c44550a821112a3b547185"
+    },
+    {
+      "path": "public/fonts/licenses/MrsSaintDelafield-OFL.txt",
+      "bytes": 4409,
+      "sha256": "f354ef1e7256644b320c5e1d9a07a819c2e2b930166003c96680894f9fba81be"
+    },
+    {
+      "path": "public/fonts/licenses/PinyonScript-OFL.txt",
+      "bytes": 4384,
+      "sha256": "61d07cb0eaa943943648df2b11d0c2210e772053c192871e13f680b53fe0b77e"
+    },
+    {
+      "path": "public/fonts/worksheet-fonts.provenance.json",
+      "bytes": 6331,
+      "sha256": "dfbca6f297b99a29d7a5de378c5e45aeb08552fbbb8eb549b9cf96b6a06eb534"
     },
     {
       "path": "public/guide/calligraphy-guide-extended.html",
@@ -4940,8 +5005,8 @@
     },
     {
       "path": "public/licenses/THIRD-PARTY-NOTICES.txt",
-      "bytes": 156602,
-      "sha256": "cc8f1808651cd52cadf6b09c94c73bce01897d0aeb7b26bc6cb493840083e26c"
+      "bytes": 214260,
+      "sha256": "c395be09ed3ee4f3898856abe185c4a90937f7b66f0ede20818479d00956a18a"
     },
     {
       "path": "repo-profile.json",
@@ -5084,14 +5149,24 @@
       "sha256": "e3bb7b7e9558664cfb35b086c762b7f74493268917c81c0bce70047b359f4e3d"
     },
     {
+      "path": "scripts/verify-typography-bundle.ts",
+      "bytes": 3054,
+      "sha256": "11d8f9b5274af0ddff1c7539de3c4797f12d477ec6f0cf3649966b833f0a3824"
+    },
+    {
+      "path": "scripts/verify-worksheet-fonts.ts",
+      "bytes": 6131,
+      "sha256": "6f542a33743a7ef99b7e6746b51aaef502f7cfefa54c78afccc52467c84170ed"
+    },
+    {
       "path": "server/app.test.ts",
-      "bytes": 6677,
-      "sha256": "b9d83430dc289819a62d2837c8273dc55064207156c81a1a462796cb80846d24"
+      "bytes": 8724,
+      "sha256": "20c9efd954a482249721b7e4d20017f7798b5968e8035dd1e41cb98513f6a971"
     },
     {
       "path": "server/app.ts",
-      "bytes": 4537,
-      "sha256": "1f70f22319f766c8843062812df0ff3d4dce535fc5952d49060387ad4d03100b"
+      "bytes": 5049,
+      "sha256": "b1f9c972837563f9f6bbd88094c3fcb4e28440312b2026f7debac9373d46922f"
     },
     {
       "path": "server/collab.test.ts",
@@ -5255,8 +5330,8 @@
     },
     {
       "path": "shared/publication.ts",
-      "bytes": 3074,
-      "sha256": "58518ee39a5f67eaf7056415a418bd0edbe9c9bda5806a0b5441b3a4740de08c"
+      "bytes": 3113,
+      "sha256": "d025259aa574c11c263bf8d0dcd9beaf5dfdd3fd06e82ace335e7270904adc3a"
     },
     {
       "path": "shared/script-metrics.test.ts",
@@ -5299,14 +5374,24 @@
       "sha256": "6bb0bca17a83797b2d0b866b05b8008edc59b9354bb5e8ab995314d0fed83069"
     },
     {
+      "path": "shared/worksheet-font-catalog.test.ts",
+      "bytes": 858,
+      "sha256": "dbb15d9fca9805ef6c88939fd8bf3defc74dc76bec4713f493890fbf51d67188"
+    },
+    {
+      "path": "shared/worksheet-font-catalog.ts",
+      "bytes": 2996,
+      "sha256": "c91c4b1d2ab9714c7898dc4c65c770bb488e8c51145a3a61b94fd455e5c677ac"
+    },
+    {
       "path": "shared/worksheet.test.ts",
-      "bytes": 9841,
-      "sha256": "9e37c9b9bd08e8ec07b49c4b899acc8a8a56ae784688027125aa55aa81f86444"
+      "bytes": 11434,
+      "sha256": "e865e1b433811a614f9c61ec3d4414261d01ad8285ddb5fe650906729d50526e"
     },
     {
       "path": "shared/worksheet.ts",
-      "bytes": 18536,
-      "sha256": "9dbc2fe1ae38ed7e79a5921700a005eff72ee9fed0d9fb84edff950584ffbe4d"
+      "bytes": 19850,
+      "sha256": "8cee09ef442096788c30d0b883ad2047f783faee1f608f6eb1fefdd6647b5a75"
     },
     {
       "path": "source/README.md",
@@ -5404,19 +5489,24 @@
       "sha256": "822b8a3839ca66ec30a73cacd7a7dc7d1d547b169c1b996a7bd3e2ceb89b7777"
     },
     {
+      "path": "src/components/calligraphy/worksheet-font-tools.tsx",
+      "bytes": 17562,
+      "sha256": "c39fe1268b94a10c46f5b6f256c1d7937fdcf853da4c5fc59154b970b31733d2"
+    },
+    {
       "path": "src/components/calligraphy/worksheet-photo.tsx",
       "bytes": 15794,
       "sha256": "c4c49765dfcfd9de09e46a304c6deea607520e4d59bfc950b6c4aaff7564ec20"
     },
     {
       "path": "src/components/calligraphy/worksheet-preview.test.tsx",
-      "bytes": 2910,
-      "sha256": "ed92f3d7dc26902251712965e6955fe3ecb8c4075079a472c6321f26b9bb4583"
+      "bytes": 5158,
+      "sha256": "01db7386c49ade46236bd5fa91529e323e5dca3048e588fed463b6d20adfadc2"
     },
     {
       "path": "src/components/calligraphy/worksheet-preview.tsx",
-      "bytes": 4240,
-      "sha256": "62dfc29a1c1654afc4dcc0a8be780d2d3b38fcd657e5f1631ab25045d6e28d4b"
+      "bytes": 5585,
+      "sha256": "c80eee797b774e0e08aa8d7d1f35ae8244fe82c9d2bfeede21aab25b7ed0c99c"
     },
     {
       "path": "src/components/calligraphy/worksheet-techniques.tsx",
@@ -5590,23 +5680,33 @@
     },
     {
       "path": "src/lib/worksheet-export.test.ts",
-      "bytes": 11057,
-      "sha256": "5f6f7261b83605fc94d6390d2a3a61d38ea4b3f3d4dc6cc876ee2232addde2ad"
+      "bytes": 17393,
+      "sha256": "7a2827a14aa4ede33f9430ca68f39adbfbfc45994cd94bc29dd958ece020f098"
     },
     {
       "path": "src/lib/worksheet-export.ts",
-      "bytes": 20933,
-      "sha256": "e66618a590cf434fe003dff4218d312e24029160bf5fa90ab47091c71cfdf680"
+      "bytes": 32617,
+      "sha256": "aa5b1c168569c700e994469753b4684f40f71e5fbbc69088bde9dab52b0b2316"
+    },
+    {
+      "path": "src/lib/worksheet-font-previews.test.ts",
+      "bytes": 363,
+      "sha256": "dd5ce14dfa6997245ba684fb187502b24245ad15cb80df2e8969fa525e4ff7cb"
+    },
+    {
+      "path": "src/lib/worksheet-font-previews.ts",
+      "bytes": 3072,
+      "sha256": "b72c2f538bac9eb1f170243a05e825c5b530a762e3d88af8eea702bf455b2b98"
     },
     {
       "path": "src/lib/worksheet-fonts.test.ts",
-      "bytes": 1479,
-      "sha256": "cb96c7ce208d93fa9982334a9884b04bc11e6f45991dbad38e0425e449beec92"
+      "bytes": 8270,
+      "sha256": "095e4906d308ab0ac48da62031130c04559d2871b63e89d3ead6b4d675818a74"
     },
     {
       "path": "src/lib/worksheet-fonts.ts",
-      "bytes": 7632,
-      "sha256": "35ef0caa514bf37a0892e65617d8083a7a88ed6684057fd4d9380e313359015d"
+      "bytes": 19727,
+      "sha256": "21d848f9af8e030eea88ddf1035bd54e88214d2e54ecaaf5ea1ba715eddb918f"
     },
     {
       "path": "src/lib/worksheet-photo.test.ts",
@@ -5619,9 +5719,19 @@
       "sha256": "ce10b8f16a1f6871118bd8cfda4e0dff3c47e080fd47c9098e6e9b7c759065bb"
     },
     {
+      "path": "src/lib/worksheet-shaping.test.ts",
+      "bytes": 1547,
+      "sha256": "38346fb4fcc3cdf79fab126f3cc35bea591f83b2f4e062a10f2bc8d47ec53876"
+    },
+    {
+      "path": "src/lib/worksheet-shaping.ts",
+      "bytes": 17108,
+      "sha256": "baa7325df1ffd3ef5325d89e536150273a43cbfa7bb52389789e6e0b0b561790"
+    },
+    {
       "path": "src/lib/worksheet-store.test.ts",
-      "bytes": 8346,
-      "sha256": "cd36611d88caa784fd73a254dbe30662803f9d02b42e95292f433ea15cce7512"
+      "bytes": 9416,
+      "sha256": "8ae836ad530a123bb781b6a252d0d19c62dbbe20c16bd94190d4818233f882c5"
     },
     {
       "path": "src/lib/worksheet-store.ts",
@@ -5690,8 +5800,8 @@
     },
     {
       "path": "src/pages/worksheet-studio.tsx",
-      "bytes": 48130,
-      "sha256": "873ed844cc278aedf3b864a31afa83ed34162558dbd1862f8079e9eb13c7f10c"
+      "bytes": 49038,
+      "sha256": "574b844595ef60f9e5d1d7a681f973760ab212954eee151035fbd202bf88cdca"
     },
     {
       "path": "src/poem-editor.css",
@@ -5720,8 +5830,8 @@
     },
     {
       "path": "src/worksheet-studio.css",
-      "bytes": 17917,
-      "sha256": "e8a14fb923ddfd4a9868270d38fd72fef2a9cc6febbe480412c02bf95a9c6915"
+      "bytes": 22303,
+      "sha256": "10ecc7ae8da1fc3ff035e48277a1eb66aa87ea48f922454abfc9929f39d86b79"
     },
     {
       "path": "tests/security/__snapshots__/no-domain-cookie-snapshot.yml",
@@ -5755,8 +5865,8 @@
     },
     {
       "path": "vite.config.ts",
-      "bytes": 547,
-      "sha256": "f43dcc260683c53d4b187fcfc869384ac1fb05d920b466d5de0126fa5811ea92"
+      "bytes": 576,
+      "sha256": "9a4b9481025725a2a0a5e98a5e5d80c0c7b3394b9f6c6bb3354fc9c563c66ebf"
     }
   ]
 }

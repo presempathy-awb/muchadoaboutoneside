@@ -70,7 +70,17 @@ export function WorksheetPreview({
         {settings.textEnabled &&
           font &&
           lines.map((line, index) => {
-            const width = font.measure(line, settings);
+            const role =
+              settings.practicePattern === "model-trace-blank"
+                ? index % 3 === 0
+                  ? "model"
+                  : index % 3 === 1
+                    ? "trace"
+                    : "blank"
+                : "model";
+            if (!line || role === "blank") return null;
+            const run = font.shape(line, settings);
+            const width = run.widthMm;
             const available = layout.contentX2Mm - layout.contentX1Mm;
             const x =
               layout.contentX1Mm +
@@ -79,25 +89,51 @@ export function WorksheetPreview({
                 : settings.textAlign === "right"
                   ? available - width
                   : 0);
-            return (
-              line && (
-                <text
-                  key={layout.baselineYsMm[index]}
-                  x={x}
-                  y={layout.baselineYsMm[index]}
-                  fontFamily={font.family}
-                  fontSize={(settings.fontSizePt * 25.4) / 72}
+            const baseline = layout.baselineYsMm[index];
+            if (baseline === undefined) return null;
+            const opacity =
+              role === "trace"
+                ? settings.textOpacity * 0.25
+                : settings.textOpacity;
+            if (
+              run.glyphs.length > 0 &&
+              run.glyphs.every((glyph) => glyph.path !== undefined)
+            ) {
+              return (
+                <g
+                  key={`${baseline}-${line}`}
                   fill={settings.textColor}
-                  opacity={settings.textOpacity}
-                  letterSpacing={settings.letterSpacingMm}
-                  wordSpacing={settings.wordSpacingMm}
-                  textLength={width > 0 ? width : undefined}
-                  lengthAdjust="spacingAndGlyphs"
-                  xmlSpace="preserve"
+                  opacity={opacity}
                 >
-                  {line}
-                </text>
-              )
+                  {run.glyphs.map((glyph) =>
+                    glyph.path ? (
+                      <path
+                        key={`${glyph.cluster}-${glyph.id}-${glyph.xMm}-${glyph.yMm}`}
+                        d={glyph.path}
+                        transform={`translate(${x + glyph.xMm} ${baseline - glyph.yMm}) scale(${run.pathScaleMm * run.writingScale} ${-run.pathScaleMm})`}
+                      />
+                    ) : null,
+                  )}
+                </g>
+              );
+            }
+            return (
+              <text
+                key={`${baseline}-${line}`}
+                x={x}
+                y={baseline}
+                fontFamily={font.family}
+                fontSize={(run.sizePt * 25.4) / 72}
+                fill={settings.textColor}
+                opacity={opacity}
+                letterSpacing={settings.letterSpacingMm}
+                wordSpacing={settings.wordSpacingMm}
+                textLength={width > 0 ? width : undefined}
+                lengthAdjust="spacingAndGlyphs"
+                xmlSpace="preserve"
+              >
+                {line}
+              </text>
             );
           })}
         {settings.calibrationMark && (

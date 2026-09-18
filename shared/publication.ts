@@ -51,6 +51,7 @@ export const REQUIRED_PUBLIC_FILES = [
   ".github/workflows/site.yml",
   "docs/decisions.md",
   "docs/calligraphy-studio.md",
+  "docs/calligraphy-font-security.md",
   "docs/runbook/development.md",
   "docs/runbook/containers.md",
   "docs/runbook/instructions.md",
