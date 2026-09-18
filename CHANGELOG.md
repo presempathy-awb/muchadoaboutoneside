@@ -4,6 +4,7 @@ This log records notable project changes. Repository history and pull requests c
 
 ## Unreleased
 
+- Put the font picker, visual gallery, and example-text toggle at the top of the practice studio; keep font choices in the existing anonymous browser autosave and templates.
 - Phase 0 repository foundations: generated agent instructions, development/security checks, container development setup and public contributor documents.
 - Upgraded the small-foil generator to Pillow 12.3.0 to resolve HIGH vulnerability findings; regenerated provenance and compressed preview while preserving geometry, marking artwork and decoded texture pixels.
 - Public snapshot selection and verification extended to include the reviewed setup files and documentation.

@@ -8,7 +8,11 @@ import {
   useSyncExternalStore,
 } from "react";
 import { WorksheetEditor } from "@/components/calligraphy/worksheet-editor";
-import { WorksheetFontTools } from "@/components/calligraphy/worksheet-font-tools";
+import {
+  WorksheetFontGallery,
+  WorksheetFontPicker,
+  WorksheetFontTools,
+} from "@/components/calligraphy/worksheet-font-tools";
 import { WorksheetPhotoPanel } from "@/components/calligraphy/worksheet-photo";
 import { WorksheetPreview } from "@/components/calligraphy/worksheet-preview";
 import { WorksheetTechniques } from "@/components/calligraphy/worksheet-techniques";
@@ -193,6 +197,7 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
     action: () => void;
   }>();
   const form = useRef<HTMLFormElement>(null);
+  const letteringOptions = useRef<HTMLDetailsElement>(null);
   const fontImportSequence = useRef(0);
   const needFont = Boolean(snapshot.text || settings.textEnabled);
   const customFontName = snapshot.customFont?.name;
@@ -502,6 +507,41 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
         </span>
         <span>Private to this browser · no account needed</span>
       </div>
+      <fieldset className="ws-font-access" disabled={!ready || busy}>
+        <legend>Choose your lettering</legend>
+        <div className="ws-font-access-row">
+          <WorksheetFontPicker
+            settings={settings}
+            customFontName={customFontName}
+            onChange={update}
+          />
+          <Toggle
+            label="Print example text"
+            checked={settings.textEnabled}
+            onChange={(textEnabled) => update({ textEnabled })}
+          />
+          <button
+            type="button"
+            className="ws-text-button"
+            onClick={() => {
+              if (!letteringOptions.current) return;
+              letteringOptions.current.open = true;
+              letteringOptions.current.querySelector("summary")?.focus();
+            }}
+          >
+            Size, color & letterforms
+          </button>
+        </div>
+        <WorksheetFontGallery
+          selected={settings.fontId}
+          onSelect={(fontId) => update({ fontId })}
+        />
+        <p className="ws-hint">
+          Your font choice saves with this draft in this browser, with no
+          sign-in needed. Add words below to preview them; leave example text
+          off for a blank sheet.
+        </p>
+      </fieldset>
       <fieldset className="ws-presets">
         <legend className="ws-sr-only">Guide presets</legend>
         <button
@@ -859,18 +899,9 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
                 )}
               </div>
             </details>
-            <details>
-              <summary>Example lettering</summary>
+            <details ref={letteringOptions}>
+              <summary>Lettering size, color & details</summary>
               <div className="ws-detail-body">
-                <Toggle
-                  label="Print example text"
-                  checked={settings.textEnabled}
-                  onChange={(textEnabled) => update({ textEnabled })}
-                />
-                <p className="ws-hint">
-                  Write or load words in the box beside the page. Keep this off
-                  for a blank practice sheet.
-                </p>
                 <WorksheetFontTools
                   settings={settings}
                   font={font}
