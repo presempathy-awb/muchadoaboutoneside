@@ -1,0 +1,82 @@
+.scales-reference-card {
+  min-width: 0;
+}
+.scales-reference-card .scales-hint {
+  color: #655f55;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.scales-reference-photos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+.scales-reference-photos figure {
+  margin: 0;
+  min-width: 0;
+}
+.scales-reference-photos svg {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  background: #403931;
+}
+.scales-reference-photos a:focus-visible {
+  outline: 3px solid #a55d18;
+  outline-offset: 3px;
+}
+.scales-reference-photos figcaption {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #655f55;
+}
+.scales-reference-metrics {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+.scales-reference-metrics > div {
+  border-top: 1px solid #e5ddd0;
+  padding-top: 9px;
+}
+.scales-reference-metrics dt {
+  font-size: 12px;
+  color: #655f55;
+  line-height: 1.5;
+}
+.scales-reference-metrics dd {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.scales-reference-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.scales-reference-heading h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.scales-reference-heading label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.scales-reference-heading select {
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid #d7cdbc;
+  border-radius: 5px;
+  background: white;
+}
+@media (max-width: 740px) {
+  .scales-reference-card {
+    order: 5;
+  }
+}

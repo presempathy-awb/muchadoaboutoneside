@@ -14,7 +14,65 @@ import {
   type ScaleShapeVersion,
 } from "./scale-history";
 
+import { DEFAULT_SCALE_SHAPE, LEGACY_SCALE_SHAPE } from "./scale-shape";
+
 describe("recent working scale shapes", () => {
+  test("history distinguishes outline controls and restores them without replacing the poem", () => {
+    const original = captureScaleShapeVersion(
+      DEFAULT_SCALE_DESIGN,
+      "Photo plates",
+      1,
+    );
+    const changed = normalizeScaleDesign({
+      ...DEFAULT_SCALE_DESIGN,
+      geometry: {
+        ...DEFAULT_SCALE_DESIGN.geometry,
+        plateShape: "diamond",
+        plateAspect: 0.8,
+        cornerCut: 0.25,
+        plateTaper: -0.2,
+      },
+      text: "Keep my poem.",
+      fontId: "serif",
+    });
+    const tuned = captureScaleShapeVersion(changed, "Tuned", 2);
+    expect(tuned.id).not.toBe(original.id);
+    const history = parseScaleShapeHistory(JSON.stringify([original, tuned]));
+    expect(history).toEqual([original, tuned]);
+    const first = history[0];
+    if (!first) throw new Error("Expected the original shape");
+    const restored = applyScaleShapeVersion(changed, first);
+    expect(restored.geometry).toEqual(original.shape.geometry);
+    expect(restored.text).toBe(changed.text);
+    expect(restored.fontId).toBe(changed.fontId);
+  });
+
+  test("old history entries migrate to legacy outlines without changing construction", () => {
+    const saved = captureScaleShapeVersion(
+      DEFAULT_SCALE_DESIGN,
+      "Earlier shape",
+      1,
+    );
+    const geometry: Record<string, unknown> = {
+      ...saved.shape.geometry,
+      relief: 0.65,
+    };
+    for (const key of Object.keys(DEFAULT_SCALE_SHAPE)) delete geometry[key];
+    const parsed = parseScaleShapeHistory(
+      JSON.stringify([{ ...saved, shape: { ...saved.shape, geometry } }]),
+    );
+    expect(parsed).toHaveLength(1);
+    const first = parsed[0];
+    if (!first) throw new Error("Expected the migrated shape");
+    const restored = applyScaleShapeVersion(DEFAULT_SCALE_DESIGN, first);
+    for (const [key, value] of Object.entries(LEGACY_SCALE_SHAPE))
+      expect(restored.geometry[key as keyof typeof LEGACY_SCALE_SHAPE]).toBe(
+        value,
+      );
+    expect(restored.geometry.relief).toBe(0.65);
+    expect(restored.layers).toEqual(saved.shape.layers);
+  });
+
   test("restores adaptive anchors and clears them when returning to fixed counts", () => {
     const fixed = captureScaleShapeVersion(DEFAULT_SCALE_DESIGN, "Fixed", 1);
     const adaptive = setScaleDensityMode(DEFAULT_SCALE_DESIGN, "adaptive");

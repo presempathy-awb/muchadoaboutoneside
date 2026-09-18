@@ -655,6 +655,90 @@ try {
     "contrast check recovers after restoring ink",
     `document.querySelector('[data-check="proof-contrast"]').getAttribute('data-check-status') === 'pass'`,
   );
+  await assert(
+    "scale outline controls and reference comparison are available",
+    `Boolean(document.querySelector('#scales-shape-clipped')?.getClientRects().length) && Boolean(document.querySelector('.scales-reference-card')?.getClientRects().length) && /including its (base|plinth)/.test(document.querySelector('.scales-size-card')?.textContent ?? '')`,
+  );
+  const storedDesign = `JSON.parse(localStorage.getItem('muchado.scale-study.v1'))`;
+  const committedShape = `document.querySelector('[data-testid="scales-workbench"]')`;
+  const readyShape = `${committedShape}?.getAttribute('data-preview-ready') === 'true'`;
+  const originalShapeFingerprint = await evaluate<string>(
+    `${committedShape}.getAttribute('data-plate-fingerprint')`,
+  );
+  await evaluate(`document.querySelector('#scales-shape-diamond').click()`);
+  await waitFor("diamond outline commits actual changed geometry", () =>
+    evaluate<boolean>(
+      `${readyShape} && ${committedShape}.getAttribute('data-plate-shape') === 'diamond' && ${committedShape}.getAttribute('data-plate-fingerprint') !== ${JSON.stringify(originalShapeFingerprint)}`,
+    ),
+  );
+  await assert(
+    "shape selection redraws actual plate geometry",
+    `${committedShape}.getAttribute('data-plate-shape') === 'diamond' && Boolean(${committedShape}.getAttribute('data-plate-fingerprint')) && ${committedShape}.getAttribute('data-plate-fingerprint') !== ${JSON.stringify(originalShapeFingerprint)}`,
+  );
+  await evaluate(`document.querySelector('#scales-shape-clipped').click()`);
+  await evaluate(
+    `(() => { const follow=document.querySelector('#scales-plate-follow-cell'); if(follow.checked) follow.click(); })()`,
+  );
+  await waitFor("plate ratio can be edited through enabled control", () =>
+    evaluate<boolean>(
+      `document.querySelector('#scales-plate-aspect')?.disabled === false`,
+    ),
+  );
+  await evaluate(
+    `(() => { const select=document.querySelector('#scales-size-unit'); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(select,'mm'); select.dispatchEvent(new Event('change',{bubbles:true})); })()`,
+  );
+  await waitFor("millimetre shape depth control", () =>
+    evaluate<boolean>(
+      `Number(document.querySelector('#scales-shape-relief')?.max) > 150`,
+    ),
+  );
+  await evaluate(
+    `(() => { for(const [id,value] of [['scales-plate-aspect','1.6'],['scales-corner-cut','0.2'],['scales-plate-taper','-0.15'],['scales-shape-relief','1.4']]) { const input=document.getElementById(id); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,value); input.dispatchEvent(new Event('input',{bubbles:true})); input.dispatchEvent(new Event('change',{bubbles:true})); } })()`,
+  );
+  await waitFor(
+    "custom shape and physical depth are stored and committed",
+    () =>
+      evaluate<boolean>(
+        `${readyShape} && ${committedShape}.getAttribute('data-plate-shape') === 'clipped' && Math.abs(Number(${committedShape}.getAttribute('data-plate-aspect'))-1.6)<0.001 && (() => { const g=${storedDesign}.geometry; return g.cornerCut===0.2 && g.plateTaper===-0.15 && Math.abs(g.relief*25.4-1.4)<0.001; })()`,
+      ),
+  );
+  // Depth units were explicitly switched to mm before the synthetic edit.
+  const customShapeDraft = await evaluate<string>(
+    `localStorage.getItem('muchado.scale-study.v1')`,
+  );
+  const customShapeFingerprint = await evaluate<string>(
+    `${committedShape}.getAttribute('data-plate-fingerprint')`,
+  );
+  await reload(`Boolean(document.querySelector('#scales-plate-aspect'))`);
+  await waitFor(
+    "custom shape survives reload with the same generated geometry",
+    () =>
+      evaluate<boolean>(
+        `${readyShape} && ${committedShape}.getAttribute('data-plate-shape') === 'clipped' && ${committedShape}.getAttribute('data-plate-fingerprint') === ${JSON.stringify(customShapeFingerprint)}`,
+      ),
+  );
+  await assert(
+    "custom shape and depth survive reload",
+    `localStorage.getItem('muchado.scale-study.v1') === ${JSON.stringify(customShapeDraft)} && document.querySelector('#scales-plate-aspect').value === '1.6' && document.querySelector('#scales-corner-cut').value === '0.2' && document.querySelector('#scales-plate-taper').value === '-0.15'`,
+  );
+  await evaluate(`document.querySelector('#scales-reference-shape').click()`);
+  await waitFor("reference shape reset is stored and committed", () =>
+    evaluate<boolean>(
+      `${readyShape} && Math.abs(Number(${committedShape}.getAttribute('data-plate-aspect'))-1.3)<0.001 && (() => { const g=${storedDesign}.geometry; return g.plateShape==='clipped' && g.cornerCut===0.12 && g.plateTaper===0.12; })()`,
+    ),
+  );
+  await assert(
+    "reference shape reset preserves words font size layers and depth",
+    `(() => { const before=JSON.parse(${JSON.stringify(customShapeDraft)}), after=${storedDesign}; for(const design of [before,after]) for(const key of ['plateShape','plateAspect','cornerCut','plateTaper']) delete design.geometry[key]; return JSON.stringify(before)===JSON.stringify(after); })()`,
+  );
+  await evaluate(
+    `document.querySelector('.scales-shape-card').scrollIntoView({block:'start'})`,
+  );
+  await screenshot("tunable-reference-shape");
+  await evaluate(
+    `document.querySelector('.scales-reference-card').scrollIntoView({block:'start'})`,
+  );
+  await screenshot("reference-comparison");
   await request("Emulation.setDeviceMetricsOverride", {
     width: 390,
     height: 844,
@@ -701,6 +785,35 @@ try {
     "intentionally blank wording survives reload",
     `JSON.parse(localStorage.getItem('muchado.scale-study.v1')).text === '' && document.querySelector('[data-testid="scales-visibility"]').getAttribute('data-status') === 'empty'`,
   );
+  await evaluate(
+    `(() => { const design=${storedDesign}; design.text='Silence sings softly.'; localStorage.setItem('muchado.scale-study.v1',JSON.stringify(design)); })()`,
+  );
+  await reload(`Boolean(document.querySelector('#scales-starting-shape'))`);
+  await waitFor("synthetic wording preview before reference preset", () =>
+    evaluate<boolean>(`${readyShape}`),
+  );
+  const beforeReferenceFingerprint = await evaluate<string>(
+    `${committedShape}.getAttribute('data-plate-fingerprint')`,
+  );
+  await evaluate(
+    `(() => { const select=document.querySelector('#scales-starting-shape'); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(select,'wood-photo-reference'); select.dispatchEvent(new Event('change',{bubbles:true})); })()`,
+  );
+  await waitFor("archival reference preset commits generated wood plates", () =>
+    evaluate<boolean>(
+      `${readyShape} && ${committedShape}.getAttribute('data-plate-shape') === 'clipped' && ${committedShape}.getAttribute('data-plate-fingerprint') !== ${JSON.stringify(beforeReferenceFingerprint)} && document.querySelector('[data-testid="scale-body-dimensions"]')?.textContent.includes('Bare body + jaw, excluding base') && ${storedDesign}.geometry.modelId === 'archival'`,
+    ),
+  );
+  await assert(
+    "archival photo preset keeps words and displays body proportions excluding base",
+    `(() => { const ratio=parseFloat(document.querySelector('[data-testid="scale-face-proportions"] dd')?.textContent ?? ''); return ${storedDesign}.text === 'Silence sings softly.' && ${committedShape}.getAttribute('data-plate-shape') === 'clipped' && document.querySelector('[data-testid="scale-body-dimensions"]')?.textContent.includes('Bare body + jaw, excluding base') && ratio >= 1.1 && ratio <= 1.7; })()`,
+  );
+  await evaluate(
+    `document.querySelector('[data-testid="scales-workbench"]').scrollIntoView({block:'start'})`,
+  );
+  // The committed preview precedes the 320 ms skin / 420 ms camera fades.
+  // Let that visible transition finish before capturing the reference model.
+  await Bun.sleep(700);
+  await screenshot("archival-photo-shape");
   results.push({
     name: "no app JavaScript exceptions",
     passed: errors.length === 0,

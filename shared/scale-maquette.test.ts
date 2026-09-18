@@ -239,3 +239,62 @@ describe("actual print maquette scale adapter", () => {
     ).toBe(true);
   });
 });
+
+test("every tunable maquette silhouette clips actual source faces without folds or invented writing space", () => {
+  for (const plateShape of ["clipped", "rectangle", "diamond"] as const) {
+    const study = generateMaquetteScaleStudy({
+      ...settings,
+      plateShape,
+      plateAspect: 1.3,
+      plateTaper: 0.4,
+      cornerCut: 0.3,
+      variation: 1,
+      relief: 0.5 / 25.4,
+    });
+    expect(study.plates.length).toBeGreaterThan(0);
+    expect(study.plates.length).toBeLessThan(6000);
+    expect(study.triangleCount).toBeLessThan(100000);
+    let outward = true,
+      unfolded = true;
+    for (const plate of study.plates) {
+      expect(plate.appliedReliefInches).toBeLessThanOrEqual(0.5 / 25.4);
+      expect(plate.positions.every(Number.isFinite)).toBe(true);
+      for (let i = 0; i < plate.indices.length; i += 3) {
+        const ids = plate.indices.slice(i, i + 3);
+        const [a, b, c] = ids.map((id) => vectorAt(plate.positions, id));
+        const normal = cross(
+          subtract(required(b), required(a)),
+          subtract(required(c), required(a)),
+        );
+        outward &&= ids.every(
+          (id) => dot(normal, vectorAt(plate.normals, id)) > 0,
+        );
+        const [u, v, w] = ids.map(
+          (id) =>
+            [required(plate.uvs[id * 2]), required(plate.uvs[id * 2 + 1])] as [
+              number,
+              number,
+            ],
+        );
+        unfolded &&=
+          (required(v)[0] - required(u)[0]) *
+            (required(w)[1] - required(u)[1]) -
+            (required(v)[1] - required(u)[1]) *
+              (required(w)[0] - required(u)[0]) <
+          0;
+      }
+      expect(plate.safeRect).toEqual(
+        maquettePatchMetrics(plate).suitableForLettering
+          ? maquetteWritingRect(plate)
+          : { x: 0, y: 0, width: 0, height: 0 },
+      );
+    }
+    expect(outward).toBe(true);
+    expect(unfolded).toBe(true);
+  }
+});
+
+function required<T>(value: T | undefined): T {
+  if (value === undefined) throw new Error("Missing test fixture value.");
+  return value;
+}

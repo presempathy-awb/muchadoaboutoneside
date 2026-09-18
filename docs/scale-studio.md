@@ -42,12 +42,58 @@ The generator runs in a disposable module worker. A newer request terminates
 the previous worker, and an old response cannot replace the current result.
 The last successful preview remains available while the next one is computed.
 
+Text assignment is deterministic and runs locally without AI. Font shaping or
+measured scanned-ink spans feed the allocator, which walks the poem in reading
+order and fits complete words inside each plate's safe writing rectangle.
+Changed geometry, wording, type size, margins, font or scan metrics trigger a
+new layout. Geometry-cache keys include every normalized shape setting; cached
+geometry never substitutes for fitting the current text. Excess words remain
+explicit overflow rather than being omitted or rewritten.
+
+## Tunable plate shapes and the photographs
+
+The shape controls are available beside the homepage resizer as well as in the
+studio. Choose clipped wood plates, rectangles, diamonds, or the original plate
+outline. Width-to-height sets a physical face-aspect target by shrinking inside
+the original cell; zero keeps the original cell proportions. For new archival
+shapes with an aspect target, 128 samples of physical distance and local course
+height redistribute column spacing before fitting the faces. This reduces
+oversized empty strips around changes in body thickness while preserving seeded
+variation, disjoint cells and the requested column count. Legacy studies bypass
+this redistribution. The maquette retains its actual planar chart spacing.
+Strong aspect
+changes can expose larger gaps between plates. Corner cut adjusts clipped corners, taper changes the
+relative widths of the opposite ends, and seeded variation produces repeatable
+irregularity. Changing these settings regenerates the geometry and the lettering
+layout together for both the archival surface and the actual maquette. Writing
+stays within the regenerated safe region; a narrower or more pointed face can
+leave less room for a word.
+
+A fresh study starts with clipped wood plates, a 1.3 width-to-height target,
+0.12 corner cut, 0.12 taper, 1.05 inches maximum relief, and a warm wood preview
+color. These are editable visual assumptions. The supplied photographs show
+chunky short rectangles and trapezoids with clipped corners and stepped edges.
+Many near-facing faces appear roughly 1.1–1.7 times as long as their short edge,
+but camera perspective changes that ratio. The 1.3 starting value is a visual
+interpretation, not calibration of the photographed construction. Neither image
+contains a complete orthogonal view or a usable dimensional reference.
+
+The comparison panel shows cropped views of the sculpture using the unchanged
+original screenshots. It reports generated face aspect and relief-to-short-edge
+ratios beside actual bare and clad geometry bounds. Opening a reference still
+shows the complete original. A saved schema-1 study without the new controls
+loads the original outline and cell proportions; its existing relief, layers,
+wording, font, and colors are retained. Missing old color settings retain the
+former gray. Saving or exporting a tuned study carries all four shape controls.
+
 ## Browsing working versions
 
-The version browser offers eight tested geometry presets: four actual-print
+The version browser offers nine geometry presets: four actual-print
 studies at 180, 240, 360, and 720 mm, plus 36-inch wood, 72-inch curved wood,
-72-inch planar hybrid, and full archival-height studies. Each preset states its
-support, metal, and relief assumptions. Choosing one applies those construction
+72-inch planar hybrid, and full archival-height studies, plus a photo-reference
+clipped-wood study. The original eight retain their earlier outlines and relief
+settings. The photo-reference version applies the new geometry defaults. Each
+preset states its support, metal, and relief assumptions. Choosing one applies those construction
 settings while preserving the current wording, font, colors, and notes. A valid
 geometry preset does not guarantee that arbitrary lettering will fit or that a
 physical assembly has adequate clearances.
@@ -165,8 +211,12 @@ The section comparison adds each allowance to the two local ellipse semiaxes
 and numerically integrates its perimeter. The scale relief stage is a maximum
 envelope estimate. It does not trace a tape measure across every gap and step.
 Actual rendered cladding bounds are reported separately from the full model
-including its base. Adding twice the radial buildup to the sculpture's overall
-height would be misleading, so the comparison uses the generated vertices.
+including its base. The photo comparison uses bare body-and-jaw bounds without
+the archival square base, then compares them with emitted plate faces and
+sidewalls. That distinction avoids mistaking the 171-inch base footprint for
+the curved body width or depth. The maquette comparison includes its integrated
+plinth because it is part of the actual print solid. Adding twice the radial
+buildup to the sculpture's overall height would be misleading, so the comparison uses the generated vertices.
 
 Measure the actual prepared support, complete layer stack, jaw gaps, and crossing
 clearances before making physical templates. The existing large-sculpture guide
