@@ -69,7 +69,7 @@ export const DEFAULT_SCALE_DESIGN: ScaleDesign = {
   showLettering: true,
   letteringQuality: "crisp",
   inkColor: "#17201c",
-  plateColor: "#d9dcd8",
+  plateColor: "#b7946c",
 };
 
 function bounded(value: unknown, fallback: number, min: number, max: number) {
@@ -307,6 +307,7 @@ export function normalizeScaleDesign(input: unknown): ScaleDesign {
     letteringQuality:
       value.letteringQuality === "balanced" ? "balanced" : "crisp",
     inkColor: color(value.inkColor, DEFAULT_SCALE_DESIGN.inkColor),
-    plateColor: color(value.plateColor, DEFAULT_SCALE_DESIGN.plateColor),
+    // Schema-1 files predating wood-colored previews keep their former color.
+    plateColor: color(value.plateColor, "#d9dcd8"),
   };
 }

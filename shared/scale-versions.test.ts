@@ -6,6 +6,7 @@ import {
 } from "./scale-design";
 import { generateMaquetteScaleStudy } from "./scale-maquette";
 import { buildUpSupportOffsetInches } from "./scale-measurements";
+import { DEFAULT_SCALE_SHAPE, LEGACY_SCALE_SHAPE } from "./scale-shape";
 import { generateScaleStudy } from "./scale-study";
 import {
   applyScaleVersionPreset,
@@ -14,9 +15,26 @@ import {
 } from "./scale-versions";
 
 describe("viewable scale versions", () => {
-  test("offers eight distinct construction versions", () => {
-    expect(SCALE_VERSION_PRESETS).toHaveLength(8);
-    expect(new Set(SCALE_VERSION_PRESETS.map(({ id }) => id)).size).toBe(8);
+  test("preserves eight construction versions and adds a photo-reference study", () => {
+    expect(SCALE_VERSION_PRESETS).toHaveLength(9);
+    expect(new Set(SCALE_VERSION_PRESETS.map(({ id }) => id)).size).toBe(9);
+    for (const version of SCALE_VERSION_PRESETS.slice(0, 8)) {
+      for (const [key, value] of Object.entries(LEGACY_SCALE_SHAPE))
+        expect(version.geometry[key as keyof typeof LEGACY_SCALE_SHAPE]).toBe(
+          value,
+        );
+    }
+    expect(
+      SCALE_VERSION_PRESETS.find(({ id }) => id === "wood-archival")?.geometry
+        .relief,
+    ).toBe(0.65);
+    const photo = SCALE_VERSION_PRESETS.find(
+      ({ id }) => id === "wood-photo-reference",
+    );
+    for (const [key, value] of Object.entries(DEFAULT_SCALE_SHAPE))
+      expect(photo?.geometry[key as keyof typeof DEFAULT_SCALE_SHAPE]).toBe(
+        value,
+      );
   });
   for (const version of SCALE_VERSION_PRESETS) {
     test(`${version.id} produces finite usable geometry from its real source`, () => {

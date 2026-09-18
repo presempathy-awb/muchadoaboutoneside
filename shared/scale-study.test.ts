@@ -1,10 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { generateFoilGeometry } from "../src/lib/foil-geometry";
+import { LEGACY_SCALE_SHAPE } from "./scale-shape";
 import {
   DEFAULT_SCALE_STUDY_SETTINGS,
   generateScaledScaleGeometry,
   generateScaleStudy,
   normalizeScaleStudySettings,
+  physicalScaleCoursePartitions,
   type ScalePlate,
 } from "./scale-study";
 import { cross, dot, ScaleSurface, subtract, vectorAt } from "./scale-surface";
@@ -343,9 +345,11 @@ describe("conforming 3D scale study", () => {
   });
 
   test("normalizes old designs to conforming and bounds all dimensions", () => {
-    expect(normalizeScaleStudySettings(null)).toEqual(
-      DEFAULT_SCALE_STUDY_SETTINGS,
-    );
+    expect(normalizeScaleStudySettings(null)).toEqual({
+      ...DEFAULT_SCALE_STUDY_SETTINGS,
+      ...LEGACY_SCALE_SHAPE,
+      relief: 0.65,
+    });
     expect(
       normalizeScaleStudySettings({ columns: 24, rows: 8 }).surfaceMode,
     ).toBe("conforming");
@@ -360,6 +364,7 @@ describe("conforming 3D scale study", () => {
         seed: -20,
       }),
     ).toEqual({
+      ...LEGACY_SCALE_SHAPE,
       modelId: "archival",
       modelScale: 1,
       columns: 240,
@@ -532,4 +537,159 @@ describe("conforming 3D scale study", () => {
     expect(original).toEqual(snapshot);
     expect(generateFoilGeometry()).toEqual(snapshot);
   });
+});
+
+describe("tunable archival footprints", () => {
+  test("each silhouette remains complete, outward and nonfolded with disjoint fitted cells", () => {
+    for (const plateShape of ["clipped", "rectangle", "diamond"] as const) {
+      for (const surfaceMode of ["conforming", "planar"] as const) {
+        const study = generateScaleStudy({
+          ...DEFAULT_SCALE_STUDY_SETTINGS,
+          columns: 24,
+          rows: 3,
+          plateShape,
+          surfaceMode,
+          cornerCut: 0.3,
+          plateTaper: -0.4,
+          variation: 1,
+          relief: 0.5,
+        });
+        expect(study.plates.length).toBeGreaterThan(0);
+        expect(study.plates.flatMap(validatePlate)).toEqual([]);
+        for (const plate of study.plates) {
+          const rect = plate.safeRect;
+          for (const [x, y] of [
+            [rect.x, rect.y],
+            [rect.x + rect.width, rect.y],
+            [rect.x + rect.width, rect.y + rect.height],
+            [rect.x, rect.y + rect.height],
+          ]) {
+            for (let i = 0; i < plate.outline.length; i++) {
+              const a = required(plate.outline[i]),
+                b = required(plate.outline[(i + 1) % plate.outline.length]);
+              expect(
+                (b[0] - a[0]) * (required(y) - a[1]) -
+                  (b[1] - a[1]) * (required(x) - a[0]),
+              ).toBeGreaterThanOrEqual(-1e-10);
+            }
+          }
+        }
+        const overlaps = study.plates.flatMap((a, i) =>
+          study.plates
+            .slice(i + 1)
+            .filter(
+              (b) =>
+                a.surface === b.surface &&
+                a.sourceBounds.u0 < b.sourceBounds.u1 &&
+                b.sourceBounds.u0 < a.sourceBounds.u1 &&
+                a.sourceBounds.v0 < b.sourceBounds.v1 &&
+                b.sourceBounds.v0 < a.sourceBounds.v1,
+            ),
+        );
+        expect(overlaps).toEqual([]);
+      }
+    }
+  });
+
+  test("physical aspect adjustment remaps face size without changing real stock", () => {
+    const input = {
+      ...DEFAULT_SCALE_STUDY_SETTINGS,
+      columns: 24,
+      rows: 3,
+      surfaceMode: "planar" as const,
+      variation: 0,
+      relief: 0.5,
+      plateShape: "rectangle" as const,
+      plateTaper: 0,
+    };
+    const original = generateScaleStudy({ ...input, plateAspect: 0 });
+    const fitted = generateScaleStudy({ ...input, plateAspect: 1.3 });
+    const resized = generateScaleStudy({
+      ...input,
+      plateAspect: 1.3,
+      modelScale: 0.5,
+    });
+    expect(
+      resized.plates.every((plate) => plate.appliedReliefInches === 0.5),
+    ).toBe(true);
+    expect(resized.plates.flatMap(validatePlate)).toEqual([]);
+    expect(fitted.plates.map((p) => p.id)).toEqual(
+      original.plates.map((p) => p.id),
+    );
+    for (let i = 0; i < fitted.plates.length; i++) {
+      const plate = required(fitted.plates[i]),
+        old = required(original.plates[i]);
+      expect(plate.appliedReliefInches).toBe(0.5);
+      expect(plate.sourceBounds.u0).toBeGreaterThanOrEqual(0);
+      expect(plate.sourceBounds.u1).toBeLessThanOrEqual(1);
+      expect(plate.sourceBounds.v0).toBeGreaterThanOrEqual(0);
+      expect(plate.sourceBounds.v1).toBeLessThanOrEqual(1);
+      expect(plate.widthInches + plate.heightInches).not.toBe(
+        old.widthInches + old.heightInches,
+      );
+    }
+    const errors = fitted.plates
+      .map((p) => Math.abs(p.widthInches / p.heightInches - 1.3))
+      .sort((a, b) => a - b);
+    expect(errors[Math.floor(errors.length / 2)]).toBeLessThan(0.1);
+  });
+});
+
+function required<T>(value: T | undefined): T {
+  if (value === undefined) throw new Error("Missing test fixture value.");
+  return value;
+}
+
+test("physical course CDF keeps deterministic disjoint endpoints and improves fresh face coverage", () => {
+  const surface = new ScaleSurface(
+    generateScaledScaleGeometry(DEFAULT_SCALE_STUDY_SETTINGS),
+  );
+  const fractions = Array.from({ length: 121 }, (_, i) => i / 120);
+  const v0 = 0.055,
+    v1 = 0.28;
+  const weighted = physicalScaleCoursePartitions(surface, fractions, v0, v1);
+  expect(weighted).toEqual(
+    physicalScaleCoursePartitions(surface, fractions, v0, v1),
+  );
+  expect(weighted).toHaveLength(fractions.length);
+  expect(weighted[0]).toBe(0);
+  expect(weighted.at(-1)).toBe(1);
+  const ratios = (course: number[]) =>
+    course
+      .slice(0, -1)
+      .map((u0, i) => {
+        const u1 = required(course[i + 1]),
+          u = (u0 + u1) / 2,
+          v = (v0 + v1) / 2;
+        const ratio =
+          surface.arcLength([u0, v], [u1, v], 0) /
+          surface.arcLength([u, v0], [u, v1], 0);
+        return Math.min(ratio / 1.3, 1.3 / ratio);
+      })
+      .sort((a, b) => a - b);
+  for (let i = 1; i < weighted.length; i++)
+    expect(required(weighted[i])).toBeGreaterThan(required(weighted[i - 1]));
+  const old = ratios(fractions),
+    improved = ratios(weighted);
+  expect(required(improved[60])).toBeGreaterThan(required(old[60]) + 0.2);
+  expect(required(improved[30])).toBeGreaterThan(required(old[30]) + 0.2);
+});
+
+test("course weighting handles only collapsed height and rejects invalid physical metrics", () => {
+  const surface = new ScaleSurface(
+    generateScaledScaleGeometry(DEFAULT_SCALE_STUDY_SETTINGS),
+  );
+  const fractions = [0, 0.2, 0.4, 0.7, 1];
+  const collapsed = physicalScaleCoursePartitions(surface, fractions, 0.2, 0.2);
+  expect(collapsed.every(Number.isFinite)).toBe(true);
+  for (let i = 1; i < collapsed.length; i++)
+    expect(required(collapsed[i])).toBeGreaterThan(required(collapsed[i - 1]));
+  surface.arcLength = () => Number.NaN;
+  expect(() =>
+    physicalScaleCoursePartitions(surface, fractions, 0.1, 0.3),
+  ).toThrow("invalid physical dimensions");
+  surface.arcLength = () => 0;
+  expect(() =>
+    physicalScaleCoursePartitions(surface, fractions, 0.1, 0.3),
+  ).toThrow("no positive physical length");
 });

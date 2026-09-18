@@ -48,12 +48,20 @@ test("scale files carry the exact source scan while ordinary browser drafts keep
     ...DEFAULT_SCALE_DESIGN,
     text: "Same\nsame",
     calligraphyFaceId: scan.id,
+    geometry: {
+      ...DEFAULT_SCALE_DESIGN.geometry,
+      plateShape: "clipped" as const,
+      plateAspect: 1.7,
+      cornerCut: 0.2,
+      plateTaper: -0.25,
+    },
   };
   const file = JSON.parse(JSON.stringify(scaleStudyFile(design, scan)));
   const restored = parseScaleStudyFile(file);
   expect(restored.scan).toEqual(scan);
   expect(restored.design.text).toBe(design.text);
   expect(restored.design.calligraphyFaceId).toBe(scan.id);
+  expect(restored.design.geometry).toEqual(design.geometry);
   expect(Object.hasOwn(normalizeScaleDesign(file), "calligraphyScan")).toBe(
     false,
   );

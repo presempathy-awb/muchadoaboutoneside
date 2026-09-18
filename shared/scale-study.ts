@@ -4,6 +4,14 @@ import {
   generateFoilGeometry,
 } from "../src/lib/foil-geometry";
 import {
+  DEFAULT_SCALE_SHAPE,
+  fitScalePlateBounds,
+  normalizeScaleShapeSettings,
+  type ScaleShapeSettings,
+  scalePlateOutline,
+  scalePlateSafeRect,
+} from "./scale-shape";
+import {
   add,
   cross,
   dot,
@@ -16,7 +24,7 @@ import {
   subtract,
 } from "./scale-surface";
 
-export interface ScaleStudySettings {
+export interface ScaleStudySettings extends ScaleShapeSettings {
   modelId: "archival" | "maquette";
   /** Uniform physical size of the frame; stock thickness stays in real inches. */
   modelScale: number;
@@ -78,7 +86,8 @@ export const DEFAULT_SCALE_STUDY_SETTINGS: ScaleStudySettings = {
   columns: 120,
   rows: 4,
   gap: 0.12,
-  relief: 0.65,
+  relief: 1.05,
+  ...DEFAULT_SCALE_SHAPE,
   supportOffsetInches: 1,
   surfaceMode: "conforming",
   variation: 0.6,
@@ -119,6 +128,7 @@ export function normalizeScaleStudySettings(
     MAX_ROWS,
   );
   return {
+    ...normalizeScaleShapeSettings(candidate),
     modelId: candidate.modelId === "maquette" ? "maquette" : "archival",
     modelScale: clamp(
       finiteNumber(
@@ -135,11 +145,7 @@ export function normalizeScaleStudySettings(
       0,
       0.3,
     ),
-    relief: clamp(
-      finiteNumber(candidate.relief, DEFAULT_SCALE_STUDY_SETTINGS.relief),
-      0,
-      6,
-    ),
+    relief: clamp(finiteNumber(candidate.relief, 0.65), 0, 6),
     supportOffsetInches: clamp(
       finiteNumber(
         candidate.supportOffsetInches,
@@ -267,22 +273,66 @@ function partitions(
   ];
 }
 
-function plateOutline(random: () => number, variation: number): Point2[] {
-  const bevel = () => 0.055 + variation * random() * 0.13;
-  const leftTop = bevel();
-  const rightTop = bevel();
-  const rightBottom = bevel();
-  const leftBottom = bevel();
-  return [
-    [leftTop, 0],
-    [1 - rightTop, 0],
-    [1, rightTop],
-    [1, 1 - rightBottom],
-    [1 - rightBottom, 1],
-    [leftBottom, 1],
-    [0, 1 - leftBottom],
-    [0, leftTop],
-  ];
+/**
+ * Invert a bounded local-metric CDF so seeded cells have comparable physical
+ * width/height along a course. This changes no random draws or plate counts.
+ * The positive floor applies only to a collapsed zero-height sample.
+ */
+export function physicalScaleCoursePartitions(
+  surface: ScaleSurface,
+  fractions: number[],
+  v0: number,
+  v1: number,
+): number[] {
+  const bins = 128;
+  const middleV = (v0 + v1) / 2;
+  const prefix = [0];
+  for (let bin = 0; bin < bins; bin++) {
+    const u = (bin + 0.5) / bins;
+    const height = surface.arcLength([u, v0], [u, v1], 0);
+    const width = surface.arcLength(
+      [bin / bins, middleV],
+      [(bin + 1) / bins, middleV],
+      0,
+    );
+    if (
+      !Number.isFinite(height) ||
+      !Number.isFinite(width) ||
+      height < 0 ||
+      width < 0
+    )
+      throw new RangeError(
+        "Scale course contains invalid physical dimensions.",
+      );
+    const previous = prefix[bin] ?? 0;
+    const weight = width / (height === 0 ? 1e-8 : height);
+    const next = previous + weight;
+    if (!Number.isFinite(next))
+      throw new RangeError("Scale course exceeds finite physical dimensions.");
+    prefix.push(next);
+  }
+  const total = prefix[bins] ?? 0;
+  if (!(total > 0))
+    throw new RangeError("Scale course has no positive physical length.");
+  return fractions.map((fraction, index) => {
+    if (index === 0) return 0;
+    if (index === fractions.length - 1) return 1;
+    const target = fraction * total;
+    let lower = 0,
+      upper = bins;
+    while (lower + 1 < upper) {
+      const middle = (lower + upper) >> 1;
+      if ((prefix[middle] ?? 0) <= target) lower = middle;
+      else upper = middle;
+    }
+    const start = prefix[lower] ?? 0;
+    const end = prefix[lower + 1] ?? total;
+    if (!(end > start))
+      throw new RangeError(
+        "Scale course cannot invert a collapsed physical interval.",
+      );
+    return (lower + (target - start) / (end - start)) / bins;
+  });
 }
 
 function planarPatch(
@@ -398,12 +448,16 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
           );
     const rows = partitions(settings.rows, settings.variation, random);
     for (let row = 0; row < settings.rows; row++) {
-      const course = partitions(columns, settings.variation, random);
+      const seededCourse = partitions(columns, settings.variation, random);
+      const cellV0 = V_GUTTER + (rows[row] ?? 0) * (1 - 2 * V_GUTTER);
+      const cellV1 = V_GUTTER + (rows[row + 1] ?? 1) * (1 - 2 * V_GUTTER);
+      const course =
+        settings.plateShape !== "legacy" && settings.plateAspect > 0
+          ? physicalScaleCoursePartitions(surface, seededCourse, cellV0, cellV1)
+          : seededCourse;
       for (let column = 0; column < columns; column++) {
         const cellU0 = course[column] ?? 0;
         const cellU1 = course[column + 1] ?? 1;
-        const cellV0 = V_GUTTER + (rows[row] ?? 0) * (1 - 2 * V_GUTTER);
-        const cellV1 = V_GUTTER + (rows[row + 1] ?? 1) * (1 - 2 * V_GUTTER);
         const insetU =
           ((cellU1 - cellU0) *
             (settings.gap + settings.variation * random() * 0.06)) /
@@ -412,13 +466,23 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
           ((cellV1 - cellV0) *
             (settings.gap + settings.variation * random() * 0.06)) /
           2;
-        const sourceBounds = {
+        let sourceBounds = {
           u0: cellU0 + insetU,
           u1: cellU1 - insetU,
           v0: cellV0 + insetV,
           v1: cellV1 - insetV,
         };
-        const outline = plateOutline(random, settings.variation);
+        if (settings.plateAspect > 0) {
+          const u = (sourceBounds.u0 + sourceBounds.u1) / 2;
+          const v = (sourceBounds.v0 + sourceBounds.v1) / 2;
+          sourceBounds = fitScalePlateBounds(
+            sourceBounds,
+            surface.arcLength([sourceBounds.u0, v], [sourceBounds.u1, v], 0),
+            surface.arcLength([u, sourceBounds.v0], [u, sourceBounds.v1], 0),
+            settings.plateAspect,
+          );
+        }
+        const outline = scalePlateOutline(settings, random);
         const requestedRelief =
           settings.relief * (1 - settings.variation * random() * 0.45);
         const patch =
@@ -455,7 +519,10 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
           widthInches,
           heightInches,
           sourceBounds,
-          safeRect: { x: 0.2, y: 0.2, width: 0.6, height: 0.6 },
+          safeRect:
+            settings.plateShape === "legacy"
+              ? { x: 0.2, y: 0.2, width: 0.6, height: 0.6 }
+              : scalePlateSafeRect(outline),
         });
       }
     }

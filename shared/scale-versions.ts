@@ -5,6 +5,7 @@ import {
 } from "./scale-design";
 import type { ScaleBuildUp } from "./scale-measurements";
 import { modelScaleForHeight } from "./scale-models";
+import { DEFAULT_SCALE_SHAPE, LEGACY_SCALE_SHAPE } from "./scale-shape";
 import type { ScaleStudySettings } from "./scale-study";
 
 export {
@@ -42,7 +43,11 @@ function preset(
 ): ScaleVersionPreset {
   const normalized = normalizeScaleDesign({
     ...DEFAULT_SCALE_DESIGN,
-    geometry: { ...DEFAULT_SCALE_DESIGN.geometry, ...geometry },
+    geometry: {
+      ...DEFAULT_SCALE_DESIGN.geometry,
+      ...LEGACY_SCALE_SHAPE,
+      ...geometry,
+    },
     layers,
     buildMethod,
   });
@@ -176,7 +181,19 @@ export const SCALE_VERSION_PRESETS: readonly ScaleVersionPreset[] = [
     "wood-archival",
     "Archival height · full scales",
     "Original source dimensions with 1 in support, thin metal and 0.65 in relief.",
-    DEFAULT_SCALE_DESIGN.geometry,
+    {
+      ...DEFAULT_SCALE_DESIGN.geometry,
+      ...LEGACY_SCALE_SHAPE,
+      relief: 0.65,
+    },
+    DEFAULT_SCALE_DESIGN.layers,
+    "wood",
+  ),
+  preset(
+    "wood-photo-reference",
+    "Photo reference · clipped wood plates",
+    "Chunky clipped plates with a 1.3 width-to-height target, inspired by the photographed wood faces; dimensions remain a visual study.",
+    { ...DEFAULT_SCALE_DESIGN.geometry, ...DEFAULT_SCALE_SHAPE },
     DEFAULT_SCALE_DESIGN.layers,
     "wood",
   ),

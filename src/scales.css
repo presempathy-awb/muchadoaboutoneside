@@ -1020,3 +1020,52 @@
   outline: 3px solid #8b5b38;
   outline-offset: 3px;
 }
+
+.scales-shape-options {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.scales-page .scales-shape-options > button[type="button"] {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 8px 3px;
+  font-size: 0.75rem;
+  min-width: 0;
+}
+.scales-shape-options svg {
+  width: 56px;
+  max-width: 100%;
+  height: 42px;
+}
+.scales-shape-options polygon {
+  fill: #d0b893;
+  stroke: #756044;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.scales-page
+  .scales-shape-options
+  > button[type="button"][aria-pressed="true"] {
+  background: #e7eee3;
+  color: #26382c;
+  border-color: #536952;
+  box-shadow: inset 0 0 0 1px #536952;
+}
+.scales-shape-card .scales-toggle {
+  margin: -5px 0 18px;
+}
+.scales-reference-shape {
+  width: 100%;
+  margin-bottom: 5px;
+}
+@media (max-width: 740px) {
+  .scales-shape-card {
+    order: 1;
+  }
+}

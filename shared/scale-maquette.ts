@@ -1,4 +1,5 @@
 import data from "./scale-maquette.json";
+import { fitScalePlateBounds, scalePlateOutline } from "./scale-shape";
 import {
   normalizeScaleStudySettings,
   type ScalePlate,
@@ -491,26 +492,36 @@ export function generateMaquetteScaleStudy(
           const u1 = courseU[column + 1] ?? 1;
           const v0 = courseV[row] ?? 0;
           const v1 = courseV[row + 1] ?? 1;
-          const bounds = {
+          let bounds = {
             u0: u0 + (u1 - u0) * inset,
             u1: u1 - (u1 - u0) * inset,
             v0: v0 + (v1 - v0) * inset,
             v1: v1 - (v1 - v0) * inset,
           };
+          if (settings.plateAspect > 0) {
+            // Chart UVs use its physical planar axes; a region may not cover
+            // the cell center, so measuring with surface.sample is invalid.
+            bounds = fitScalePlateBounds(
+              bounds,
+              (bounds.u1 - bounds.u0) * chart.widthMm * factor,
+              (bounds.v1 - bounds.v0) * chart.heightMm * factor,
+              settings.plateAspect,
+            );
+          }
+          const outline: Point2[] =
+            settings.plateShape === "legacy"
+              ? [
+                  [0, 0],
+                  [1, 0],
+                  [1, 1],
+                  [0, 1],
+                ]
+              : scalePlateOutline(settings, random);
           const requestedRelief =
             settings.relief * (1 - settings.variation * random() * 0.45);
           let patch: SurfacePatch;
           try {
-            patch = surface.conformingPatch(
-              bounds,
-              [
-                [0, 0],
-                [1, 0],
-                [1, 1],
-                [0, 1],
-              ],
-              requestedRelief,
-            );
+            patch = surface.conformingPatch(bounds, outline, requestedRelief);
           } catch (error) {
             if (
               error instanceof Error &&

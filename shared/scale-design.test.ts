@@ -8,7 +8,77 @@ import {
   updateScaleDensity,
 } from "./scale-design";
 
+import { DEFAULT_SCALE_SHAPE, LEGACY_SCALE_SHAPE } from "./scale-shape";
+
+function oldGeometry() {
+  const geometry: Record<string, unknown> = {
+    ...DEFAULT_SCALE_DESIGN.geometry,
+    relief: 0.65,
+  };
+  for (const key of Object.keys(DEFAULT_SCALE_SHAPE)) delete geometry[key];
+  return geometry;
+}
+
 describe("portable scale study settings", () => {
+  test("old schema-1 imports retain their shape, stock, blank wording and saved font", () => {
+    const legacy: Record<string, unknown> = {
+      ...DEFAULT_SCALE_DESIGN,
+      geometry: oldGeometry(),
+      fontId: "custom",
+      customFont: { name: "Saved.ttf", dataUrl: "data:font/ttf;base64,AA==" },
+      text: "",
+    };
+    delete legacy.plateColor;
+    const loaded = normalizeScaleDesign(JSON.parse(JSON.stringify(legacy)));
+    for (const [key, value] of Object.entries(LEGACY_SCALE_SHAPE))
+      expect(loaded.geometry[key as keyof typeof LEGACY_SCALE_SHAPE]).toBe(
+        value,
+      );
+    expect(loaded.geometry.relief).toBe(0.65);
+    expect(loaded.layers).toEqual(DEFAULT_SCALE_DESIGN.layers);
+    expect(loaded.text).toBe("");
+    expect(loaded.customFont).toEqual({
+      name: "Saved.ttf",
+      dataUrl: "data:font/ttf;base64,AA==",
+    });
+    expect(loaded.plateColor).toBe("#d9dcd8");
+    expect(DEFAULT_SCALE_DESIGN.plateColor).toBe("#b7946c");
+  });
+
+  test("every tuned outline round trips through portable JSON and resizing", () => {
+    for (const plateShape of [
+      "clipped",
+      "rectangle",
+      "diamond",
+      "legacy",
+    ] as const) {
+      const design = normalizeScaleDesign({
+        ...DEFAULT_SCALE_DESIGN,
+        geometry: {
+          ...DEFAULT_SCALE_DESIGN.geometry,
+          plateShape,
+          plateAspect: 1.75,
+          cornerCut: 0.24,
+          plateTaper: -0.3,
+        },
+        text: "Exact words stay.",
+        calligraphyFaceId: "scan-saved-original",
+        plateColor: "#abcdef",
+      });
+      const restored = normalizeScaleDesign(
+        JSON.parse(JSON.stringify(resizeScaleDesign(design, 2))),
+      );
+      for (const key of Object.keys(
+        DEFAULT_SCALE_SHAPE,
+      ) as (keyof typeof DEFAULT_SCALE_SHAPE)[])
+        expect(restored.geometry[key]).toBe(design.geometry[key]);
+      expect(restored.text).toBe(design.text);
+      expect(restored.calligraphyFaceId).toBe(design.calligraphyFaceId);
+      expect(restored.plateColor).toBe(design.plateColor);
+      expect(restored.layers).toEqual(design.layers);
+    }
+  });
+
   test("preview quality defaults old designs to crisp and preserves balanced through resize and reload", () => {
     const { letteringQuality: _quality, ...legacy } = DEFAULT_SCALE_DESIGN;
     for (const letteringQuality of [undefined, null, "unknown", {}, 64]) {

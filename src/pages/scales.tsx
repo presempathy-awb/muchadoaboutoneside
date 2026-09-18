@@ -20,6 +20,8 @@ import {
 import { PoemVersionControls } from "@/components/poem-version-controls";
 import { ScaleBuildUpPanel } from "@/components/scale-build-up";
 import { ScalePlateProof } from "@/components/scale-plate-proof";
+import { ScaleReferenceComparison } from "@/components/scale-reference-comparison";
+import { ScaleShapeControls } from "@/components/scale-shape-controls";
 import { ScaleVersionBrowser } from "@/components/scale-version-browser";
 import {
   matchingCalligraphyFaces,
@@ -61,6 +63,7 @@ import {
   allocateScaleLettering,
   fitScaleLettering,
 } from "../../shared/scale-lettering";
+import { scaleStudyBoundsComparison } from "../../shared/scale-measurements";
 import {
   modelScaleForHeight,
   SCALE_MODELS,
@@ -655,6 +658,10 @@ export default function Scales({
       Boolean(candidatePreview && candidatePreview !== renderedPreview));
   const previewBlocked = readiness.blocked || Boolean(previewError);
   const study = renderedPreview?.study;
+  const committedBounds = useMemo(
+    () => (study ? scaleStudyBoundsComparison(study) : null),
+    [study],
+  );
   const plates = study?.plates ?? EMPTY_PLATES;
   const displayedLettering = renderedPreview?.lettering;
   const displayedDesign = renderedPreview?.design;
@@ -1005,6 +1012,12 @@ export default function Scales({
         )}
         data-font-id={renderedPreview?.design.fontId}
         data-model-scale={renderedPreview?.design.geometry.modelScale}
+        data-plate-shape={renderedPreview?.design.geometry.plateShape}
+        data-plate-aspect={renderedPreview?.design.geometry.plateAspect}
+        data-plate-fingerprint={renderedPreview?.study.plates[0]?.positions
+          .slice(0, 24)
+          .map((value) => value.toFixed(5))
+          .join(",")}
         data-fit-state={fitState}
       >
         <div className="scales-display-column">
@@ -1530,7 +1543,7 @@ export default function Scales({
             />
             <dl
               className="scales-size-dimensions"
-              aria-label="Target model dimensions"
+              aria-label="Target complete model dimensions including base or plinth"
             >
               <div>
                 <dt>Width</dt>
@@ -1552,9 +1565,27 @@ export default function Scales({
               </div>
             </dl>
             <p className="scales-help">
-              Target source dimensions, before the added layers and raised
-              plates.
+              Complete source model including its{" "}
+              {design.geometry.modelId === "archival" ? "base" : "plinth"},
+              before the added layers and raised plates. Compare the body and
+              clad body measurements below the viewer.
             </p>
+            {committedBounds?.scales && (
+              <p className="scales-help" data-testid="scales-clad-size">
+                <strong>
+                  {renderedPreview?.study.modelId === "archival"
+                    ? "Body + jaw plates, excluding base"
+                    : "Generated print cladding"}
+                  :
+                </strong>{" "}
+                {sizeValue(committedBounds.scales.width)} W ×{" "}
+                {sizeValue(committedBounds.scales.height)} H ×{" "}
+                {sizeValue(committedBounds.scales.depth)} D {sizeUnit}.
+                {updating || previewBlocked
+                  ? " Previous completed preview; updating."
+                  : ""}
+              </p>
+            )}
             <div className="scales-size-fit">
               <button
                 type="button"
@@ -1653,6 +1684,16 @@ export default function Scales({
               </label>
             </details>
           </section>
+
+          <ScaleShapeControls
+            settings={design.geometry}
+            unit={sizeUnit}
+            onChange={updateGeometry}
+          />
+          <ScaleReferenceComparison
+            study={renderedPreview?.study ?? null}
+            pending={updating || previewBlocked}
+          />
 
           <details
             className="scales-disclosure scales-lettering-disclosure"
