@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "c1506606aa7410c371a69a5fcdbb1b0b75838975",
+  "sourceCommit": "4bf053a83ba8b3d57880c40c8ff128f508ef41a7",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5974,6 +5974,16 @@
       "sha256": "5bf197ec72b55bfbe6b0974109135295dd84f66bb76df53d54f798b3c9bdc1c7"
     },
     {
+      "path": "src/lib/scale-typography-resources.test.ts",
+      "bytes": 4861,
+      "sha256": "7e6fc2dce33123376daa4bac0cf0463b646facdbee3a0a92414e37207729f401"
+    },
+    {
+      "path": "src/lib/scale-typography-resources.ts",
+      "bytes": 1913,
+      "sha256": "fd1b4e9be2ca0580d5447c0415f2375206c3e481edca0ec6f3994513cf9b45ff"
+    },
+    {
       "path": "src/lib/scale-typography.test.ts",
       "bytes": 9059,
       "sha256": "fdf8b50c767451528079005285716aab5b4ceb515ee6522f0c4c3ff6a342e1bb"
@@ -6155,8 +6165,8 @@
     },
     {
       "path": "src/pages/scales.tsx",
-      "bytes": 66735,
-      "sha256": "e23a4b8ff663dfe9e13ca8344f28fadd854574993443711946bc75b74bc3ff3f"
+      "bytes": 67901,
+      "sha256": "511646611b239bd5dd26113e190f50dc1398db278a86b72dea967783ece920ab"
     },
     {
       "path": "src/pages/six-foot.tsx",

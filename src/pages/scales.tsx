@@ -29,6 +29,7 @@ import { drawScalePlate } from "@/lib/scale-plate-canvas";
 import { scalePreviewReadiness } from "@/lib/scale-preview-readiness";
 import type { ScalePreview } from "@/lib/scale-skin";
 import type { ScaleTypography } from "@/lib/scale-typography";
+import { createScaleTypographyResources } from "@/lib/scale-typography-resources";
 import { useScaleStudy } from "@/lib/use-scale-study";
 import {
   DEFAULT_SCALE_DESIGN,
@@ -280,6 +281,19 @@ export default function Scales() {
     request: object;
     typography: ScaleTypography;
   } | null>(null);
+  const typographyResources = useRef<ReturnType<
+    typeof createScaleTypographyResources
+  > | null>(null);
+  const resolvingFont = useRef<ScaleTypography | null>(null);
+  useEffect(() => {
+    const owner = createScaleTypographyResources();
+    typographyResources.current = owner;
+    return () => {
+      owner.dispose();
+      typographyResources.current = null;
+      resolvingFont.current = null;
+    };
+  }, []);
   const [fontUploadError, setFontUploadError] = useState("");
   const [fontFeaturesInput, setFontFeaturesInput] = useState(
     design.fontFeatures,
@@ -434,9 +448,12 @@ export default function Scales() {
     };
     void load().then(
       (loaded) => {
-        if (active)
+        if (active && typographyResources.current) {
+          // Hold the result even before React commits the queued state update.
+          resolvingFont.current = loaded;
+          typographyResources.current.own(loaded);
           setLoadedFont({ request: settledFontRequest, typography: loaded });
-        else loaded.dispose?.();
+        } else loaded.dispose?.();
       },
       (error: unknown) => {
         if (active)
@@ -603,6 +620,17 @@ export default function Scales() {
       setScalePreview(candidatePreview);
     }
   }, [candidatePreview]);
+  useEffect(() => {
+    // A queued 3D update and the flat proof can still use earlier handwriting.
+    // Release it only after both have moved to a complete replacement.
+    typographyResources.current?.retain([
+      resolvingFont.current,
+      loadedFont?.typography,
+      candidatePreview?.typography,
+      scalePreview?.typography,
+      renderedPreview?.typography,
+    ]);
+  }, [loadedFont, candidatePreview, scalePreview, renderedPreview]);
   const updating =
     !previewError &&
     (mappingPending ||
