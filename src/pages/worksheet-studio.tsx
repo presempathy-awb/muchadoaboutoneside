@@ -16,6 +16,7 @@ import {
 import { WorksheetPhotoPanel } from "@/components/calligraphy/worksheet-photo";
 import { WorksheetPreview } from "@/components/calligraphy/worksheet-preview";
 import { WorksheetTechniques } from "@/components/calligraphy/worksheet-techniques";
+import { PoemVersionControls } from "@/components/poem-version-controls";
 import {
   createWorksheetComparisonPdf,
   createWorksheetPdf,
@@ -31,8 +32,6 @@ import {
   type WorksheetSession,
   type WorksheetSnapshot,
 } from "@/lib/worksheet-store";
-import { POEM_VERSIONS } from "../../shared/poem";
-import { draftSource } from "../../shared/poem-drafts";
 import {
   DEFAULT_WORKSHEET_SETTINGS,
   getWorksheetLayout,
@@ -1160,15 +1159,10 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
                   disabled={!ready}
                   onChange={(event) => {
                     const selected = event.target.value;
-                    const wording = POEM_VERSIONS.find(
-                      (item) => item.id === selected,
-                    );
                     const text =
                       selected === "alphabet"
                         ? "abcdefghijklmnopqrstuvwxyz\nABCDEFGHIJKLMNOPQRSTUVWXYZ\n0123456789"
-                        : wording
-                          ? draftSource(wording)
-                          : "";
+                        : "";
                     if (!selected) return;
                     const action = () => {
                       session.setText(text);
@@ -1186,13 +1180,21 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
                   }}
                 >
                   <option value="">Load text…</option>
-                  <option value="canonical">Original poem</option>
-                  <option value="extended">Extended poem</option>
                   <option value="alphabet">Alphabet & numbers</option>
                   <option value="blank">Empty text</option>
                 </select>
               </label>
             </div>
+            <PoemVersionControls
+              text={snapshot.text}
+              disabled={!ready || busy}
+              onLoad={(text, version) => {
+                session.setText(text);
+                setNotice(
+                  `Loaded “${version.label}”. Turn on Print example text to include it on the sheet.`,
+                );
+              }}
+            />
             <WorksheetEditor session={session} />
             <div className="ws-estimate" aria-live="polite">
               {textFitError && <p className="ws-error">{textFitError}</p>}

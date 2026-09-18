@@ -28,6 +28,25 @@ const sectionIcons = {
   send: Send,
 } as const;
 
+export function InstructionDownloads({
+  downloads,
+}: {
+  downloads: readonly { href: string; label: string }[];
+}) {
+  return (
+    <div className="instructions-downloads">
+      {downloads
+        .filter((download) => download.href)
+        .map((download) => (
+          <a key={download.href} href={download.href} download>
+            <ArrowDownToLine size={15} aria-hidden="true" />
+            {download.label}
+          </a>
+        ))}
+    </div>
+  );
+}
+
 function PrintPackingSlip() {
   return (
     <section
@@ -183,7 +202,7 @@ export default function Instructions() {
             </div>
           </header>
           <p className="instructions-version-note">
-            Lettering downloads follow the selected poem version:{" "}
+            Available lettering downloads follow the selected poem version:{" "}
             <strong>{version.label}</strong>, {version.lines.length} lines.
             {!version.fabricationArtwork &&
               " The foil kits and marking masters still carry the canonical poem."}
@@ -201,14 +220,7 @@ export default function Instructions() {
                     <li key={step}>{step}</li>
                   ))}
                 </ol>
-                <div className="instructions-downloads">
-                  {path.downloads.map((download) => (
-                    <a key={download.href} href={download.href} download>
-                      <ArrowDownToLine size={15} aria-hidden="true" />
-                      {download.label}
-                    </a>
-                  ))}
-                </div>
+                <InstructionDownloads downloads={path.downloads} />
               </article>
             ))}
           </div>

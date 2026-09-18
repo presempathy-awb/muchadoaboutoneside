@@ -4,9 +4,13 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { surfaceLimitEm } from "../../shared/inscription-layout";
 import PoemEditor from "./poem";
 
-test("the editor page renders its version tabs, surface budget, and limits on the server", () => {
+test("the editor page renders its version controls, surface budget, and limits on the server", () => {
   const html = renderToStaticMarkup(createElement(PoemEditor));
-  expect(html).toContain('role="tab"');
+  expect(html).toContain("Load poem version");
+  expect(html).not.toContain("Load selected wording");
+  expect(html).toContain("Save version");
+  expect(html).toContain("Delete version");
+  expect(html).toContain("Import calligraphy scan");
   expect(html).toContain("Canonical");
   expect(html).toContain("Extended");
   expect(html).toContain("Surface budget");

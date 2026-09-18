@@ -1,5 +1,4 @@
 import { usePoemVersion } from "@/lib/poem-version";
-import { isPoemVersionId } from "../../shared/poem";
 
 /** Switches every page, render, and download to one wording of the poem. */
 export function PoemVersionPicker() {
@@ -11,8 +10,10 @@ export function PoemVersionPicker() {
       <select
         value={base.id}
         onChange={(event) => {
-          if (isPoemVersionId(event.target.value))
-            setVersionId(event.target.value);
+          const selected = versions.find(
+            (item) => item.id === event.target.value,
+          );
+          if (selected) setVersionId(selected.id);
         }}
       >
         {versions.map((item) => (

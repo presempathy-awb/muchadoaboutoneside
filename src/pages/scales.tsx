@@ -17,9 +17,13 @@ import {
   useRef,
   useState,
 } from "react";
+import { PoemVersionControls } from "@/components/poem-version-controls";
 import { ScaleBuildUpPanel } from "@/components/scale-build-up";
 import { ScaleVersionBrowser } from "@/components/scale-version-browser";
-import { usePoemVersion } from "@/lib/poem-version";
+import {
+  matchingCalligraphyFaces,
+  useCalligraphyFaces,
+} from "@/lib/calligraphy-faces";
 import { planScaleAtlases } from "@/lib/scale-atlas";
 import { drawScalePlate } from "@/lib/scale-plate-canvas";
 import { scalePreviewReadiness } from "@/lib/scale-preview-readiness";
@@ -46,6 +50,11 @@ import {
   type ScaleLetteringPlacement,
 } from "../../shared/scale-lettering";
 import { modelScaleForHeight, SCALE_MODELS } from "../../shared/scale-models";
+import {
+  MAX_SCALE_STUDY_FILE_BYTES,
+  parseScaleStudyFile,
+  scaleStudyFile,
+} from "../../shared/scale-scan-file";
 import type { ScalePlate, ScaleStudySettings } from "../../shared/scale-study";
 import {
   applyScaleVersionPreset,
@@ -63,6 +72,7 @@ import {
 import "../scales.css";
 
 const SculptureViewer = lazy(() => import("@/components/sculpture-viewer"));
+const ScalePoemEditor = lazy(() => import("@/components/scale-poem-editor"));
 const STORAGE_KEY = "muchado.scale-study.v1";
 const MAX_DESIGN_BYTES = MAX_SCALE_DESIGN_BYTES;
 const EMPTY_PLATES: ScalePlate[] = [];
@@ -97,10 +107,25 @@ function useDebounced<T>(value: T): T {
   return settled;
 }
 
-function downloadDesign(design: ScaleDesign) {
-  const blob = new Blob([JSON.stringify(design, null, 2)], {
-    type: "application/json",
-  });
+async function downloadDesign(design: ScaleDesign, scanId?: string) {
+  const choice = design.calligraphyFaceId ?? "auto";
+  const selectedId =
+    choice === "auto" ? scanId : choice === "font" ? undefined : choice;
+  const scan = selectedId
+    ? await (await import("@/lib/calligraphy-scan-store")).getCalligraphyScan(
+        selectedId,
+      )
+    : undefined;
+  if (selectedId && !scan)
+    throw new Error(
+      "Restore the original scan before exporting this handwriting.",
+    );
+  const blob = new Blob(
+    [JSON.stringify(scaleStudyFile(design, scan), null, 2)],
+    {
+      type: "application/json",
+    },
+  );
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -287,7 +312,21 @@ export default function Scales() {
     [],
   );
   const importRef = useRef<HTMLInputElement>(null);
-  const { version, versions } = usePoemVersion();
+  const calligraphy = useCalligraphyFaces();
+  const matchingFaces = useMemo(
+    () => matchingCalligraphyFaces(calligraphy.faces, design.text),
+    [calligraphy.faces, design.text],
+  );
+  const facePreference = design.calligraphyFaceId ?? "auto";
+  const selectedFace =
+    facePreference === "auto"
+      ? matchingFaces[0]
+      : matchingFaces.find((face) => face.id === facePreference);
+  const missingFace =
+    facePreference !== "auto" && facePreference !== "font" && !selectedFace;
+  const exportWaiting =
+    facePreference !== "font" &&
+    (!calligraphy.ready || Boolean(calligraphy.error));
 
   useEffect(() => {
     try {
@@ -342,6 +381,10 @@ export default function Scales() {
           : undefined,
       shapingEngine: design.shapingEngine,
       fontFeatures: design.fontFeatures,
+      scanId: selectedFace?.id,
+      scanText: selectedFace?.text ?? "",
+      missingFace,
+      scansReady: calligraphy.ready,
     }),
     [
       design.fontId,
@@ -349,6 +392,10 @@ export default function Scales() {
       customFontDataUrl,
       design.shapingEngine,
       design.fontFeatures,
+      selectedFace?.id,
+      selectedFace?.text,
+      missingFace,
+      calligraphy.ready,
     ],
   );
   const settledFontRequest = useDebounced(fontRequest);
@@ -363,24 +410,43 @@ export default function Scales() {
     let active = true;
     void fontRetry;
     setFontError("");
-    void import("@/lib/scale-typography")
-      .then(({ loadScaleTypography }) =>
-        loadScaleTypography(settledFontRequest),
-      )
-      .then(
-        (loaded) => {
-          if (active)
-            setLoadedFont({ request: settledFontRequest, typography: loaded });
-        },
-        (error: unknown) => {
-          if (active)
-            setFontError(
-              error instanceof Error
-                ? error.message
-                : "This font could not load.",
-            );
-        },
-      );
+    if (!settledFontRequest.scansReady) return;
+    const load = async () => {
+      if (settledFontRequest.missingFace)
+        throw new Error(
+          "This handwriting is unavailable or its original transcription no longer matches. Restore the original wording, import its scan, or choose another face.",
+        );
+      if (settledFontRequest.scanId) {
+        const [{ getCalligraphyScan }, { loadScannedScaleTypography }] =
+          await Promise.all([
+            import("@/lib/calligraphy-scan-store"),
+            import("@/lib/scanned-scale-typography"),
+          ]);
+        const scan = await getCalligraphyScan(settledFontRequest.scanId);
+        if (!scan)
+          throw new Error(
+            "The selected scan is no longer saved in this browser. Import its saved scan file to restore it.",
+          );
+        return loadScannedScaleTypography(scan, settledFontRequest.scanText);
+      }
+      const { loadScaleTypography } = await import("@/lib/scale-typography");
+      return loadScaleTypography(settledFontRequest);
+    };
+    void load().then(
+      (loaded) => {
+        if (active)
+          setLoadedFont({ request: settledFontRequest, typography: loaded });
+        else loaded.dispose?.();
+      },
+      (error: unknown) => {
+        if (active)
+          setFontError(
+            error instanceof Error
+              ? error.message
+              : "This font could not load.",
+          );
+      },
+    );
     return () => {
       active = false;
     };
@@ -442,6 +508,7 @@ export default function Scales() {
         ...settledLayout,
         measure: typography.measure,
         measureLine: typography.measureLine,
+        segments: typography.segments,
       };
       const lettering = settledLayout.autoFit
         ? fitScaleLettering(candidatePlates, settledLayout.text, options)
@@ -491,6 +558,7 @@ export default function Scales() {
       fontFeatures: design.fontFeatures,
       ...settledLayout,
       fontId: design.fontId,
+      calligraphyFaceId: design.calligraphyFaceId,
       inkColor: design.inkColor,
       plateColor: design.plateColor,
       showLettering: design.showLettering,
@@ -499,6 +567,7 @@ export default function Scales() {
       previewGeometry,
       settledLayout,
       design.fontId,
+      design.calligraphyFaceId,
       design.inkColor,
       design.plateColor,
       design.showLettering,
@@ -710,7 +779,11 @@ export default function Scales() {
         dataUrl: `data:font/${/\.otf$/i.test(file.name) ? "otf" : "ttf"};base64,${btoa(binary)}`,
       };
       if (request === fontUploadRequest.current)
-        updateDesign({ customFont, fontId: "custom" });
+        updateDesign({
+          customFont,
+          fontId: "custom",
+          calligraphyFaceId: "font",
+        });
     } catch (error) {
       if (request === fontUploadRequest.current)
         setFontUploadError(
@@ -728,10 +801,18 @@ export default function Scales() {
     cancelFontUpload();
     setImportError("");
     try {
-      if (file.size > MAX_DESIGN_BYTES)
-        throw new Error("Choose a study JSON file smaller than 3 MB.");
-      const imported = normalizeScaleDesign(JSON.parse(await file.text()));
-      setDesign(imported);
+      if (file.size > MAX_SCALE_STUDY_FILE_BYTES)
+        throw new Error(
+          "This study exceeds the supported size, including its original scan.",
+        );
+      const imported = parseScaleStudyFile(JSON.parse(await file.text()));
+      if (imported.scan) {
+        const { saveCalligraphyScan } = await import(
+          "@/lib/calligraphy-scan-store"
+        );
+        await saveCalligraphyScan(imported.scan);
+      }
+      setDesign(imported.design);
     } catch (error) {
       setImportError(
         error instanceof Error
@@ -1103,10 +1184,19 @@ export default function Scales() {
               Calligraphy font
               <select
                 id="scales-font"
-                value={design.fontId}
+                value={
+                  facePreference === "font" ? design.fontId : facePreference
+                }
                 onChange={(event) => {
                   cancelFontUpload();
                   const next = event.target.value;
+                  if (
+                    next === "auto" ||
+                    calligraphy.faces.some((face) => face.id === next)
+                  ) {
+                    updateDesign({ calligraphyFaceId: next });
+                    return;
+                  }
                   if (
                     isWorksheetBundledFontId(next) ||
                     next === "serif" ||
@@ -1114,9 +1204,22 @@ export default function Scales() {
                     next === "mono" ||
                     next === "custom"
                   )
-                    updateDesign({ fontId: next });
+                    updateDesign({ fontId: next, calligraphyFaceId: "font" });
                 }}
               >
+                <option value="auto">
+                  Prefer original calligraphy · automatic
+                </option>
+                {matchingFaces.map((face) => (
+                  <option key={face.id} value={face.id}>
+                    {face.calligrapher} · {face.name} · scanned ink
+                  </option>
+                ))}
+                {missingFace && (
+                  <option value={facePreference}>
+                    Saved scan · unavailable for this text
+                  </option>
+                )}
                 <option value="serif">Classic serif</option>
                 <option value="sans">Clean sans serif</option>
                 <option value="mono">Monospaced</option>
@@ -1132,16 +1235,37 @@ export default function Scales() {
                 ))}
               </select>
             </label>
-            <div
-              className="scales-font-sample"
-              style={{
-                fontFamily,
-                color: design.inkColor,
-              }}
-              aria-hidden="true"
-            >
-              The shape of a line
-            </div>
+            {selectedFace ? (
+              <p className="scales-help">
+                Original ink by {selectedFace.calligrapher}. Each source
+                occurrence keeps its own strokes and proportions; placement
+                recalculates with the model.
+              </p>
+            ) : (
+              <div
+                className="scales-font-sample"
+                style={{
+                  fontFamily,
+                  color: design.inkColor,
+                }}
+                aria-hidden="true"
+              >
+                The shape of a line
+              </div>
+            )}
+            {calligraphy.error && (
+              <p className="scales-error" role="alert">
+                {calligraphy.error}
+              </p>
+            )}
+            {facePreference === "auto" &&
+              calligraphy.ready &&
+              !selectedFace && (
+                <p className="scales-help">
+                  No saved scan matches this exact wording yet. Using the
+                  selected font until matching calligraphy is imported.
+                </p>
+              )}
             {fontLoading && (
               <p className="scales-help" role="status">
                 Loading the selected font and exact shaping metrics…
@@ -1202,6 +1326,7 @@ export default function Scales() {
               <select
                 id="scales-shaping"
                 value={design.shapingEngine}
+                disabled={Boolean(selectedFace)}
                 onChange={(event) =>
                   updateDesign({
                     shapingEngine:
@@ -1226,6 +1351,7 @@ export default function Scales() {
                 type="text"
                 maxLength={256}
                 value={fontFeaturesInput}
+                disabled={Boolean(selectedFace)}
                 placeholder="liga, kern, calt"
                 onChange={(event) => setFontFeaturesInput(event.target.value)}
                 onBlur={applyFontFeatures}
@@ -1254,45 +1380,30 @@ export default function Scales() {
                 ? `Available in this font: ${typography.supportedFeatures.join(", ")}`
                 : "Feature support depends on the font. Leave empty for its defaults."}
             </p>
-            <label className="scales-field" htmlFor="scales-poem">
-              Start with a poem
-              <select
-                id="scales-poem"
-                value=""
-                onChange={(event) => {
-                  if (event.target.value === "current")
-                    updateDesign({ text: version.lines.join("\n") });
-                  else {
-                    const chosen = versions.find(
-                      (poem) => poem.id === event.target.value,
-                    );
-                    if (chosen) updateDesign({ text: chosen.lines.join("\n") });
-                  }
-                }}
+            <PoemVersionControls
+              text={design.text}
+              onLoad={(text, poem) =>
+                updateDesign({
+                  text,
+                  calligraphyFaceId: poem.calligraphyScanId ?? "auto",
+                })
+              }
+              onScanImported={(scan) =>
+                updateDesign({ text: scan.text, calligraphyFaceId: scan.id })
+              }
+            />
+            <div className="scales-field">
+              <span>Words to place</span>
+              <Suspense
+                fallback={<p role="status">Opening the poem editor…</p>}
               >
-                <option value="">Choose wording to fill the editor…</option>
-                <option value="current">
-                  Current site wording / previewed draft
-                </option>
-                {versions.map((poem) => (
-                  <option key={poem.id} value={poem.id}>
-                    {poem.label} version
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="scales-field" htmlFor="scales-text">
-              Words to place
-              <textarea
-                id="scales-text"
-                maxLength={20_000}
-                value={design.text}
-                placeholder="Begin with a word, a poem, or a little room for possibility…"
-                onChange={(event) => updateDesign({ text: event.target.value })}
-                rows={7}
-              />
-            </label>
-            <p className="scales-help">
+                <ScalePoemEditor
+                  value={design.text}
+                  onChange={(text) => updateDesign({ text })}
+                />
+              </Suspense>
+            </div>
+            <p id="scales-text-help" className="scales-help">
               Complete words flow in row order around the body, then the jaw.
               Line breaks are reflowed to each face.{" "}
               {design.text.length.toLocaleString()} / 20,000 characters.
@@ -1683,7 +1794,26 @@ export default function Scales() {
               it to another device or keep a durable backup.
             </p>
             <div className="scales-save-actions">
-              <button type="button" onClick={() => downloadDesign(design)}>
+              <button
+                type="button"
+                disabled={exportWaiting}
+                title={
+                  exportWaiting
+                    ? "Wait for the handwriting library before exporting a complete study."
+                    : undefined
+                }
+                onClick={() => {
+                  setImportError("");
+                  void downloadDesign(design, selectedFace?.id).catch(
+                    (error: unknown) =>
+                      setImportError(
+                        error instanceof Error
+                          ? error.message
+                          : "This study could not be exported.",
+                      ),
+                  );
+                }}
+              >
                 <Download size={16} aria-hidden="true" /> Save study
               </button>
               <button type="button" onClick={() => importRef.current?.click()}>

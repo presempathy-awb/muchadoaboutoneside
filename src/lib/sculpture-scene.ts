@@ -15,6 +15,7 @@ import { CANONICAL_POEM, type PoemVersion } from "../../shared/poem";
 import type { FoilSkinController } from "./foil-skin";
 import { inscriptionView } from "./inscription-view";
 import type { ScalePreview, ScaleSkinController } from "./scale-skin";
+import type { ScaleTypography } from "./scale-typography";
 import {
   applyHardwareOpacity,
   type CameraPose,
@@ -47,7 +48,12 @@ export interface SculptureSceneController {
   setWireframe(enabled: boolean): void;
   setLettering(visible: boolean): void;
   setSeams(visible: boolean): void;
-  setPoemVersion(version: PoemVersion): void;
+  /** Transfers a scan renderer to this viewer; do not share it with another view. */
+  setPoemVersion(
+    version: PoemVersion,
+    typography?: ScaleTypography,
+  ): Promise<void>;
+  cancelPendingPoemVersion(): void;
   setReadingView(enabled: boolean): void;
   setScalePreview(preview: ScalePreview): void;
   setReducedMotion(enabled: boolean): void;
@@ -183,6 +189,7 @@ export function createSculptureScene(
   let showLettering = true;
   let showSeams = false;
   let poemVersion: PoemVersion = CANONICAL_POEM;
+  let inscriptionRequest = 0;
   let wireframe = false;
   let readingView = false;
   const foilEdition = options.edition === "inscription";
@@ -510,7 +517,7 @@ export function createSculptureScene(
       }
       foilSkin.setLettering(showLettering);
       foilSkin.setSeams(showSeams);
-      foilSkin.setPoemVersion(poemVersion);
+      await foilSkin.setPoemVersion(poemVersion);
       foilSkin.setWireframe(wireframe);
       if (readingView) applyCameraView();
     }
@@ -544,9 +551,24 @@ export function createSculptureScene(
       showSeams = visible;
       foilSkin?.setSeams(visible);
     },
-    setPoemVersion(version) {
+    async setPoemVersion(version, typography) {
+      const request = ++inscriptionRequest;
       poemVersion = version;
-      foilSkin?.setPoemVersion(version);
+      try {
+        await ready;
+        if (disposed || request !== inscriptionRequest || !foilSkin) {
+          typography?.dispose?.();
+          return;
+        }
+        await foilSkin.setPoemVersion(version, typography);
+      } catch (error) {
+        typography?.dispose?.();
+        throw error;
+      }
+    },
+    cancelPendingPoemVersion() {
+      inscriptionRequest++;
+      foilSkin?.cancelPendingPoemVersion();
     },
     setReadingView(enabled) {
       readingView = foilEdition && enabled;
@@ -591,6 +613,7 @@ export function createSculptureScene(
       camera.detachControl();
       engine.stopRenderLoop();
       scaleSkin?.dispose();
+      foilSkin?.dispose();
       scene.dispose();
       engine.dispose();
     },

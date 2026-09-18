@@ -59,6 +59,7 @@ export function drawScalePlate(
             placement.fontSizeMm,
             rect.x + rect.width / 2,
             centerY,
+            placement.lineRanges?.[index],
           );
           return;
         }

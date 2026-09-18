@@ -4,7 +4,13 @@
  * derived wording the rest of the site previews while a draft differs.
  */
 import * as Y from "yjs";
-import { isPoemVersionId, type PoemVersion, type PoemVersionId } from "./poem";
+import {
+  isPoemVersionId,
+  type PoemId,
+  type PoemVersion,
+  type PoemVersionId,
+  poemTextDownloadUrl,
+} from "./poem";
 import { loopWidthEm } from "./script-metrics";
 
 export const DRAFT_TEXT_NAME = "poem";
@@ -12,8 +18,8 @@ const ROOM_PREFIX = "poem-";
 /** Every seed is written by this client id, so identical seeds merge as one. */
 const SEED_CLIENT_ID = 1;
 
-export function draftRoom(id: PoemVersionId) {
-  return `${ROOM_PREFIX}${id}`;
+export function draftRoom(id: PoemId) {
+  return isPoemVersionId(id) ? `${ROOM_PREFIX}${id}` : `private-poem-${id}`;
 }
 
 export function versionIdForRoom(room: string): PoemVersionId | undefined {
@@ -24,7 +30,10 @@ export function versionIdForRoom(room: string): PoemVersionId | undefined {
 
 /** One verse line per line, one blank line between stanzas, no title. */
 export function draftSource(version: PoemVersion) {
-  return version.stanzas.map((stanza) => stanza.join("\n")).join("\n\n");
+  return (
+    version.sourceText ??
+    version.stanzas.map((stanza) => stanza.join("\n")).join("\n\n")
+  );
 }
 
 export interface ParsedDraft {
@@ -61,11 +70,15 @@ export function seedUpdate(version: PoemVersion): Uint8Array {
 /** The wording the site shows when a draft differs from its fixed version. */
 export function applyDraft(version: PoemVersion, text: string): PoemVersion {
   const parsed = parseDraft(text);
-  if (parsed.loop === version.loop) return version;
+  if (text === draftSource(version)) return version;
   return {
     ...version,
     label: `${version.label} draft`,
     summary: `The ${version.label.toLowerCase()} wording as edited in the poem editor; not a fixed version.`,
+    sourceText: text,
+    textPath: version.saved
+      ? poemTextDownloadUrl(text, version.title)
+      : version.textPath,
     stanzas: parsed.stanzas,
     lines: parsed.lines,
     loop: parsed.loop,

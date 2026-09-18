@@ -20,6 +20,7 @@ import {
 import {
   CANONICAL_POEM,
   INSCRIPTION_LAYOUT,
+  isPoemVersionId,
   JAW_INSCRIPTION_LAYOUT,
   POEM_TITLE,
   type PoemVersion,
@@ -226,8 +227,10 @@ function autoSplit(text: string, widthMm: (part: string) => number): string[] {
 
 /** Measured widths for the fixed wordings; estimates for edited drafts. */
 function metricsFor(version: PoemVersion): VersionMetrics {
-  const measured = VERSION_METRICS[version.id];
-  if (!version.draft && measured.lineWidthsEm.length === version.lines.length)
+  const measured = isPoemVersionId(version.id)
+    ? VERSION_METRICS[version.id]
+    : undefined;
+  if (!version.draft && measured?.lineWidthsEm.length === version.lines.length)
     return measured;
   return {
     loopWidthEm: version.loopWidthEm,
@@ -239,7 +242,8 @@ function buildMasterRows(
   version: PoemVersion,
   metrics: VersionMetrics,
 ): readonly MasterRow[] {
-  const splits = version.draft ? {} : ROW_SPLITS[version.id];
+  const splits =
+    !version.draft && isPoemVersionId(version.id) ? ROW_SPLITS[version.id] : {};
   const estimateWidthMm = (line: number, text: string) => {
     const full = version.lines[line - 1] ?? "";
     const lineEm = metrics.lineWidthsEm[line - 1] ?? 0;
@@ -253,9 +257,10 @@ function buildMasterRows(
     const number = String(line).padStart(2, "0");
     const split = splits[line];
     if (!split) {
-      const parts = version.draft
-        ? autoSplit(text, (part) => estimateWidthMm(line, part))
-        : [text];
+      const parts =
+        version.draft || version.saved
+          ? autoSplit(text, (part) => estimateWidthMm(line, part))
+          : [text];
       if (parts.length === 1)
         return [
           {
@@ -1126,23 +1131,31 @@ export function buildCalligraphyGuide(version: PoemVersion): CalligraphyGuide {
         (sheet + 1) * SHEET.rowsPerSheet,
       ),
   );
-  const hardWords = version.draft
-    ? HARD_WORDS_BY_VERSION[version.id].filter((word) =>
-        version.lines.join(" ").includes(word),
-      )
-    : HARD_WORDS_BY_VERSION[version.id];
+  const fixedHardWords = isPoemVersionId(version.id)
+    ? HARD_WORDS_BY_VERSION[version.id]
+    : undefined;
+  const hardWords = fixedHardWords
+    ? version.draft
+      ? fixedHardWords.filter((word) => version.lines.join(" ").includes(word))
+      : fixedHardWords
+    : [...new Set(text.match(/\S+/gu) ?? [])]
+        .sort((a, b) => textWidthEm(b) - textWidthEm(a))
+        .slice(0, 12);
   const firstLine = lines[0] ?? "";
   const lastLine = lines[lines.length - 1] ?? "";
   const lastWords = lastLine.split(" ");
-  const loopFigureEm = LOOP_FIGURE_PERIMETER / metrics.loopWidthEm;
+  const loopFigureEm =
+    metrics.loopWidthEm > 0 ? LOOP_FIGURE_PERIMETER / metrics.loopWidthEm : 0;
   const partial: Omit<CalligraphyGuide, "chapters" | "chapterById"> = {
     version,
     sheetTitle: canonical
       ? POEM_TITLE
       : `${POEM_TITLE} (${version.label.toLowerCase()})`,
-    subtitle: canonical
-      ? `A brief for Jill: writing the master for ${POEM_TITLE} in your own copperplate`
-      : `A brief for Jill: writing the master for ${POEM_TITLE} (${version.label.toLowerCase()} version) in your own copperplate`,
+    subtitle: version.saved
+      ? `A brief for ${version.calligrapher || "Jill Winters"}: writing ${version.label} in your own hand`
+      : canonical
+        ? `A brief for Jill: writing the master for ${POEM_TITLE} in your own copperplate`
+        : `A brief for Jill: writing the master for ${POEM_TITLE} (${version.label.toLowerCase()} version) in your own copperplate`,
     guideVersion: version.guideVersion,
     pdfPath: version.guidePdfPath,
     htmlPath: version.guideHtmlPath,
@@ -1154,9 +1167,10 @@ export function buildCalligraphyGuide(version: PoemVersion): CalligraphyGuide {
     splitLines: masterRows.filter((row) => row.part === "a").length,
     spareRows: masterSheets.length * SHEET.rowsPerSheet - masterRows.length,
     hardWords,
-    hardWordRows: version.draft
-      ? packHardWordRows(hardWords)
-      : HARD_WORD_ROWS_BY_VERSION[version.id],
+    hardWordRows:
+      !version.draft && isPoemVersionId(version.id)
+        ? HARD_WORD_ROWS_BY_VERSION[version.id]
+        : packHardWordRows(hardWords),
     bodyRows: surfaceRows("body", version).layout.rows,
     jawRows: surfaceRows("jaw", version).layout.rows,
     maquetteFits: maquette.fits,

@@ -8,13 +8,23 @@ import { IndexeddbPersistence } from "y-indexeddb";
 import { Awareness } from "y-protocols/awareness";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
-import type { PoemVersion, PoemVersionId } from "../../shared/poem";
+import {
+  isPoemVersionId,
+  type PoemId,
+  type PoemVersion,
+  type SavedPoemId,
+} from "../../shared/poem";
 import {
   DRAFT_TEXT_NAME,
   draftRoom,
   draftSource,
   seedUpdate,
 } from "../../shared/poem-drafts";
+import {
+  assertDeletablePoemId,
+  MAX_POEM_TEXT_LENGTH,
+} from "../../shared/poem-library";
+import { isSavedPoemDeleted } from "./poem-library";
 
 export interface DraftStatus {
   /** Where the draft is kept between visits. */
@@ -23,6 +33,8 @@ export interface DraftStatus {
   sync: "off" | "connecting" | "connected" | "disconnected";
   /** Other people currently in the room. */
   peers: number;
+  deleted?: boolean;
+  error?: string;
 }
 
 export interface DraftSession {
@@ -39,6 +51,8 @@ export interface DraftSession {
   subscribeText(listener: () => void): () => void;
   /** Replaces the draft with the fixed wording, as one undoable step. */
   reset(): void;
+  /** Replaces the working text as one undoable step, preserving its formatting. */
+  setText(text: string): void;
 }
 
 interface EditorUser {
@@ -49,7 +63,9 @@ interface EditorUser {
 
 const USER_KEY = "muchado.poem-editor-user";
 const COLORS = ["#b8862f", "#658253", "#8f6a42", "#5d735b", "#bd6546"];
-const sessions = new Map<PoemVersionId, DraftSession>();
+const sessions = new Map<PoemId, DraftSession>();
+const privateDisposers = new Map<SavedPoemId, () => Promise<void>>();
+const deletedSavedIds = new Set<SavedPoemId>();
 let liveSyncOffer: Promise<boolean> | undefined;
 
 function editorUser(): EditorUser {
@@ -87,6 +103,10 @@ function liveSyncOffered() {
 
 /** The session for a fixed wording, created once per page load. */
 export function draftSession(version: PoemVersion): DraftSession {
+  if (!isPoemVersionId(version.id) && deletedSavedIds.has(version.id))
+    throw new Error(
+      "This saved poem version was deleted. Select another version.",
+    );
   const existing = sessions.get(version.id);
   if (existing) return existing;
 
@@ -96,6 +116,8 @@ export function draftSession(version: PoemVersion): DraftSession {
   const awareness = new Awareness(doc);
   awareness.setLocalStateField("user", editorUser());
   const undo = new Y.UndoManager(text, { captureTimeout: 400 });
+  let disposed = false;
+  let persistence: IndexeddbPersistence | undefined;
 
   let status: DraftStatus = { storage: "loading", sync: "off", peers: 0 };
   const statusListeners = new Set<() => void>();
@@ -115,6 +137,7 @@ export function draftSession(version: PoemVersion): DraftSession {
   if (channel) {
     const tabs = channel;
     tabs.onmessage = (event: MessageEvent<unknown>) => {
+      if (disposed) return;
       const data = event.data;
       if (data instanceof Uint8Array) Y.applyUpdate(doc, data, tabs);
       else if (
@@ -126,27 +149,58 @@ export function draftSession(version: PoemVersion): DraftSession {
         tabs.postMessage(Y.encodeStateAsUpdate(doc));
     };
     doc.on("update", (update: Uint8Array, origin: unknown) => {
-      if (origin !== tabs) tabs.postMessage(update);
+      if (!disposed && origin !== tabs) tabs.postMessage(update);
     });
   }
+
+  const dispose = async () => {
+    if (!disposed) {
+      disposed = true;
+      channel?.close();
+      undo.destroy();
+      awareness.destroy();
+      sessions.delete(version.id);
+      setStatus({
+        storage: "memory",
+        sync: "off",
+        peers: 0,
+        deleted: true,
+        error: "This saved poem version was deleted. Select another version.",
+      });
+    }
+    await persistence?.destroy();
+    doc.destroy();
+  };
 
   const ready = (async () => {
     try {
       if (typeof indexedDB === "undefined")
         throw new Error("IndexedDB is unavailable");
-      const persistence = new IndexeddbPersistence(room, doc);
+      if (
+        !isPoemVersionId(version.id) &&
+        (await isSavedPoemDeleted(version.id))
+      ) {
+        deletedSavedIds.add(version.id);
+        await dispose();
+        return;
+      }
+      if (disposed) return;
+      persistence = new IndexeddbPersistence(room, doc);
       await persistence.whenSynced;
+      if (disposed) return;
       setStatus({ storage: "browser" });
     } catch {
       setStatus({ storage: "memory" });
     }
+    if (disposed) return;
     // The seed is the same bytes everywhere, so applying it never duplicates.
     if (text.length === 0) Y.applyUpdate(doc, seedUpdate(version), "seed");
     channel?.postMessage({ hello: true });
   })();
 
   ready
-    .then(liveSyncOffered)
+    // Named copies are private. Never probe or join the public relay for them.
+    .then(() => (isPoemVersionId(version.id) ? liveSyncOffered() : false))
     .then((offered) => {
       if (!offered) return;
       const url = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/api/collab/rooms`;
@@ -190,14 +244,65 @@ export function draftSession(version: PoemVersion): DraftSession {
       return () => text.unobserve(handler);
     },
     reset() {
+      session.setText(draftSource(version));
+    },
+    setText(nextText) {
+      if (disposed)
+        throw new Error(
+          "This saved poem version was deleted. Select another version.",
+        );
+      if (nextText.length > MAX_POEM_TEXT_LENGTH)
+        throw new Error("Poem text must be 20,000 characters or fewer.");
+      undo.stopCapturing();
       doc.transact(() => {
         text.delete(0, text.length);
-        text.insert(0, draftSource(version));
+        text.insert(0, nextText);
       });
+      undo.stopCapturing();
     },
   };
   sessions.set(version.id, session);
+  if (!isPoemVersionId(version.id)) privateDisposers.set(version.id, dispose);
   return session;
+}
+
+/** Removes only this private working draft, after its named snapshot was deleted. */
+export async function deleteDraftSession(id: PoemId): Promise<void> {
+  assertDeletablePoemId(id);
+  deletedSavedIds.add(id);
+  const dispose = privateDisposers.get(id);
+  if (dispose) await dispose();
+  privateDisposers.delete(id);
+  await new Promise<void>((resolve, reject) => {
+    if (typeof indexedDB === "undefined") {
+      reject(
+        new Error(
+          "Browser storage is unavailable; the private draft could not be cleared.",
+        ),
+      );
+      return;
+    }
+    const request = indexedDB.deleteDatabase(draftRoom(id));
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    request.onsuccess = () => {
+      clearTimeout(timeout);
+      resolve();
+    };
+    request.onerror = () => {
+      clearTimeout(timeout);
+      reject(
+        request.error ??
+          new Error("The private draft database could not be cleared."),
+      );
+    };
+    request.onblocked = () => {
+      timeout ??= setTimeout(
+        () =>
+          reject(new Error("Another tab still has this private draft open.")),
+        2000,
+      );
+    };
+  });
 }
 
 export function useDraftText(session: DraftSession) {
