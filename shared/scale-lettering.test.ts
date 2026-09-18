@@ -1,0 +1,204 @@
+import { expect, test } from "bun:test";
+import {
+  allocateScaleLettering,
+  fitScaleLettering,
+  type ScaleLetteringPlate,
+} from "./scale-lettering";
+
+const characterMeasure = (text: string, fontSizeMm: number) =>
+  text.length * fontSizeMm;
+
+function plate(
+  id: string,
+  widthMm: number,
+  heightMm: number,
+  safeWidth = 1,
+  safeHeight = 1,
+): ScaleLetteringPlate {
+  return {
+    id,
+    surface: "body",
+    widthInches: widthMm / 25.4,
+    heightInches: heightMm / 25.4,
+    safeRect: { x: 0, y: 0, width: safeWidth, height: safeHeight },
+  };
+}
+
+test("conserves ordered words and punctuation exactly once across faces", () => {
+  const text = "One,  two\nthree! four — five?";
+  const result = allocateScaleLettering(
+    [plate("first", 18, 8), plate("second", 18, 8)],
+    text,
+    { fontSizeMm: 2, marginMm: 1, measure: characterMeasure },
+  );
+
+  const placedWords = result.placements.flatMap(({ lines }) =>
+    lines.flatMap((line) => line.split(" ")),
+  );
+  expect(placedWords).toEqual(text.match(/\S+/gu) ?? []);
+  expect(result.unplacedText).toBe("");
+  expect(result.placedWordCount).toBe(6);
+  expect(result.totalWordCount).toBe(6);
+  expect(result.placements.every(({ lines }) => lines.length > 0)).toBe(true);
+});
+
+test("uses the shared script metrics when no measurer is supplied", () => {
+  const result = allocateScaleLettering([plate("face", 4, 20)], "ab AB", {
+    fontSizeMm: 5,
+    marginMm: 0,
+  });
+
+  expect(result.placements[0]?.lines).toEqual(["ab"]);
+  expect(result.unplacedText).toBe("AB");
+});
+
+test("uses normalized safe dimensions and physical margins", () => {
+  const result = allocateScaleLettering(
+    [plate("inset", 100, 100, 0.5, 0.25)],
+    "aaaa bbbb cccc dddd",
+    { fontSizeMm: 5, marginMm: 5, measure: characterMeasure },
+  );
+
+  // Usable area is 40 x 15 mm: two 7 mm lines, each at most 40 mm wide.
+  expect(result.placements[0]?.lines).toEqual(["aaaa", "bbbb"]);
+  expect(result.unplacedText).toBe("cccc dddd");
+});
+
+test("reallocates lines when face size changes", () => {
+  const options = {
+    fontSizeMm: 2,
+    marginMm: 1,
+    measure: characterMeasure,
+  };
+  const narrow = allocateScaleLettering(
+    [plate("face", 18, 20)],
+    "alpha beta gamma",
+    options,
+  );
+  const wide = allocateScaleLettering(
+    [plate("face", 40, 20)],
+    "alpha beta gamma",
+    options,
+  );
+
+  expect(narrow.placements[0]?.lines).toEqual(["alpha", "beta", "gamma"]);
+  expect(wide.placements[0]?.lines).toEqual(["alpha beta gamma"]);
+});
+
+test("autofit chooses the greatest fitting physical font size", () => {
+  const result = fitScaleLettering([plate("face", 50, 20)], "alpha beta", {
+    fontSizeMm: 8,
+    minFontSizeMm: 3,
+    marginMm: 0,
+    measure: characterMeasure,
+  });
+
+  expect(result.unplacedText).toBe("");
+  expect(result.placements[0]?.fontSizeMm).toBeCloseTo(20 / 2 / 1.4, 5);
+  expect(result.placements[0]?.lines).toEqual(["alpha", "beta"]);
+});
+
+test("lines remain within width and height budgets", () => {
+  const face = plate("face", 72, 34, 0.75, 0.75);
+  const fontSizeMm = 4;
+  const marginMm = 3;
+  const result = allocateScaleLettering(
+    [face],
+    "one two three four five six seven",
+    { fontSizeMm, marginMm, measure: characterMeasure },
+  );
+  const lines = result.placements[0]?.lines ?? [];
+  const usableWidth = 72 * 0.75 - 2 * marginMm;
+  const usableHeight = 34 * 0.75 - 2 * marginMm;
+
+  expect(lines.length * fontSizeMm * 1.4).toBeLessThanOrEqual(usableHeight);
+  for (const line of lines)
+    expect(characterMeasure(line, fontSizeMm)).toBeLessThanOrEqual(usableWidth);
+});
+
+test("reports an unbreakable word and all following words without loss", () => {
+  const result = allocateScaleLettering(
+    [plate("narrow", 20, 20), plate("wider", 30, 20)],
+    "ok extraordinarilylong after",
+    { fontSizeMm: 2, marginMm: 1, measure: characterMeasure },
+  );
+
+  expect(result.placements[0]?.lines).toEqual(["ok"]);
+  expect(result.placements[1]?.lines).toEqual([]);
+  expect(result.unplacedText).toBe("extraordinarilylong after");
+  expect(result.placedWordCount).toBe(1);
+  expect(result.totalWordCount).toBe(3);
+});
+
+test("returns the minimum-size partial result when even autofit cannot fit", () => {
+  const result = fitScaleLettering([plate("face", 10, 10)], "impossible rest", {
+    fontSizeMm: 6,
+    minFontSizeMm: 2,
+    marginMm: 1,
+    measure: characterMeasure,
+  });
+
+  expect(result.placements[0]?.fontSizeMm).toBe(2);
+  expect(result.unplacedText).toBe("impossible rest");
+});
+
+test("handles blank text and rejects invalid bounds", () => {
+  const blank = allocateScaleLettering([plate("face", 20, 20)], " \n\t ", {
+    fontSizeMm: 4,
+    marginMm: 1,
+  });
+  expect(blank.placements[0]?.lines).toEqual([]);
+  expect(blank.totalWordCount).toBe(0);
+  expect(blank.unplacedText).toBe("");
+
+  expect(() =>
+    allocateScaleLettering([plate("face", 20, 20)], "x".repeat(20_001), {
+      fontSizeMm: 4,
+      marginMm: 1,
+    }),
+  ).toThrow("at most 20000 characters");
+});
+
+test("uses actual vertical flourishes and never squashes a tall line to fit", () => {
+  const measureLine = (text: string, fontSizeMm: number) => ({
+    widthMm: text.length * fontSizeMm,
+    heightMm: fontSizeMm * (text.includes("Tall") ? 3 : 1),
+  });
+  const result = allocateScaleLettering(
+    [plate("short", 16, 8), plate("tall", 30, 15)],
+    "one Tall two",
+    { fontSizeMm: 4, marginMm: 0, measureLine },
+  );
+  expect(result.placements[0]?.lines).toEqual(["one"]);
+  expect(result.placements[0]?.lineHeightsMm).toEqual([4]);
+  expect(result.placements[1]?.lines).toEqual(["Tall"]);
+  expect(result.placements[1]?.lineHeightsMm).toEqual([12]);
+  expect(result.unplacedText).toBe("two");
+});
+
+test("autofit measures each line's vertical ink instead of assuming 1.4 em", () => {
+  const result = fitScaleLettering([plate("face", 70, 20)], "Tall", {
+    fontSizeMm: 10,
+    minFontSizeMm: 2,
+    marginMm: 0,
+    measureLine: (text, size) => ({
+      widthMm: text.length * size,
+      heightMm: size * 3,
+    }),
+  });
+  expect(result.unplacedText).toBe("");
+  expect(result.placements[0]?.fontSizeMm).toBeCloseTo(20 / 3, 5);
+  expect(result.placements[0]?.lineHeightsMm?.[0]).toBeLessThanOrEqual(20);
+});
+
+test("rejects invalid measured heights rather than reporting a false fit", () => {
+  for (const heightMm of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+    expect(() =>
+      allocateScaleLettering([plate("face", 40, 20)], "word", {
+        fontSizeMm: 4,
+        marginMm: 0,
+        measureLine: () => ({ widthMm: 10, heightMm }),
+      }),
+    ).toThrow("positive height");
+  }
+});

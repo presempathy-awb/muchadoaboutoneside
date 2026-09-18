@@ -79,6 +79,18 @@ const links = [
     label: "Files & source",
     index: "10",
   },
+  {
+    to: "/scales" as const,
+    icon: Box,
+    label: "3D scale studio",
+    index: "11",
+  },
+  {
+    to: "/references" as const,
+    icon: FolderOpen,
+    label: "Reference images",
+    index: "12",
+  },
 ];
 
 export function AppShell() {

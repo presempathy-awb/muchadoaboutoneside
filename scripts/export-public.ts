@@ -1,8 +1,8 @@
 import { lstat, mkdir, realpath, writeFile } from "node:fs/promises";
 import { basename, dirname, resolve } from "node:path";
 import {
+  assertReferencePublication,
   isPublicSourcePath,
-  PRIVATE_REFERENCE_SHA256,
   REQUIRED_PUBLIC_FILES,
 } from "../shared/publication";
 
@@ -41,8 +41,7 @@ for (const path of paths.filter(isPublicSourcePath).sort()) {
     );
   const bytes = await Bun.file(source).arrayBuffer();
   const sha256 = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
-  if (sha256 === PRIVATE_REFERENCE_SHA256)
-    throw new Error(`Private reference bytes found in public source: ${path}`);
+  assertReferencePublication(path, sha256, "source");
   inventory.push({ path, bytes: bytes.byteLength, sha256 });
 }
 for (const required of REQUIRED_PUBLIC_FILES)

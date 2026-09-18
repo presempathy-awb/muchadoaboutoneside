@@ -1,9 +1,6 @@
 import { cp, mkdir, readdir, stat, writeFile } from "node:fs/promises";
 import { relative, resolve, sep } from "node:path";
-import {
-  PRIVATE_REFERENCE_NAMES,
-  PRIVATE_REFERENCE_SHA256,
-} from "../shared/publication";
+import { assertReferencePublication } from "../shared/publication";
 
 const root = resolve(import.meta.dir, "..");
 const archivedAssets = [
@@ -121,24 +118,15 @@ for (const asset of archivedAssets) {
 }
 
 const releaseFiles = await walk(releaseDir);
-const forbidden = releaseFiles.find(
-  (path) =>
-    path.includes(`${sep}source${sep}reference${sep}`) ||
-    PRIVATE_REFERENCE_NAMES.has(path.split(sep).at(-1) ?? ""),
-);
-if (forbidden) {
-  throw new Error(
-    `private reference entered release: ${relative(releaseDir, forbidden)}`,
-  );
-}
 for (const path of releaseFiles) {
   const hash = new Bun.CryptoHasher("sha256")
     .update(await Bun.file(path).arrayBuffer())
     .digest("hex");
-  if (hash === PRIVATE_REFERENCE_SHA256)
-    throw new Error(
-      `private reference bytes entered release: ${relative(releaseDir, path)}`,
-    );
+  assertReferencePublication(
+    relative(releaseDir, path).split(sep).join("/"),
+    hash,
+    "release",
+  );
 }
 
 await writeFile(
