@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, spyOn, test } from "bun:test";
 import { VertexBuffer } from "@babylonjs/core/Buffers/buffer";
 import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
@@ -8,7 +8,7 @@ import { DEFAULT_SCALE_DESIGN } from "../../shared/scale-design";
 import { allocateScaleLettering } from "../../shared/scale-lettering";
 import { generateScaleStudy } from "../../shared/scale-study";
 import { planScaleAtlases } from "./scale-atlas";
-import { createScaleSkin } from "./scale-skin";
+import { createScaleSkin, type ScalePreview } from "./scale-skin";
 
 test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resources", () => {
   const original = Object.getOwnPropertyDescriptor(globalThis, "document");
@@ -65,7 +65,13 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
   try {
     const root = new TransformNode("gltf-root", scene);
     root.scaling.z = -1;
-    const skin = createScaleSkin(scene, root);
+    const committed: ScalePreview[] = [];
+    const failed: { preview: ScalePreview; error: unknown }[] = [];
+    const skin = createScaleSkin(scene, root, {
+      onCommit: (preview) => committed.push(preview),
+      onError: (preview, error) => failed.push({ preview, error }),
+    });
+    skin.setReducedMotion(true);
     // Surface generation has separate geometry tests. Reuse one simple face to
     // exercise renderer pressure and repeated rebuilds without remeshing it.
     const fixtureStudy = generateScaleStudy({
@@ -169,6 +175,10 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
     expect(
       planScaleAtlases(study, lettering, true).atlases.length,
     ).toBeGreaterThan(1);
+    const goodMeshes = [...skin.getMeshes()];
+    const goodMaterials = [...scene.materials];
+    const goodTextures = [...scene.textures];
+    const goodCanvasCount = canvasCount;
     failCanvas = canvasCount + 2;
     expect(() =>
       skin.update({
@@ -178,15 +188,13 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
         fontFamily: "serif",
       }),
     ).toThrow("Simulated canvas allocation failure");
-    expect(scene.meshes.length).toBe(0);
-    expect(scene.materials.length).toBe(0);
+    expect(scene.meshes).toEqual(goodMeshes);
+    expect(scene.materials).toEqual(goodMaterials);
+    expect(scene.textures).toEqual(goodTextures);
     expect(
-      scene.textures.filter((texture) =>
-        texture.name.startsWith("scale-atlas-"),
-      ).length,
-    ).toBe(0);
-    expect(
-      canvases.every((canvas) => canvas.width === 0 && canvas.height === 0),
+      canvases
+        .slice(goodCanvasCount)
+        .every((canvas) => canvas.width === 0 && canvas.height === 0),
     ).toBe(true);
     // Exercise a throw after DynamicTexture has registered itself with the scene.
     failCanvas = canvasCount + 1;
@@ -199,13 +207,9 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
         fontFamily: "serif",
       }),
     ).toThrow("Simulated canvas allocation failure");
-    expect(scene.meshes.length).toBe(0);
-    expect(scene.materials.length).toBe(0);
-    expect(
-      scene.textures.filter((texture) =>
-        texture.name.startsWith("scale-atlas-"),
-      ).length,
-    ).toBe(0);
+    expect(scene.meshes).toEqual(goodMeshes);
+    expect(scene.materials).toEqual(goodMaterials);
+    expect(scene.textures).toEqual(goodTextures);
     skin.update({
       study,
       lettering,
@@ -218,6 +222,135 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
         texture.name.startsWith("scale-atlas-"),
       ).length,
     ).toBe(0);
+    // Changes build an atomic replacement and fade only two bounded groups.
+    let now = 1000;
+    const clock = spyOn(performance, "now").mockImplementation(() => now);
+    try {
+      skin.setReducedMotion(false);
+      const firstMeshes = [...skin.getMeshes()];
+      const preview = {
+        study: makeStudy(2),
+        lettering: { ...lettering, placements: [] },
+        design: { ...DEFAULT_SCALE_DESIGN, showLettering: false },
+        fontFamily: "serif",
+      };
+      skin.update(preview);
+      const nextMeshes = [...skin.getMeshes()];
+      expect(nextMeshes.every((mesh) => mesh.visibility === 0)).toBe(true);
+      expect(scene.meshes.length).toBe(4);
+      now += 160;
+      scene.onBeforeRenderObservable.notifyObservers(scene);
+      expect(nextMeshes.every((mesh) => mesh.visibility === 0.5)).toBe(true);
+      expect(firstMeshes.every((mesh) => mesh.visibility === 0.5)).toBe(true);
+      const committedBeforeQueue = committed.length;
+      const allocated = canvasCount;
+      const superseded = { ...preview, study: makeStudy(3) };
+      const latest = { ...preview, study: makeStudy(4) };
+      skin.update(superseded);
+      skin.update(latest);
+      // A third/fourth request leaves both the exact opacity and resources of
+      // the running A→B transition untouched; only the latest request is queued.
+      expect(skin.getMeshes()).toEqual(nextMeshes);
+      expect(canvasCount).toBe(allocated);
+      expect(committed.length).toBe(committedBeforeQueue);
+      expect(
+        firstMeshes.every(
+          (mesh) => mesh.visibility === 0.5 && !mesh.isDisposed(),
+        ),
+      ).toBe(true);
+      expect(
+        nextMeshes.every(
+          (mesh) => mesh.visibility === 0.5 && !mesh.isDisposed(),
+        ),
+      ).toBe(true);
+      expect(scene.meshes.length).toBe(4);
+      now += 160;
+      scene.onBeforeRenderObservable.notifyObservers(scene);
+      expect(firstMeshes.every((mesh) => mesh.isDisposed())).toBe(true);
+      expect(
+        nextMeshes.every((mesh) => mesh.visibility === 1 && !mesh.isDisposed()),
+      ).toBe(true);
+      const latestMeshes = [...skin.getMeshes()];
+      expect(latestMeshes.every((mesh) => mesh.visibility === 0)).toBe(true);
+      expect(scene.meshes.length).toBe(4);
+      expect(committed.at(-1)).toBe(latest);
+      expect(committed.includes(superseded)).toBe(false);
+      now += 160;
+      scene.onBeforeRenderObservable.notifyObservers(scene);
+      const failedPreview = {
+        study,
+        lettering,
+        design: DEFAULT_SCALE_DESIGN,
+        fontFamily: "serif",
+      };
+      failCanvas = canvasCount + 1;
+      failContextRead = 1;
+      // Deferred failures are reported with their exact request identity and
+      // never throw from a render-loop callback or replace the working skin.
+      expect(() => skin.update(failedPreview)).not.toThrow();
+      expect(failed.length).toBe(0);
+      expect(latestMeshes.every((mesh) => mesh.visibility === 0.5)).toBe(true);
+      expect(nextMeshes.every((mesh) => mesh.visibility === 0.5)).toBe(true);
+      now += 160;
+      expect(() =>
+        scene.onBeforeRenderObservable.notifyObservers(scene),
+      ).not.toThrow();
+      expect(scene.meshes).toEqual(latestMeshes);
+      expect(
+        latestMeshes.every(
+          (mesh) => mesh.visibility === 1 && !mesh.isDisposed(),
+        ),
+      ).toBe(true);
+      expect(failed.at(-1)?.preview).toBe(failedPreview);
+      expect(failed.at(-1)?.error).toBeInstanceOf(Error);
+      expect(committed.includes(failedPreview)).toBe(false);
+      const next = { ...preview, study: makeStudy(5) };
+      const reducedLatest = { ...preview, study: makeStudy(6) };
+      skin.update(next);
+      skin.update(superseded);
+      skin.update(reducedLatest);
+      expect(committed.at(-1)).toBe(next);
+      expect(scene.meshes.length).toBe(4);
+      skin.setReducedMotion(true);
+      expect(committed.at(-1)).toBe(reducedLatest);
+      expect(committed.includes(superseded)).toBe(false);
+      expect(scene.meshes.length).toBe(2);
+      expect(skin.getMeshes().every((mesh) => mesh.visibility === 1)).toBe(
+        true,
+      );
+      // An unchanged rendered preview, including metadata-only edits, allocates nothing.
+      const unchangedMeshes = [...skin.getMeshes()];
+      const unchangedCanvases = canvasCount;
+      const metadata = {
+        ...reducedLatest,
+        design: { ...reducedLatest.design, notes: "Only a note" },
+      };
+      skin.update(metadata);
+      expect(skin.getMeshes()).toEqual(unchangedMeshes);
+      expect(canvasCount).toBe(unchangedCanvases);
+      expect(committed.at(-1)).toBe(metadata);
+      // Ink-only updates share immutable geometry; old mesh disposal cannot
+      // dispose the buffers still used by its successfully committed replacement.
+      skin.update(preview);
+      const colored = [...skin.getMeshes()];
+      const sharedGeometry = colored.map((mesh) => mesh.geometry);
+      skin.update({
+        ...preview,
+        design: { ...preview.design, plateColor: "#123456" },
+      });
+      for (const [index, mesh] of skin.getMeshes().entries()) {
+        expect(mesh.geometry).toBe(sharedGeometry[index] ?? null);
+        expect(mesh.getTotalIndices()).toBeGreaterThan(0);
+      }
+      expect(colored.every((mesh) => mesh.isDisposed())).toBe(true);
+      // Parent hardware may animate, but skin coordinates remain physical inches.
+      root.scaling.set(1.5, 1.5, -1.5);
+      skin.setModelScale(1.5);
+      const mesh = skin.getMeshes()[0];
+      expect(mesh?.scaling.x).toBeCloseTo(1 / 1.5, 8);
+    } finally {
+      clock.mockRestore();
+    }
     // Geometry is already in physical inches. A resized archival glTF parent
     // must scale hardware without applying that resize to the scales twice.
     root.scaling.set(2, 2, -2);
@@ -257,7 +390,26 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
     );
     expect(substrate?.getTotalIndices()).toBe(3);
     expect(substrate?.scaling.x).toBe(1);
+    skin.setReducedMotion(false);
+    skin.update({
+      study: makeStudy(2),
+      lettering: { ...lettering, placements: [] },
+      design: { ...DEFAULT_SCALE_DESIGN, showLettering: false },
+      fontFamily: "serif",
+    });
+    expect(scene.meshes.length).toBeGreaterThan(skin.getMeshes().length);
+    const cancelled = {
+      study: makeStudy(3),
+      lettering: { ...lettering, placements: [] },
+      design: { ...DEFAULT_SCALE_DESIGN, showLettering: false },
+      fontFamily: "serif",
+    };
+    skin.update(cancelled);
+    const committedBeforeDispose = committed.length;
     skin.dispose();
+    scene.onBeforeRenderObservable.notifyObservers(scene);
+    expect(committed.length).toBe(committedBeforeDispose);
+    expect(committed.includes(cancelled)).toBe(false);
     expect(scene.meshes.length).toBe(0);
     expect(scene.materials.length).toBe(0);
     expect(
@@ -266,6 +418,9 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
       ).length,
     ).toBe(0);
     skin.dispose();
+    expect(
+      canvases.every((canvas) => canvas.width === 0 && canvas.height === 0),
+    ).toBe(true);
   } finally {
     scene.dispose();
     engine.dispose();

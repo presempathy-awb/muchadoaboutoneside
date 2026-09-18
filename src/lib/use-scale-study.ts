@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ScaleBuildUp } from "../../shared/scale-measurements";
 import type { ScaleStudy, ScaleStudySettings } from "../../shared/scale-study";
+import { ScaleStudyCache } from "./scale-study-cache";
 
 export interface ScaleStudyRequest {
   requestId: number;
@@ -27,8 +28,13 @@ interface StudyState {
 }
 
 /** Keeps the last successful preview while a cancellable worker builds its replacement. */
-export function useScaleStudy(input: ScaleStudyInputs): StudyState {
+export function useScaleStudy(
+  input: ScaleStudyInputs,
+): StudyState & { retry: () => void } {
   const latestRequest = useRef(0);
+  const [cache] = useState(() => new ScaleStudyCache());
+  const [retryCount, setRetryCount] = useState(0);
+  const retry = useCallback(() => setRetryCount((count) => count + 1), []);
   const [state, setState] = useState<StudyState>({
     study: null,
     snapshot: null,
@@ -38,11 +44,23 @@ export function useScaleStudy(input: ScaleStudyInputs): StudyState {
   });
 
   useEffect(() => {
+    void retryCount;
     const settings = input.geometry;
     const requestId = ++latestRequest.current;
     let active = true;
     let worker: Worker | undefined;
     const fallback = typeof Worker === "undefined";
+    const cached = cache.get(settings);
+    if (cached) {
+      setState({
+        study: cached,
+        snapshot: input,
+        computing: false,
+        error: "",
+        fallback,
+      });
+      return;
+    }
     setState((current) => ({
       ...current,
       computing: true,
@@ -57,6 +75,7 @@ export function useScaleStudy(input: ScaleStudyInputs): StudyState {
     const accept = (result: ScaleStudyResponse) => {
       if (!isCurrent() || result.requestId !== requestId) return;
       if (result.study) {
+        cache.set(settings, result.study);
         setState({
           study: result.study,
           snapshot: input,
@@ -146,9 +165,10 @@ export function useScaleStudy(input: ScaleStudyInputs): StudyState {
       if (timer !== undefined) window.clearTimeout(timer);
       worker?.terminate();
     };
-  }, [input]);
+  }, [input, cache, retryCount]);
   return {
     ...state,
+    retry,
     // Reflect a new request immediately, before its effect starts the next worker.
     computing: state.computing || (!state.error && state.snapshot !== input),
   };

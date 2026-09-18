@@ -15,6 +15,12 @@ import { CANONICAL_POEM, type PoemVersion } from "../../shared/poem";
 import type { FoilSkinController } from "./foil-skin";
 import { inscriptionView } from "./inscription-view";
 import type { ScalePreview, ScaleSkinController } from "./scale-skin";
+import {
+  type CameraPose,
+  interpolateCameraPose,
+  sameCameraPose,
+  transitionProgress,
+} from "./scene-transition";
 
 export const SCULPTURE_ASSET_URL = "/api/assets/snake_build.glb";
 
@@ -41,6 +47,7 @@ export interface SculptureSceneController {
   setPoemVersion(version: PoemVersion): void;
   setReadingView(enabled: boolean): void;
   setScalePreview(preview: ScalePreview): void;
+  setReducedMotion(enabled: boolean): void;
   resetCamera(): void;
   resize(): void;
   dispose(): void;
@@ -48,6 +55,8 @@ export interface SculptureSceneController {
 
 interface CreateSculptureSceneOptions {
   onSelectPart?: (part: SculpturePart | null) => void;
+  onScalePreviewReady?: (preview: ScalePreview) => void;
+  onScalePreviewError?: (preview: ScalePreview, message: string) => void;
   edition?: "construction" | "inscription" | "scales";
 }
 
@@ -148,10 +157,20 @@ export function createSculptureScene(
   let selectedPart: string | null = null;
   let hiddenParts = new Set<string>();
   let autoRotate = false;
+  let reducedMotion = false;
+  let cameraTransition: {
+    from: CameraPose;
+    to: CameraPose;
+    started: number;
+  } | null = null;
+  let sourceScale = 1;
+  let sourceTransition: { from: number; to: number; started: number } | null =
+    null;
   let disposed = false;
   let foilSkin: FoilSkinController | null = null;
   let scaleSkin: ScaleSkinController | null = null;
   let scalePreview: ScalePreview | undefined;
+  let requestedScalePreview: ScalePreview | undefined;
   let sourceRoot: AbstractMesh | null = null;
   let originalRootScale = Vector3.One();
   let framedScaleStudy: ScalePreview["study"] | null = null;
@@ -184,7 +203,46 @@ export function createSculptureScene(
     }
   };
 
-  const fitCamera = (meshes: AbstractMesh[]) => {
+  const cameraPose = (): CameraPose => ({
+    alpha: camera.alpha,
+    beta: camera.beta,
+    radius: camera.radius,
+    target: [camera.target.x, camera.target.y, camera.target.z],
+  });
+  const applyPose = (pose: CameraPose) => {
+    camera.alpha = pose.alpha;
+    camera.beta = pose.beta;
+    camera.radius = pose.radius;
+    camera.target.set(...pose.target);
+  };
+  const clearInertia = () => {
+    camera.inertialAlphaOffset = camera.inertialBetaOffset = 0;
+    camera.inertialRadiusOffset =
+      camera.inertialPanningX =
+      camera.inertialPanningY =
+        0;
+  };
+  const moveCamera = (to: CameraPose, animate: boolean) => {
+    // Density/font changes with unchanged bounds must not stop an orbit, zoom
+    // inertia, or an existing animation already heading to the same framing.
+    if (sameCameraPose(to, cameraTransition?.to ?? cameraPose())) return;
+    clearInertia();
+    if (!animate || reducedMotion) {
+      cameraTransition = null;
+      applyPose(to);
+    } else
+      cameraTransition = { from: cameraPose(), to, started: performance.now() };
+  };
+  const updateSourceScale = (factor: number) => {
+    sourceScale = factor;
+    sourceRoot?.scaling.copyFrom(originalRootScale.scale(factor));
+    scaleSkin?.setModelScale(factor);
+  };
+  const fitCamera = (
+    meshes: readonly AbstractMesh[],
+    animate = false,
+    preserveView = false,
+  ) => {
     let minimum = new Vector3(
       Number.POSITIVE_INFINITY,
       Number.POSITIVE_INFINITY,
@@ -207,23 +265,41 @@ export function createSculptureScene(
     }
 
     if (!foundBounds) return;
+    const oldTarget = fittedTarget;
+    const oldRadius = fittedRadius;
     fittedTarget = minimum.add(maximum).scale(0.5);
     const size = maximum.subtract(minimum);
     fittedRadius = Math.max(size.x, size.y, size.z) * 1.42;
-    camera.target.copyFrom(fittedTarget);
-    camera.radius = fittedRadius;
-    camera.lowerRadiusLimit = fittedRadius * 0.18;
-    camera.upperRadiusLimit = fittedRadius * 3.2;
-    camera.minZ = Math.max(0.0001, fittedRadius / 1_000);
-    camera.maxZ = fittedRadius * 8;
+    const ratio = fittedRadius / oldRadius;
+    const view = cameraTransition?.to ?? cameraPose();
+    const target = preserveView
+      ? fittedTarget.add(
+          Vector3.FromArray(view.target).subtract(oldTarget).scale(ratio),
+        )
+      : fittedTarget;
+    const radius = preserveView ? view.radius * ratio : fittedRadius;
+    // Keep the whole animated path inside the clipping and interaction limits.
+    camera.lowerRadiusLimit = Math.min(
+      camera.radius,
+      radius,
+      fittedRadius * 0.18,
+    );
+    camera.upperRadiusLimit = Math.max(
+      camera.radius,
+      radius,
+      fittedRadius * 3.2,
+    );
+    camera.minZ = Math.max(0.0001, Math.min(oldRadius, fittedRadius) / 1_000);
+    camera.maxZ = Math.max(oldRadius, fittedRadius) * 8;
+    moveCamera(
+      { ...cameraPose(), radius, target: [target.x, target.y, target.z] },
+      animate,
+    );
   };
 
   const applyCameraView = () => {
-    camera.inertialAlphaOffset = 0;
-    camera.inertialBetaOffset = 0;
-    camera.inertialRadiusOffset = 0;
-    camera.inertialPanningX = 0;
-    camera.inertialPanningY = 0;
+    clearInertia();
+    cameraTransition = null;
     if (readingView && foilSkin) {
       const view = inscriptionView(foilSkin.getReadingMesh());
       camera.lowerRadiusLimit = 8;
@@ -233,29 +309,66 @@ export function createSculptureScene(
     } else {
       camera.lowerRadiusLimit = fittedRadius * 0.18;
       camera.upVector = Vector3.Up();
-      camera.alpha = START_ALPHA;
-      camera.beta = START_BETA;
-      camera.radius = fittedRadius;
-      camera.target.copyFrom(fittedTarget);
+      moveCamera(
+        {
+          alpha: START_ALPHA,
+          beta: START_BETA,
+          radius: fittedRadius,
+          target: [fittedTarget.x, fittedTarget.y, fittedTarget.z],
+        },
+        true,
+      );
     }
   };
 
-  const applyScalePreview = () => {
-    if (!scaleSkin || !scalePreview || !sourceRoot) return;
+  const applyScalePreview = (preview: ScalePreview) => {
+    if (!scaleSkin || !sourceRoot) return;
+    scalePreview = preview;
     const factor =
       scalePreview.study.modelId === "maquette"
         ? 1
         : (scalePreview.study.modelScale ?? 1);
-    sourceRoot.scaling.copyFrom(originalRootScale.scale(factor));
+    // This callback runs only after a skin commits, never for a queued request.
+    const previousSourceScale = sourceScale;
+    const previousModel = framedScaleStudy?.modelId;
+    const changedStudy = framedScaleStudy !== scalePreview.study;
+    updateSourceScale(changedStudy ? factor : sourceScale);
     for (const [part, meshes] of meshesByPart)
       for (const mesh of meshes) mesh.setEnabled(partVisible(part));
-    scaleSkin.update(scalePreview);
-    if (framedScaleStudy !== scalePreview.study) {
-      fitCamera(scene.meshes.filter((mesh) => mesh.isEnabled()));
+    if (changedStudy) {
+      // Exclude fading-out skins when measuring the new model's bounds.
+      const hardware = [...meshesByPart.values()]
+        .flat()
+        .filter((mesh) => mesh.isEnabled());
+      fitCamera(
+        [...scaleSkin.getMeshes(), ...hardware],
+        Boolean(framedScaleStudy),
+        previousModel === scalePreview.study.modelId,
+      );
       framedScaleStudy = scalePreview.study;
     }
+    if (
+      changedStudy &&
+      previousModel &&
+      !reducedMotion &&
+      previousSourceScale !== factor
+    ) {
+      sourceTransition = {
+        from: previousSourceScale,
+        to: factor,
+        started: performance.now(),
+      };
+      updateSourceScale(previousSourceScale);
+    } else if (changedStudy) sourceTransition = null;
+    options.onScalePreviewReady?.(scalePreview);
   };
 
+  const cancelCameraTransition = () => {
+    cameraTransition = null;
+  };
+  canvas.addEventListener("pointerdown", cancelCameraTransition);
+  canvas.addEventListener("wheel", cancelCameraTransition, { passive: true });
+  canvas.addEventListener("keydown", cancelCameraTransition);
   scene.onPointerObservable.add((pointerInfo) => {
     if (pointerInfo.type !== PointerEventTypes.POINTERPICK) return;
     const part = partForMesh(pointerInfo.pickInfo?.pickedMesh ?? null);
@@ -263,7 +376,27 @@ export function createSculptureScene(
   });
 
   scene.onBeforeRenderObservable.add(() => {
-    if (autoRotate) camera.alpha += engine.getDeltaTime() * 0.00012;
+    const now = performance.now();
+    if (cameraTransition) {
+      const amount = transitionProgress(cameraTransition.started, now, 420);
+      applyPose(
+        interpolateCameraPose(
+          cameraTransition.from,
+          cameraTransition.to,
+          amount,
+        ),
+      );
+      if (amount === 1) cameraTransition = null;
+    } else if (autoRotate && !reducedMotion)
+      camera.alpha += Math.min(engine.getDeltaTime(), 64) * 0.00012;
+    if (sourceTransition) {
+      const amount = transitionProgress(sourceTransition.started, now, 320);
+      updateSourceScale(
+        sourceTransition.from +
+          (sourceTransition.to - sourceTransition.from) * amount,
+      );
+      if (amount === 1) sourceTransition = null;
+    }
   });
 
   const render = () => {
@@ -309,9 +442,19 @@ export function createSculptureScene(
       scene.environmentIntensity = 0.85;
       sourceRoot = meshes[0] ?? null;
       originalRootScale = sourceRoot?.scaling.clone() ?? Vector3.One();
-      scaleSkin = createScaleSkin(scene, meshes[0] ?? null);
+      scaleSkin = createScaleSkin(scene, meshes[0] ?? null, {
+        onCommit: applyScalePreview,
+        onError: (preview, error) =>
+          options.onScalePreviewError?.(
+            preview,
+            error instanceof Error
+              ? error.message
+              : "The scales could not be updated.",
+          ),
+      });
       scaleSkin.setWireframe(wireframe);
-      applyScalePreview();
+      scaleSkin.setReducedMotion(reducedMotion);
+      if (requestedScalePreview) scaleSkin.update(requestedScalePreview);
     }
     if (foilEdition) {
       const { createFoilSkin } = await import("./foil-skin");
@@ -371,8 +514,20 @@ export function createSculptureScene(
       applyCameraView();
     },
     setScalePreview(preview) {
-      scalePreview = preview;
-      applyScalePreview();
+      requestedScalePreview = preview;
+      scaleSkin?.update(preview);
+    },
+    setReducedMotion(enabled) {
+      reducedMotion = enabled;
+      scaleSkin?.setReducedMotion(enabled);
+      if (enabled && cameraTransition) {
+        applyPose(cameraTransition.to);
+        cameraTransition = null;
+      }
+      if (enabled && sourceTransition) {
+        updateSourceScale(sourceTransition.to);
+        sourceTransition = null;
+      }
     },
     resetCamera() {
       readingView = false;
@@ -385,6 +540,11 @@ export function createSculptureScene(
       if (disposed) return;
       disposed = true;
       visibilityObserver?.disconnect();
+      cameraTransition = sourceTransition = null;
+      requestedScalePreview = undefined;
+      canvas.removeEventListener("pointerdown", cancelCameraTransition);
+      canvas.removeEventListener("wheel", cancelCameraTransition);
+      canvas.removeEventListener("keydown", cancelCameraTransition);
       camera.detachControl();
       engine.stopRenderLoop();
       scaleSkin?.dispose();

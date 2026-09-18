@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "9d482d76c0cdbf1f1abec9cdcdfd2cb3440e60b9",
+  "sourceCommit": "5f039f17e24b7f5128fdc1a7453f1cae9541c198",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -115,8 +115,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 31016,
-      "sha256": "99b2d86c7e1c55cae4e6a7966147ed5fe5388d1b6b9b4ce4bcb535bf2e13b845"
+      "bytes": 31202,
+      "sha256": "25f323d16c8fdaa9434ca5e7cad6bc7092274672b45ce3508317fb94e6819097"
     },
     {
       "path": "REUSE.md",
@@ -205,8 +205,8 @@
     },
     {
       "path": "docs/scale-studio.md",
-      "bytes": 6904,
-      "sha256": "415951b555b3022ae308cf3c2678d31f3d9420c59893d35b1be2c1435f57c383"
+      "bytes": 9194,
+      "sha256": "3e2e3cab735f87b686d598e5cc04bfed8f6ff9065f82637d16cea18d4aaf1c83"
     },
     {
       "path": "index.html",
@@ -5375,13 +5375,23 @@
     },
     {
       "path": "shared/scale-design.test.ts",
-      "bytes": 3837,
-      "sha256": "8f58b1f92f85d4961dda8a0a7d6985beeb40e0678215365ca62c80c4e66016ce"
+      "bytes": 7905,
+      "sha256": "db79724df0e74d14073a70cb1187e33426e7f7dcfde57b1e7914beb844219a28"
     },
     {
       "path": "shared/scale-design.ts",
-      "bytes": 5573,
-      "sha256": "0b5a7298df823d4ca2a885974b35aa262e58fd12af74f39a091044aef2d5ae48"
+      "bytes": 9890,
+      "sha256": "2c4b934302312e92d179a4fa3b9828e518957e80ae2521970a901947048ada93"
+    },
+    {
+      "path": "shared/scale-history.test.ts",
+      "bytes": 3922,
+      "sha256": "ed4ba18c1cec637a1e957e89f9f98b88492f79c17ea95fde015669a25d4f82d6"
+    },
+    {
+      "path": "shared/scale-history.ts",
+      "bytes": 3626,
+      "sha256": "801d3229dca34305dd9a3067e30df506ae8be1226eed1a6efa685848f31e089c"
     },
     {
       "path": "shared/scale-lettering.test.ts",
@@ -5442,6 +5452,16 @@
       "path": "shared/scale-surface.ts",
       "bytes": 12947,
       "sha256": "a651f3a814affd0e503381d9f5371d501248b67725da875bcfababfa159ce7b4"
+    },
+    {
+      "path": "shared/scale-versions.test.ts",
+      "bytes": 5485,
+      "sha256": "51677cf082ecd7c69bc67b0166ab6cde7c0b688bb1f67ae2c9b55654a7465287"
+    },
+    {
+      "path": "shared/scale-versions.ts",
+      "bytes": 5746,
+      "sha256": "097f9260208cce90fd4c265a19409a06b3f6a74ba83f3248eee8877e163b24f4"
     },
     {
       "path": "shared/script-metrics.test.ts",
@@ -5664,9 +5684,14 @@
       "sha256": "6cfc11f0d8aa0006e257c75da43c27b2ec25b4a9484fc02f26f4ae2e0b63dd0b"
     },
     {
+      "path": "src/components/scale-version-browser.tsx",
+      "bytes": 5337,
+      "sha256": "1eb24501d4898e3c9a125af23e3f517b9b3bb531b68d4e016977f3a74b44f490"
+    },
+    {
       "path": "src/components/sculpture-viewer.tsx",
-      "bytes": 7263,
-      "sha256": "eb7b11c6862db306ecacbcfd56b4a34c2e5c6a10c8c9f9faafede31bb85720a6"
+      "bytes": 9713,
+      "sha256": "3d8f443eccfaa82ff8f2505e77a9f880a740834d8c6bd367b76d0a3bf6c43fde"
     },
     {
       "path": "src/components/ui/badge.tsx",
@@ -5794,19 +5819,39 @@
       "sha256": "b8d9a4de9d1297d96cf3e2b06d019ef64ec4873e0837d4fe4f2d32ec44482e18"
     },
     {
+      "path": "src/lib/scale-preview-readiness.test.ts",
+      "bytes": 2032,
+      "sha256": "cd651849edacf885ea8229e769e1c9bb2268e9012df439a509871dcc4433f065"
+    },
+    {
+      "path": "src/lib/scale-preview-readiness.ts",
+      "bytes": 940,
+      "sha256": "ea2682ecad5c74a673b96e4ac907eb4052202bf76a074faf44e71f0191f8daeb"
+    },
+    {
       "path": "src/lib/scale-remapping.test.ts",
       "bytes": 6919,
       "sha256": "b4b21a39057e5a6f2e38955d67479eece2118bc5957e067628e3c4da7e300136"
     },
     {
       "path": "src/lib/scale-skin.test.ts",
-      "bytes": 9248,
-      "sha256": "b2f51ab04f8dc738ebb2503c8b05ab435b9f7d2eda7a79a88db6b080a1c16872"
+      "bytes": 16094,
+      "sha256": "4127bd84e71d6f76caaaa776430bb7f72abd2dd2393b89a777937466a5447a24"
     },
     {
       "path": "src/lib/scale-skin.ts",
-      "bytes": 8233,
-      "sha256": "9c90fcdcc3571385e37909efb32fd0a0c88531daf6432d58cde1632ecb84cc1e"
+      "bytes": 12457,
+      "sha256": "4a1a1cd7b03e5ef4cd9b21f42532f2312db8e7f37db79c8327c0c761d683bf0e"
+    },
+    {
+      "path": "src/lib/scale-study-cache.test.ts",
+      "bytes": 2231,
+      "sha256": "ba17d1cfcb5aa8f684ca051b5bb17ef5581587addeb1f3cabe2936f55eda2121"
+    },
+    {
+      "path": "src/lib/scale-study-cache.ts",
+      "bytes": 2756,
+      "sha256": "6a7ebb0ccedd5bbb244397d5208bb4bc5b20f7d2c7166762ed4a8b3f7bad4d54"
     },
     {
       "path": "src/lib/scale-study.worker.test.ts",
@@ -5829,9 +5874,19 @@
       "sha256": "cb3ee031890c9c34b496552422433548940f4c7918bebc4bbf0a8390edd7f539"
     },
     {
+      "path": "src/lib/scene-transition.test.ts",
+      "bytes": 2210,
+      "sha256": "51eb77622a9aefa902f648fa92b10a8e7e09a8fd1e2a0e9e90bed4c8d8c6915c"
+    },
+    {
+      "path": "src/lib/scene-transition.ts",
+      "bytes": 1712,
+      "sha256": "aa87480aad71264f805e1b14cfb56d32d536aa32e6810bfab48e040b26006293"
+    },
+    {
       "path": "src/lib/sculpture-scene.ts",
-      "bytes": 12766,
-      "sha256": "a88b7b31538f0bd946c913320b66bb11904c9f4cc87f70b9655a0479dd60ec5c"
+      "bytes": 18226,
+      "sha256": "0e535bae430c119b66ea2b34f553fb49f5cc7a5f5a0ecf5c0bb7197d2745d51a"
     },
     {
       "path": "src/lib/studio-reflection.ts",
@@ -5840,8 +5895,8 @@
     },
     {
       "path": "src/lib/use-scale-study.ts",
-      "bytes": 4791,
-      "sha256": "21aea21ea90ea5e58e10a1819d31182a1412b2169bbf0a632ecc7e254e4ac751"
+      "bytes": 5382,
+      "sha256": "58d83a85333248243ccde5b28f32426d0b9eb21dd0a3ed6cab2716d6d3bebbc7"
     },
     {
       "path": "src/lib/utils.ts",
@@ -5965,8 +6020,8 @@
     },
     {
       "path": "src/pages/scales.tsx",
-      "bytes": 54178,
-      "sha256": "47a45432fb255cca5f7bf771d4e5aa54c1adfc0997f8e7657e9f1ad73c37d2bd"
+      "bytes": 61980,
+      "sha256": "d82e737321d5ecb7741f0df4f059529eea1a54e2463e244e9e650498c226e7de"
     },
     {
       "path": "src/pages/six-foot.tsx",
@@ -6005,8 +6060,8 @@
     },
     {
       "path": "src/scales.css",
-      "bytes": 11790,
-      "sha256": "05c97abfc6cc4686a28ae0ed8556e7791f2a515beb43ad4a1c84f83feb8fff79"
+      "bytes": 14315,
+      "sha256": "e777d42b18d364963b59a06a1a987993a57180b7cebf8809623d9ce93041dc61"
     },
     {
       "path": "src/site-guide.css",
