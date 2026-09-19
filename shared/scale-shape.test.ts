@@ -35,6 +35,7 @@ describe("convex scale silhouettes", () => {
       }),
     ).toEqual({
       plateShape: "diamond",
+      plateFit: "inset",
       plateAspect: 2.5,
       cornerCut: 0,
       plateTaper: -0.4,

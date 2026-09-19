@@ -318,3 +318,131 @@ describe("physical scale density", () => {
     }
   });
 });
+
+describe("body proportions persistence and density", () => {
+  test("old geometry and adaptive anchors import as identity proportions", () => {
+    const geometry = { ...DEFAULT_SCALE_DESIGN.geometry } as Record<
+      string,
+      unknown
+    >;
+    delete geometry.bodyWidthScale;
+    delete geometry.bodyDepthScale;
+    const imported = normalizeScaleDesign({
+      ...DEFAULT_SCALE_DESIGN,
+      geometry,
+      densityMode: "adaptive",
+      densityReference: {
+        modelId: "archival",
+        modelScale: 1,
+        columns: 31,
+        rows: 3,
+      },
+    });
+    expect(imported.geometry.bodyWidthScale).toBe(1);
+    expect(imported.geometry.bodyDepthScale).toBe(1);
+    expect(imported.geometry.columns).toBe(31);
+    expect(imported.geometry.rows).toBe(3);
+  });
+
+  test("body edits round trip and change adaptive girth targets without column drift", () => {
+    const initial = setScaleDensityMode(
+      normalizeScaleDesign({
+        ...DEFAULT_SCALE_DESIGN,
+        geometry: { ...DEFAULT_SCALE_DESIGN.geometry, columns: 31, rows: 3 },
+      }),
+      "adaptive",
+    );
+    const changed = normalizeScaleDesign({
+      ...initial,
+      geometry: { ...initial.geometry, bodyWidthScale: 2, bodyDepthScale: 2 },
+    });
+    expect(changed.geometry.columns).toBe(31);
+    expect(changed.geometry.rows).toBe(6);
+    expect(scaleDensityStatus(changed).requestedRows).toBe(6);
+    expect(normalizeScaleDesign(JSON.parse(JSON.stringify(changed)))).toEqual(
+      changed,
+    );
+    let cycled = changed;
+    for (const factor of [0.5, 1.7, 2, 1]) {
+      cycled = normalizeScaleDesign({
+        ...cycled,
+        geometry: {
+          ...cycled.geometry,
+          bodyWidthScale: factor,
+          bodyDepthScale: factor,
+        },
+      });
+    }
+    expect(cycled).toEqual(initial);
+    const widthOnly = normalizeScaleDesign({
+      ...initial,
+      geometry: { ...initial.geometry, bodyWidthScale: 2 },
+    });
+    expect(widthOnly.geometry.rows).toBeGreaterThan(initial.geometry.rows);
+    expect(widthOnly.geometry.rows).toBeLessThan(changed.geometry.rows);
+  });
+
+  test("adaptive anchors retain edited proportions through size changes", () => {
+    const initial = setScaleDensityMode(
+      normalizeScaleDesign({
+        ...DEFAULT_SCALE_DESIGN,
+        geometry: {
+          ...DEFAULT_SCALE_DESIGN.geometry,
+          columns: 20,
+          rows: 3,
+          bodyWidthScale: 1.4,
+          bodyDepthScale: 0.8,
+        },
+      }),
+      "adaptive",
+    );
+    expect(initial.densityReference?.bodyWidthScale).toBe(1.4);
+    expect(initial.densityReference?.bodyDepthScale).toBe(0.8);
+    const doubled = resizeScaleDesign(initial, 2);
+    expect(doubled.geometry.columns).toBe(40);
+    expect(doubled.geometry.rows).toBe(6);
+    expect(
+      resizeScaleDesign(
+        normalizeScaleDesign(JSON.parse(JSON.stringify(doubled))),
+        1,
+      ),
+    ).toEqual(initial);
+  });
+});
+
+test("cover and inset studies round trip without silently changing old tuned geometry", () => {
+  for (const plateFit of ["cover", "inset"] as const) {
+    const original = normalizeScaleDesign({
+      ...DEFAULT_SCALE_DESIGN,
+      geometry: {
+        ...DEFAULT_SCALE_DESIGN.geometry,
+        plateFit,
+        gap: 0.19,
+        variation: 0.71,
+        bodyWidthScale: 1.6,
+        bodyDepthScale: 0.9,
+        relief: 0.82,
+      },
+      text: "Keep exact lettering.",
+      fontId: "serif",
+      fontSizeMm: 18,
+    });
+    expect(normalizeScaleDesign(JSON.parse(JSON.stringify(original)))).toEqual(
+      original,
+    );
+    expect(resizeScaleDesign(original, 2).geometry.plateFit).toBe(plateFit);
+    const oldGeometry = { ...original.geometry } as Record<string, unknown>;
+    delete oldGeometry.plateFit;
+    const restored = normalizeScaleDesign({
+      ...original,
+      geometry: oldGeometry,
+    });
+    expect(restored.geometry).toEqual({
+      ...original.geometry,
+      plateFit: "inset",
+    });
+    expect(restored.text).toBe(original.text);
+    expect(restored.fontSizeMm).toBe(18);
+    expect(restored.layers).toEqual(original.layers);
+  }
+});

@@ -15,6 +15,9 @@ export function scaleStudyCacheKey(
   return JSON.stringify(entries);
 }
 
+/** Close-set archival studies are ~37 MiB; two must remain for body-edit revisits. */
+export const MAX_SCALE_STUDY_CACHE_BYTES = 96 * 1024 * 1024;
+
 /** Conservative JS-array estimate; both entry count and retained size are bounded. */
 export function estimateScaleStudyBytes(study: ScaleStudy): number {
   let numbers =
@@ -41,7 +44,7 @@ export class ScaleStudyCache {
 
   constructor(
     private readonly maxEntries = 4,
-    private readonly maxBytes = 64 * 1024 * 1024,
+    private readonly maxBytes = MAX_SCALE_STUDY_CACHE_BYTES,
   ) {
     if (
       !Number.isInteger(maxEntries) ||

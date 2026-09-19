@@ -5,12 +5,14 @@
       "**",
       "!source",
       "!dist",
+      "!artifacts",
       "!node_modules",
       "!bun.lock",
       "!public/fabrication",
       "!public/guide",
       "!shared/print-manifest.json",
       "!shared/scale-maquette.json",
+      "!shared/scale-maquette-body.json",
       "!src/components/ui"
     ]
   },

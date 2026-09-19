@@ -4,6 +4,7 @@ import {
   scalePlateOutline,
 } from "../../shared/scale-shape";
 import type { ScaleStudySettings } from "../../shared/scale-study";
+import { DEFAULT_SCALE_STUDY_SETTINGS } from "../../shared/scale-study";
 
 const SHAPES = [
   ["clipped", "Wood plates"],
@@ -63,6 +64,7 @@ export function ScaleShapeControls({
   onChange: (patch: Partial<ScaleStudySettings>) => void;
 }) {
   const followingCell = settings.plateAspect === 0;
+  const covering = settings.plateFit === "cover";
   const factor = unit === "mm" ? 25.4 : 1;
   return (
     <section
@@ -73,6 +75,35 @@ export function ScaleShapeControls({
         <span>OUTLINE & PROPORTIONS</span>
         <h2 id="scales-outline-title">Scale shape</h2>
       </div>
+      <fieldset
+        className="scales-coverage-options"
+        aria-label="Plate coverage layout"
+      >
+        <legend>Fit the surface</legend>
+        {(
+          [
+            ["cover", "Close-set coverage"],
+            ["inset", "Inset plates"],
+          ] as const
+        ).map(([plateFit, label]) => (
+          <label key={plateFit} htmlFor={`scales-plate-fit-${plateFit}`}>
+            <input
+              id={`scales-plate-fit-${plateFit}`}
+              type="radio"
+              name="scales-plate-fit"
+              value={plateFit}
+              checked={settings.plateFit === plateFit}
+              onChange={() => onChange({ plateFit })}
+            />
+            {label}
+          </label>
+        ))}
+      </fieldset>
+      <p className="scales-help">
+        {covering
+          ? "Coverage balances courses within your requested plate budget and fills each cell. The width / height ratio is an approximate physical target; bends and integer course counts can change individual faces."
+          : "Inset plates fit the selected physical ratio inside each surface cell. This preserves the earlier layout; narrow or wide ratios can leave large gaps."}
+      </p>
       <fieldset className="scales-shape-options" aria-label="Plate outline">
         {SHAPES.map(([plateShape, label]) => {
           const outline = scalePlateOutline(
@@ -117,7 +148,9 @@ export function ScaleShapeControls({
       </fieldset>
       <ShapeRange
         id="scales-plate-aspect"
-        label="Plate width / height"
+        label={
+          covering ? "Target plate width / height" : "Plate width / height"
+        }
         value={
           followingCell ? DEFAULT_SCALE_SHAPE.plateAspect : settings.plateAspect
         }
@@ -127,7 +160,9 @@ export function ScaleShapeControls({
         disabled={followingCell}
         display={
           followingCell
-            ? "follows each surface cell"
+            ? covering
+              ? "automatically balanced courses"
+              : "follows each surface cell"
             : `${settings.plateAspect.toFixed(2)} : 1`
         }
         onChange={(plateAspect) => onChange({ plateAspect })}
@@ -145,7 +180,9 @@ export function ScaleShapeControls({
             })
           }
         />
-        Follow the surface cell proportions
+        {covering
+          ? "Use automatic course proportions"
+          : "Follow the surface cell proportions"}
       </label>
       <ShapeRange
         id="scales-corner-cut"
@@ -178,7 +215,7 @@ export function ScaleShapeControls({
       />
       <ShapeRange
         id="scales-shape-relief"
-        label="Raised plate depth"
+        label="Raised plate depth / bulk"
         value={settings.relief * factor}
         min={0}
         max={6 * factor}
@@ -200,24 +237,39 @@ export function ScaleShapeControls({
         id="scales-reference-shape"
         type="button"
         className="scales-reference-shape"
-        onClick={() => onChange({ ...DEFAULT_SCALE_SHAPE })}
+        onClick={() =>
+          onChange({
+            ...DEFAULT_SCALE_SHAPE,
+            gap: DEFAULT_SCALE_STUDY_SETTINGS.gap,
+            variation: DEFAULT_SCALE_STUDY_SETTINGS.variation,
+            columns: DEFAULT_SCALE_STUDY_SETTINGS.columns,
+            rows: DEFAULT_SCALE_STUDY_SETTINGS.rows,
+          })
+        }
       >
-        Use reference plate shape
+        Apply photo-reference plates
       </button>
       <p className="scales-help">
         The photographs suggest chunky short rectangles and trapezoids with
         clipped corners. The starting 1.3 : 1 ratio is an adjustable visual
         interpretation of those faces; the photographs are not calibrated
         measurements. Changing the shape remaps your lettering. The reference
-        button keeps your size, depth, layers, and words.
+        button applies close-set coverage and reference density, gap, and
+        irregularity. It keeps your body proportions, physical size, depth,
+        layers, font, and words.
+      </p>
+      <p className="scales-help">
+        Raised depth controls the generated plate relief; it is not a uniform
+        stock-thickness measurement. Curved areas may need less relief to keep
+        their geometry valid.
       </p>
       <p className="scales-help">
         Words are fitted in reading order using measured letters and each
         plate’s safe writing area. Recalculation happens locally without AI.
       </p>
       <p className="scales-help">
-        The ratio fits each plate inside its surface cell. Extreme ratios can
-        open larger gaps; adjust the pattern density to fill out the surface.
+        Smaller corner cuts, taper, and gaps leave more of the body covered.
+        Diamonds and large corner cuts intentionally expose more underneath.
       </p>
     </section>
   );

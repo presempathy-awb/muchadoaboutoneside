@@ -22,6 +22,8 @@ interface ScaleBuildUpPanelProps {
   study: ScaleStudy | null;
   reliefInches: number;
   modelScale?: number;
+  bodyWidthScale?: number;
+  bodyDepthScale?: number;
   modelId?: ScaleModelId;
   pending?: boolean;
 }
@@ -39,6 +41,8 @@ export function ScaleBuildUpPanel({
   study,
   reliefInches,
   modelScale = 1,
+  bodyWidthScale = 1,
+  bodyDepthScale = 1,
   modelId = "archival",
   pending = false,
 }: ScaleBuildUpPanelProps) {
@@ -46,8 +50,23 @@ export function ScaleBuildUpPanel({
   const [sectionId, setSectionId] = useState(widestSection.id);
   const [unit, setUnit] = useState<"in" | "mm">("in");
   const stages = useMemo(
-    () => scaleSectionMeasurements(sectionId, layers, reliefInches, modelScale),
-    [sectionId, layers, reliefInches, modelScale],
+    () =>
+      scaleSectionMeasurements(
+        sectionId,
+        layers,
+        reliefInches,
+        modelScale,
+        bodyWidthScale,
+        bodyDepthScale,
+      ),
+    [
+      sectionId,
+      layers,
+      reliefInches,
+      modelScale,
+      bodyWidthScale,
+      bodyDepthScale,
+    ],
   );
   const bounds = useMemo(
     () =>
@@ -261,26 +280,26 @@ export function ScaleBuildUpPanel({
           <p className="scale-build-up-note">
             Width U and depth V follow the selected ring’s local axes, not the
             whole sculpture’s orientation. Girth integrates an ellipse fitted to
-            its two source semiaxes, enlarged by the listed allowances. The
-            maximum raised face height overstates sections with shorter scales
-            or local clearance adjustments. Gaps, steps, fasteners, and edge
-            details make a real tape measurement different; check those on the
-            physical work.
+            its two source semiaxes, adjusted by the body proportions before
+            adding the listed physical allowances. The maximum raised face
+            height overstates sections with shorter scales or local clearance
+            adjustments. Gaps, steps, fasteners, and edge details make a real
+            tape measurement different; check those on the physical work.
           </p>
         </>
       ) : (
         <p className="scale-build-up-note">
-          This model uses the actual solid maquette mesh, with its joined
-          crossings and integrated plinth. Its cross-sections differ from the
-          archival ribs, so the archival ellipse and girth table do not apply.
-          Compare the measured mesh bounds below, then check local girth and
-          printed joint fit on the physical model.
+          This preview deforms the source maquette mesh while retaining its
+          joined crossings and integrated plinth. Its cross-sections differ from
+          the archival ribs, so the archival ellipse and girth table do not
+          apply. Compare the measured mesh bounds below, then check local girth
+          and printed joint fit on the physical model.
         </p>
       )}
 
       <details>
         <summary>
-          Compare whole-model dimensions before and after scaling
+          Compare historical source and generated preview dimensions
         </summary>
         <dl className="scale-build-up-bounds">
           <div>
@@ -294,8 +313,8 @@ export function ScaleBuildUpPanel({
           <div>
             <dt>
               {modelId === "maquette"
-                ? "Solid print maquette at the selected size, including plinth"
-                : "Archived model at the selected size, including base"}
+                ? "Historical print source at selected size, before body changes"
+                : "Historical archive at selected size, before body changes"}
             </dt>
             <dd>
               {dimensions(scaledModelDimensions(modelId, appliedModelScale))}
@@ -304,8 +323,8 @@ export function ScaleBuildUpPanel({
           <div>
             <dt>
               {modelId === "maquette"
-                ? "Loaded solid maquette mesh before added layers"
-                : "Resized source-derived skin alone, without added allowance"}
+                ? "Generated maquette preview with body changes, before layers"
+                : "Generated body and jaw with body changes, before layers"}
             </dt>
             <dd>
               {bounds?.source
@@ -337,11 +356,11 @@ export function ScaleBuildUpPanel({
           </p>
         ) : (
           <p className="scale-build-up-note">
-            The loaded mesh bounds come from the actual print solid at its
-            current size. Plate bounds include only generated cladding and
-            sidewalls; neither a shipping envelope nor a verified fit of the
-            added layers is implied. Resizing the solid does not re-engineer its
-            wall thickness or validate a larger printed or wood construction.
+            Generated mesh bounds describe the current deformed preview; the
+            original STL is unchanged. Plate bounds include only cladding and
+            sidewalls. These dimensions do not certify fabrication, wall
+            thickness, joint fit, or a shipping envelope. Check the proposed
+            printed or wood construction physically before building.
           </p>
         )}
       </details>

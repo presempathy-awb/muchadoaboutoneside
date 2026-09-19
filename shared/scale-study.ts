@@ -28,8 +28,12 @@ export interface ScaleStudySettings extends ScaleShapeSettings {
   modelId: "archival" | "maquette";
   /** Uniform physical size of the frame; stock thickness stays in real inches. */
   modelScale: number;
-  /** Number of plates around the body's reading loop; jaw density follows it. */
+  /** Local rib semiaxes; centerline and physical stock thickness stay fixed. */
+  bodyWidthScale: number;
+  bodyDepthScale: number;
+  /** Longitudinal density target; cover redistributes columns × rows cells. */
   columns: number;
+  /** Course density target; cover selects physical aspect with the same budget. */
   rows: number;
   /** Empty space around each plate, as a fraction of its cell. */
   gap: number;
@@ -72,6 +76,9 @@ export interface ScaleStudy {
   unletterablePlateCount?: number;
   modelId: "archival" | "maquette";
   modelScale: number;
+  bodyWidthScale?: number;
+  bodyDepthScale?: number;
+  bareSourceBounds?: { width: number; height: number; depth: number };
   /** Actual substrate mesh when a source adapter supplies one, in real inches. */
   sourceGeometry?: { positions: number[]; indices: number[] };
   plates: ScalePlate[];
@@ -83,20 +90,22 @@ export interface ScaleStudy {
 export const DEFAULT_SCALE_STUDY_SETTINGS: ScaleStudySettings = {
   modelId: "archival",
   modelScale: 1,
-  columns: 120,
+  bodyWidthScale: 1,
+  bodyDepthScale: 1,
+  columns: 100,
   rows: 4,
-  gap: 0.12,
+  gap: 0.02,
   relief: 1.05,
   ...DEFAULT_SCALE_SHAPE,
   supportOffsetInches: 1,
   surfaceMode: "conforming",
-  variation: 0.6,
+  variation: 0.3,
   seed: 1,
 };
 
 const MIN_COLUMNS = 4;
 const MAX_COLUMNS = 240;
-const MIN_ROWS = 2;
+const MIN_ROWS = 1;
 const MAX_ROWS = 12;
 const MAX_PLATES_PER_SURFACE = 600;
 const V_GUTTER = 0.055;
@@ -124,7 +133,7 @@ export function normalizeScaleStudySettings(
   );
   const requestedRows = clamp(
     Math.round(finiteNumber(candidate.rows, DEFAULT_SCALE_STUDY_SETTINGS.rows)),
-    MIN_ROWS,
+    candidate.plateFit === "cover" ? MIN_ROWS : 2,
     MAX_ROWS,
   );
   return {
@@ -138,6 +147,8 @@ export function normalizeScaleStudySettings(
       0.02,
       30,
     ),
+    bodyWidthScale: clamp(finiteNumber(candidate.bodyWidthScale, 1), 0.5, 2),
+    bodyDepthScale: clamp(finiteNumber(candidate.bodyDepthScale, 1), 0.5, 2),
     columns,
     rows: Math.min(requestedRows, Math.floor(MAX_PLATES_PER_SURFACE / columns)),
     gap: clamp(
@@ -170,16 +181,122 @@ export function normalizeScaleStudySettings(
   };
 }
 
+/** Keep the current object's field order when only some normalized values change. */
+export function mergeScaleStudySettings(
+  current: ScaleStudySettings,
+  next: ScaleStudySettings,
+): ScaleStudySettings {
+  return (Object.keys(next) as (keyof ScaleStudySettings)[]).every((key) =>
+    Object.is(current[key], next[key]),
+  )
+    ? current
+    : { ...current, ...next };
+}
+
 let referenceGeometry:
   | { bare: FoilGeometry; unitAllowance: FoilGeometry }
   | undefined;
 
-function scaleReferenceGeometry() {
+const radialReferenceCache = new Map<
+  string,
+  { bare: FoilGeometry; unitAllowance: FoilGeometry }
+>();
+
+/** Derive the local radial basis from the unchanged historical mesh meridians. */
+function deformReferenceMesh(
+  mesh: FoilMeshGeometry,
+  widthScale: number,
+  depthScale: number,
+): FoilMeshGeometry {
+  const positions = mesh.positions.map((value, index) => {
+    const vertex = Math.floor(index / 3);
+    const row = Math.floor(vertex / mesh.verticesPerMeridian);
+    const column = vertex % mesh.verticesPerMeridian;
+    const axis = index % 3;
+    const first = mesh.positions[column * 3 + axis] ?? 0;
+    const last =
+      mesh.positions[
+        (mesh.meridianCount * mesh.verticesPerMeridian + column) * 3 + axis
+      ] ?? 0;
+    const middle =
+      mesh.positions[
+        (Math.floor(mesh.meridianCount / 2) * mesh.verticesPerMeridian +
+          column) *
+          3 +
+          axis
+      ] ?? 0;
+    const center = (first + last) / 2;
+    const angle = (row / mesh.meridianCount) * Math.PI;
+    const across = Math.cos(angle);
+    const depth = row === 0 || row === mesh.meridianCount ? 0 : Math.sin(angle);
+    return (
+      value +
+      ((first - last) / 2) * (widthScale - 1) * across +
+      (middle - center) * (depthScale - 1) * depth
+    );
+  });
+  return { ...mesh, positions };
+}
+
+function scaleReferenceGeometry(bodyWidthScale = 1, bodyDepthScale = 1) {
   referenceGeometry ??= {
     bare: generateFoilGeometry({ radiusOffsetInches: 0 }),
     unitAllowance: generateFoilGeometry({ radiusOffsetInches: 1 }),
   };
-  return referenceGeometry;
+  if (bodyWidthScale === 1 && bodyDepthScale === 1) return referenceGeometry;
+  const key = `${bodyWidthScale}:${bodyDepthScale}`;
+  const cached = radialReferenceCache.get(key);
+  if (cached) return cached;
+  const bare = {
+    ...deformReferenceMesh(
+      referenceGeometry.bare,
+      bodyWidthScale,
+      bodyDepthScale,
+    ),
+    jawGeometry: deformReferenceMesh(
+      referenceGeometry.bare.jawGeometry,
+      bodyWidthScale,
+      bodyDepthScale,
+    ),
+  };
+  // Keep the generator's exact one-inch allowance direction: real stock is not
+  // multiplied by either radial dimension factor.
+  function allowance(
+    mesh: FoilMeshGeometry,
+    original: FoilMeshGeometry,
+    supported: FoilMeshGeometry,
+  ) {
+    return {
+      ...mesh,
+      positions: mesh.positions.map(
+        (value, index) =>
+          value +
+          ((supported.positions[index] ?? 0) -
+            (original.positions[index] ?? 0)),
+      ),
+    };
+  }
+  const generated = {
+    bare,
+    unitAllowance: {
+      ...allowance(
+        bare,
+        referenceGeometry.bare,
+        referenceGeometry.unitAllowance,
+      ),
+      jawGeometry: allowance(
+        bare.jawGeometry,
+        referenceGeometry.bare.jawGeometry,
+        referenceGeometry.unitAllowance.jawGeometry,
+      ),
+    },
+  };
+  radialReferenceCache.set(key, generated);
+  if (radialReferenceCache.size > 4) {
+    const oldest = radialReferenceCache.keys().next().value;
+    if (oldest !== undefined) radialReferenceCache.delete(oldest);
+  }
+  return generated;
 }
 
 /**
@@ -191,11 +308,19 @@ function scaleReferenceGeometry() {
  * This adapter remains the archival frame; it is not the distinct maquette.
  */
 export function generateScaledScaleGeometry(
-  input: { modelScale?: number; supportOffsetInches?: number } = {},
+  input: {
+    modelScale?: number;
+    supportOffsetInches?: number;
+    bodyWidthScale?: number;
+    bodyDepthScale?: number;
+  } = {},
 ): FoilGeometry {
-  const { modelScale, supportOffsetInches } =
+  const { modelScale, supportOffsetInches, bodyWidthScale, bodyDepthScale } =
     normalizeScaleStudySettings(input);
-  const { bare, unitAllowance } = scaleReferenceGeometry();
+  const { bare, unitAllowance } = scaleReferenceGeometry(
+    bodyWidthScale,
+    bodyDepthScale,
+  );
   function scaledMesh(
     mesh: FoilMeshGeometry,
     allowance: FoilMeshGeometry,
@@ -278,9 +403,8 @@ function partitions(
  * width/height along a course. This changes no random draws or plate counts.
  * The positive floor applies only to a collapsed zero-height sample.
  */
-export function physicalScaleCoursePartitions(
+function physicalScaleCourseMetric(
   surface: ScaleSurface,
-  fractions: number[],
   v0: number,
   v1: number,
 ): number[] {
@@ -314,6 +438,19 @@ export function physicalScaleCoursePartitions(
   const total = prefix[bins] ?? 0;
   if (!(total > 0))
     throw new RangeError("Scale course has no positive physical length.");
+  return prefix;
+}
+
+export function physicalScaleCoursePartitions(
+  surface: ScaleSurface,
+  fractions: number[],
+  v0: number,
+  v1: number,
+  cachedMetric?: number[],
+): number[] {
+  const prefix = cachedMetric ?? physicalScaleCourseMetric(surface, v0, v1);
+  const bins = prefix.length - 1;
+  const total = prefix[bins] ?? 0;
   return fractions.map((fraction, index) => {
     if (index === 0) return 0;
     if (index === fractions.length - 1) return 1;
@@ -333,6 +470,95 @@ export function physicalScaleCoursePartitions(
       );
     return (lower + (target - start) / (end - start)) / bins;
   });
+}
+
+/** Exact bounded budget with physical aspect approximated by course density. */
+function coverCourseLayout(
+  surface: ScaleSurface,
+  budget: number,
+  requestedRows: number,
+  aspect: number,
+) {
+  const maxRows = Math.min(MAX_ROWS, Math.floor(budget / MIN_COLUMNS));
+  const minRows = Math.max(1, Math.ceil(budget / MAX_COLUMNS));
+  const metrics = new Map<number, number[]>();
+  const prefixes = new Map<number, number[][]>();
+  const weights = (count: number) => {
+    let result = metrics.get(count);
+    if (!result) {
+      const coursePrefixes: number[][] = [];
+      result = Array.from({ length: count }, (_, i) => {
+        const prefix = physicalScaleCourseMetric(
+          surface,
+          0.005 + (i / count) * 0.99,
+          0.005 + ((i + 1) / count) * 0.99,
+        );
+        coursePrefixes.push(prefix);
+        return prefix[prefix.length - 1] ?? 0;
+      });
+      metrics.set(count, result);
+      prefixes.set(count, coursePrefixes);
+    }
+    return result;
+  };
+  const initial = clamp(requestedRows, minRows, maxRows);
+  const initialTotal = weights(initial).reduce((a, b) => a + b, 0);
+  const targetAspect = aspect > 0 ? aspect : initialTotal / budget;
+  const estimated = Math.sqrt(
+    (budget * targetAspect) / (initialTotal / (initial * initial)),
+  );
+  const candidates = new Set([
+    initial,
+    clamp(Math.floor(estimated), minRows, maxRows),
+    clamp(Math.ceil(estimated), minRows, maxRows),
+  ]);
+  let rows = initial,
+    best = Infinity;
+  for (const candidate of candidates) {
+    const total = weights(candidate).reduce((a, b) => a + b, 0);
+    const error = Math.abs(Math.log(total / budget / targetAspect));
+    if (
+      error < best - 1e-10 ||
+      (Math.abs(error - best) <= 1e-10 &&
+        Math.abs(candidate - requestedRows) < Math.abs(rows - requestedRows))
+    ) {
+      best = error;
+      rows = candidate;
+    }
+  }
+  const q = weights(rows);
+  // Capped proportional water filling, then largest remainders. Every course
+  // receives at least four cells and no course exceeds the original limit.
+  const counts = Array.from({ length: rows }, () => MIN_COLUMNS);
+  let remaining = budget - rows * MIN_COLUMNS;
+  while (remaining > 0) {
+    const eligible = counts
+      .map((n, i) => (n < MAX_COLUMNS ? i : -1))
+      .filter((i) => i >= 0);
+    if (!eligible.length)
+      throw new RangeError("Cover budget exceeds course capacity.");
+    const total = eligible.reduce((sum, i) => sum + (q[i] ?? 0), 0);
+    const allocations = eligible.map((i) => ({
+      i,
+      exact: (remaining * (q[i] ?? 0)) / total,
+    }));
+    let assigned = 0;
+    for (const { i, exact } of allocations) {
+      const add = Math.min(MAX_COLUMNS - (counts[i] ?? 0), Math.floor(exact));
+      counts[i] = (counts[i] ?? 0) + add;
+      assigned += add;
+    }
+    remaining -= assigned;
+    allocations.sort((a, b) => (b.exact % 1) - (a.exact % 1) || a.i - b.i);
+    for (const { i } of allocations) {
+      if (!remaining) break;
+      if ((counts[i] ?? 0) < MAX_COLUMNS) {
+        counts[i] = (counts[i] ?? 0) + 1;
+        remaining--;
+      }
+    }
+  }
+  return { rows, counts, prefixes: prefixes.get(rows) };
 }
 
 function planarPatch(
@@ -446,25 +672,49 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
             MIN_COLUMNS,
             settings.columns,
           );
-    const rows = partitions(settings.rows, settings.variation, random);
-    for (let row = 0; row < settings.rows; row++) {
-      const seededCourse = partitions(columns, settings.variation, random);
-      const cellV0 = V_GUTTER + (rows[row] ?? 0) * (1 - 2 * V_GUTTER);
-      const cellV1 = V_GUTTER + (rows[row + 1] ?? 1) * (1 - 2 * V_GUTTER);
+    const cover = settings.plateFit === "cover";
+    const layout = cover
+      ? coverCourseLayout(
+          surface,
+          columns * settings.rows,
+          settings.rows,
+          settings.plateAspect,
+        )
+      : null;
+    const rowCount = layout?.rows ?? settings.rows;
+    const rows = partitions(rowCount, cover ? 0 : settings.variation, random);
+    const gutter = cover ? 0.005 : V_GUTTER;
+    for (let row = 0; row < rowCount; row++) {
+      const courseColumns = layout?.counts[row] ?? columns;
+      const seededCourse = partitions(
+        courseColumns,
+        settings.variation,
+        random,
+      );
+      const cellV0 = gutter + (rows[row] ?? 0) * (1 - 2 * gutter);
+      const cellV1 = gutter + (rows[row + 1] ?? 1) * (1 - 2 * gutter);
       const course =
-        settings.plateShape !== "legacy" && settings.plateAspect > 0
-          ? physicalScaleCoursePartitions(surface, seededCourse, cellV0, cellV1)
+        cover || (settings.plateShape !== "legacy" && settings.plateAspect > 0)
+          ? physicalScaleCoursePartitions(
+              surface,
+              seededCourse,
+              cellV0,
+              cellV1,
+              layout?.prefixes?.[row],
+            )
           : seededCourse;
-      for (let column = 0; column < columns; column++) {
+      for (let column = 0; column < courseColumns; column++) {
         const cellU0 = course[column] ?? 0;
         const cellU1 = course[column + 1] ?? 1;
         const insetU =
           ((cellU1 - cellU0) *
-            (settings.gap + settings.variation * random() * 0.06)) /
+            (settings.gap +
+              settings.variation * random() * (cover ? 0.01 : 0.06))) /
           2;
         const insetV =
           ((cellV1 - cellV0) *
-            (settings.gap + settings.variation * random() * 0.06)) /
+            (settings.gap +
+              settings.variation * random() * (cover ? 0.01 : 0.06))) /
           2;
         let sourceBounds = {
           u0: cellU0 + insetU,
@@ -472,7 +722,7 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
           v0: cellV0 + insetV,
           v1: cellV1 - insetV,
         };
-        if (settings.plateAspect > 0) {
+        if (!cover && settings.plateAspect > 0) {
           const u = (sourceBounds.u0 + sourceBounds.u1) / 2;
           const v = (sourceBounds.v0 + sourceBounds.v1) / 2;
           sourceBounds = fitScalePlateBounds(
@@ -527,9 +777,14 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
       }
     }
   }
+  const source = archivalBareSource(settings);
   return {
     modelId: "archival",
     modelScale: settings.modelScale,
+    bodyWidthScale: settings.bodyWidthScale,
+    bodyDepthScale: settings.bodyDepthScale,
+    bareSourceBounds: source.bounds,
+    sourceGeometry: source.geometry,
     plates,
     triangleCount: plates.reduce(
       (total, plate) =>
@@ -537,5 +792,35 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
       0,
     ),
     adjustedReliefCount,
+  };
+}
+
+function archivalBareSource(settings: ScaleStudySettings) {
+  const bare = scaleReferenceGeometry(
+    settings.bodyWidthScale,
+    settings.bodyDepthScale,
+  ).bare;
+  const minimum = [Infinity, Infinity, Infinity];
+  const maximum = [-Infinity, -Infinity, -Infinity];
+  const positions: number[] = [];
+  const indices: number[] = [];
+  for (const mesh of [bare, bare.jawGeometry]) {
+    const vertexOffset = positions.length / 3;
+    for (const index of mesh.indices) indices.push(index + vertexOffset);
+    for (let index = 0; index < mesh.positions.length; index++) {
+      const axis = index % 3;
+      const value = (mesh.positions[index] ?? 0) * settings.modelScale;
+      positions.push(value);
+      minimum[axis] = Math.min(minimum[axis] ?? Infinity, value);
+      maximum[axis] = Math.max(maximum[axis] ?? -Infinity, value);
+    }
+  }
+  return {
+    geometry: { positions, indices },
+    bounds: {
+      width: (maximum[0] ?? 0) - (minimum[0] ?? 0),
+      height: (maximum[1] ?? 0) - (minimum[1] ?? 0),
+      depth: (maximum[2] ?? 0) - (minimum[2] ?? 0),
+    },
   };
 }

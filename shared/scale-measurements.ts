@@ -170,6 +170,8 @@ export function scaleSectionMeasurements(
   input: ScaleBuildUp,
   reliefInches: number,
   modelScale = 1,
+  bodyWidthScale = 1,
+  bodyDepthScale = 1,
 ): ScaleMeasurementStage[] {
   const section = SOURCE_SCALE_SECTIONS.find(
     (candidate) => candidate.id === sectionId,
@@ -177,14 +179,20 @@ export function scaleSectionMeasurements(
   if (!section) throw new RangeError("Unknown source cross-section.");
   const layers = normalizeScaleBuildUp(input);
   const scale = normalizeScaleModelScale(modelScale);
+  const proportion = (value: number) =>
+    Number.isFinite(value) ? Math.max(0.5, Math.min(2, value)) : 1;
+  const widthScale = proportion(bodyWidthScale);
+  const depthScale = proportion(bodyDepthScale);
   const stage = (
     id: string,
     label: string,
     addedRadialInches: number,
     totalRadialInches: number,
   ): ScaleMeasurementStage => {
-    const radiusU = section.radiusUInches * scale + totalRadialInches;
-    const radiusV = section.radiusVInches * scale + totalRadialInches;
+    const radiusU =
+      section.radiusUInches * scale * widthScale + totalRadialInches;
+    const radiusV =
+      section.radiusVInches * scale * depthScale + totalRadialInches;
     return {
       id,
       label,
@@ -263,6 +271,9 @@ export function scaleStudyBoundsComparison(study: ScaleStudy): {
         : null,
       scales,
     };
+  }
+  if (study.bareSourceBounds) {
+    return { source: { ...study.bareSourceBounds }, scales };
   }
   if (!sourceSkinBounds) {
     const geometry = generateFoilGeometry({ radiusOffsetInches: 0 });

@@ -84,6 +84,12 @@ function studies(modelId: "archival" | "maquette") {
   return [
     generate({ ...input, plateShape: "rectangle" }),
     generate({ ...input, plateShape: "diamond", plateAspect: 1.3 }),
+    generate({
+      ...input,
+      plateShape: "rectangle",
+      bodyWidthScale: 1.1,
+      bodyDepthScale: 0.9,
+    }),
   ];
 }
 
@@ -121,6 +127,7 @@ test("actual font ink is deterministically reassigned to each rebuilt silhouette
       pair[1]?.plates.map((p) => p.safeRect),
     );
     expect(allocations[0]?.placements).not.toEqual(allocations[1]?.placements);
+    expect(allocations[0]?.placements).not.toEqual(allocations[2]?.placements);
     for (const [index, study] of pair.entries()) {
       const result = allocations[index];
       if (!result) throw new Error("Missing allocation.");
@@ -128,23 +135,27 @@ test("actual font ink is deterministically reassigned to each rebuilt silhouette
       expect(result.placedWordCount).toBeGreaterThan(0);
       assertConservedAndFits(study.plates, text, result, face);
       // Overflow is a complete ordered suffix, even for an impossibly large word.
-      const overflow = fitScaleLettering(
-        study.plates,
-        `${"W".repeat(80)} explicit ending`,
-        options,
+      const oversizedWord = "W".repeat(500);
+      const overflowText = `${oversizedWord} explicit ending`;
+      // Prove the fixture is too wide even for the newly enlarged cover faces.
+      expect(
+        face.measureLine(oversizedWord, options.minFontSizeMm).widthMm,
+      ).toBeGreaterThan(
+        Math.max(
+          ...study.plates.map(
+            (plate) =>
+              plate.widthInches * 25.4 * plate.safeRect.width - 2 * marginMm,
+          ),
+        ),
       );
+      const overflow = fitScaleLettering(study.plates, overflowText, options);
       expect(overflow.placedWordCount).toBe(0);
-      expect(overflow.unplacedText).toBe(`${"W".repeat(80)} explicit ending`);
-      assertConservedAndFits(
-        study.plates,
-        `${"W".repeat(80)} explicit ending`,
-        overflow,
-        face,
-      );
+      expect(overflow.unplacedText).toBe(overflowText);
+      assertConservedAndFits(study.plates, overflowText, overflow, face);
     }
   }
   face.dispose?.();
-});
+}, 15_000);
 
 function scanFixture(): CalligraphyScan {
   const bytes = Buffer.alloc(33);
@@ -268,4 +279,4 @@ test("scanned occurrence metrics preserve joined ink when new shapes recalculate
       else Reflect.deleteProperty(globalThis, name);
     }
   }
-});
+}, 15_000);

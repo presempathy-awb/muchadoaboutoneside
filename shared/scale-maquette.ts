@@ -1,4 +1,5 @@
 import data from "./scale-maquette.json";
+import { deformedMaquetteBody } from "./scale-maquette-body";
 import { fitScalePlateBounds, scalePlateOutline } from "./scale-shape";
 import {
   normalizeScaleStudySettings,
@@ -421,9 +422,13 @@ export function generateMaquetteScaleStudy(
     modelId: "maquette",
     surfaceMode: "conforming",
   });
+  const body = deformedMaquetteBody(
+    settings.bodyWidthScale,
+    settings.bodyDepthScale,
+  );
   const factor = settings.modelScale / MM_PER_INCH;
-  const positions = data.positionsMm.map((value) => value * factor);
-  const area = data.charts.reduce(
+  const positions = body.positionsMm.map((value) => value * factor);
+  const area = body.charts.reduce(
     (sum, chart) => sum + chart.widthMm * chart.heightMm,
     0,
   );
@@ -432,14 +437,17 @@ export function generateMaquetteScaleStudy(
   let adjustedReliefCount = 0;
   let unletterablePlateCount = 0;
   let triangleCount = 0;
-  for (const chart of data.charts) {
+  for (const chart of body.charts) {
     const portion = Math.max(
       1,
       (desired * chart.widthMm * chart.heightMm) / area,
     );
     const aspect =
-      (chart.widthMm / chart.heightMm) *
-      (settings.columns / settings.rows / 30);
+      ((chart.widthMm / chart.heightMm) *
+        (settings.columns / settings.rows / 30)) /
+      (settings.plateFit === "cover" && settings.plateAspect > 0
+        ? settings.plateAspect
+        : 1);
     const nx = Math.max(
       1,
       Math.min(24, Math.ceil(portion), Math.round(Math.sqrt(portion * aspect))),
@@ -498,7 +506,7 @@ export function generateMaquetteScaleStudy(
             v0: v0 + (v1 - v0) * inset,
             v1: v1 - (v1 - v0) * inset,
           };
-          if (settings.plateAspect > 0) {
+          if (settings.plateFit !== "cover" && settings.plateAspect > 0) {
             // Chart UVs use its physical planar axes; a region may not cover
             // the cell center, so measuring with surface.sample is invalid.
             bounds = fitScalePlateBounds(
@@ -564,6 +572,8 @@ export function generateMaquetteScaleStudy(
   return {
     modelId: "maquette",
     modelScale: settings.modelScale,
+    bodyWidthScale: settings.bodyWidthScale,
+    bodyDepthScale: settings.bodyDepthScale,
     sourceGeometry: { positions, indices: [...data.indices] },
     plates,
     triangleCount,

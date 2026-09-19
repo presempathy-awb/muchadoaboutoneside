@@ -28,9 +28,12 @@ describe("recent working scale shapes", () => {
       geometry: {
         ...DEFAULT_SCALE_DESIGN.geometry,
         plateShape: "diamond",
+        plateFit: "inset",
         plateAspect: 0.8,
         cornerCut: 0.25,
         plateTaper: -0.2,
+        bodyWidthScale: 1.6,
+        bodyDepthScale: 0.7,
       },
       text: "Keep my poem.",
       fontId: "serif",
@@ -39,6 +42,16 @@ describe("recent working scale shapes", () => {
     expect(tuned.id).not.toBe(original.id);
     const history = parseScaleShapeHistory(JSON.stringify([original, tuned]));
     expect(history).toEqual([original, tuned]);
+    const savedTuned = history[1];
+    if (!savedTuned) throw new Error("Expected tuned body history");
+    const restoredTuned = applyScaleShapeVersion(
+      DEFAULT_SCALE_DESIGN,
+      savedTuned,
+    );
+    expect(restoredTuned.geometry.plateFit).toBe("inset");
+    expect(original.shape.geometry.plateFit).toBe("cover");
+    expect(restoredTuned.geometry.bodyWidthScale).toBe(1.6);
+    expect(restoredTuned.geometry.bodyDepthScale).toBe(0.7);
     const first = history[0];
     if (!first) throw new Error("Expected the original shape");
     const restored = applyScaleShapeVersion(changed, first);

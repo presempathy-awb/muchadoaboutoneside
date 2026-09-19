@@ -5,6 +5,12 @@ const LINE_HEIGHT_FACTOR = 1.4;
 const MAX_TEXT_LENGTH = 20_000;
 const AUTOFIT_ITERATIONS = 24;
 
+/** Auto-fit keeps writing moving along the scales instead of packing a few large faces. */
+export const SCALE_AUTO_FIT_MAX_LINES_PER_PLATE = 1;
+
+/** Auto-fit places one unsplittable segment per plate and sizes it to that face. */
+export const SCALE_AUTO_FIT_SEGMENTS_PER_PLATE = 1;
+
 /** Word occurrence indices in the complete transcript; end is exclusive. */
 export interface ScaleTextRange {
   wordStart: number;
@@ -49,6 +55,8 @@ export interface ScaleLetteringOptions {
   measureLine?: ScaleLineMeasurer;
   /** Ordered, complete transcript coverage whose joined ink cannot be split. */
   segments?: readonly ScaleTextRange[];
+  /** When set, later words continue on following faces instead of filling one plate. */
+  maxLinesPerPlate?: number;
 }
 
 export interface FitScaleLetteringOptions extends ScaleLetteringOptions {
@@ -70,6 +78,40 @@ export interface ScaleLetteringResult {
   unplacedText: string;
   placedWordCount: number;
   totalWordCount: number;
+}
+
+const MAX_FILL_FONT_SIZE_MM = 700;
+
+/** Largest type that typically fills one auto-fit line on these plates. */
+export function typicalPlateFillFontSizeMm(
+  plates: readonly ScaleLetteringPlate[],
+  marginMm: number,
+  maxLinesPerPlate = SCALE_AUTO_FIT_MAX_LINES_PER_PLATE,
+): number {
+  assertFinite("marginMm", marginMm);
+  if (marginMm < 0) throw new RangeError("marginMm must be zero or greater");
+  if (
+    !Number.isInteger(maxLinesPerPlate) ||
+    maxLinesPerPlate < 1 ||
+    !Number.isFinite(maxLinesPerPlate)
+  )
+    throw new RangeError("maxLinesPerPlate must be an integer of at least 1");
+  const heights = plates
+    .map((plate) =>
+      Math.max(
+        0,
+        plate.heightInches * MILLIMETRES_PER_INCH * plate.safeRect.height -
+          2 * marginMm,
+      ),
+    )
+    .filter((height) => height > 0)
+    .sort((a, b) => a - b);
+  const median = heights[Math.floor(heights.length / 2)];
+  if (median === undefined) return 0;
+  return Math.min(
+    MAX_FILL_FONT_SIZE_MM,
+    median / (maxLinesPerPlate * LINE_HEIGHT_FACTOR),
+  );
 }
 
 function assertFinite(name: string, value: number): void {
@@ -97,6 +139,14 @@ function validateInputs(
     typeof options.measureLine !== "function"
   )
     throw new TypeError("measureLine must be a function");
+  if (options.maxLinesPerPlate !== undefined) {
+    assertFinite("maxLinesPerPlate", options.maxLinesPerPlate);
+    if (
+      !Number.isInteger(options.maxLinesPerPlate) ||
+      options.maxLinesPerPlate < 1
+    )
+      throw new RangeError("maxLinesPerPlate must be an integer of at least 1");
+  }
 
   const ids = new Set<string>();
   for (const [index, plate] of plates.entries()) {
@@ -233,6 +283,130 @@ function fittingLineEnd(
   return low;
 }
 
+function plateUsableMm(
+  plate: ScaleLetteringPlate,
+  marginMm: number,
+): { maxWidthMm: number; maxHeightMm: number } {
+  return {
+    maxWidthMm: Math.max(
+      0,
+      plate.widthInches * MILLIMETRES_PER_INCH * plate.safeRect.width -
+        2 * marginMm,
+    ),
+    maxHeightMm: Math.max(
+      0,
+      plate.heightInches * MILLIMETRES_PER_INCH * plate.safeRect.height -
+        2 * marginMm,
+    ),
+  };
+}
+
+function largestSizeForSegment(
+  words: readonly string[],
+  boundaries: readonly number[],
+  start: number,
+  end: number,
+  maxWidthMm: number,
+  maxHeightMm: number,
+  minFontSizeMm: number,
+  options: ScaleLetteringOptions,
+): number | null {
+  const fits = (fontSizeMm: number) =>
+    fittingLineEnd(
+      words,
+      boundaries,
+      start,
+      maxWidthMm,
+      maxHeightMm,
+      fontSizeMm,
+      options,
+    ) >= end;
+  if (!fits(minFontSizeMm)) return null;
+  const highBound = Math.min(
+    MAX_FILL_FONT_SIZE_MM,
+    Math.max(maxWidthMm, maxHeightMm, minFontSizeMm),
+  );
+  if (fits(highBound)) return highBound;
+  let low = minFontSizeMm;
+  let high = highBound;
+  for (let iteration = 0; iteration < AUTOFIT_ITERATIONS; iteration += 1) {
+    const candidate = (low + high) / 2;
+    if (fits(candidate)) low = candidate;
+    else high = candidate;
+  }
+  return low;
+}
+
+/**
+ * Place one transcript segment on each plate, as large as that plate allows.
+ * Faces that cannot take the next segment at the minimum size are skipped.
+ */
+export function fillScaleLettering(
+  plates: readonly ScaleLetteringPlate[],
+  text: string,
+  options: FitScaleLetteringOptions,
+): ScaleLetteringResult {
+  validateInputs(plates, text, options);
+  assertFinite("minFontSizeMm", options.minFontSizeMm);
+  if (options.minFontSizeMm <= 0)
+    throw new RangeError("minFontSizeMm must be greater than zero");
+  if (options.minFontSizeMm > MAX_FILL_FONT_SIZE_MM)
+    throw new RangeError("minFontSizeMm is larger than the drawing limit");
+
+  const words = text.match(/\S+/gu) ?? [];
+  const boundaries = segmentBoundaries(words.length, options.segments);
+  let segmentIndex = 0;
+
+  const placements = plates.map((plate): ScaleLetteringPlacement => {
+    const { maxWidthMm, maxHeightMm } = plateUsableMm(plate, options.marginMm);
+    const empty = (): ScaleLetteringPlacement => ({
+      plateId: plate.id,
+      lines: [],
+      lineHeightsMm: [],
+      lineRanges: [],
+      fontSizeMm: options.fontSizeMm,
+    });
+    if (segmentIndex >= boundaries.length - 1) return empty();
+    const end = Math.min(
+      segmentIndex + SCALE_AUTO_FIT_SEGMENTS_PER_PLATE,
+      boundaries.length - 1,
+    );
+    const fontSizeMm = largestSizeForSegment(
+      words,
+      boundaries,
+      segmentIndex,
+      end,
+      maxWidthMm,
+      maxHeightMm,
+      options.minFontSizeMm,
+      options,
+    );
+    if (fontSizeMm === null) return empty();
+    const range = {
+      wordStart: boundaries[segmentIndex] ?? 0,
+      wordEnd: boundaries[end] ?? words.length,
+    };
+    const line = words.slice(range.wordStart, range.wordEnd).join(" ");
+    const { heightMm } = measuredLine(line, fontSizeMm, options, range);
+    segmentIndex = end;
+    return {
+      plateId: plate.id,
+      lines: [line],
+      lineHeightsMm: [heightMm],
+      lineRanges: [range],
+      fontSizeMm,
+    };
+  });
+
+  const wordIndex = boundaries[segmentIndex] ?? 0;
+  return {
+    placements,
+    unplacedText: words.slice(wordIndex).join(" "),
+    placedWordCount: wordIndex,
+    totalWordCount: words.length,
+  };
+}
+
 /** Allocate complete words across plates in the order supplied by the caller. */
 export function allocateScaleLettering(
   plates: readonly ScaleLetteringPlate[],
@@ -245,22 +419,18 @@ export function allocateScaleLettering(
   let segmentIndex = 0;
 
   const placements = plates.map((plate): ScaleLetteringPlacement => {
-    const maxWidthMm = Math.max(
-      0,
-      plate.widthInches * MILLIMETRES_PER_INCH * plate.safeRect.width -
-        2 * options.marginMm,
-    );
-    const maxHeightMm = Math.max(
-      0,
-      plate.heightInches * MILLIMETRES_PER_INCH * plate.safeRect.height -
-        2 * options.marginMm,
-    );
+    const { maxWidthMm, maxHeightMm } = plateUsableMm(plate, options.marginMm);
     const lines: string[] = [];
     const lineHeightsMm: number[] = [];
     const lineRanges: ScaleTextRange[] = [];
     let usedHeightMm = 0;
 
     while (usedHeightMm < maxHeightMm && segmentIndex < boundaries.length - 1) {
+      if (
+        options.maxLinesPerPlate !== undefined &&
+        lines.length >= options.maxLinesPerPlate
+      )
+        break;
       const end = fittingLineEnd(
         words,
         boundaries,

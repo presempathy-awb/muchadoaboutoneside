@@ -184,6 +184,63 @@ describe("scale build-up estimates", () => {
     });
   });
 
+  test("body proportions change the bare section before fixed physical layers", () => {
+    const layers = { ...noLayers, supportInches: 0.2, metalMm: 0.127 };
+    const sourceSection = SOURCE_SCALE_SECTIONS[0];
+    if (!sourceSection) throw new Error("Expected source section.");
+    for (const [width, depth] of [
+      [0.5, 2],
+      [1.6, 0.7],
+      [2, 0.5],
+    ]) {
+      const stages = scaleSectionMeasurements(
+        "body-0",
+        layers,
+        0.25,
+        0.35,
+        width,
+        depth,
+      );
+      const source = stages[0];
+      const outer = stages.at(-1);
+      if (!source || !outer) throw new Error("Expected stages.");
+      expect(source.widthInches).toBeCloseTo(
+        sourceSection.radiusUInches * 0.35 * (width ?? 1) * 2,
+        10,
+      );
+      expect(source.depthInches).toBeCloseTo(
+        sourceSection.radiusVInches * 0.35 * (depth ?? 1) * 2,
+        10,
+      );
+      expect(outer.widthInches - source.widthInches).toBeCloseTo(0.91, 10);
+      expect(outer.depthInches - source.depthInches).toBeCloseTo(0.91, 10);
+      expect(outer.girthInches).toBeGreaterThan(source.girthInches);
+    }
+  });
+
+  test("archival bounds use the actual deformed bare source supplied by the study", () => {
+    const study: ScaleStudy = {
+      modelId: "archival",
+      modelScale: 0.35,
+      bodyWidthScale: 1.8,
+      bodyDepthScale: 0.7,
+      bareSourceBounds: { width: 48, height: 69, depth: 11 },
+      plates: [],
+      triangleCount: 0,
+      adjustedReliefCount: 0,
+    };
+    expect(scaleStudyBoundsComparison(study)).toEqual({
+      source: { width: 48, height: 69, depth: 11 },
+      scales: null,
+    });
+    expect(
+      scaleStudyBoundsComparison({
+        ...study,
+        bareSourceBounds: { width: 51, height: 70, depth: 12 },
+      }).source,
+    ).toEqual({ width: 51, height: 70, depth: 12 });
+  });
+
   test("resizing the source preserves physical layer and scale-face thickness", () => {
     const layers = { ...noLayers, supportInches: 0.2, metalMm: 0.127 };
     let previousWidth = 0;

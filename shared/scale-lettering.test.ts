@@ -1,9 +1,12 @@
 import { expect, test } from "bun:test";
 import {
   allocateScaleLettering,
+  fillScaleLettering,
   fitScaleLettering,
+  SCALE_AUTO_FIT_MAX_LINES_PER_PLATE,
   type ScaleLetteringPlate,
   type ScaleTextRange,
+  typicalPlateFillFontSizeMm,
 } from "./scale-lettering";
 
 const characterMeasure = (text: string, fontSizeMm: number) =>
@@ -297,4 +300,164 @@ test("rejects incomplete, overlapping, unordered and fractional source segments"
         segments,
       }),
     ).toThrow("segments must cover");
+});
+
+test("a line cap sends later words along following faces", () => {
+  const options = {
+    fontSizeMm: 2,
+    marginMm: 1,
+    measure: characterMeasure,
+    maxLinesPerPlate: 1,
+  };
+  const packed = allocateScaleLettering(
+    [plate("tall", 10, 100)],
+    "aaaa bbbb cccc",
+    { fontSizeMm: 2, marginMm: 1, measure: characterMeasure },
+  );
+  expect(packed.placements[0]?.lines).toEqual(["aaaa", "bbbb", "cccc"]);
+  const spread = allocateScaleLettering(
+    [
+      plate("first", 10, 100),
+      plate("second", 10, 100),
+      plate("third", 10, 100),
+    ],
+    "aaaa bbbb cccc",
+    options,
+  );
+  expect(spread.placements.map(({ lines }) => lines)).toEqual([
+    ["aaaa"],
+    ["bbbb"],
+    ["cccc"],
+  ]);
+  expect(spread.unplacedText).toBe("");
+});
+
+test("auto-fit with a line cap shrinks type instead of packing a few tall faces", () => {
+  const plates = [
+    plate("first", 10, 100),
+    plate("second", 10, 100),
+    plate("third", 10, 8),
+  ];
+  const packed = fitScaleLettering(plates, "aaaa bbbb cccc", {
+    fontSizeMm: 2,
+    minFontSizeMm: 0.5,
+    marginMm: 1,
+    measure: characterMeasure,
+  });
+  expect(
+    packed.placements.filter(({ lines }) => lines.length > 0),
+  ).toHaveLength(1);
+  const spread = fitScaleLettering(plates, "aaaa bbbb cccc", {
+    fontSizeMm: 2,
+    minFontSizeMm: 0.5,
+    marginMm: 1,
+    measure: characterMeasure,
+    maxLinesPerPlate: SCALE_AUTO_FIT_MAX_LINES_PER_PLATE,
+  });
+  expect(spread.unplacedText).toBe("");
+  expect(
+    spread.placements.filter(({ lines }) => lines.length > 0).length,
+  ).toBeGreaterThan(1);
+});
+
+test("rejects a non-positive line cap", () => {
+  expect(() =>
+    allocateScaleLettering([plate("face", 20, 20)], "word", {
+      fontSizeMm: 2,
+      marginMm: 0,
+      maxLinesPerPlate: 0,
+    }),
+  ).toThrow("maxLinesPerPlate");
+});
+
+test("typical plate fill size follows median usable height", () => {
+  expect(typicalPlateFillFontSizeMm([], 2)).toBe(0);
+  expect(
+    typicalPlateFillFontSizeMm(
+      [plate("short", 10, 14), plate("tall", 10, 140), plate("mid", 10, 70)],
+      0,
+      1,
+    ),
+  ).toBeCloseTo(70 / 1.4, 10);
+});
+
+test("fill auto-fit puts one word on each plate as large as the face allows", () => {
+  const plates = [plate("a", 40, 40), plate("b", 40, 40), plate("c", 40, 40)];
+  const packed = allocateScaleLettering(plates, "aa bb cc", {
+    fontSizeMm: 2,
+    marginMm: 0,
+    measure: characterMeasure,
+  });
+  expect(packed.placements.filter(({ lines }) => lines.length).length).toBe(1);
+  const filled = fillScaleLettering(plates, "aa bb cc", {
+    fontSizeMm: 2,
+    minFontSizeMm: 1,
+    marginMm: 0,
+    measure: characterMeasure,
+  });
+  expect(filled.unplacedText).toBe("");
+  expect(filled.placements.map(({ lines }) => lines)).toEqual([
+    ["aa"],
+    ["bb"],
+    ["cc"],
+  ]);
+  expect(filled.placements[0]?.fontSizeMm).toBeGreaterThan(2);
+  expect(
+    filled.placements.every(
+      (placement) => placement.fontSizeMm === filled.placements[0]?.fontSizeMm,
+    ),
+  ).toBe(true);
+});
+
+test("fill auto-fit sizes each plate independently", () => {
+  const filled = fillScaleLettering(
+    [plate("narrow", 20, 40), plate("wide", 80, 40)],
+    "aa aa",
+    {
+      fontSizeMm: 2,
+      minFontSizeMm: 1,
+      marginMm: 0,
+      measure: characterMeasure,
+    },
+  );
+  expect(filled.placements[0]?.fontSizeMm).toBeCloseTo(10, 5);
+  expect(filled.placements[1]?.fontSizeMm).toBeGreaterThan(
+    filled.placements[0]?.fontSizeMm ?? 0,
+  );
+});
+
+test("fill auto-fit skips a face that cannot take the next word at the minimum size", () => {
+  const filled = fillScaleLettering(
+    [plate("tiny", 3, 40), plate("wide", 40, 40)],
+    "aaaa",
+    {
+      fontSizeMm: 2,
+      minFontSizeMm: 1,
+      marginMm: 0,
+      measure: characterMeasure,
+    },
+  );
+  expect(filled.placements[0]?.lines).toEqual([]);
+  expect(filled.placements[1]?.lines).toEqual(["aaaa"]);
+  expect(filled.unplacedText).toBe("");
+});
+
+test("fill auto-fit keeps a joined segment on one plate", () => {
+  const filled = fillScaleLettering(
+    [plate("first", 80, 40), plate("second", 80, 40)],
+    "one two three",
+    {
+      fontSizeMm: 2,
+      minFontSizeMm: 1,
+      marginMm: 0,
+      measure: characterMeasure,
+      segments: [
+        { wordStart: 0, wordEnd: 2 },
+        { wordStart: 2, wordEnd: 3 },
+      ],
+    },
+  );
+  expect(filled.placements[0]?.lines).toEqual(["one two"]);
+  expect(filled.placements[1]?.lines).toEqual(["three"]);
+  expect(filled.unplacedText).toBe("");
 });

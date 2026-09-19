@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "31a7a517a2e1fadf175b15c556664b6879025b21",
+  "sourceCommit": "7a8f592ca9803d3bd91fcf568fb49a26ed64b003",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -45,8 +45,8 @@
     },
     {
       "path": ".gitignore",
-      "bytes": 176,
-      "sha256": "0bc5010b23567dc03b2330d91b32612bc8041049558181c44e379f4e2da86f32"
+      "bytes": 187,
+      "sha256": "9e1827a3cda4bbff974b5b7dc1759d6e0641c0c53b8a0897e9f9ccfd0eb964b2"
     },
     {
       "path": ".gitleaks.toml",
@@ -115,8 +115,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 33030,
-      "sha256": "471b19602763def44dcc6594417f90dad4802d4e9adafc465766181f6a3d2b6e"
+      "bytes": 34014,
+      "sha256": "d83ce8b92f0d6e08c620fd3b9b6097d8d972a1a180aea3d8c17bf957ad799ab5"
     },
     {
       "path": "REUSE.md",
@@ -145,8 +145,8 @@
     },
     {
       "path": "biome.json",
-      "bytes": 701,
-      "sha256": "6e9d12c56163d305f22c2f99079eac5c1bf1925fc1ee74eca75f85a2fa678d76"
+      "bytes": 763,
+      "sha256": "6dbac27051668ea07d972c1cc7916635e385025d56cfa58485a6ab8f13b6fdbc"
     },
     {
       "path": "bun.lock",
@@ -170,8 +170,8 @@
     },
     {
       "path": "docs/browser-testing.md",
-      "bytes": 4206,
-      "sha256": "1c5dedcc6aa2a0d35ba89655ca66d5de414609feada001d080c3d907befc5749"
+      "bytes": 5113,
+      "sha256": "0c7409f8d949790294cac1fb77c62709f742d197b032827334dd63013d78837b"
     },
     {
       "path": "docs/calligraphy-font-security.md",
@@ -210,8 +210,8 @@
     },
     {
       "path": "docs/scale-studio.md",
-      "bytes": 15461,
-      "sha256": "de09b5be457a005be8a773fa40825bb836eac25b2d0c2c0b5bbe4fb3004fda51"
+      "bytes": 19517,
+      "sha256": "60591205b8e456fc5e569c4af7a813c8e929ad84822c96ef6be2bfb5c7d9fde3"
     },
     {
       "path": "docs/scanned-calligraphy.md",
@@ -5070,8 +5070,8 @@
     },
     {
       "path": "scripts/browser-smoke.ts",
-      "bytes": 39347,
-      "sha256": "cbb8206840083864d6b060d8094489e933685de278ae8945e003b3b5777873c3"
+      "bytes": 49551,
+      "sha256": "c02029e99d3e9ed0dd3114451bc026bee0e58a4d557de812a972f7aa1858b771"
     },
     {
       "path": "scripts/container-ci-smoke.ts",
@@ -5127,6 +5127,11 @@
       "path": "scripts/generate-print.py",
       "bytes": 19126,
       "sha256": "86c3d6b949acd1c3261399bdda6c563bb6fd0ef4ca9059a45147d36c36724bfd"
+    },
+    {
+      "path": "scripts/generate-scale-body.py",
+      "bytes": 9015,
+      "sha256": "3ba3ca07d6cdac134a21af15d710a9a1422720d9b8ef50d4baefd19310d2dc3a"
     },
     {
       "path": "scripts/generate-scale-maquette.py",
@@ -5429,19 +5434,29 @@
       "sha256": "6554026ecfe34c6cb28918ce995a13e8f87d5e04479cfd8bed68b7d50558f676"
     },
     {
+      "path": "shared/scale-body.test.ts",
+      "bytes": 1490,
+      "sha256": "bbed63088c2b2b5373fcd2227a3e26b136120227f8369cf2ecd8bab046cd2134"
+    },
+    {
+      "path": "shared/scale-body.ts",
+      "bytes": 2923,
+      "sha256": "38ac5cd7f097a9ad4ed94ca76c0a4bbdea67d70a727111e46c8a9cf8278b3408"
+    },
+    {
       "path": "shared/scale-design.test.ts",
-      "bytes": 11161,
-      "sha256": "0ddc978bd65b9f608c4b0f93d94f4dd1a4e25ecf7dae100c3440a38cd3391521"
+      "bytes": 15251,
+      "sha256": "7ba7d3f1d7bcb2b1bf6d8226f4ae78f8c1a762aa623a5992c0ff16ed4a971f0a"
     },
     {
       "path": "shared/scale-design.ts",
-      "bytes": 10582,
-      "sha256": "5b398e21bcad14ba90483eb5f7349369ead585036cf2d66d5dd792ce498f2ae8"
+      "bytes": 11291,
+      "sha256": "9b0a5cf6e2e1ed5e375e7c058beea0c1126c4f6c38e5348e46acf214e726dd0c"
     },
     {
       "path": "shared/scale-history.test.ts",
-      "bytes": 6080,
-      "sha256": "086beff634bab0ac8173337ab840308a8800a01ca644508effdc2a21271be1b4"
+      "bytes": 6613,
+      "sha256": "d9aa716354353cb591dd5d14a483dd64188114a8f24954980206eca0797b72af"
     },
     {
       "path": "shared/scale-history.ts",
@@ -5450,13 +5465,23 @@
     },
     {
       "path": "shared/scale-lettering.test.ts",
-      "bytes": 9465,
-      "sha256": "0d6046a56fe6085fe44b1ff5ff2f22cabc09b4e38cf479aef1b6c2e237f073d8"
+      "bytes": 14047,
+      "sha256": "ba175016577a408470856699614e2f720be531e58d3a39d23b03965ea5122773"
     },
     {
       "path": "shared/scale-lettering.ts",
-      "bytes": 10381,
-      "sha256": "07ec3eee50b84d81931130c29f4c80f9479923c9d47a2ec9e2b1bf2498294a53"
+      "bytes": 15551,
+      "sha256": "df8ccdbd1eb77492093a8fae82b3cfbc0a34cb60d82804e955af641fdfeda92b"
+    },
+    {
+      "path": "shared/scale-maquette-body.json",
+      "bytes": 137575,
+      "sha256": "7e96017c6a8c09961b880645a38a817d1aa52a1826a74657531e02b12f0fe702"
+    },
+    {
+      "path": "shared/scale-maquette-body.ts",
+      "bytes": 5421,
+      "sha256": "2ca0674b4c4c5c285028c405c14a2373bb59bc499207239f92b7220cc11e52dc"
     },
     {
       "path": "shared/scale-maquette.json",
@@ -5465,23 +5490,23 @@
     },
     {
       "path": "shared/scale-maquette.test.ts",
-      "bytes": 10618,
-      "sha256": "75102717f7722f94ac892618b6205aa55c1db68bfad087a4e7b87849a07e99ba"
+      "bytes": 19500,
+      "sha256": "e996d0607e606da122ea8b3e0d477fc4cc0d58fc4e38d8ce3eb3493a668c08fd"
     },
     {
       "path": "shared/scale-maquette.ts",
-      "bytes": 19320,
-      "sha256": "ffc1225bde958bbb6066041206bba17b74612c6a6ca47802994b60b0c94ab582"
+      "bytes": 19720,
+      "sha256": "59359275b4c544ed1573fb301c68b16ca06c5f3c67fc25343f9b9b5cf8617b2a"
     },
     {
       "path": "shared/scale-measurements.test.ts",
-      "bytes": 11919,
-      "sha256": "ffee1c297c59e5b9bd61936be4e5f1bb27878c448000b17fcf2afe0db33ffe57"
+      "bytes": 13781,
+      "sha256": "71c446a588e2de8eb1b2ab8a4b81d769062e0bf2b0cfd1803bdf75150b7e00d3"
     },
     {
       "path": "shared/scale-measurements.ts",
-      "bytes": 8479,
-      "sha256": "b6109e70044c50bf53ed4cde50b64c476dacf2506bdef73eb4300668366bfb07"
+      "bytes": 8865,
+      "sha256": "63f0d87354998167229018cfebe2be4175d81713b7a727fcf9ee7261e5a1ead9"
     },
     {
       "path": "shared/scale-models.test.ts",
@@ -5515,23 +5540,23 @@
     },
     {
       "path": "shared/scale-shape-lettering.test.ts",
-      "bytes": 8517,
-      "sha256": "48ee5fc0025eeb9f460fff99bb1a144104accfb053cc83d44c32a13a2065f416"
+      "bytes": 9076,
+      "sha256": "cf5b6ec64f10068bd01b6a08104811cbae58dddc55cb31466b308fb0cccf3c4d"
     },
     {
       "path": "shared/scale-shape.test.ts",
-      "bytes": 4595,
-      "sha256": "10718cd95bb2a57576e34867688edb33586115be90446b83187225948790a934"
+      "bytes": 4620,
+      "sha256": "9a1f2de8ff52d1dd1a8735fb1acb3d3815440867bd2dec2aae518d8398631459"
     },
     {
       "path": "shared/scale-shape.ts",
-      "bytes": 4978,
-      "sha256": "18070e14eddb54ba7ca6675cd997d92c974b38537d1e29edf7618ee44bfa4506"
+      "bytes": 5192,
+      "sha256": "7ddd85158f977b3d21dd0d85791e10ac89fd455f48070c792c535df9035afddd"
     },
     {
       "path": "shared/scale-size-fit.test.ts",
-      "bytes": 8312,
-      "sha256": "0ead1a96a188735fdbfb8d61fe173447091949f23eca9e783c8da6d427249aa0"
+      "bytes": 8575,
+      "sha256": "7846d9f23cc4707aefb59bca8e57d162f0c50dedb4da9e25277b36c6da8b6582"
     },
     {
       "path": "shared/scale-size-fit.ts",
@@ -5540,13 +5565,13 @@
     },
     {
       "path": "shared/scale-study.test.ts",
-      "bytes": 24039,
-      "sha256": "e3ce55cc522b633aae33aa2756582ad8a7ce0e48466b9d3534c7e4154e5d2fcf"
+      "bytes": 34574,
+      "sha256": "0d6023ce9628c50a7badbeff9f14a68b2eac22eb56d511b7862c82e567baa6b0"
     },
     {
       "path": "shared/scale-study.ts",
-      "bytes": 17275,
-      "sha256": "e7bf3a83b2a361ff63f954c6bfbbfda3b1aadaebba86b8fed6cd44266172f07c"
+      "bytes": 26597,
+      "sha256": "2badba002e74bfb2f2accce5c5c27455a1248538ef7496707191b90f8ac9b7f2"
     },
     {
       "path": "shared/scale-surface.ts",
@@ -5555,13 +5580,13 @@
     },
     {
       "path": "shared/scale-versions.test.ts",
-      "bytes": 6227,
-      "sha256": "92591f5ff03e9253d2dfbd68aedb1f98342080b41c0e28fae08e72f62edfa09d"
+      "bytes": 7318,
+      "sha256": "06cbbb9676ee8b2cc73af9903563c4b011a6f5bcb75785fbe4f2c13ba8a355b0"
     },
     {
       "path": "shared/scale-versions.ts",
-      "bytes": 6271,
-      "sha256": "401b88575eaab6c1b3e264d5eb729d1c91f7359bad5638fb924d07dcbd23bd43"
+      "bytes": 6710,
+      "sha256": "48eb97f932e740ec9a3b872ef9d93de067057d86d0d57c7e999136eaecda0c95"
     },
     {
       "path": "shared/scan-crop-geometry.test.ts",
@@ -5809,9 +5834,14 @@
       "sha256": "ce2f8ac5ac16d4f1bab352f9a42affe94f1fc78c48e8e8671e84fce8a0e3c6cc"
     },
     {
+      "path": "src/components/scale-body-controls.tsx",
+      "bytes": 2716,
+      "sha256": "791c048e7da55f9107aefe789697c8bd747f90bb75036d384c0af72fb360338c"
+    },
+    {
       "path": "src/components/scale-build-up.tsx",
-      "bytes": 13278,
-      "sha256": "6cfc11f0d8aa0006e257c75da43c27b2ec25b4a9484fc02f26f4ae2e0b63dd0b"
+      "bytes": 13607,
+      "sha256": "205fe1725f39faf068cc0b29027d1ef90fea02647477e6b7f82e83ae0e2ff742"
     },
     {
       "path": "src/components/scale-plate-proof.test.tsx",
@@ -5830,13 +5860,13 @@
     },
     {
       "path": "src/components/scale-reference-comparison.tsx",
-      "bytes": 7124,
-      "sha256": "64686d76f91d1f716a334c0b6bd9f52dc81f6d40985c1355aeb7c3d6db9f81c2"
+      "bytes": 7210,
+      "sha256": "02c6bc9afb0528497ac9bbf33a88962361948c775d25d7bb5f1bfb73605919a0"
     },
     {
       "path": "src/components/scale-shape-controls.tsx",
-      "bytes": 6788,
-      "sha256": "39f1e7d6e9286c7417c22c151d1e8ffb2008e54aaf1a5034d4c5119fea4cb745"
+      "bytes": 8951,
+      "sha256": "a0370ccd608fd0587466f780a285732238a1a7d29c0338641afc55da7ad50608"
     },
     {
       "path": "src/components/scale-version-browser.tsx",
@@ -6060,23 +6090,23 @@
     },
     {
       "path": "src/lib/scale-skin.test.ts",
-      "bytes": 23501,
-      "sha256": "893554251164aa7c3d1b5a637fcf34b5860fe76181d6028f96ea47b7decc2725"
+      "bytes": 30203,
+      "sha256": "13b08bf049893d21633be528a9eb4f3481e48a43f34a67ea8d5cbb15747761ad"
     },
     {
       "path": "src/lib/scale-skin.ts",
-      "bytes": 13188,
-      "sha256": "b26b5d3f5dac6886f8088ba70ba62f162fce34a1a94db8b02c2535b050af5cb2"
+      "bytes": 14305,
+      "sha256": "c4f03f637b4ad389c407a1e5eae76300632f842fb41b80b5cf6f1624eb16b5a1"
     },
     {
       "path": "src/lib/scale-study-cache.test.ts",
-      "bytes": 2231,
-      "sha256": "ba17d1cfcb5aa8f684ca051b5bb17ef5581587addeb1f3cabe2936f55eda2121"
+      "bytes": 3923,
+      "sha256": "2df184bc295e11357c40c4b6be26e69052ea194d2c9b306c28849979f623b92d"
     },
     {
       "path": "src/lib/scale-study-cache.ts",
-      "bytes": 2756,
-      "sha256": "6a7ebb0ccedd5bbb244397d5208bb4bc5b20f7d2c7166762ed4a8b3f7bad4d54"
+      "bytes": 2916,
+      "sha256": "0c9a83e55f89155421566db2201f2191dd5060a6c1cd3f413581ae014e09dcad"
     },
     {
       "path": "src/lib/scale-study.worker.test.ts",
@@ -6140,8 +6170,8 @@
     },
     {
       "path": "src/lib/sculpture-scene.ts",
-      "bytes": 21248,
-      "sha256": "b03bae05db41280e0eb8b97b5d6a19e9bfcefbf01cf571cae85529859616dfdb"
+      "bytes": 25005,
+      "sha256": "2a712ff3a1c87740ffccdf5da158cba9eab799a004b5e613b54fe1334138c505"
     },
     {
       "path": "src/lib/studio-reflection.ts",
@@ -6150,8 +6180,8 @@
     },
     {
       "path": "src/lib/use-scale-study.ts",
-      "bytes": 5382,
-      "sha256": "58d83a85333248243ccde5b28f32426d0b9eb21dd0a3ed6cab2716d6d3bebbc7"
+      "bytes": 5475,
+      "sha256": "a4eeaa9af166658a26b8c4a97737c756c33707b2e61d7760d08b02a463221cc9"
     },
     {
       "path": "src/lib/utils.ts",
@@ -6295,8 +6325,8 @@
     },
     {
       "path": "src/pages/scales.tsx",
-      "bytes": 84550,
-      "sha256": "104c321bba74da3044e436581c101e92c6eb6ff5ecafc3a6c16a7cc2de7f287c"
+      "bytes": 87432,
+      "sha256": "38200650b4accd2992cb2682633f876feda60619f0c130eece43fa03c05c9b61"
     },
     {
       "path": "src/pages/six-foot.tsx",
@@ -6345,8 +6375,8 @@
     },
     {
       "path": "src/scales.css",
-      "bytes": 20836,
-      "sha256": "f651096b52b2f3f2ba42833a55ce2ec15a4c03892347f05c19aca878c7741e89"
+      "bytes": 21559,
+      "sha256": "ecff21102bf4fba50f70bdca30e3f2069cd18a35f3c5ecf68edc730cd6f4a96d"
     },
     {
       "path": "src/site-guide.css",
