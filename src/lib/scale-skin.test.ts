@@ -1,6 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import { VertexBuffer } from "@babylonjs/core/Buffers/buffer";
 import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
+import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
@@ -10,6 +11,125 @@ import { allocateScaleLettering } from "../../shared/scale-lettering";
 import { generateScaleStudy } from "../../shared/scale-study";
 import { planScaleAtlases, type ScaleAtlasPlan } from "./scale-atlas";
 import { createScaleSkin, type ScalePreview } from "./scale-skin";
+
+test("a paused render loop settles the fade and commits its newest queued preview", async () => {
+  const engine = new NullEngine();
+  const scene = new Scene(engine);
+  const root = new TransformNode("paused-render-root", scene);
+  const committed: ScalePreview[] = [];
+  const skin = createScaleSkin(scene, root, {
+    onCommit: (preview) => committed.push(preview),
+  });
+  try {
+    const generated = generateScaleStudy({
+      columns: 4,
+      rows: 2,
+      surfaceMode: "planar",
+    });
+    const study = { ...generated, plates: generated.plates.slice(0, 1) };
+    const makePreview = (plateColor: string): ScalePreview => ({
+      study,
+      lettering: {
+        placements: [],
+        unplacedText: "",
+        placedWordCount: 0,
+        totalWordCount: 0,
+      },
+      design: { ...DEFAULT_SCALE_DESIGN, showLettering: false, plateColor },
+      fontFamily: "serif",
+    });
+    const first = makePreview("#aaaaaa");
+    const second = makePreview("#bbbbbb");
+    const superseded = makePreview("#cccccc");
+    const latest = makePreview("#dddddd");
+    skin.update(first);
+    const firstMeshes = [...skin.getMeshes()];
+    skin.update(second);
+    const secondMeshes = [...skin.getMeshes()];
+    skin.update(superseded);
+    skin.update(latest);
+    expect(committed).toEqual([first, second]);
+    expect(firstMeshes).toHaveLength(3);
+    expect(secondMeshes).toHaveLength(3);
+    expect(scene.meshes.length).toBe(firstMeshes.length + secondMeshes.length);
+    // No render, observer notification, visibility change, or reduced-motion
+    // toggle may be needed to release the queued newest complete preview.
+    await Bun.sleep(850);
+    expect(committed.at(-1)).toBe(latest);
+    expect(committed.includes(superseded)).toBe(false);
+    expect(scene.meshes.length).toBe(firstMeshes.length);
+    expect(
+      [...firstMeshes, ...secondMeshes].every((mesh) => mesh.isDisposed()),
+    ).toBe(true);
+    expect(scene.meshes).toEqual([...skin.getMeshes()]);
+    expect(skin.getMeshes().every((mesh) => mesh.visibility === 1)).toBe(true);
+    expect(scene.materials.length).toBe(scene.meshes.length);
+    expect(
+      scene.textures.filter((texture) =>
+        texture.name.startsWith("scale-atlas-"),
+      ).length,
+    ).toBe(0);
+  } finally {
+    skin.dispose();
+    scene.dispose();
+    engine.dispose();
+  }
+});
+
+test("disposing a paused fade cancels its deadline and queued preview", async () => {
+  const engine = new NullEngine();
+  const scene = new Scene(engine);
+  const root = new TransformNode("disposed-render-root", scene);
+  const committed: ScalePreview[] = [];
+  const skin = createScaleSkin(scene, root, {
+    onCommit: (preview) => committed.push(preview),
+  });
+  try {
+    const generated = generateScaleStudy({
+      columns: 4,
+      rows: 2,
+      surfaceMode: "planar",
+    });
+    const study = { ...generated, plates: generated.plates.slice(0, 1) };
+    const base: ScalePreview = {
+      study,
+      lettering: {
+        placements: [],
+        unplacedText: "",
+        placedWordCount: 0,
+        totalWordCount: 0,
+      },
+      design: { ...DEFAULT_SCALE_DESIGN, showLettering: false },
+      fontFamily: "serif",
+    };
+    const fading = {
+      ...base,
+      design: { ...base.design, plateColor: "#aaaaaa" },
+    };
+    const queued = {
+      ...base,
+      design: { ...base.design, plateColor: "#bbbbbb" },
+    };
+    skin.update(base);
+    skin.update(fading);
+    skin.update(queued);
+    expect(committed).toEqual([base, fading]);
+    skin.dispose();
+    await Bun.sleep(850);
+    expect(committed).toEqual([base, fading]);
+    expect(scene.meshes.length).toBe(0);
+    expect(scene.materials.length).toBe(0);
+    expect(
+      scene.textures.filter((texture) =>
+        texture.name.startsWith("scale-atlas-"),
+      ).length,
+    ).toBe(0);
+  } finally {
+    skin.dispose();
+    scene.dispose();
+    engine.dispose();
+  }
+});
 
 test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resources", () => {
   const original = Object.getOwnPropertyDescriptor(globalThis, "document");
@@ -136,7 +256,9 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
       ).toBe(topMeshes.length);
       expect(
         scene.meshes.reduce((sum, mesh) => sum + mesh.getTotalIndices() / 3, 0),
-      ).toBe(study.triangleCount);
+      ).toBe(
+        study.triangleCount + (study.sourceGeometry?.indices.length ?? 0) / 3,
+      );
       for (const mesh of topMeshes) {
         expect(mesh.parent).toBe(root);
         const uvs = mesh.getVerticesData(VertexBuffer.UVKind) ?? [];
@@ -316,7 +438,7 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
       design: { ...DEFAULT_SCALE_DESIGN, showLettering: false },
       fontFamily: "serif",
     });
-    expect(scene.meshes.length).toBe(2);
+    expect(scene.meshes.length).toBe(3);
     expect(
       scene.textures.filter((texture) =>
         texture.name.startsWith("scale-atlas-"),
@@ -337,7 +459,7 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
       skin.update(preview);
       const nextMeshes = [...skin.getMeshes()];
       expect(nextMeshes.every((mesh) => mesh.visibility === 0)).toBe(true);
-      expect(scene.meshes.length).toBe(4);
+      expect(scene.meshes.length).toBe(6);
       now += 160;
       scene.onBeforeRenderObservable.notifyObservers(scene);
       expect(nextMeshes.every((mesh) => mesh.visibility === 0.5)).toBe(true);
@@ -363,7 +485,7 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
           (mesh) => mesh.visibility === 0.5 && !mesh.isDisposed(),
         ),
       ).toBe(true);
-      expect(scene.meshes.length).toBe(4);
+      expect(scene.meshes.length).toBe(6);
       now += 160;
       scene.onBeforeRenderObservable.notifyObservers(scene);
       expect(firstMeshes.every((mesh) => mesh.isDisposed())).toBe(true);
@@ -372,7 +494,7 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
       ).toBe(true);
       const latestMeshes = [...skin.getMeshes()];
       expect(latestMeshes.every((mesh) => mesh.visibility === 0)).toBe(true);
-      expect(scene.meshes.length).toBe(4);
+      expect(scene.meshes.length).toBe(6);
       expect(committed.at(-1)).toBe(latest);
       expect(committed.includes(superseded)).toBe(false);
       expect(committedPlans.has(superseded)).toBe(false);
@@ -412,11 +534,11 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
       skin.update(superseded);
       skin.update(reducedLatest);
       expect(committed.at(-1)).toBe(next);
-      expect(scene.meshes.length).toBe(4);
+      expect(scene.meshes.length).toBe(6);
       skin.setReducedMotion(true);
       expect(committed.at(-1)).toBe(reducedLatest);
       expect(committed.includes(superseded)).toBe(false);
-      expect(scene.meshes.length).toBe(2);
+      expect(scene.meshes.length).toBe(3);
       expect(skin.getMeshes().every((mesh) => mesh.visibility === 1)).toBe(
         true,
       );
@@ -543,7 +665,14 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
     // Geometry is already in physical inches. A resized archival glTF parent
     // must scale hardware without applying that resize to the scales twice.
     root.scaling.set(2, 2, -2);
-    const scaledStudy = { ...makeStudy(1), modelScale: 2 };
+    const scaledStudy = {
+      ...makeStudy(1),
+      modelScale: 2,
+      sourceGeometry: {
+        positions: [0, 0, 0, 2, 0, 0, 0, 2, 0],
+        indices: [0, 1, 2],
+      },
+    };
     skin.update({
       study: scaledStudy,
       lettering: { ...lettering, placements: [] },
@@ -552,6 +681,11 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
     });
     const top = scene.meshes.find((mesh) => mesh.name === "scales-plain");
     if (!top) throw new Error("Scaled top mesh missing");
+    expect(top.material instanceof PBRMaterial).toBe(true);
+    if (top.material instanceof PBRMaterial) {
+      expect(top.material.metallic).toBe(0);
+      expect(top.material.roughness).toBe(0.88);
+    }
     const first = scaledStudy.plates[0]?.positions.slice(0, 3) ?? [];
     const world = Vector3.TransformCoordinates(
       Vector3.FromArray(first),
@@ -560,6 +694,63 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
     expect(world.x).toBeCloseTo(first[0] ?? 0, 5);
     expect(world.y).toBeCloseTo(first[1] ?? 0, 5);
     expect(world.z).toBeCloseTo(-(first[2] ?? 0), 5);
+    const woodSubstrate = scene.meshes.find(
+      (mesh) => mesh.name === "scale-wood-substrate",
+    );
+    if (!woodSubstrate || !(woodSubstrate.material instanceof PBRMaterial)) {
+      throw new Error("Archival wood substrate missing");
+    }
+    expect(woodSubstrate.getTotalIndices()).toBe(3);
+    expect(
+      Array.from(
+        woodSubstrate.getVerticesData(VertexBuffer.PositionKind) ?? [],
+      ),
+    ).toEqual(scaledStudy.sourceGeometry.positions);
+    expect(
+      Array.from(woodSubstrate.getVerticesData(VertexBuffer.NormalKind) ?? []),
+    ).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1]);
+    expect(woodSubstrate.scaling.x).toBe(0.5);
+    expect(woodSubstrate.material.metallic).toBe(0);
+    expect(woodSubstrate.material.roughness).toBe(0.95);
+    expect(woodSubstrate.material.albedoColor.toHexString()).toBe("#65503C");
+    const bodyGeometry = woodSubstrate.geometry;
+    skin.update({
+      study: scaledStudy,
+      lettering: { ...lettering, placements: [] },
+      design: {
+        ...DEFAULT_SCALE_DESIGN,
+        showLettering: false,
+        plateColor: "#c8aa83",
+      },
+      fontFamily: "serif",
+    });
+    expect(
+      scene.meshes.find((mesh) => mesh.name === "scale-wood-substrate")
+        ?.geometry,
+    ).toBe(bodyGeometry);
+    for (const [buildMethod, metallic, roughness] of [
+      ["printed", 0.62, 0.46],
+      ["hybrid", 0, 0.88],
+    ] as const) {
+      skin.update({
+        study: scaledStudy,
+        lettering: { ...lettering, placements: [] },
+        design: {
+          ...DEFAULT_SCALE_DESIGN,
+          showLettering: false,
+          plateColor: "#c8aa83",
+          buildMethod,
+        },
+        fontFamily: "serif",
+      });
+      const changedTop = skin
+        .getMeshes()
+        .find((mesh) => mesh.name === "scales-plain");
+      if (!(changedTop?.material instanceof PBRMaterial))
+        throw new Error("Plate material missing");
+      expect(changedTop.material.metallic).toBe(metallic);
+      expect(changedTop.material.roughness).toBe(roughness);
+    }
     root.scaling.set(1, 1, -1);
     skin.update({
       study: {
@@ -579,6 +770,12 @@ test("scale rebuilds keep bounded draw calls, correct UVs and no stale GPU resou
     );
     expect(substrate?.getTotalIndices()).toBe(3);
     expect(substrate?.scaling.x).toBe(1);
+    expect(substrate?.material instanceof PBRMaterial).toBe(true);
+    if (substrate?.material instanceof PBRMaterial) {
+      expect(substrate.material.metallic).toBe(0);
+      expect(substrate.material.roughness).toBe(0.85);
+      expect(substrate.material.albedoColor.toHexString()).toBe("#AFA99C");
+    }
     skin.setReducedMotion(false);
     skin.update({
       study: makeStudy(2),

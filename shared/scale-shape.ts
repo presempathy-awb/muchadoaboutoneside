@@ -3,6 +3,8 @@ import type { Point2, SurfaceBounds } from "./scale-surface";
 export type ScalePlateShape = "legacy" | "clipped" | "rectangle" | "diamond";
 export interface ScaleShapeSettings {
   plateShape: ScalePlateShape;
+  /** Cover keeps the complete cell; inset fits the exact physical aspect. */
+  plateFit: "cover" | "inset";
   /** Physical face width / height; zero preserves the original cell. */
   plateAspect: number;
   cornerCut: number;
@@ -10,12 +12,14 @@ export interface ScaleShapeSettings {
 }
 export const DEFAULT_SCALE_SHAPE: ScaleShapeSettings = {
   plateShape: "clipped",
+  plateFit: "cover",
   plateAspect: 1.3,
-  cornerCut: 0.12,
-  plateTaper: 0.12,
+  cornerCut: 0.04,
+  plateTaper: 0.025,
 };
 export const LEGACY_SCALE_SHAPE: ScaleShapeSettings = {
   plateShape: "legacy",
+  plateFit: "inset",
   plateAspect: 0,
   cornerCut: 0.055,
   plateTaper: 0,
@@ -31,6 +35,7 @@ export function normalizeScaleShapeSettings(
 ): ScaleShapeSettings {
   const aspect = finite(input.plateAspect, 0);
   return {
+    plateFit: input.plateFit === "cover" ? "cover" : "inset",
     plateShape:
       input.plateShape === "clipped" ||
       input.plateShape === "rectangle" ||

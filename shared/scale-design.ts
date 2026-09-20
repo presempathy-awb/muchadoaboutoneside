@@ -1,6 +1,7 @@
 import {
   buildUpSupportOffsetInches,
   DEFAULT_SCALE_BUILD_UP,
+  ellipsePerimeter,
   normalizeScaleBuildUp,
   type ScaleBuildUp,
 } from "./scale-measurements";
@@ -19,7 +20,8 @@ export type ScaleLetteringQuality = "balanced" | "crisp";
 export type ScaleDensityReference = Pick<
   ScaleStudySettings,
   "modelId" | "modelScale" | "columns" | "rows"
->;
+> &
+  Partial<Pick<ScaleStudySettings, "bodyWidthScale" | "bodyDepthScale">>;
 
 export interface ScaleDesign {
   schema: 1;
@@ -86,7 +88,18 @@ function color(value: unknown, fallback: string) {
 
 function densityReference(geometry: ScaleStudySettings): ScaleDensityReference {
   const { modelId, modelScale, columns, rows } = geometry;
-  return { modelId, modelScale, columns, rows };
+  return {
+    modelId,
+    modelScale,
+    columns,
+    rows,
+    ...(geometry.bodyWidthScale !== 1
+      ? { bodyWidthScale: geometry.bodyWidthScale }
+      : {}),
+    ...(geometry.bodyDepthScale !== 1
+      ? { bodyDepthScale: geometry.bodyDepthScale }
+      : {}),
+  };
 }
 
 function normalizeDensityReference(
@@ -106,10 +119,21 @@ function normalizeDensityReference(
   return densityReference(normalizeScaleStudySettings(value));
 }
 
-function adaptiveDensity(reference: ScaleDensityReference, scale: number) {
-  const ratio = scale / reference.modelScale;
+function adaptiveDensity(
+  reference: ScaleDensityReference,
+  geometry: ScaleStudySettings,
+) {
+  const ratio = geometry.modelScale / reference.modelScale;
+  // Estimated local girth response: the true cross-section varies along the body.
+  // The unchanged centerline keeps column targets independent of body thickness.
+  const girthRatio =
+    ellipsePerimeter(geometry.bodyWidthScale, geometry.bodyDepthScale) /
+    ellipsePerimeter(
+      reference.bodyWidthScale ?? 1,
+      reference.bodyDepthScale ?? 1,
+    );
   const requestedColumns = Math.round(reference.columns * ratio);
-  const requestedRows = Math.round(reference.rows * ratio);
+  const requestedRows = Math.round(reference.rows * ratio * girthRatio);
   const columns = Math.max(4, requestedColumns);
   const rows = Math.max(2, requestedRows);
   // Preserve the requested aspect ratio when the shared 600-cell budget binds.
@@ -147,7 +171,7 @@ export function scaleDensityStatus(design: ScaleDesign) {
   }
   return adaptiveDensity(
     normalizeDensityReference(design.densityReference, design.geometry),
-    design.geometry.modelScale,
+    design.geometry,
   );
 }
 
@@ -245,7 +269,7 @@ export function normalizeScaleDesign(input: unknown): ScaleDesign {
       ? normalizeDensityReference(value.densityReference, geometry)
       : undefined;
   if (reference) {
-    const counts = adaptiveDensity(reference, geometry.modelScale);
+    const counts = adaptiveDensity(reference, geometry);
     geometry.columns = counts.columns;
     geometry.rows = counts.rows;
   }

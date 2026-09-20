@@ -60,6 +60,8 @@ export function createScaleSkin(
   let disposed = false;
   let coordinateScale = 1;
   let fadeStarted = 0;
+  const fadeDuration = 320;
+  let fadeDeadline: ReturnType<typeof setTimeout> | undefined;
   const clear = (resources: SkinResources | null) => {
     if (!resources) return;
     for (const mesh of resources.meshes) mesh.dispose();
@@ -71,13 +73,21 @@ export function createScaleSkin(
     for (const mesh of resources?.meshes ?? []) mesh.visibility = value;
   };
   const settle = () => {
+    if (fadeDeadline !== undefined) {
+      clearTimeout(fadeDeadline);
+      fadeDeadline = undefined;
+    }
     clear(retiring);
     retiring = null;
     opacity(current, 1);
   };
   const observer = scene.onBeforeRenderObservable.add(() => {
     if (!retiring) return;
-    const amount = transitionProgress(fadeStarted, performance.now(), 320);
+    const amount = transitionProgress(
+      fadeStarted,
+      performance.now(),
+      fadeDuration,
+    );
     opacity(current, amount);
     opacity(retiring, 1 - amount);
     if (amount === 1) {
@@ -100,8 +110,10 @@ export function createScaleSkin(
     const makeMaterial = (name: string) => {
       const material = new PBRMaterial(name, scene);
       materials.push(material);
-      material.metallic = 0.62;
-      material.roughness = 0.46;
+      const woodPlates =
+        design.buildMethod === "wood" || design.buildMethod === "hybrid";
+      material.metallic = woodPlates ? 0 : 0.62;
+      material.roughness = woodPlates ? 0.88 : 0.46;
       material.backFaceCulling = false;
       material.wireframe = wireframe;
       return material;
@@ -123,7 +135,8 @@ export function createScaleSkin(
         sameStudy &&
         (sameLayout ||
           name === "scale-sidewalls" ||
-          name === "scale-print-substrate")
+          name === "scale-print-substrate" ||
+          name === "scale-wood-substrate")
           ? current?.meshes.find((mesh) => mesh.name === name)
           : undefined;
       // Babylon reference-counts the shared immutable vertex/index buffers.
@@ -238,13 +251,19 @@ export function createScaleSkin(
         );
         meshFor("scale-sidewalls", edgePositions, edgeIndices, [], material);
       }
-      if (study.modelId === "maquette" && study.sourceGeometry) {
-        const material = makeMaterial("scale-print-substrate");
+      if (study.sourceGeometry) {
+        const printSubstrate = study.modelId === "maquette";
+        const substrateName = printSubstrate
+          ? "scale-print-substrate"
+          : "scale-wood-substrate";
+        const material = makeMaterial(substrateName);
         material.metallic = 0;
-        material.roughness = 0.85;
-        material.albedoColor = Color3.FromHexString("#afa99c");
+        material.roughness = printSubstrate ? 0.85 : 0.95;
+        material.albedoColor = Color3.FromHexString(
+          printSubstrate ? "#afa99c" : "#65503c",
+        );
         meshFor(
-          "scale-print-substrate",
+          substrateName,
           study.sourceGeometry.positions,
           study.sourceGeometry.indices,
           [],
@@ -273,6 +292,7 @@ export function createScaleSkin(
       previous.lettering === preview.lettering &&
       previous.typography === preview.typography &&
       previous.fontFamily === preview.fontFamily &&
+      previous.design.buildMethod === preview.design.buildMethod &&
       previous.design.plateColor === preview.design.plateColor &&
       previous.design.inkColor === preview.design.inkColor &&
       previous.design.marginMm === preview.design.marginMm &&
@@ -294,6 +314,15 @@ export function createScaleSkin(
       else {
         fadeStarted = performance.now();
         opacity(current, 0);
+        // A background document can stop receiving animation frames while its
+        // canvas still intersects the viewport. The fade must not hold the
+        // latest complete preview hostage to the next render notification.
+        fadeDeadline = setTimeout(() => {
+          fadeDeadline = undefined;
+          if (disposed || scene.isDisposed) return;
+          settle();
+          flushPending();
+        }, fadeDuration);
       }
     }
     currentPreview = preview;

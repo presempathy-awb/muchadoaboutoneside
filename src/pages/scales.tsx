@@ -18,6 +18,7 @@ import {
   useState,
 } from "react";
 import { PoemVersionControls } from "@/components/poem-version-controls";
+import { ScaleBodyControls } from "@/components/scale-body-controls";
 import { ScaleBuildUpPanel } from "@/components/scale-build-up";
 import { ScalePlateProof } from "@/components/scale-plate-proof";
 import { ScaleReferenceComparison } from "@/components/scale-reference-comparison";
@@ -61,7 +62,7 @@ import {
 } from "../../shared/scale-history";
 import {
   allocateScaleLettering,
-  fitScaleLettering,
+  fillScaleLettering,
 } from "../../shared/scale-lettering";
 import { scaleStudyBoundsComparison } from "../../shared/scale-measurements";
 import {
@@ -74,7 +75,11 @@ import {
   parseScaleStudyFile,
   scaleStudyFile,
 } from "../../shared/scale-scan-file";
-import type { ScalePlate, ScaleStudySettings } from "../../shared/scale-study";
+import {
+  mergeScaleStudySettings,
+  type ScalePlate,
+  type ScaleStudySettings,
+} from "../../shared/scale-study";
 import {
   applyScaleVersionPreset,
   matchingScaleVersionPreset,
@@ -547,7 +552,7 @@ export default function Scales({
         segments: typography.segments,
       };
       const lettering = settledLayout.autoFit
-        ? fitScaleLettering(candidatePlates, settledLayout.text, options)
+        ? fillScaleLettering(candidatePlates, settledLayout.text, options)
         : allocateScaleLettering(candidatePlates, settledLayout.text, options);
       return { lettering, error: "" };
     } catch (error) {
@@ -767,9 +772,20 @@ export default function Scales({
   const selectedPlacement = displayedLettering?.placements.find(
     (placement) => placement.plateId === selectedPlate?.id,
   );
-  const actualSize =
-    displayedLettering?.placements[0]?.fontSizeMm ??
-    displayedDesign?.fontSizeMm;
+  const letteredSizes =
+    displayedLettering?.placements
+      .filter((placement) => placement.lines.length > 0)
+      .map((placement) => placement.fontSizeMm) ?? [];
+  const actualSizeMin =
+    letteredSizes.length > 0 ? Math.min(...letteredSizes) : undefined;
+  const actualSizeMax =
+    letteredSizes.length > 0 ? Math.max(...letteredSizes) : undefined;
+  const actualSizeLabel =
+    actualSizeMin === undefined
+      ? "—"
+      : actualSizeMax !== undefined && actualSizeMax - actualSizeMin >= 1
+        ? `${actualSizeMin.toFixed(0)}–${actualSizeMax.toFixed(0)}`
+        : actualSizeMin.toFixed(1);
   const usedPlates =
     displayedLettering?.placements.filter(
       (placement) => placement.lines.length > 0,
@@ -794,20 +810,34 @@ export default function Scales({
   }
 
   function updateGeometry(patch: Partial<ScaleStudySettings>) {
-    setDesign((current) => ({
-      ...normalizeScaleDesign({
-        ...current,
+    setDesign((current) => {
+      const base =
+        patch.columns !== undefined || patch.rows !== undefined
+          ? updateScaleDensity(current, {
+              columns: patch.columns ?? current.geometry.columns,
+              rows: patch.rows ?? current.geometry.rows,
+            })
+          : current;
+      const normalized = normalizeScaleDesign({
+        ...base,
         geometry: {
-          ...current.geometry,
+          ...base.geometry,
           ...patch,
           ...(patch.modelId === "maquette"
             ? { surfaceMode: "conforming" }
             : {}),
         },
-      }),
-      layers: current.layers,
-      customFont: current.customFont,
-    }));
+      });
+      return {
+        ...normalized,
+        geometry: mergeScaleStudySettings(
+          current.geometry,
+          normalized.geometry,
+        ),
+        layers: current.layers,
+        customFont: current.customFont,
+      };
+    });
   }
 
   function applyHeight() {
@@ -1012,7 +1042,16 @@ export default function Scales({
         )}
         data-font-id={renderedPreview?.design.fontId}
         data-model-scale={renderedPreview?.design.geometry.modelScale}
+        data-body-width={renderedPreview?.design.geometry.bodyWidthScale}
+        data-body-depth={renderedPreview?.design.geometry.bodyDepthScale}
+        data-geometry-source={geometry.cacheHit ? "cache" : "built"}
         data-plate-shape={renderedPreview?.design.geometry.plateShape}
+        data-plate-fit={renderedPreview?.design.geometry.plateFit}
+        data-source-triangles={
+          renderedPreview?.study.sourceGeometry
+            ? renderedPreview.study.sourceGeometry.indices.length / 3
+            : 0
+        }
         data-plate-aspect={renderedPreview?.design.geometry.plateAspect}
         data-plate-fingerprint={renderedPreview?.study.plates[0]?.positions
           .slice(0, 24)
@@ -1150,10 +1189,10 @@ export default function Scales({
             </div>
             <div>
               <strong>
-                {actualSize?.toFixed(1) ?? "—"}
+                {actualSizeLabel}
                 <small> mm</small>
               </strong>
-              <span>type size · not x-height</span>
+              <span>type size on lettered faces · not x-height</span>
             </div>
           </div>
           <p className="scales-model-note">
@@ -1333,6 +1372,8 @@ export default function Scales({
               pending={updating || previewBlocked}
               modelId={design.geometry.modelId}
               modelScale={design.geometry.modelScale}
+              bodyWidthScale={design.geometry.bodyWidthScale}
+              bodyDepthScale={design.geometry.bodyDepthScale}
             />
           </details>
 
@@ -1541,9 +1582,13 @@ export default function Scales({
                 setDesign((current) => resizeScaleDesign(current, 2 ** value))
               }
             />
+            <ScaleBodyControls
+              settings={design.geometry}
+              onChange={updateGeometry}
+            />
             <dl
               className="scales-size-dimensions"
-              aria-label="Target complete model dimensions including base or plinth"
+              aria-label="Historical source dimensions at overall size, including base or plinth"
             >
               <div>
                 <dt>Width</dt>
@@ -1565,10 +1610,11 @@ export default function Scales({
               </div>
             </dl>
             <p className="scales-help">
-              Complete source model including its{" "}
+              Historical source dimensions at the selected overall size,
+              including its{" "}
               {design.geometry.modelId === "archival" ? "base" : "plinth"},
-              before the added layers and raised plates. Compare the body and
-              clad body measurements below the viewer.
+              before body-girth adjustments, added layers, and raised plates.
+              Compare the body and clad body measurements below the viewer.
             </p>
             {committedBounds?.scales && (
               <p className="scales-help" data-testid="scales-clad-size">
@@ -2039,9 +2085,12 @@ export default function Scales({
                 />
               )}
               <p className="scales-help">
-                Auto-fit reduces type only as far as your minimum. A script font
-                previews the composition; hand lettering and swashes still need
-                a practice test.
+                Auto-fit puts about one word on each plate, as large as that
+                plate allows, so writing spreads around the sculpture. It will
+                not go below your minimum. Turn auto-fit off to keep an exact
+                requested size on fewer faces. A script font previews the
+                composition; hand lettering and swashes still need a practice
+                test.
               </p>
             </section>
           </details>
@@ -2122,9 +2171,11 @@ export default function Scales({
               )}
               <RangeField
                 label={
-                  design.geometry.modelId === "maquette"
-                    ? "Target lengthwise density"
-                    : "Plates around the body loop"
+                  design.geometry.plateFit === "cover"
+                    ? "Plate budget · lengthwise target"
+                    : design.geometry.modelId === "maquette"
+                      ? "Target lengthwise density"
+                      : "Plates around the body loop"
                 }
                 value={design.geometry.columns}
                 min={4}
@@ -2137,9 +2188,11 @@ export default function Scales({
               />
               <RangeField
                 label={
-                  design.geometry.modelId === "maquette"
-                    ? "Target crosswise density"
-                    : "Rows across each surface"
+                  design.geometry.plateFit === "cover"
+                    ? "Plate budget · crosswise target"
+                    : design.geometry.modelId === "maquette"
+                      ? "Target crosswise density"
+                      : "Rows across each surface"
                 }
                 value={design.geometry.rows}
                 min={2}
@@ -2148,6 +2201,17 @@ export default function Scales({
                   setDesign((current) => updateScaleDensity(current, { rows }))
                 }
               />
+              {design.geometry.plateFit === "cover" && (
+                <p className="scales-help">
+                  Covering layout balances these targets into closely fitted
+                  courses. The {design.geometry.columns} ×{" "}
+                  {design.geometry.rows} budget guides the layout; curved
+                  regions and separate surfaces can change the actual count.
+                  {study
+                    ? ` Completed preview: ${study.plates.length} plates.`
+                    : ""}
+                </p>
+              )}
               <RangeField
                 label="Space between plates"
                 value={design.geometry.gap}

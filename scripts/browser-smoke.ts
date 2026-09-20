@@ -127,7 +127,7 @@ async function diagnose(stage: string) {
   if (socket?.readyState !== WebSocket.OPEN) return;
   try {
     const data = await evaluate(
-      `(() => { const w=document.querySelector('[data-testid="scales-workbench"]'); const ink=document.querySelector('#scales-ink'); const paper=document.querySelector('#scales-metal'); return { url:location.href, workbench:w ? Object.fromEntries(Array.from(w.attributes).filter(a=>a.name.startsWith('data-')).map(a=>[a.name,a.value])) : null, ink:ink?.value, paper:paper?.value, inkVisible:Boolean(ink?.getClientRects().length), activeElement:document.activeElement?.id, draft:localStorage.getItem('muchado.scale-study.v1'), visibility:document.querySelector('[data-testid="scales-visibility"]')?.outerHTML, fitMessages:Array.from(document.querySelectorAll('.scales-size-card [role="status"]')).map(e=>e.textContent), alerts:Array.from(document.querySelectorAll('[role="alert"],.scales-error')).map(e=>e.textContent) }; })()`,
+      `(() => { const w=document.querySelector('[data-testid="scales-workbench"]'); const ink=document.querySelector('#scales-ink'); const paper=document.querySelector('#scales-metal'); return { url:location.href, workbench:w ? Object.fromEntries(Array.from(w.attributes).filter(a=>a.name.startsWith('data-')).map(a=>[a.name,a.value])) : null, ink:ink?.value, paper:paper?.value, inkVisible:Boolean(ink?.getClientRects().length), activeElement:document.activeElement?.id, draft:localStorage.getItem('muchado.scale-study.v1'), visibility:document.querySelector('[data-testid="scales-visibility"]')?.outerHTML, fitMessages:Array.from(document.querySelectorAll('.scales-size-card [role="status"]')).map(e=>e.textContent), alerts:Array.from(document.querySelectorAll('[role="alert"],.scales-error')).map(e=>e.textContent), bodyDiffs:globalThis.__scaleBodyDiffs ?? null }; })()`,
     );
     diagnostics.push({ stage, data });
     await Bun.write(
@@ -643,9 +643,15 @@ try {
     "low contrast reports needs attention",
     `document.querySelector('[data-testid="scales-visibility"]').getAttribute('data-status') === 'needs-attention'`,
   );
-  await evaluate(
-    `(() => { const ink=document.querySelector('#scales-ink'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(ink,${JSON.stringify(originalInk)}); ink.dispatchEvent(new Event('input',{bubbles:true})); ink.dispatchEvent(new Event('change',{bubbles:true})); })()`,
-  );
+  const inkMatches = (color: string) =>
+    `document.querySelector('#scales-ink').value === ${JSON.stringify(color)} && JSON.parse(localStorage.getItem('muchado.scale-study.v1')||'{}').inkColor === ${JSON.stringify(color)}`;
+  async function settleStoredInk(color: string, label: string) {
+    await evaluate(
+      `(() => { const ink=document.querySelector('#scales-ink'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(ink,${JSON.stringify(color)}); ink.dispatchEvent(new Event('input',{bubbles:true})); ink.dispatchEvent(new Event('change',{bubbles:true})); ink.blur(); })()`,
+    );
+    await waitFor(label, () => evaluate<boolean>(inkMatches(color)));
+  }
+  await settleStoredInk(originalInk, "restored ink is stored after contrast");
   await waitFor("restored colors pass measured contrast", () =>
     evaluate<boolean>(
       `document.querySelector('[data-check="proof-contrast"]')?.getAttribute('data-check-status') === 'pass'`,
@@ -655,6 +661,9 @@ try {
     "contrast check recovers after restoring ink",
     `document.querySelector('[data-check="proof-contrast"]').getAttribute('data-check-status') === 'pass'`,
   );
+  await waitFor("restored ink remains stored after contrast recovery", () =>
+    evaluate<boolean>(inkMatches(originalInk)),
+  );
   await assert(
     "scale outline controls and reference comparison are available",
     `Boolean(document.querySelector('#scales-shape-clipped')?.getClientRects().length) && Boolean(document.querySelector('.scales-reference-card')?.getClientRects().length) && /including its (base|plinth)/.test(document.querySelector('.scales-size-card')?.textContent ?? '')`,
@@ -662,6 +671,141 @@ try {
   const storedDesign = `JSON.parse(localStorage.getItem('muchado.scale-study.v1'))`;
   const committedShape = `document.querySelector('[data-testid="scales-workbench"]')`;
   const readyShape = `${committedShape}?.getAttribute('data-preview-ready') === 'true'`;
+  async function exerciseBodyTuning(modelId: "maquette" | "archival") {
+    await waitFor(`${modelId} baseline before body tuning`, () =>
+      evaluate<boolean>(
+        `${readyShape} && ${storedDesign}.geometry.modelId === ${JSON.stringify(modelId)} && ${inkMatches(originalInk)}`,
+      ),
+    );
+    const baselineDraft = await evaluate<string>(
+      `localStorage.getItem('muchado.scale-study.v1')`,
+    );
+    const baselineFingerprint = await evaluate<string>(
+      `${committedShape}.getAttribute('data-plate-fingerprint')`,
+    );
+    await assert(
+      `${modelId} body controls are available without opening a disclosure`,
+      `['scales-body-width','scales-body-depth','scales-body-linked','scales-body-reset'].every(id => Boolean(document.getElementById(id)?.getClientRects().length))`,
+    );
+    async function setBodyRange(id: string, value: number) {
+      await evaluate(
+        `(() => { const input=document.getElementById(${JSON.stringify(id)}); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(String(value))}); input.dispatchEvent(new Event('input',{bubbles:true})); input.dispatchEvent(new Event('change',{bubbles:true})); })()`,
+      );
+    }
+    const factorsCommitted = (width: number, depth: number) =>
+      `${readyShape} && Number(${committedShape}.getAttribute('data-body-width'))===${width} && Number(${committedShape}.getAttribute('data-body-depth'))===${depth} && ${storedDesign}.geometry.bodyWidthScale===${width} && ${storedDesign}.geometry.bodyDepthScale===${depth}`;
+    await evaluate(
+      `(() => { const link=document.querySelector('#scales-body-linked'); if(!link.checked) link.click(); })()`,
+    );
+    await setBodyRange("scales-body-width", 1.1);
+    await waitFor(`${modelId} linked body width and depth commit`, () =>
+      evaluate<boolean>(
+        `${factorsCommitted(1.1, 1.1)} && ${committedShape}.getAttribute('data-plate-fingerprint') !== ${JSON.stringify(baselineFingerprint)}`,
+      ),
+    );
+    const linkedFingerprint = await evaluate<string>(
+      `${committedShape}.getAttribute('data-plate-fingerprint')`,
+    );
+    await assert(
+      `${modelId} linked girth changes actual plate geometry`,
+      `${factorsCommitted(1.1, 1.1)} && document.querySelector('#scales-body-depth').value==='1.1' && ${committedShape}.getAttribute('data-plate-fingerprint') !== ${JSON.stringify(baselineFingerprint)}`,
+    );
+    await evaluate(`document.querySelector('#scales-body-linked').click()`);
+    await setBodyRange("scales-body-depth", 0.9);
+    await waitFor(`${modelId} independent depth commits`, () =>
+      evaluate<boolean>(
+        `${factorsCommitted(1.1, 0.9)} && ${committedShape}.getAttribute('data-plate-fingerprint') !== ${JSON.stringify(linkedFingerprint)}`,
+      ),
+    );
+    const asymmetricFingerprint = await evaluate<string>(
+      `${committedShape}.getAttribute('data-plate-fingerprint')`,
+    );
+    await settleStoredInk(
+      originalInk,
+      `${modelId} contrast ink is settled before persist compare`,
+    );
+    const persistUnchanged = await evaluate<
+      { path: string; before: unknown; after: unknown }[]
+    >(
+      `(() => { const before=JSON.parse(${JSON.stringify(baselineDraft)}), after=${storedDesign}; const diffs=[]; const walk=(a,b,p)=>{ const keys=new Set([...Object.keys(a??{}), ...Object.keys(b??{})]); for (const k of keys) { const path=p?p+'.'+k:k; if (path==='geometry.bodyWidthScale' || path==='geometry.bodyDepthScale') continue; const av=a?.[k], bv=b?.[k]; if (av && bv && typeof av==='object' && typeof bv==='object' && !Array.isArray(av) && !Array.isArray(bv)) walk(av,bv,path); else if (JSON.stringify(av)!==JSON.stringify(bv)) diffs.push({path,before:av,after:bv}); } }; walk(before,after,''); globalThis.__scaleBodyDiffs=diffs; return diffs; })()`,
+    );
+    await diagnose(`${modelId} independent depth persist compare`);
+    results.push({
+      name: `${modelId} independent depth preserves source size layers words font and plate relief`,
+      passed: persistUnchanged.length === 0,
+      detail: persistUnchanged,
+    });
+    if (persistUnchanged.length)
+      throw new Error(
+        `Browser assertion failed: ${modelId} independent depth preserves source size layers words font and plate relief ${JSON.stringify(persistUnchanged)}`,
+      );
+    await assert(
+      `${modelId} independent depth keeps unlinked 1.1 × 0.9 body factors`,
+      `${factorsCommitted(1.1, 0.9)} && !document.querySelector('#scales-body-linked').checked`,
+    );
+    // Large archival studies can fill the memory budget before the four-entry
+    // count limit. Revisit the immediately preceding shape, not a third one.
+    await setBodyRange("scales-body-depth", 1.1);
+    await waitFor(
+      `${modelId} preceding body proportions reuse the geometry cache`,
+      () =>
+        evaluate<boolean>(
+          `${factorsCommitted(1.1, 1.1)} && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(linkedFingerprint)} && ${committedShape}.getAttribute('data-geometry-source')==='cache'`,
+        ),
+    );
+    await assert(
+      `${modelId} revisiting body proportions returns identical cached geometry`,
+      `${factorsCommitted(1.1, 1.1)} && ${committedShape}.getAttribute('data-geometry-source')==='cache' && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(linkedFingerprint)}`,
+    );
+    await evaluate(`document.querySelector('#scales-body-reset').click()`);
+    await waitFor(`${modelId} original body resets exactly`, () =>
+      evaluate<boolean>(
+        `${factorsCommitted(1, 1)} && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(baselineFingerprint)}`,
+      ),
+    );
+    await evaluate(`document.querySelector('#scales-body-linked').click()`);
+    await setBodyRange("scales-body-width", 1.1);
+    await waitFor(`${modelId} cached width commits`, () =>
+      evaluate<boolean>(factorsCommitted(1.1, 1.1)),
+    );
+    await evaluate(`document.querySelector('#scales-body-linked').click()`);
+    await setBodyRange("scales-body-depth", 0.9);
+    await waitFor(`${modelId} asymmetric proportions revisit`, () =>
+      evaluate<boolean>(
+        `${factorsCommitted(1.1, 0.9)} && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(asymmetricFingerprint)}`,
+      ),
+    );
+    await evaluate(
+      `document.querySelector('.scales-body-controls').scrollIntoView({block:'center'})`,
+    );
+    await screenshot(`${modelId}-body-controls`);
+    await evaluate(
+      `document.querySelector('.scales-model-card').scrollIntoView({block:'start'})`,
+    );
+    await Bun.sleep(700);
+    await screenshot(`${modelId}-body-tuned-model`);
+    await reload(`Boolean(document.querySelector('#scales-body-width'))`);
+    await waitFor(
+      `${modelId} body proportions regenerate identically after reload`,
+      () =>
+        evaluate<boolean>(
+          `${factorsCommitted(1.1, 0.9)} && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(asymmetricFingerprint)}`,
+        ),
+    );
+    await assert(
+      `${modelId} body width depth and generated geometry survive reload`,
+      `${factorsCommitted(1.1, 0.9)} && document.querySelector('#scales-body-width').value==='1.1' && document.querySelector('#scales-body-depth').value==='0.9' && !document.querySelector('#scales-body-linked').checked && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(asymmetricFingerprint)}`,
+    );
+    await evaluate(`document.querySelector('#scales-body-reset').click()`);
+    await waitFor(
+      `${modelId} original body restored for subsequent checks`,
+      () =>
+        evaluate<boolean>(
+          `${factorsCommitted(1, 1)} && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(baselineFingerprint)}`,
+        ),
+    );
+  }
+  await exerciseBodyTuning("maquette");
   const originalShapeFingerprint = await evaluate<string>(
     `${committedShape}.getAttribute('data-plate-fingerprint')`,
   );
@@ -724,12 +868,41 @@ try {
   await evaluate(`document.querySelector('#scales-reference-shape').click()`);
   await waitFor("reference shape reset is stored and committed", () =>
     evaluate<boolean>(
-      `${readyShape} && Math.abs(Number(${committedShape}.getAttribute('data-plate-aspect'))-1.3)<0.001 && (() => { const g=${storedDesign}.geometry; return g.plateShape==='clipped' && g.cornerCut===0.12 && g.plateTaper===0.12; })()`,
+      `${readyShape} && Math.abs(Number(${committedShape}.getAttribute('data-plate-aspect'))-1.3)<0.001 && (() => { const g=${storedDesign}.geometry; return g.plateShape==='clipped' && g.plateFit==='cover' && g.cornerCut===0.04 && g.plateTaper===0.025 && g.gap===0.02 && g.variation===0.3 && g.columns===100 && g.rows===4; })()`,
     ),
   );
   await assert(
     "reference shape reset preserves words font size layers and depth",
-    `(() => { const before=JSON.parse(${JSON.stringify(customShapeDraft)}), after=${storedDesign}; for(const design of [before,after]) for(const key of ['plateShape','plateAspect','cornerCut','plateTaper']) delete design.geometry[key]; return JSON.stringify(before)===JSON.stringify(after); })()`,
+    `(() => { const before=JSON.parse(${JSON.stringify(customShapeDraft)}), after=${storedDesign}; for(const design of [before,after]) { delete design.densityReference; for(const key of ['plateFit','plateShape','plateAspect','cornerCut','plateTaper','gap','variation','columns','rows']) delete design.geometry[key]; } return JSON.stringify(before)===JSON.stringify(after); })()`,
+  );
+  await assert(
+    "photo defaults cover the maquette over its solid substrate",
+    `${committedShape}.getAttribute('data-plate-fit')==='cover' && Number(${committedShape}.getAttribute('data-source-triangles'))>0 && document.querySelector('#scales-plate-fit-cover').checked`,
+  );
+  const coveredFingerprint = await evaluate<string>(
+    `${committedShape}.getAttribute('data-plate-fingerprint')`,
+  );
+  await evaluate(`document.querySelector('#scales-plate-fit-inset').click()`);
+  await waitFor("inset mode changes actual geometry", () =>
+    evaluate<boolean>(
+      `${readyShape} && ${committedShape}.getAttribute('data-plate-fit')==='inset' && ${committedShape}.getAttribute('data-plate-fingerprint')!==${JSON.stringify(coveredFingerprint)}`,
+    ),
+  );
+  await evaluate(`document.querySelector('#scales-plate-fit-cover').click()`);
+  await waitFor("cover mode restores identical filled geometry", () =>
+    evaluate<boolean>(
+      `${readyShape} && ${committedShape}.getAttribute('data-plate-fit')==='cover' && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(coveredFingerprint)}`,
+    ),
+  );
+  await reload(`Boolean(document.querySelector('#scales-plate-fit-cover'))`);
+  await waitFor("cover mode survives reload", () =>
+    evaluate<boolean>(
+      `${readyShape} && ${committedShape}.getAttribute('data-plate-fit')==='cover' && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(coveredFingerprint)}`,
+    ),
+  );
+  await assert(
+    "cover and inset switching is durable and restores generated geometry",
+    `${committedShape}.getAttribute('data-plate-fit')==='cover' && document.querySelector('#scales-plate-fit-cover').checked && ${committedShape}.getAttribute('data-plate-fingerprint')===${JSON.stringify(coveredFingerprint)}`,
   );
   await evaluate(
     `document.querySelector('.scales-shape-card').scrollIntoView({block:'start'})`,
@@ -807,6 +980,10 @@ try {
     "archival photo preset keeps words and displays body proportions excluding base",
     `(() => { const ratio=parseFloat(document.querySelector('[data-testid="scale-face-proportions"] dd')?.textContent ?? ''); return ${storedDesign}.text === 'Silence sings softly.' && ${committedShape}.getAttribute('data-plate-shape') === 'clipped' && document.querySelector('[data-testid="scale-body-dimensions"]')?.textContent.includes('Bare body + jaw, excluding base') && ratio >= 1.1 && ratio <= 1.7; })()`,
   );
+  await assert(
+    "archival photo default has close-set plates over a complete solid body",
+    `${committedShape}.getAttribute('data-plate-fit')==='cover' && Number(${committedShape}.getAttribute('data-source-triangles'))===32960 && ${storedDesign}.geometry.gap===0.02 && ${storedDesign}.geometry.cornerCut===0.04 && ${storedDesign}.geometry.plateTaper===0.025`,
+  );
   await evaluate(
     `document.querySelector('[data-testid="scales-workbench"]').scrollIntoView({block:'start'})`,
   );
@@ -814,6 +991,7 @@ try {
   // Let that visible transition finish before capturing the reference model.
   await Bun.sleep(700);
   await screenshot("archival-photo-shape");
+  await exerciseBodyTuning("archival");
   results.push({
     name: "no app JavaScript exceptions",
     passed: errors.length === 0,

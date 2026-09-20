@@ -21,7 +21,14 @@ const design = normalizeScaleDesign({
   text: "One word\nthen another.",
   fontSizeMm: 16,
   autoFit: true,
-  geometry: { ...DEFAULT_SCALE_DESIGN.geometry, columns: 4, rows: 2 },
+  geometry: {
+    ...DEFAULT_SCALE_DESIGN.geometry,
+    columns: 4,
+    rows: 2,
+    bodyWidthScale: 1.4,
+    bodyDepthScale: 0.8,
+    relief: 0.9,
+  },
 });
 
 describe("bounded model size search", () => {
@@ -49,6 +56,9 @@ describe("bounded model size search", () => {
           expect(candidate).toEqual(
             resizeScaleDesign(original, candidate.geometry.modelScale),
           );
+          expect(candidate.geometry.bodyWidthScale).toBe(1.4);
+          expect(candidate.geometry.bodyDepthScale).toBe(0.8);
+          expect(candidate.geometry.relief).toBe(0.9);
           expect(candidate.fontSizeMm).toBe(16);
           expect(candidate.autoFit).toBe(true);
           return {

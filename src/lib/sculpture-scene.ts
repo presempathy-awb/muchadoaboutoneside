@@ -1,4 +1,8 @@
+import { VertexBuffer } from "@babylonjs/core/Buffers/buffer";
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
+import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
+import { deformArchivalHardwarePosition } from "../../shared/scale-body";
 import "@babylonjs/core/Culling/ray";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { PointerEventTypes } from "@babylonjs/core/Events/pointerEvents";
@@ -191,6 +195,44 @@ export function createSculptureScene(
   let requestedScalePreview: ScalePreview | undefined;
   let sourceRoot: AbstractMesh | null = null;
   let originalRootScale = Vector3.One();
+  const originalHardwarePositions = new Map<Mesh, number[]>();
+  let hardwareWidthScale = 1;
+  let hardwareDepthScale = 1;
+  let hardwareShapeTransition: {
+    fromWidth: number;
+    fromDepth: number;
+    toWidth: number;
+    toDepth: number;
+    started: number;
+  } | null = null;
+  const updateHardwareShape = (width: number, depth: number) => {
+    hardwareWidthScale = width;
+    hardwareDepthScale = depth;
+    for (const [mesh, original] of originalHardwarePositions) {
+      const positions = original.slice();
+      for (let index = 0; index < positions.length; index += 3) {
+        const point = deformArchivalHardwarePosition(
+          [
+            original[index] ?? 0,
+            original[index + 1] ?? 0,
+            original[index + 2] ?? 0,
+          ],
+          width,
+          depth,
+        );
+        positions[index] = point[0];
+        positions[index + 1] = point[1];
+        positions[index + 2] = point[2];
+      }
+      mesh.updateVerticesData(VertexBuffer.PositionKind, positions, true);
+      const indices = mesh.getIndices();
+      if (indices) {
+        const normals: number[] = [];
+        VertexData.ComputeNormals(positions, indices, normals);
+        mesh.updateVerticesData(VertexBuffer.NormalKind, normals);
+      }
+    }
+  };
   let framedScaleStudy: ScalePreview["study"] | null = null;
   let showLettering = true;
   let showSeams = false;
@@ -354,9 +396,17 @@ export function createSculptureScene(
     scalePreview = preview;
     // This callback runs only after a skin commits, never for a queued request.
     const previousSourceScale = sourceScale;
+    const previousHardwareWidth = hardwareWidthScale;
+    const previousHardwareDepth = hardwareDepthScale;
     const previousModel = framedScaleStudy?.modelId;
     const changedStudy = framedScaleStudy !== scalePreview.study;
     const committedAt = performance.now();
+    const nextHardwareWidth = scalePreview.study.bodyWidthScale ?? 1;
+    const nextHardwareDepth = scalePreview.study.bodyDepthScale ?? 1;
+    if (changedStudy && scalePreview.study.modelId === "archival") {
+      hardwareShapeTransition = null;
+      updateHardwareShape(nextHardwareWidth, nextHardwareDepth);
+    }
     if (previousModel && previousModel !== scalePreview.study.modelId) {
       // The skin scheduler has finished the prior fade before this commit.
       // Set its exact hardware endpoint before repositioning an incoming root.
@@ -410,6 +460,24 @@ export function createSculptureScene(
       };
       updateSourceScale(previousSourceScale);
     } else if (changedStudy) sourceTransition = null;
+    if (
+      changedStudy &&
+      previousModel === "archival" &&
+      scalePreview.study.modelId === "archival" &&
+      !reducedMotion &&
+      visible &&
+      (previousHardwareWidth !== nextHardwareWidth ||
+        previousHardwareDepth !== nextHardwareDepth)
+    ) {
+      hardwareShapeTransition = {
+        fromWidth: previousHardwareWidth,
+        fromDepth: previousHardwareDepth,
+        toWidth: nextHardwareWidth,
+        toDepth: nextHardwareDepth,
+        started: committedAt,
+      };
+      updateHardwareShape(previousHardwareWidth, previousHardwareDepth);
+    }
     options.onScalePreviewReady?.(scalePreview, atlasPlan);
   };
 
@@ -447,6 +515,15 @@ export function createSculptureScene(
       );
       if (amount === 1) hardwareTransition = null;
     }
+    if (hardwareShapeTransition) {
+      const shape = hardwareShapeTransition;
+      const amount = transitionProgress(shape.started, now, 320);
+      updateHardwareShape(
+        shape.fromWidth + (shape.toWidth - shape.fromWidth) * amount,
+        shape.fromDepth + (shape.toDepth - shape.fromDepth) * amount,
+      );
+      if (amount === 1) hardwareShapeTransition = null;
+    }
     if (sourceTransition) {
       const amount = transitionProgress(sourceTransition.started, now, 320);
       updateSourceScale(
@@ -461,6 +538,13 @@ export function createSculptureScene(
     if (!disposed) scene.render();
   };
   const settleSceneTransitions = () => {
+    if (hardwareShapeTransition) {
+      updateHardwareShape(
+        hardwareShapeTransition.toWidth,
+        hardwareShapeTransition.toDepth,
+      );
+      hardwareShapeTransition = null;
+    }
     if (cameraTransition) {
       applyPose(cameraTransition.to);
       cameraTransition = null;
@@ -506,6 +590,20 @@ export function createSculptureScene(
       mesh.isPickable = true;
       mesh.useVertexColors = false;
       mesh.setEnabled(partVisible(part));
+      if (
+        scaleEdition &&
+        (part === "eyes" || part === "fangs") &&
+        mesh instanceof Mesh
+      ) {
+        const positions = mesh.getVerticesData(VertexBuffer.PositionKind);
+        if (positions) {
+          originalHardwarePositions.set(mesh, Array.from(positions));
+          mesh.setVerticesData(VertexBuffer.PositionKind, positions, true);
+          const normals = mesh.getVerticesData(VertexBuffer.NormalKind);
+          if (normals)
+            mesh.setVerticesData(VertexBuffer.NormalKind, normals, true);
+        }
+      }
     }
     fitCamera(meshes);
     updateSelection();
@@ -624,6 +722,8 @@ export function createSculptureScene(
       disposed = true;
       visibilityObserver?.disconnect();
       cameraTransition = sourceTransition = hardwareTransition = null;
+      hardwareShapeTransition = null;
+      originalHardwarePositions.clear();
       requestedScalePreview = undefined;
       canvas.removeEventListener("pointerdown", cancelCameraTransition);
       canvas.removeEventListener("wheel", cancelCameraTransition);

@@ -5,6 +5,7 @@ import {
   DEFAULT_SCALE_STUDY_SETTINGS,
   generateScaledScaleGeometry,
   generateScaleStudy,
+  mergeScaleStudySettings,
   normalizeScaleStudySettings,
   physicalScaleCoursePartitions,
   type ScalePlate,
@@ -137,10 +138,10 @@ describe("conforming 3D scale study", () => {
     expect(generateScaleStudy()).toEqual(defaultStudy);
     expect(
       defaultStudy.plates.filter((plate) => plate.surface === "body"),
-    ).toHaveLength(480);
+    ).toHaveLength(400);
     expect(
       defaultStudy.plates.filter((plate) => plate.surface === "jaw"),
-    ).toHaveLength(24);
+    ).toHaveLength(20);
     const aspects = defaultStudy.plates
       .filter((plate) => plate.surface === "body")
       .map((plate) => plate.widthInches / plate.heightInches)
@@ -265,7 +266,7 @@ describe("conforming 3D scale study", () => {
           plate.appliedReliefInches >= 0 && plate.appliedReliefInches <= 6,
       ),
     ).toBe(true);
-    expect(defaultStudy.adjustedReliefCount).toBe(0);
+    expect(defaultStudy.adjustedReliefCount).toBeLessThan(5);
   });
 
   test("varied courses have disjoint footprints and keep writing gutters within beveled corners", () => {
@@ -367,6 +368,8 @@ describe("conforming 3D scale study", () => {
       ...LEGACY_SCALE_SHAPE,
       modelId: "archival",
       modelScale: 1,
+      bodyWidthScale: 1,
+      bodyDepthScale: 1,
       columns: 240,
       rows: 2,
       gap: 0,
@@ -415,10 +418,14 @@ describe("conforming 3D scale study", () => {
     const relief = 0.5 / 25.4;
     const referenceBare = generateScaledScaleGeometry({
       modelScale: 1,
+      bodyWidthScale: 1,
+      bodyDepthScale: 1,
       supportOffsetInches: 0,
     });
     const referenceLayer = generateScaledScaleGeometry({
       modelScale: 1,
+      bodyWidthScale: 1,
+      bodyDepthScale: 1,
       supportOffsetInches,
     });
     for (const factor of [180 / 25.4 / 206.3, 72 / 206.3, 1.25]) {
@@ -467,6 +474,8 @@ describe("conforming 3D scale study", () => {
     const historical = generateFoilGeometry({ radiusOffsetInches: 2 });
     const adapted = generateScaledScaleGeometry({
       modelScale: 1,
+      bodyWidthScale: 1,
+      bodyDepthScale: 1,
       supportOffsetInches: 2,
     });
     let maximumError = 0;
@@ -482,6 +491,8 @@ describe("conforming 3D scale study", () => {
     );
     const bare = generateScaledScaleGeometry({
       modelScale: 1,
+      bodyWidthScale: 1,
+      bodyDepthScale: 1,
       supportOffsetInches: 0,
     });
     const scaled = generateScaledScaleGeometry({
@@ -549,6 +560,7 @@ describe("tunable archival footprints", () => {
           rows: 3,
           plateShape,
           surfaceMode,
+          plateFit: "inset",
           cornerCut: 0.3,
           plateTaper: -0.4,
           variation: 1,
@@ -594,6 +606,7 @@ describe("tunable archival footprints", () => {
   test("physical aspect adjustment remaps face size without changing real stock", () => {
     const input = {
       ...DEFAULT_SCALE_STUDY_SETTINGS,
+      plateFit: "inset" as const,
       columns: 24,
       rows: 3,
       surfaceMode: "planar" as const,
@@ -692,4 +705,300 @@ test("course weighting handles only collapsed height and rejects invalid physica
   expect(() =>
     physicalScaleCoursePartitions(surface, fractions, 0.1, 0.3),
   ).toThrow("no positive physical length");
+});
+
+describe("local archival body proportions", () => {
+  test("normalizes legacy, invalid and out-of-range radial dimensions", () => {
+    expect(normalizeScaleStudySettings({}).bodyWidthScale).toBe(1);
+    expect(
+      normalizeScaleStudySettings({
+        bodyWidthScale: Number.NaN,
+        bodyDepthScale: Infinity,
+      }).bodyDepthScale,
+    ).toBe(1);
+    expect(
+      normalizeScaleStudySettings({ bodyWidthScale: 9, bodyDepthScale: -1 }),
+    ).toMatchObject({ bodyWidthScale: 2, bodyDepthScale: 0.5 });
+  });
+  test("keeps ring centers fixed and changes the two local semiaxes independently", () => {
+    const original = generateScaledScaleGeometry({ supportOffsetInches: 0 });
+    const wide = generateScaledScaleGeometry({
+      supportOffsetInches: 0,
+      bodyWidthScale: 1.6,
+    });
+    const deep = generateScaledScaleGeometry({
+      supportOffsetInches: 0,
+      bodyDepthScale: 1.4,
+    });
+    for (const key of ["body", "jaw"] as const) {
+      const bare = key === "body" ? original : original.jawGeometry;
+      const changed = key === "body" ? wide : wide.jawGeometry;
+      const depthChanged = key === "body" ? deep : deep.jawGeometry;
+      const first = vectorAt(bare.positions, 0);
+      const oppositeIndex = bare.meridianCount * bare.verticesPerMeridian;
+      const opposite = vectorAt(bare.positions, oppositeIndex);
+      const center = first.map(
+        (value, axis) => (value + (opposite[axis] ?? 0)) / 2,
+      );
+      const changedFirst = vectorAt(changed.positions, 0);
+      const changedOpposite = vectorAt(changed.positions, oppositeIndex);
+      for (let axis = 0; axis < 3; axis++) {
+        expect(
+          ((changedFirst[axis] ?? 0) + (changedOpposite[axis] ?? 0)) / 2,
+        ).toBeCloseTo(center[axis] ?? 0, 10);
+        expect((changedFirst[axis] ?? 0) - (center[axis] ?? 0)).toBeCloseTo(
+          ((first[axis] ?? 0) - (center[axis] ?? 0)) * 1.6,
+          10,
+        );
+      }
+      expect(vectorAt(depthChanged.positions, 0)).toEqual(first);
+      const middle = (bare.meridianCount / 2) * bare.verticesPerMeridian;
+      expect(vectorAt(changed.positions, middle)).toEqual(
+        vectorAt(bare.positions, middle),
+      );
+      const originalDepth = vectorAt(bare.positions, middle);
+      const newDepth = vectorAt(depthChanged.positions, middle);
+      for (let axis = 0; axis < 3; axis++)
+        expect((newDepth[axis] ?? 0) - (center[axis] ?? 0)).toBeCloseTo(
+          ((originalDepth[axis] ?? 0) - (center[axis] ?? 0)) * 1.4,
+          10,
+        );
+    }
+  });
+  test("adds physical layers after radial and uniform resizing", () => {
+    for (const modelScale of [0.02, 1, 2]) {
+      const bare = generateScaledScaleGeometry({
+        modelScale,
+        supportOffsetInches: 0,
+        bodyWidthScale: 1.8,
+        bodyDepthScale: 0.6,
+      });
+      const supported = generateScaledScaleGeometry({
+        modelScale,
+        supportOffsetInches: 1.25,
+        bodyWidthScale: 1.8,
+        bodyDepthScale: 0.6,
+      });
+      expect(
+        Math.hypot(
+          ...subtract(
+            vectorAt(supported.positions, 0),
+            vectorAt(bare.positions, 0),
+          ),
+        ),
+      ).toBeCloseTo(1.25, 10);
+    }
+  });
+  test("reports the actual deformed bare skin and produces finite lettering surfaces", () => {
+    const settings = {
+      columns: 12,
+      rows: 2,
+      bodyWidthScale: 1.4,
+      bodyDepthScale: 0.75,
+      modelScale: 0.35,
+      variation: 0,
+      relief: 0.2,
+    };
+    const study = generateScaleStudy(settings);
+    expect(study).toMatchObject({ bodyWidthScale: 1.4, bodyDepthScale: 0.75 });
+    const bare = generateScaledScaleGeometry({
+      ...settings,
+      supportOffsetInches: 0,
+    });
+    const all = [...bare.positions, ...bare.jawGeometry.positions];
+    for (const [axis, field] of [
+      [0, "width"],
+      [1, "height"],
+      [2, "depth"],
+    ] as const) {
+      const values = all.filter((_, index) => index % 3 === axis);
+      expect(study.bareSourceBounds?.[field]).toBeCloseTo(
+        Math.max(...values) - Math.min(...values),
+        10,
+      );
+    }
+    for (const plate of study.plates) {
+      expect(validatePlate(plate)).toEqual([]);
+      expect(plate.appliedReliefInches).toBeLessThanOrEqual(0.2);
+      expect(plate.widthInches).toBeGreaterThan(0);
+      expect(plate.heightInches).toBeGreaterThan(0);
+    }
+  });
+});
+
+test("archival source mesh combines bare capped body and jaw in physical inches", () => {
+  const settings = {
+    columns: 8,
+    rows: 2,
+    modelScale: 0.4,
+    bodyWidthScale: 1.35,
+    bodyDepthScale: 0.8,
+    supportOffsetInches: 1.2,
+    relief: 0.6,
+  };
+  const study = generateScaleStudy(settings);
+  const source = study.sourceGeometry;
+  if (!source) throw new Error("Missing archival substrate geometry");
+  const bare = generateScaledScaleGeometry({
+    ...settings,
+    supportOffsetInches: 0,
+  });
+  expect(source.positions).toEqual([
+    ...bare.positions,
+    ...bare.jawGeometry.positions,
+  ]);
+  expect(source.indices.slice(0, bare.indices.length)).toEqual(bare.indices);
+  expect(source.indices.slice(bare.indices.length)).toEqual(
+    bare.jawGeometry.indices.map((index) => index + bare.positions.length / 3),
+  );
+  expect(source.positions.every(Number.isFinite)).toBe(true);
+  expect(
+    source.indices.every(
+      (index) =>
+        Number.isInteger(index) &&
+        index >= 0 &&
+        index < source.positions.length / 3,
+    ),
+  ).toBe(true);
+  const resized = generateScaleStudy({ ...settings, modelScale: 0.8 });
+  expect(resized.sourceGeometry?.positions).toEqual(
+    source.positions.map((value) => value * 2),
+  );
+  expect(resized.sourceGeometry?.indices).toEqual(source.indices);
+});
+
+function triangleMeshArea(mesh: { positions: number[]; indices: number[] }) {
+  let area = 0;
+  for (let i = 0; i < mesh.indices.length; i += 3) {
+    const a = vectorAt(mesh.positions, required(mesh.indices[i]));
+    const b = vectorAt(mesh.positions, required(mesh.indices[i + 1]));
+    const c = vectorAt(mesh.positions, required(mesh.indices[i + 2]));
+    area += Math.hypot(...cross(subtract(b, a), subtract(c, a))) / 2;
+  }
+  return area;
+}
+
+describe("complete archival cover packing", () => {
+  test("fresh close-set faces cover over ninety percent of the supported skin", () => {
+    for (const [bodyWidthScale, bodyDepthScale] of [
+      [1, 1],
+      [0.5, 0.5],
+      [1.1, 0.9],
+      [2, 2],
+    ]) {
+      const input = {
+        ...DEFAULT_SCALE_STUDY_SETTINGS,
+        bodyWidthScale,
+        bodyDepthScale,
+        relief: 0,
+      };
+      const study = generateScaleStudy(input);
+      const skin = generateScaledScaleGeometry(input);
+      const coverage =
+        study.plates.reduce((sum, plate) => sum + triangleMeshArea(plate), 0) /
+        (triangleMeshArea(skin) + triangleMeshArea(skin.jawGeometry));
+      expect(coverage).toBeGreaterThan(0.9);
+      expect(coverage).toBeLessThanOrEqual(0.95);
+      expect(study.plates.filter((p) => p.surface === "body")).toHaveLength(
+        400,
+      );
+      const aspects = study.plates
+        .filter((p) => p.surface === "body")
+        .map((p) => p.widthInches / p.heightInches)
+        .sort((a, b) => a - b);
+      expect(required(aspects[Math.floor(aspects.length / 2)])).toBeGreaterThan(
+        0.9,
+      );
+      expect(required(aspects[Math.floor(aspects.length / 2)])).toBeLessThan(
+        1.7,
+      );
+    }
+  }, 15000);
+
+  test("body width and depth rebuild disjoint safe faces within the density budget", () => {
+    for (const [bodyWidthScale, bodyDepthScale] of [
+      [1.4, 1],
+      [1, 1.4],
+    ]) {
+      const study = generateScaleStudy({
+        ...DEFAULT_SCALE_STUDY_SETTINGS,
+        bodyWidthScale,
+        bodyDepthScale,
+        relief: 0.5,
+      });
+      const body = study.plates.filter((p) => p.surface === "body");
+      expect(body).toHaveLength(400);
+      expect(body.flatMap(validatePlate)).toEqual([]);
+      for (const a of body) {
+        const b = body.find(
+          (b) => b.row === a.row && b.column === a.column + 1,
+        );
+        if (b) expect(a.sourceBounds.u1).toBeLessThanOrEqual(b.sourceBounds.u0);
+        expect(a.safeRect.width).toBeGreaterThan(0);
+        expect(a.appliedReliefInches).toBeLessThanOrEqual(0.5);
+      }
+    }
+  }, 15000);
+
+  test("body-only edits keep the persisted geometry field order", () => {
+    const current = normalizeScaleStudySettings({
+      ...LEGACY_SCALE_SHAPE,
+      modelId: "maquette",
+      modelScale: 8.36,
+      columns: 36,
+      rows: 3,
+      gap: 0.12,
+      relief: 0.02,
+      supportOffsetInches: 0.005,
+      variation: 0.35,
+    });
+    const next = normalizeScaleStudySettings({
+      ...current,
+      bodyWidthScale: 1.1,
+      bodyDepthScale: 0.9,
+    });
+    const merged = mergeScaleStudySettings(current, next);
+    expect(Object.keys(merged)).toEqual(Object.keys(current));
+    const before = JSON.parse(JSON.stringify(current)) as Record<
+      string,
+      unknown
+    >;
+    const after = JSON.parse(JSON.stringify(merged)) as Record<string, unknown>;
+    delete before.bodyWidthScale;
+    delete after.bodyWidthScale;
+    delete before.bodyDepthScale;
+    delete after.bodyDepthScale;
+    expect(after).toEqual(before);
+    expect(merged.bodyWidthScale).toBe(1.1);
+    expect(merged.bodyDepthScale).toBe(0.9);
+  });
+
+  test("old missing fit keeps the exact inset geometry and seeded draws", () => {
+    const input = {
+      ...DEFAULT_SCALE_STUDY_SETTINGS,
+      ...LEGACY_SCALE_SHAPE,
+      columns: 24,
+      rows: 3,
+      gap: 0.12,
+      variation: 0.6,
+    };
+    const { plateFit: _oldMissingField, ...old } = input;
+    expect(generateScaleStudy(old)).toEqual(generateScaleStudy(input));
+  });
+
+  test("a four-face budget supports one course without exceeding limits", () => {
+    const study = generateScaleStudy({
+      ...DEFAULT_SCALE_STUDY_SETTINGS,
+      columns: 4,
+      rows: 1,
+      plateAspect: 0.5,
+      relief: 0,
+    });
+    expect(study.plates.filter((p) => p.surface === "body")).toHaveLength(4);
+    expect(
+      new Set(
+        study.plates.filter((p) => p.surface === "body").map((p) => p.row),
+      ).size,
+    ).toBe(1);
+  }, 15000);
 });

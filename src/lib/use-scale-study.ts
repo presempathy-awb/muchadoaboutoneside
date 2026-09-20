@@ -25,6 +25,7 @@ interface StudyState {
   computing: boolean;
   error: string;
   fallback: boolean;
+  cacheHit: boolean;
 }
 
 /** Keeps the last successful preview while a cancellable worker builds its replacement. */
@@ -41,6 +42,7 @@ export function useScaleStudy(
     computing: true,
     error: "",
     fallback: false,
+    cacheHit: false,
   });
 
   useEffect(() => {
@@ -58,6 +60,7 @@ export function useScaleStudy(
         computing: false,
         error: "",
         fallback,
+        cacheHit: true,
       });
       return;
     }
@@ -82,6 +85,7 @@ export function useScaleStudy(
           computing: false,
           error: "",
           fallback,
+          cacheHit: false,
         });
       } else fail(result.error || "The scale geometry could not be built.");
       worker?.terminate();

@@ -24,6 +24,16 @@ describe("viewable scale versions", () => {
           value,
         );
     }
+    for (const version of SCALE_VERSION_PRESETS.slice(0, 8))
+      expect(version.geometry.gap).toBe(
+        version.id === "maquette-240-flat" ? 0.08 : 0.12,
+      );
+    const archival = SCALE_VERSION_PRESETS.find(
+      ({ id }) => id === "wood-archival",
+    );
+    expect(archival?.geometry.columns).toBe(120);
+    expect(archival?.geometry.rows).toBe(4);
+    expect(archival?.geometry.variation).toBe(0.6);
     expect(
       SCALE_VERSION_PRESETS.find(({ id }) => id === "wood-archival")?.geometry
         .relief,
@@ -31,6 +41,9 @@ describe("viewable scale versions", () => {
     const photo = SCALE_VERSION_PRESETS.find(
       ({ id }) => id === "wood-photo-reference",
     );
+    expect(photo?.geometry.columns).toBe(100);
+    expect(photo?.geometry.gap).toBe(0.02);
+    expect(photo?.geometry.variation).toBe(0.3);
     for (const [key, value] of Object.entries(DEFAULT_SCALE_SHAPE))
       expect(photo?.geometry[key as keyof typeof DEFAULT_SCALE_SHAPE]).toBe(
         value,
@@ -60,9 +73,8 @@ describe("viewable scale versions", () => {
         buildUpSupportOffsetInches(version.layers),
         10,
       );
-      expect(study.sourceGeometry !== undefined).toBe(
-        study.modelId === "maquette",
-      );
+      expect(study.sourceGeometry !== undefined).toBe(true);
+      expect(study.sourceGeometry?.positions.every(Number.isFinite)).toBe(true);
       for (const plate of study.plates) {
         expect(
           [
@@ -177,4 +189,20 @@ describe("viewable scale versions", () => {
       matchingScaleVersionPreset({ ...initial, buildMethod: "wood" }),
     ).toBeUndefined();
   });
+});
+
+test("all construction presets restore identity body proportions", () => {
+  const edited = normalizeScaleDesign({
+    ...DEFAULT_SCALE_DESIGN,
+    geometry: {
+      ...DEFAULT_SCALE_DESIGN.geometry,
+      bodyWidthScale: 2,
+      bodyDepthScale: 0.5,
+    },
+  });
+  for (const version of SCALE_VERSION_PRESETS) {
+    const restored = applyScaleVersionPreset(edited, version.id);
+    expect(restored.geometry.bodyWidthScale).toBe(1);
+    expect(restored.geometry.bodyDepthScale).toBe(1);
+  }
 });

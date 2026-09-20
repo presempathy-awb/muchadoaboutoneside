@@ -20,3 +20,18 @@ Protocol reference: [Chrome DevTools Protocol](https://chromedevtools.github.io/
 On macOS, background headless tests request the native ANGLE Metal backend with `--enable-gpu --use-angle=metal` after repeated software-headless stalls. Other platforms retain Chrome's default driver selection. `results.json` records the requested backend; it is not a claim that Chrome successfully selected it. These test flags do not change the product or activate a window. See [Chromium headless driver selection](https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/headless/headless_mode_switches.h) and [ANGLE backend options](https://github.com/google/angle/blob/main/doc/DebuggingTips.md).
 
 The isolated test browser disables background timer throttling, renderer backgrounding, and occluded-window backgrounding. These are also [Playwright's Chromium automation defaults](https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/chromium/chromiumSwitches.ts). They keep bounded asynchronous fit work progressing without bringing any window forward; production browser behavior is unchanged.
+
+Body-control regression coverage exercises linked and
+independent width/depth edits and actual changed geometry,
+preserved physical plate depth and lettering size, anonymous reload persistence,
+and geometry-cache identity when returning to recent settings. These use the
+same temporary profile, synthetic wording, and background headless browser;
+check the harness's fresh results for each run's outcome. Browser
+checks do not validate a newly deformed model for fabrication.
+
+Coverage checks exercise the close-set/inset selector, different generated
+geometry in each mode, reload durability, and the solid body mesh beneath both
+models. Applying the photo-reference defaults resets packing and shape while
+preserving body proportions, physical stock, relief, font, and wording. Surface
+coverage percentages are verified by geometry tests; screenshots provide a
+separate check of the rendered appearance.

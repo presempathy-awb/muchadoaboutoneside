@@ -45,6 +45,11 @@ function preset(
     ...DEFAULT_SCALE_DESIGN,
     geometry: {
       ...DEFAULT_SCALE_DESIGN.geometry,
+      // Freeze inherited settings of the original eight studies.
+      columns: 120,
+      rows: 4,
+      gap: 0.12,
+      variation: 0.6,
       ...LEGACY_SCALE_SHAPE,
       ...geometry,
     },
@@ -184,6 +189,10 @@ export const SCALE_VERSION_PRESETS: readonly ScaleVersionPreset[] = [
     {
       ...DEFAULT_SCALE_DESIGN.geometry,
       ...LEGACY_SCALE_SHAPE,
+      columns: 120,
+      rows: 4,
+      gap: 0.12,
+      variation: 0.6,
       relief: 0.65,
     },
     DEFAULT_SCALE_DESIGN.layers,
@@ -206,7 +215,8 @@ export function applyScaleVersionPreset(
 ): ScaleDesign {
   const version = SCALE_VERSION_PRESETS.find((entry) => entry.id === id);
   if (!version) throw new RangeError("Choose a listed scale version.");
-  const { modelId, modelScale, columns, rows } = version.geometry;
+  const { modelId, modelScale, columns, rows, bodyWidthScale, bodyDepthScale } =
+    version.geometry;
   return normalizeScaleDesign({
     ...design,
     geometry: version.geometry,
@@ -214,7 +224,14 @@ export function applyScaleVersionPreset(
     buildMethod: version.buildMethod,
     densityReference:
       design.densityMode === "adaptive"
-        ? { modelId, modelScale, columns, rows }
+        ? {
+            modelId,
+            modelScale,
+            columns,
+            rows,
+            ...(bodyWidthScale !== 1 ? { bodyWidthScale } : {}),
+            ...(bodyDepthScale !== 1 ? { bodyDepthScale } : {}),
+          }
         : undefined,
   });
 }

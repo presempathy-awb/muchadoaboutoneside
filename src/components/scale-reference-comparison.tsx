@@ -86,8 +86,9 @@ export function ScaleReferenceComparison({
       <p className="scales-hint">
         The reference suggests mostly short rectangles and trapezoids, with
         visible depth. The new wood-plate shape starts at 1.3 width to height;
-        corner cuts and taper keep it from looking like a grid of identical
-        tiles.
+        small corner cuts and taper soften the edges while close-set courses
+        cover the body. Apply photo-reference plates to update an older saved
+        inset layout.
       </p>
       <p className="scales-hint">
         Many near-facing plates look roughly 1.1–1.7 times as long as they are

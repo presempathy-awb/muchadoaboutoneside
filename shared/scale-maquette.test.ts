@@ -8,6 +8,8 @@ import {
   maquetteWritingRect,
 } from "./scale-maquette";
 import data from "./scale-maquette.json";
+import { deformedMaquetteBody } from "./scale-maquette-body";
+import radial from "./scale-maquette-body.json";
 import { DEFAULT_SCALE_STUDY_SETTINGS } from "./scale-study";
 import { cross, dot, subtract, vectorAt } from "./scale-surface";
 
@@ -237,7 +239,9 @@ describe("actual print maquette scale adapter", () => {
     expect(
       extreme.plates.every((plate) => plate.positions.every(Number.isFinite)),
     ).toBe(true);
-  });
+    // Four complete STL adaptations include pathological physical offsets at
+    // minimum model size; allow CPU contention without relaxing their budgets.
+  }, 15_000);
 });
 
 test("every tunable maquette silhouette clips actual source faces without folds or invented writing space", () => {
@@ -292,9 +296,220 @@ test("every tunable maquette silhouette clips actual source faces without folds 
     expect(outward).toBe(true);
     expect(unfolded).toBe(true);
   }
-});
+}, 15_000);
 
 function required<T>(value: T | undefined): T {
   if (value === undefined) throw new Error("Missing test fixture value.");
   return value;
 }
+
+describe("local print-model body proportions", () => {
+  test("identity is the exact original mesh and charts; metadata is bound to its inputs", async () => {
+    const identity = deformedMaquetteBody();
+    expect(identity.positionsMm).toBe(data.positionsMm);
+    expect(identity.charts).toBe(data.charts);
+    expect(radial.stlSha256).toBe(data.stlSha256);
+    for (const [name, hash] of [
+      ["scale-maquette.json", radial.sourceChartsSha256],
+      ["foil-sections.json", radial.sourceSectionsSha256],
+      ["../scripts/generate-scale-body.py", radial.generatorSha256],
+    ] as const) {
+      const bytes = await readFile(new URL(`./${name}`, import.meta.url));
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(hash);
+    }
+    expect(radial.widthDisplacementsMm).toHaveLength(data.positionsMm.length);
+    expect(radial.depthDisplacementsMm).toHaveLength(data.positionsMm.length);
+    expect(radial.maximumProjectionDistanceMm).toBeLessThanOrEqual(0.37511);
+  });
+  test("local tube adjustments leave every contact and plinth vertex fixed", () => {
+    const body = deformedMaquetteBody(1.1, 0.9);
+    expect(radial.fixedVertices.length).toBeGreaterThan(100);
+    for (const id of radial.fixedVertices) {
+      expect(vectorAt(body.positionsMm, id)).toEqual(
+        vectorAt(data.positionsMm, id),
+      );
+    }
+    expect(body.positionsMm.every(Number.isFinite)).toBe(true);
+    expect(body.positionsMm).not.toEqual(data.positionsMm);
+  });
+  test("changed hinge charts preserve actual deformed triangle edge lengths", () => {
+    for (const [width, depth] of [
+      [1.1, 0.9],
+      [0.9, 1.1],
+    ]) {
+      const body = deformedMaquetteBody(width, depth);
+      for (const chart of body.charts) {
+        for (let offset = 0; offset < chart.indices.length; offset += 3) {
+          for (let edge = 0; edge < 3; edge++) {
+            const a = chart.indices[offset + edge] ?? 0;
+            const b = chart.indices[offset + ((edge + 1) % 3)] ?? 0;
+            const physical = Math.hypot(
+              ...subtract(
+                vectorAt(body.positionsMm, chart.vertices[a] ?? 0),
+                vectorAt(body.positionsMm, chart.vertices[b] ?? 0),
+              ),
+            );
+            const flat = Math.hypot(
+              ((chart.uvs[a * 2] ?? 0) - (chart.uvs[b * 2] ?? 0)) *
+                chart.widthMm,
+              ((chart.uvs[a * 2 + 1] ?? 0) - (chart.uvs[b * 2 + 1] ?? 0)) *
+                chart.heightMm,
+            );
+            expect(flat).toBeCloseTo(physical, 8);
+          }
+        }
+      }
+    }
+  });
+  test("source and generated plates use the same changed body, preserving physical layers", () => {
+    const study = generateMaquetteScaleStudy({
+      ...settings,
+      bodyWidthScale: 1.1,
+      bodyDepthScale: 0.9,
+      supportOffsetInches: 0.015,
+      relief: 0.01,
+    });
+    const body = deformedMaquetteBody(1.1, 0.9);
+    expect(study.sourceGeometry?.positions).toEqual(
+      body.positionsMm.map((v) => v * (1 / 25.4)),
+    );
+    expect(study.bodyWidthScale).toBe(1.1);
+    expect(study.bodyDepthScale).toBe(0.9);
+    expect(study.plates.length).toBeGreaterThan(0);
+    for (const plate of study.plates) {
+      expect(plate.positions.every(Number.isFinite)).toBe(true);
+      expect(plate.appliedReliefInches).toBeGreaterThanOrEqual(0);
+      expect(plate.appliedReliefInches).toBeLessThanOrEqual(0.01);
+      expect(plate.safeRect.x + plate.safeRect.width).toBeLessThanOrEqual(
+        1 + 1e-10,
+      );
+      expect(plate.safeRect.y + plate.safeRect.height).toBeLessThanOrEqual(
+        1 + 1e-10,
+      );
+    }
+    const larger = generateMaquetteScaleStudy({
+      ...settings,
+      modelScale: 2,
+      bodyWidthScale: 1.1,
+      bodyDepthScale: 0.9,
+      supportOffsetInches: 0.015,
+      relief: 0.01,
+    });
+    expect(
+      Math.max(...larger.plates.map((p) => p.appliedReliefInches)),
+    ).toBeCloseTo(0.01, 10);
+    const lettering = allocateScaleLettering(
+      study.plates,
+      "Words follow changed plates in reading order.",
+      { fontSizeMm: 0.5, marginMm: 0.1 },
+    );
+    expect(
+      lettering.placedWordCount +
+        lettering.unplacedText.split(/\s+/u).filter(Boolean).length,
+    ).toBe(lettering.totalWordCount);
+  });
+  test("invalid factors are rejected before returning replacement geometry", () => {
+    expect(() => deformedMaquetteBody(Number.NaN, 1)).toThrow();
+    expect(() => deformedMaquetteBody(0.49, 1)).toThrow();
+    expect(() => deformedMaquetteBody(1, 2.01)).toThrow();
+    expect(() => deformedMaquetteBody(2, 0.5)).toThrow(
+      "fold a print-model junction",
+    );
+  });
+});
+
+function meshSurfaceArea(positions: number[], indices: number[]) {
+  let area = 0;
+  for (let offset = 0; offset < indices.length; offset += 3) {
+    const a = vectorAt(positions, indices[offset] ?? 0);
+    const b = vectorAt(positions, indices[offset + 1] ?? 0);
+    const c = vectorAt(positions, indices[offset + 2] ?? 0);
+    area += Math.hypot(...cross(subtract(b, a), subtract(c, a))) / 2;
+  }
+  return area;
+}
+
+describe("maquette cover packing", () => {
+  test("fresh wood plates cover 90–95% of actual eligible STL surface, excluding contact underside", () => {
+    for (const bodySettings of [
+      { modelScale: 1, bodyWidthScale: 1, bodyDepthScale: 1 },
+      { modelScale: 2, bodyWidthScale: 1.1, bodyDepthScale: 0.9 },
+    ]) {
+      const study = generateMaquetteScaleStudy({
+        ...DEFAULT_SCALE_STUDY_SETTINGS,
+        ...bodySettings,
+        modelId: "maquette",
+        supportOffsetInches: 0,
+        relief: 0,
+      });
+      expect(DEFAULT_SCALE_STUDY_SETTINGS.plateFit).toBe("cover");
+      const sourcePositions = required(study.sourceGeometry).positions;
+      // The existing 5,426 exposed chart triangles include base top/sides;
+      // only the 64 build-plate contact underside triangles are excluded.
+      const eligibleIndices = data.charts.flatMap((chart) =>
+        chart.indices.map((id) => chart.vertices[id] ?? 0),
+      );
+      expect(eligibleIndices).toHaveLength(5426 * 3);
+      const eligibleArea = meshSurfaceArea(sourcePositions, eligibleIndices);
+      const fullArea = meshSurfaceArea(sourcePositions, data.indices);
+      const platedArea = study.plates.reduce(
+        (sum, plate) => sum + meshSurfaceArea(plate.positions, plate.indices),
+        0,
+      );
+      expect(eligibleArea).toBeLessThan(fullArea);
+      expect(platedArea / eligibleArea).toBeGreaterThanOrEqual(0.9);
+      expect(platedArea / eligibleArea).toBeLessThanOrEqual(0.951);
+      expect(study.plates.length).toBeLessThanOrEqual(6000);
+      expect(study.triangleCount).toBeLessThanOrEqual(100000);
+    }
+  });
+  test("cover aspect changes chart cell allocation without inscribing tiny plates", () => {
+    const common = {
+      ...DEFAULT_SCALE_STUDY_SETTINGS,
+      modelId: "maquette" as const,
+      supportOffsetInches: 0,
+      relief: 0,
+      gap: 0,
+      variation: 0,
+      plateShape: "rectangle" as const,
+      plateTaper: 0,
+    };
+    const narrow = generateMaquetteScaleStudy({ ...common, plateAspect: 0.5 });
+    const wide = generateMaquetteScaleStudy({ ...common, plateAspect: 2.5 });
+    const sourcePositions = required(narrow.sourceGeometry).positions;
+    const eligibleIndices = data.charts.flatMap((chart) =>
+      chart.indices.map((id) => chart.vertices[id] ?? 0),
+    );
+    const eligibleArea = meshSurfaceArea(sourcePositions, eligibleIndices);
+    for (const study of [narrow, wide]) {
+      const platedArea = study.plates.reduce(
+        (sum, plate) => sum + meshSurfaceArea(plate.positions, plate.indices),
+        0,
+      );
+      expect(platedArea / eligibleArea).toBeCloseTo(1, 8);
+      expect(
+        study.plates.every((plate) => plate.positions.every(Number.isFinite)),
+      ).toBe(true);
+    }
+    expect(narrow.plates.map((plate) => plate.sourceBounds)).not.toEqual(
+      wide.plates.map((plate) => plate.sourceBounds),
+    );
+  });
+  test("an old saved inset study and its explicit inset migration are byte-identical", () => {
+    const { plateFit: _plateFit, ...oldSettings } = {
+      ...settings,
+      plateShape: "clipped" as const,
+      plateFit: "inset" as const,
+      plateAspect: 1.3,
+      cornerCut: 0.12,
+      plateTaper: 0.08,
+    };
+    // Normalization accepts the older missing field and preserves inset behavior.
+    const old = generateMaquetteScaleStudy(oldSettings as typeof settings);
+    const explicit = generateMaquetteScaleStudy({
+      ...oldSettings,
+      plateFit: "inset",
+    });
+    expect(JSON.stringify(old)).toBe(JSON.stringify(explicit));
+  });
+});

@@ -38,6 +38,29 @@ asks for thinner stock or a larger model. The thin-prototype action is explicit.
 Wood, printed, and hybrid construction choices and joint notes travel with the
 saved study. Printed adapters still require measured mating surfaces and a fit test.
 
+Local body width and depth can each be adjusted from 0.5 to 2 times the source
+cross-section. They start linked, so one edit changes both; turn linking off to
+tune them independently. These controls change the thickness around the snake's
+fixed centerline, rather than stretching the entire sculpture along a global
+axis. The archival base retains its source footprint. The maquette keeps its
+integrated base fixed and uses smooth transition collars at the body/base union.
+Uniform height resizing remains a separate control. Body edits preserve physical
+stock, raised scale depth, lettering size, margins, and the current wording and
+font. Old saved studies without body factors load with identity factors of 1.
+
+Body edits regenerate the bare surface, scales and safe writing regions, then
+recalculate text assignment with the same deterministic, non-AI allocator. Actual
+bounds are measured from the emitted deformed vertices. Neither the local body
+controls nor the scale preview generate a newly validated manufacturing model;
+the preserved STL and published fabrication patterns remain historical artifacts
+with their original dimensions.
+
+The maquette's derived radial map is generated offline with
+`python3 scripts/generate-scale-body.py`; use `--check` to verify it without
+writing files. The dependency-free generator projects onto the original tube
+operands and records source and generator hashes, which the regular test suite
+checks. It writes only `shared/scale-maquette-body.json`.
+
 The generator runs in a disposable module worker. A newer request terminates
 the previous worker, and an old response cannot replace the current result.
 The last successful preview remains available while the next one is computed.
@@ -46,23 +69,27 @@ Text assignment is deterministic and runs locally without AI. Font shaping or
 measured scanned-ink spans feed the allocator, which walks the poem in reading
 order and fits complete words inside each plate's safe writing rectangle.
 Changed geometry, wording, type size, margins, font or scan metrics trigger a
-new layout. Geometry-cache keys include every normalized shape setting; cached
-geometry never substitutes for fitting the current text. Excess words remain
+new layout. Geometry-cache keys include every normalized shape setting, including
+both body factors; cached geometry never substitutes for fitting the current text. Excess words remain
 explicit overflow rather than being omitted or rewritten.
 
 ## Tunable plate shapes and the photographs
 
 The shape controls are available beside the homepage resizer as well as in the
 studio. Choose clipped wood plates, rectangles, diamonds, or the original plate
-outline. Width-to-height sets a physical face-aspect target by shrinking inside
-the original cell; zero keeps the original cell proportions. For new archival
-shapes with an aspect target, 128 samples of physical distance and local course
-height redistribute column spacing before fitting the faces. This reduces
-oversized empty strips around changes in body thickness while preserving seeded
-variation, disjoint cells and the requested column count. Legacy studies bypass
-this redistribution. The maquette retains its actual planar chart spacing.
-Strong aspect
-changes can expose larger gaps between plates. Corner cut adjusts clipped corners, taper changes the
+outline. Cover mode keeps the complete surface cell and uses the requested
+width-to-height as an approximate course-layout target. The archival generator
+adapts the number of real courses within the rows × columns cell budget, then
+redistributes column spacing from physical distances along each course. It does
+not shrink faces to enforce an exact aspect, avoiding broad strips of empty
+surface. The maquette retains its existing chart topology and clipping while
+adjusting the cell grid to the requested face aspect.
+Inset mode fits an exact physical face-aspect target by shrinking inside the
+original cell; zero keeps the cell proportions. New archival inset shapes use
+128 distance samples to redistribute column spacing, while legacy shapes bypass
+that redistribution. Both modes preserve repeatable variation and disjoint cells.
+Strong aspect changes in inset mode can expose larger gaps between plates.
+Corner cut adjusts clipped corners, taper changes the
 relative widths of the opposite ends, and seeded variation produces repeatable
 irregularity. Changing these settings regenerates the geometry and the lettering
 layout together for both the archival surface and the actual maquette. Writing
@@ -70,8 +97,9 @@ stays within the regenerated safe region; a narrower or more pointed face can
 leave less room for a word.
 
 A fresh study starts with clipped wood plates, a 1.3 width-to-height target,
-0.12 corner cut, 0.12 taper, 1.05 inches maximum relief, and a warm wood preview
-color. These are editable visual assumptions. The supplied photographs show
+0.04 corner cut, 0.025 taper, 100 × 4 target cells, a 0.02 gap, 0.3 variation,
+1.05 inches maximum relief, and a matte warm-wood preview color. Cover mode is
+the new-study default; the aspect is approximate rather than an exact face ratio. These are editable visual assumptions. The supplied photographs show
 chunky short rectangles and trapezoids with clipped corners and stepped edges.
 Many near-facing faces appear roughly 1.1–1.7 times as long as their short edge,
 but camera perspective changes that ratio. The 1.3 starting value is a visual
@@ -84,34 +112,58 @@ ratios beside actual bare and clad geometry bounds. Opening a reference still
 shows the complete original. A saved schema-1 study without the new controls
 loads the original outline and cell proportions; its existing relief, layers,
 wording, font, and colors are retained. Missing old color settings retain the
-former gray. Saving or exporting a tuned study carries all four shape controls.
+former gray. Saving or exporting a tuned study carries all shape controls, including cover or
+inset mode. Studies and history saved before this mode existed load as inset;
+custom gaps, relief, body factors and lettering settings are retained.
+
+Both models render a solid bare body underneath the plates, so gaps reveal the
+underlying support rather than the scene behind the sculpture. The preview uses
+matte wood shading. Fresh reference settings target 90–95% coverage: measured
+plate footprints cover about 92.1% of the archival body and jaw, and 95.0% of
+the eligible print-model surface. Tests also check resized bodies. These are
+surface-area measurements with relief removed, so raised plate sides cannot
+inflate the coverage. Archival faces are compared with the matching supported
+body and jaw; print faces are compared directly with the bare chart surface at
+zero support offset. Custom gaps and outlines can change
+the result. Coverage is evaluated on the mapped body surface; the
+original archival base and the maquette's unmapped base underside are outside
+that comparison. A coverage percentage describes the generated study and is not
+a fabrication-clearance or installation guarantee.
 
 ## Browsing working versions
 
 The version browser offers nine geometry presets: four actual-print
 studies at 180, 240, 360, and 720 mm, plus 36-inch wood, 72-inch curved wood,
 72-inch planar hybrid, and full archival-height studies, plus a photo-reference
-clipped-wood study. The original eight retain their earlier outlines and relief
-settings. The photo-reference version applies the new geometry defaults. Each
+clipped-wood study. The original eight retain their earlier outlines, gaps, variation, counts and
+relief settings, using inset mode. The photo-reference version applies the new geometry defaults. Each
 preset states its support, metal, and relief assumptions. Choosing one applies those construction
 settings while preserving the current wording, font, colors, and notes. A valid
 geometry preset does not guarantee that arbitrary lettering will fit or that a
 physical assembly has adequate clearances.
 
 Up to eight recently displayed working shapes are saved in this browser. This
-small history contains shape and construction settings rather than duplicate
-font files or text. Reopening an existing shape preserves the navigation order.
+small history contains body factors, plate shape and construction settings rather
+than duplicate font files or text. Reopening an existing shape preserves the navigation order.
 Only successfully prepared previews enter this history. The current complete
 view remains visible while a new font, layout, or geometry is loading or fails.
-Recent geometry is reused from a page-local cache bounded by both entry count
-and a conservative memory estimate. Reloading preserves the shape settings,
-not the cached meshes.
+The page automatically builds a recent-geometry cache as valid studies finish.
+It reuses matching geometry when returning to a recent study, with at most four
+entries and a 96 MiB conservative memory-estimate budget. Close-set archival
+studies are large enough that only two typically fit. Every normalized
+geometry setting, including body width and depth, participates in the key. The
+cache is page-local; it is not a persistent mesh store or a server precomputation.
+Reloading preserves the settings and history, then rebuilds the meshes.
 
 Optional adaptive plate density uses a saved physical-size reference. Increasing
 the model size requests more rows and columns; decreasing it requests fewer.
-Calculations always use the reference, so repeated size changes do not accumulate
-rounding error. Editing the density deliberately sets a new reference. Minimum
-counts and preview budgets still apply and are reported; the maquette's original
+Local body width and depth additionally change the row target using the relative
+perimeter of an ellipse formed by the two body factors. Columns stay tied to
+uniform size because body edits leave the centerline fixed. This row response is
+an estimated girth target: actual cross-sections vary along the sculpture.
+Calculations always use the saved size and body-factor reference, so repeated
+size or thickness changes do not accumulate rounding error. Editing the density
+deliberately sets a new reference. Minimum counts and preview budgets still apply and are reported; the maquette's original
 chart seams still establish a floor on its actual piece count. Material thickness,
 relief, type size, and margins remain in physical units.
 
@@ -123,7 +175,8 @@ The renderer prepares each replacement before retiring the current
 surface, with at most two skins during a short crossfade. Failed preparation
 retains the previous skin. Rapid selections keep the active fade continuous and
 coalesce to the latest requested replacement. Reduced-motion preferences complete transitions
-immediately. These controls improve continuity; actual frame rate still depends
+immediately. A cancellable fade deadline also releases queued previews when a
+background tab stops receiving animation frames. These controls improve continuity; actual frame rate still depends
 on device, texture load, and the chosen density.
 
 ## Lettering
@@ -207,8 +260,8 @@ mean no allowance has been entered; they do not prove a layer is absent. The
 0.127 mm metal default records the existing proposed stock, not a confirmed
 purchase or installed thickness.
 
-The section comparison adds each allowance to the two local ellipse semiaxes
-and numerically integrates its perimeter. The scale relief stage is a maximum
+The section comparison applies the local body factors, then adds each allowance
+to the two local ellipse semiaxes and numerically integrates its perimeter. The scale relief stage is a maximum
 envelope estimate. It does not trace a tape measure across every gap and step.
 Actual rendered cladding bounds are reported separately from the full model
 including its base. The photo comparison uses bare body-and-jaw bounds without
@@ -225,8 +278,8 @@ movement, attachment samples, and installation records.
 
 ## Saving and publication
 
-The current study is saved in this browser. A JSON download carries geometry,
-layer assumptions, wording, selected font (including embedded custom bytes),
+The current study is saved in this browser. A JSON download carries geometry and
+body factors, layer assumptions, wording, selected font (including embedded custom bytes),
 construction notes, colors, and fit settings to
 another browser. Imports are bounded and normalized; they cannot load remote
 fonts, scripts, or arbitrary asset URLs. Design imports are capped at 3 MB. This surface does not claim account

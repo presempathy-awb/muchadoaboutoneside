@@ -1021,6 +1021,46 @@
   outline-offset: 3px;
 }
 
+.scales-body-controls {
+  border-block: 1px solid #dedbd1;
+  padding-block: 16px;
+  margin-block: 12px 18px;
+}
+.scales-body-controls h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+.scales-body-controls .scales-toggle {
+  margin-bottom: 12px;
+}
+.scales-body-reset {
+  margin-top: 6px;
+}
+
+.scales-coverage-options {
+  border: 1px solid #dedbd1;
+  border-radius: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.scales-coverage-options legend {
+  font-size: 0.8rem;
+  padding-inline: 4px;
+}
+.scales-coverage-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.scales-coverage-options input {
+  accent-color: #40543e;
+}
+
 .scales-shape-options {
   border: 0;
   padding: 0;

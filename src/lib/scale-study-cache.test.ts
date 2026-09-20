@@ -42,6 +42,49 @@ describe("bounded recent geometry cache", () => {
     expect(cache.get(settings)).toBe(study);
   });
 
+  test("builds distinct body shapes and reuses a revisited shape", () => {
+    const cache = new ScaleStudyCache();
+    const wider = { ...settings, bodyWidthScale: 1.25 };
+    const deeper = { ...settings, bodyDepthScale: 1.25 };
+    cache.set(settings, study);
+    expect(cache.get(wider)).toBeUndefined();
+    expect(cache.get(deeper)).toBeUndefined();
+    const wideStudy = generateScaleStudy(wider);
+    const deepStudy = generateScaleStudy(deeper);
+    expect(wideStudy.bareSourceBounds).not.toEqual(study.bareSourceBounds);
+    expect(deepStudy.bareSourceBounds).not.toEqual(study.bareSourceBounds);
+    cache.set(wider, wideStudy);
+    cache.set(deeper, deepStudy);
+    expect(cache.size).toBe(3);
+    expect(cache.get({ ...wider })).toBe(wideStudy);
+    expect(cache.get({ ...deeper })).toBe(deepStudy);
+    expect(cache.get({ ...settings })).toBe(study);
+  });
+
+  test("close-set archival body edits keep the immediately preceding study", () => {
+    const cache = new ScaleStudyCache();
+    const linked = {
+      ...DEFAULT_SCALE_STUDY_SETTINGS,
+      bodyWidthScale: 1.1,
+      bodyDepthScale: 1.1,
+    };
+    const independent = {
+      ...DEFAULT_SCALE_STUDY_SETTINGS,
+      bodyWidthScale: 1.1,
+      bodyDepthScale: 0.9,
+    };
+    const linkedStudy = generateScaleStudy(linked);
+    const independentStudy = generateScaleStudy(independent);
+    expect(estimateScaleStudyBytes(linkedStudy)).toBeGreaterThan(
+      32 * 1024 * 1024,
+    );
+    cache.set(linked, linkedStudy);
+    cache.set(independent, independentStudy);
+    expect(cache.size).toBe(2);
+    expect(cache.get(linked)).toBe(linkedStudy);
+    expect(cache.get(independent)).toBe(independentStudy);
+  }, 15000);
+
   test("bounds retained array memory and does not accumulate replaced entries", () => {
     const bytes = estimateScaleStudyBytes(study);
     const cache = new ScaleStudyCache(8, bytes);
