@@ -61,8 +61,11 @@ class Room {
 
   constructor(
     readonly name: string,
-    private readonly file: string,
-    private readonly textFile: string,
+    private readonly textName: string,
+    private readonly label: string,
+    /** Without files the room lives in memory only and never saves. */
+    private readonly file?: string,
+    private readonly textFile?: string,
   ) {
     // The server is a relay, not a participant, so it has no presence.
     this.awareness.setLocalState(null);
@@ -97,21 +100,23 @@ class Room {
   }
 
   async load(seed: Uint8Array) {
-    try {
-      Y.applyUpdate(
-        this.doc,
-        new Uint8Array(await readFile(this.file)),
-        "load",
-      );
-    } catch (error) {
-      if (!isMissingFile(error)) throw error;
+    if (this.file) {
+      try {
+        Y.applyUpdate(
+          this.doc,
+          new Uint8Array(await readFile(this.file)),
+          "load",
+        );
+      } catch (error) {
+        if (!isMissingFile(error)) throw error;
+      }
     }
     // Idempotent: the seed is the same bytes every browser applies.
     Y.applyUpdate(this.doc, seed, "seed");
   }
 
   text() {
-    return this.doc.getText(DRAFT_TEXT_NAME).toString();
+    return this.doc.getText(this.textName).toString();
   }
 
   join(connection: Connection) {
@@ -188,7 +193,7 @@ class Room {
   }
 
   private scheduleSave() {
-    if (this.closed) return;
+    if (this.closed || !this.file) return;
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(() => {
       this.saveTimer = undefined;
@@ -201,12 +206,13 @@ class Room {
     this.pending = this.pending
       .then(() => this.save())
       .catch((error: unknown) => {
-        console.error(`Could not save poem room ${this.name}:`, error);
+        console.error(`Could not save ${this.label} room ${this.name}:`, error);
       });
     return this.pending;
   }
 
   private async save() {
+    if (!this.file || !this.textFile) return;
     const state = Y.encodeStateAsUpdate(this.doc);
     const temporary = `${this.file}.tmp`;
     await writeFile(temporary, state);
@@ -219,22 +225,30 @@ class RoomRegistry {
   private readonly rooms = new Map<string, Promise<Room>>();
   private readonly prepared: Promise<void>;
 
-  constructor(private readonly dir: string) {
-    this.prepared = mkdir(dir, { recursive: true }).then(() => undefined);
+  constructor(
+    private readonly spec: RoomSpec,
+    private readonly dir?: string,
+  ) {
+    this.prepared = dir
+      ? mkdir(dir, { recursive: true }).then(() => undefined)
+      : Promise.resolve();
   }
 
   room(name: string): Promise<Room> {
     let room = this.rooms.get(name);
     if (!room) {
-      const id = versionIdForRoom(name);
-      if (!id) throw new Error(`Unknown poem room: ${name}`);
+      const seed = this.spec.seed(name);
+      if (!seed) throw new Error(`Unknown ${this.spec.label} room: ${name}`);
+      const dir = this.dir;
       room = this.prepared.then(async () => {
         const created = new Room(
           name,
-          resolve(this.dir, `${name}.yjs`),
-          resolve(this.dir, `${name}.txt`),
+          this.spec.textName,
+          this.spec.label,
+          dir && resolve(dir, `${name}.yjs`),
+          dir && resolve(dir, `${name}.txt`),
         );
-        await created.load(seedUpdate(poemVersionById(id)));
+        await created.load(seed);
         return created;
       });
       this.rooms.set(name, room);
@@ -254,37 +268,85 @@ interface Attachment {
   ready: Promise<{ room: Room; connection: Connection } | undefined>;
 }
 
+/** Which rooms exist, how each starts, and what the text mirror reads. */
+export interface RoomSpec {
+  /** Advertised by the status endpoint. */
+  readonly list: readonly string[];
+  /** Deterministic seed for a room, or undefined when the room is unknown. */
+  seed(room: string): Uint8Array | undefined;
+  /** The Y.Text key the plain-text mirror reads. */
+  readonly textName: string;
+  /** Word used in errors and logs: "poem", "erebe". */
+  readonly label: string;
+}
+
+export interface CollabOptions {
+  /** Elysia plugin name; unique per mounted instance. */
+  name: string;
+  /** Route prefix, e.g. "/api/collab". */
+  prefix: string;
+  rooms: RoomSpec;
+  /** Persist rooms here. Without it rooms live in memory and end with the process. */
+  dir?: string;
+}
+
+export const POEM_ROOMS: RoomSpec = {
+  list: COLLAB_ROOMS,
+  seed(room) {
+    const id = versionIdForRoom(room);
+    return id ? seedUpdate(poemVersionById(id)) : undefined;
+  },
+  textName: DRAFT_TEXT_NAME,
+  label: "poem",
+};
+
+/** Live poem drafts. Stays off without a directory, exactly as before. */
 export function createCollab(dir?: string) {
-  const registry = dir ? new RoomRegistry(resolve(dir)) : undefined;
-  const enabled = registry !== undefined;
-  const status = () =>
-    Response.json(
-      { enabled, rooms: enabled ? COLLAB_ROOMS : [] },
-      { headers: noStore },
+  if (!dir) {
+    const plugin = new Elysia({ name: "collab" }).get(
+      "/api/collab/status",
+      () => Response.json({ enabled: false, rooms: [] }, { headers: noStore }),
     );
-  const base = new Elysia({ name: "collab" }).get("/api/collab/status", status);
-  if (!registry) {
-    return { enabled, plugin: base, close: async () => {} };
+    return { enabled: false, plugin, close: async () => {} };
   }
+  return createRooms({
+    name: "collab",
+    prefix: "/api/collab",
+    rooms: POEM_ROOMS,
+    dir,
+  });
+}
+
+/** A set of y-websocket rooms under one prefix; persistent only with a dir. */
+export function createRooms(options: CollabOptions) {
+  const { rooms } = options;
+  const registry = new RoomRegistry(
+    rooms,
+    options.dir ? resolve(options.dir) : undefined,
+  );
+  const unknown = () =>
+    Response.json(
+      { error: `Unknown ${rooms.label} room` },
+      { status: 404, headers: noStore },
+    );
   const attachments = new WeakMap<object, Attachment>();
-  const plugin = base
-    .get("/api/collab/rooms/:room/text", async ({ params: { room } }) => {
-      if (!versionIdForRoom(room))
-        return Response.json(
-          { error: "Unknown poem room" },
-          { status: 404, headers: noStore },
-        );
+  const plugin = new Elysia({ name: options.name, prefix: options.prefix })
+    .get("/status", () =>
+      Response.json({ enabled: true, rooms: rooms.list }, { headers: noStore }),
+    )
+    .get("/rooms/:room/text", async ({ params: { room } }) => {
+      if (!rooms.seed(room)) return unknown();
       const loaded = await registry.room(room);
       return new Response(`${loaded.text()}\n`, {
         headers: { ...noStore, "content-type": "text/plain; charset=utf-8" },
       });
     })
-    .ws("/api/collab/rooms/:room", {
+    .ws("/rooms/:room", {
       maxPayloadLength: 1024 * 1024,
       open(ws) {
         const name = ws.data.params.room;
-        if (!versionIdForRoom(name)) {
-          ws.close(4404, "Unknown poem room");
+        if (!rooms.seed(name)) {
+          ws.close(4404, `Unknown ${rooms.label} room`);
           return;
         }
         const attachment: Attachment = {
@@ -317,5 +379,5 @@ export function createCollab(dir?: string) {
         attached?.room.leave(attached.connection);
       },
     });
-  return { enabled, plugin, close: () => registry.close() };
+  return { enabled: true, plugin, close: () => registry.close() };
 }

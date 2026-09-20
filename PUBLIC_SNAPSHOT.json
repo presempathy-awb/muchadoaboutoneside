@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "84806ea23a426ecbcacf738210183bf071f8856c",
+  "sourceCommit": "a6d967b282cb82308f4b76d0cb0c26bdcf433bb3",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5225,8 +5225,8 @@
     },
     {
       "path": "server/app.ts",
-      "bytes": 5098,
-      "sha256": "902419e05e692bdddc0aec3b1b5b37a146eec8c8d6c83664361165ab5882c05a"
+      "bytes": 5549,
+      "sha256": "c7f7afba8b8babd970694f983eac735b6eae5d2085ed99851832c5536303349f"
     },
     {
       "path": "server/collab.test.ts",
@@ -5235,13 +5235,23 @@
     },
     {
       "path": "server/collab.ts",
-      "bytes": 9909,
-      "sha256": "d6d1930ce4d8a781d0b953b88049f1432e51e2b73cc32c081858697af079c16c"
+      "bytes": 11805,
+      "sha256": "69f58ed316725702fe9f2b88a89c09ab270dd6a99a304c3b346f578814ce7de2"
     },
     {
       "path": "server/index.ts",
-      "bytes": 865,
-      "sha256": "43c66f4ad98e7749c4e1b199db85959b693cc25c319c7ec4bc4592475e985786"
+      "bytes": 1302,
+      "sha256": "0443a7d4464f04625f81ea2523bb631b78d8cddb804929906b94ddf55f327fc0"
+    },
+    {
+      "path": "server/modules.test.ts",
+      "bytes": 4338,
+      "sha256": "5a40102ec80185f8fff15039f861cf814bbccfac65d9e5e80e21269e734b15a9"
+    },
+    {
+      "path": "server/modules.ts",
+      "bytes": 2726,
+      "sha256": "54184633eb2f6366433f6642623cb923d84f5c1fcad9cb93fc7fb8a2ee53368b"
     },
     {
       "path": "server/project.ts",
