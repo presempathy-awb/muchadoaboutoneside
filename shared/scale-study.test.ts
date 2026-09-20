@@ -9,6 +9,8 @@ import {
   normalizeScaleStudySettings,
   physicalScaleCoursePartitions,
   type ScalePlate,
+  shiftScalePartitionsToCover,
+  staggerScaleCoursePartitions,
 } from "./scale-study";
 import { cross, dot, ScaleSurface, subtract, vectorAt } from "./scale-surface";
 
@@ -138,10 +140,10 @@ describe("conforming 3D scale study", () => {
     expect(generateScaleStudy()).toEqual(defaultStudy);
     expect(
       defaultStudy.plates.filter((plate) => plate.surface === "body"),
-    ).toHaveLength(400);
+    ).toHaveLength(500);
     expect(
       defaultStudy.plates.filter((plate) => plate.surface === "jaw"),
-    ).toHaveLength(20);
+    ).toHaveLength(25);
     const aspects = defaultStudy.plates
       .filter((plate) => plate.surface === "body")
       .map((plate) => plate.widthInches / plate.heightInches)
@@ -900,7 +902,7 @@ describe("complete archival cover packing", () => {
       expect(coverage).toBeGreaterThan(0.9);
       expect(coverage).toBeLessThanOrEqual(0.95);
       expect(study.plates.filter((p) => p.surface === "body")).toHaveLength(
-        400,
+        500,
       );
       const aspects = study.plates
         .filter((p) => p.surface === "body")
@@ -927,7 +929,7 @@ describe("complete archival cover packing", () => {
         relief: 0.5,
       });
       const body = study.plates.filter((p) => p.surface === "body");
-      expect(body).toHaveLength(400);
+      expect(body).toHaveLength(500);
       expect(body.flatMap(validatePlate)).toEqual([]);
       for (const a of body) {
         const b = body.find(
@@ -1001,4 +1003,37 @@ describe("complete archival cover packing", () => {
       ).size,
     ).toBe(1);
   }, 15000);
+
+  test("even and odd row patterns plate the visible front meridian", () => {
+    expect(shiftScalePartitionsToCover([0, 0.25, 0.5, 0.75, 1])).toEqual([
+      0, 0.25, 0.6, 0.75, 1,
+    ]);
+    expect(
+      staggerScaleCoursePartitions([0, 0.25, 0.5, 0.75, 1], 1),
+    ).not.toEqual([0, 0.25, 0.5, 0.75, 1]);
+    expect(staggerScaleCoursePartitions([0, 0.25, 0.5, 0.75, 1], 0)).toEqual([
+      0, 0.25, 0.5, 0.75, 1,
+    ]);
+    for (const rows of [2, 3, 4, 5, 6]) {
+      for (const plateFit of ["cover", "inset"] as const) {
+        const study = generateScaleStudy({
+          ...DEFAULT_SCALE_STUDY_SETTINGS,
+          ...LEGACY_SCALE_SHAPE,
+          plateFit,
+          columns: 24,
+          rows,
+          gap: plateFit === "cover" ? 0.02 : 0.12,
+          variation: 0,
+          relief: 0,
+        });
+        const covering = study.plates.filter(
+          (plate) =>
+            plate.surface === "body" &&
+            plate.sourceBounds.v0 < 0.5 &&
+            0.5 < plate.sourceBounds.v1,
+        );
+        expect(covering.length).toBeGreaterThan(0);
+      }
+    }
+  }, 20000);
 });

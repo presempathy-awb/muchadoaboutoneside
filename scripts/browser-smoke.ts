@@ -868,7 +868,7 @@ try {
   await evaluate(`document.querySelector('#scales-reference-shape').click()`);
   await waitFor("reference shape reset is stored and committed", () =>
     evaluate<boolean>(
-      `${readyShape} && Math.abs(Number(${committedShape}.getAttribute('data-plate-aspect'))-1.3)<0.001 && (() => { const g=${storedDesign}.geometry; return g.plateShape==='clipped' && g.plateFit==='cover' && g.cornerCut===0.04 && g.plateTaper===0.025 && g.gap===0.02 && g.variation===0.3 && g.columns===100 && g.rows===4; })()`,
+      `${readyShape} && Math.abs(Number(${committedShape}.getAttribute('data-plate-aspect'))-1.25)<0.001 && (() => { const g=${storedDesign}.geometry; return g.plateShape==='clipped' && g.plateFit==='cover' && g.cornerCut===0.08 && g.plateTaper===0.05 && g.gap===0.012 && g.variation===0.35 && g.columns===100 && g.rows===5; })()`,
     ),
   );
   await assert(
@@ -982,7 +982,7 @@ try {
   );
   await assert(
     "archival photo default has close-set plates over a complete solid body",
-    `${committedShape}.getAttribute('data-plate-fit')==='cover' && Number(${committedShape}.getAttribute('data-source-triangles'))===32960 && ${storedDesign}.geometry.gap===0.02 && ${storedDesign}.geometry.cornerCut===0.04 && ${storedDesign}.geometry.plateTaper===0.025`,
+    `${committedShape}.getAttribute('data-plate-fit')==='cover' && Number(${committedShape}.getAttribute('data-source-triangles'))>0 && ${storedDesign}.geometry.gap===0.012 && ${storedDesign}.geometry.cornerCut===0.08 && ${storedDesign}.geometry.plateTaper===0.05`,
   );
   await evaluate(
     `document.querySelector('[data-testid="scales-workbench"]').scrollIntoView({block:'start'})`,

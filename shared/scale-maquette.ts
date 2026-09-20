@@ -6,6 +6,8 @@ import {
   type ScalePlate,
   type ScaleStudy,
   type ScaleStudySettings,
+  shiftScalePartitionsToCover,
+  staggerScaleCoursePartitions,
 } from "./scale-study";
 import {
   add,
@@ -455,7 +457,9 @@ export function generateMaquetteScaleStudy(
     const ny = Math.max(1, Math.min(12, Math.round(portion / nx)));
     const random = randomForChart(chart.id, settings.seed);
     const courseU = chartPartitions(nx, settings.variation, random);
-    const courseV = chartPartitions(ny, settings.variation, random);
+    const courseV = shiftScalePartitionsToCover(
+      chartPartitions(ny, settings.variation, random),
+    );
     const chartPositions = chart.vertices.flatMap((id) =>
       vectorAt(positions, id),
     );
@@ -494,10 +498,11 @@ export function generateMaquetteScaleStudy(
         verticesPerMeridian: 0,
       });
       for (let row = 0; row < ny; row++) {
+        const rowU = staggerScaleCoursePartitions(courseU, row);
         for (let column = 0; column < nx; column++) {
           const inset = settings.gap / 2;
-          const u0 = courseU[column] ?? 0;
-          const u1 = courseU[column + 1] ?? 1;
+          const u0 = rowU[column] ?? 0;
+          const u1 = rowU[column + 1] ?? 1;
           const v0 = courseV[row] ?? 0;
           const v1 = courseV[row + 1] ?? 1;
           let bounds = {

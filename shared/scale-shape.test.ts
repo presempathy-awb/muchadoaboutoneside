@@ -114,6 +114,11 @@ describe("convex scale silhouettes", () => {
       [0, required(lt)],
     ]);
   });
+  test("clipped wood plates keep an eight-sided outline", () => {
+    expect(
+      scalePlateOutline({ ...DEFAULT_SCALE_SHAPE, variation: 0 }, () => 0.5),
+    ).toHaveLength(8);
+  });
   test("physical aspect fitting only shrinks disjoint cells and retains their centers", () => {
     const bounds = { u0: 0.1, u1: 0.9, v0: 0.2, v1: 0.8 };
     expect(fitScalePlateBounds(bounds, 10, 2, 0)).toBe(bounds);

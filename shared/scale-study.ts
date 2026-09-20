@@ -93,13 +93,13 @@ export const DEFAULT_SCALE_STUDY_SETTINGS: ScaleStudySettings = {
   bodyWidthScale: 1,
   bodyDepthScale: 1,
   columns: 100,
-  rows: 4,
-  gap: 0.02,
+  rows: 5,
+  gap: 0.012,
   relief: 1.05,
   ...DEFAULT_SCALE_SHAPE,
   supportOffsetInches: 1,
   surfaceMode: "conforming",
-  variation: 0.3,
+  variation: 0.35,
   seed: 1,
 };
 
@@ -399,6 +399,69 @@ function partitions(
 }
 
 /**
+ * Keep the visible front meridian (v = 0.5) inside a course, not on grout.
+ * Equal even-row splits otherwise put a gap down the middle of the body.
+ */
+export function shiftScalePartitionsToCover(
+  edges: number[],
+  center = 0.5,
+): number[] {
+  const count = edges.length - 1;
+  if (count <= 1) return edges;
+  const moved = edges.slice();
+  let index = -1;
+  for (let i = 0; i < count; i++) {
+    const start = moved[i] ?? 0;
+    const end = moved[i + 1] ?? 1;
+    if (start < center && center < end) {
+      index = i;
+      break;
+    }
+  }
+  if (index < 0) {
+    const at = moved.findIndex(
+      (value, i) => i > 0 && i < count && Math.abs(value - center) <= 1e-12,
+    );
+    if (at < 1) return moved;
+    const left = moved[at - 1] ?? 0;
+    const right = moved[at + 1] ?? 1;
+    moved[at] = center + Math.min(center - left, right - center) * 0.4;
+    index = at - 1;
+  }
+  const start = moved[index] ?? 0;
+  const end = moved[index + 1] ?? 1;
+  const margin = (end - start) * 0.25;
+  if (center - start >= margin && end - center >= margin) return moved;
+  const width = end - start;
+  const origin = Math.max(0, Math.min(1 - width, center - width / 2));
+  if (index > 0) moved[index] = origin;
+  if (index + 1 < count) moved[index + 1] = origin + width;
+  return moved;
+}
+
+/** Brick-bond offset so neighbouring courses do not share a longitudinal seam. */
+export function staggerScaleCoursePartitions(
+  course: number[],
+  row: number,
+): number[] {
+  if (row % 2 === 0 || course.length < 3) return course;
+  const widths = Array.from(
+    { length: course.length - 1 },
+    (_, i) => (course[i + 1] ?? 1) - (course[i] ?? 0),
+  ).sort((a, b) => a - b);
+  const delta = (widths[Math.floor(widths.length / 2)] ?? 0) / 2;
+  if (!(delta > 1e-9)) return course;
+  const interior = course
+    .slice(1, -1)
+    .map((u) => {
+      const shifted = u + delta;
+      return shifted < 1 ? shifted : shifted - 1;
+    })
+    .sort((a, b) => a - b);
+  return [0, ...interior, 1];
+}
+
+/**
  * Invert a bounded local-metric CDF so seeded cells have comparable physical
  * width/height along a course. This changes no random draws or plate counts.
  * The positive floor applies only to a collapsed zero-height sample.
@@ -512,6 +575,12 @@ function coverCourseLayout(
     clamp(Math.floor(estimated), minRows, maxRows),
     clamp(Math.ceil(estimated), minRows, maxRows),
   ]);
+  for (const candidate of [...candidates]) {
+    if (candidate % 2 === 0) {
+      candidates.add(clamp(candidate - 1, minRows, maxRows));
+      candidates.add(clamp(candidate + 1, minRows, maxRows));
+    }
+  }
   let rows = initial,
     best = Infinity;
   for (const candidate of candidates) {
@@ -525,6 +594,24 @@ function coverCourseLayout(
       best = error;
       rows = candidate;
     }
+  }
+  if (rows % 2 === 0) {
+    let oddRows = rows;
+    let oddError = Infinity;
+    for (const odd of [rows - 1, rows + 1]) {
+      if (odd < minRows || odd > maxRows) continue;
+      const total = weights(odd).reduce((a, b) => a + b, 0);
+      const error = Math.abs(Math.log(total / budget / targetAspect));
+      if (
+        error < oddError - 1e-10 ||
+        (Math.abs(error - oddError) <= 1e-10 &&
+          Math.abs(odd - requestedRows) < Math.abs(oddRows - requestedRows))
+      ) {
+        oddRows = odd;
+        oddError = error;
+      }
+    }
+    if (oddRows !== rows && oddError <= best + 0.08) rows = oddRows;
   }
   const q = weights(rows);
   // Capped proportional water filling, then largest remainders. Every course
@@ -682,7 +769,9 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
         )
       : null;
     const rowCount = layout?.rows ?? settings.rows;
-    const rows = partitions(rowCount, cover ? 0 : settings.variation, random);
+    const rows = shiftScalePartitionsToCover(
+      partitions(rowCount, cover ? 0 : settings.variation, random),
+    );
     const gutter = cover ? 0.005 : V_GUTTER;
     for (let row = 0; row < rowCount; row++) {
       const courseColumns = layout?.counts[row] ?? columns;
@@ -693,7 +782,7 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
       );
       const cellV0 = gutter + (rows[row] ?? 0) * (1 - 2 * gutter);
       const cellV1 = gutter + (rows[row + 1] ?? 1) * (1 - 2 * gutter);
-      const course =
+      const mappedCourse =
         cover || (settings.plateShape !== "legacy" && settings.plateAspect > 0)
           ? physicalScaleCoursePartitions(
               surface,
@@ -703,6 +792,7 @@ export function generateScaleStudy(input: unknown = {}): ScaleStudy {
               layout?.prefixes?.[row],
             )
           : seededCourse;
+      const course = staggerScaleCoursePartitions(mappedCourse, row);
       for (let column = 0; column < courseColumns; column++) {
         const cellU0 = course[column] ?? 0;
         const cellU1 = course[column + 1] ?? 1;

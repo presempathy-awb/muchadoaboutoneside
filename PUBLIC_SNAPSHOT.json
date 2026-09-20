@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "a7ae3d6b67c72d05da88f99957d650814d0f2662",
+  "sourceCommit": "84806ea23a426ecbcacf738210183bf071f8856c",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -115,8 +115,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 34014,
-      "sha256": "d83ce8b92f0d6e08c620fd3b9b6097d8d972a1a180aea3d8c17bf957ad799ab5"
+      "bytes": 34015,
+      "sha256": "c1cf431ae575d3d3eeea96e9e5d3d4de7ea636525d91808a246c39ab1f221e46"
     },
     {
       "path": "REUSE.md",
@@ -210,8 +210,8 @@
     },
     {
       "path": "docs/scale-studio.md",
-      "bytes": 19517,
-      "sha256": "60591205b8e456fc5e569c4af7a813c8e929ad84822c96ef6be2bfb5c7d9fde3"
+      "bytes": 19673,
+      "sha256": "37d978709e34260f3dcfb9a3a0308b0e4795674abf47bb52fa51104d77995545"
     },
     {
       "path": "docs/scanned-calligraphy.md",
@@ -5070,8 +5070,8 @@
     },
     {
       "path": "scripts/browser-smoke.ts",
-      "bytes": 50287,
-      "sha256": "fbfae0c30a18a62fd99e69644758c690864584bf11019eb2cbb9ee30718145d5"
+      "bytes": 50283,
+      "sha256": "8b595bcf4639065c05eb69ad5368059a99f6bd7b0690f9f243d5d786f82a49e4"
     },
     {
       "path": "scripts/container-ci-smoke.ts",
@@ -5495,8 +5495,8 @@
     },
     {
       "path": "shared/scale-maquette.ts",
-      "bytes": 19720,
-      "sha256": "59359275b4c544ed1573fb301c68b16ca06c5f3c67fc25343f9b9b5cf8617b2a"
+      "bytes": 19884,
+      "sha256": "58989d689e19424c637261a3f52443e85bce9a7e3addca06ec1aaafc38e08861"
     },
     {
       "path": "shared/scale-measurements.test.ts",
@@ -5545,13 +5545,13 @@
     },
     {
       "path": "shared/scale-shape.test.ts",
-      "bytes": 4620,
-      "sha256": "9a1f2de8ff52d1dd1a8735fb1acb3d3815440867bd2dec2aae518d8398631459"
+      "bytes": 4805,
+      "sha256": "0300bae643f5ceb4315e435e122a71ae97906b5c288cf20ad452b930a5c86fdf"
     },
     {
       "path": "shared/scale-shape.ts",
       "bytes": 5192,
-      "sha256": "7ddd85158f977b3d21dd0d85791e10ac89fd455f48070c792c535df9035afddd"
+      "sha256": "e5675f8b143018763174d052640ab7ff616873b70113678141c191ff3b801ead"
     },
     {
       "path": "shared/scale-size-fit.test.ts",
@@ -5565,13 +5565,13 @@
     },
     {
       "path": "shared/scale-study.test.ts",
-      "bytes": 34574,
-      "sha256": "0d6023ce9628c50a7badbeff9f14a68b2eac22eb56d511b7862c82e567baa6b0"
+      "bytes": 35732,
+      "sha256": "f6cbdcc6b91893b8f5da3520d95cd82e3af29f2affad104b4cb7a98920a6867e"
     },
     {
       "path": "shared/scale-study.ts",
-      "bytes": 26597,
-      "sha256": "2badba002e74bfb2f2accce5c5c27455a1248538ef7496707191b90f8ac9b7f2"
+      "bytes": 29541,
+      "sha256": "426669c806240a11725d2693a8b2bd42ee29d8c87764d824dc5a14ca67ace801"
     },
     {
       "path": "shared/scale-surface.ts",
@@ -5580,13 +5580,13 @@
     },
     {
       "path": "shared/scale-versions.test.ts",
-      "bytes": 7318,
-      "sha256": "06cbbb9676ee8b2cc73af9903563c4b011a6f5bcb75785fbe4f2c13ba8a355b0"
+      "bytes": 7856,
+      "sha256": "d2930f854eeb0626c170e4b02a347bf748f40f73a2a94f703cdd4a9c437df03b"
     },
     {
       "path": "shared/scale-versions.ts",
-      "bytes": 6710,
-      "sha256": "48eb97f932e740ec9a3b872ef9d93de067057d86d0d57c7e999136eaecda0c95"
+      "bytes": 6711,
+      "sha256": "78052ff23f166384b55f4bca5797e87cc76cb6cca0f7badb2b83ec55d222198b"
     },
     {
       "path": "shared/scan-crop-geometry.test.ts",
@@ -5860,13 +5860,13 @@
     },
     {
       "path": "src/components/scale-reference-comparison.tsx",
-      "bytes": 7210,
-      "sha256": "02c6bc9afb0528497ac9bbf33a88962361948c775d25d7bb5f1bfb73605919a0"
+      "bytes": 7293,
+      "sha256": "b767c0210a593976b6652c56a1866db53fbd18ee156f9da0aeada17be3cbfa58"
     },
     {
       "path": "src/components/scale-shape-controls.tsx",
-      "bytes": 8951,
-      "sha256": "a0370ccd608fd0587466f780a285732238a1a7d29c0338641afc55da7ad50608"
+      "bytes": 8962,
+      "sha256": "5b782f20ee5a4306c052b3a943f9d91c5a5666b611a0fcbf285824a528695e58"
     },
     {
       "path": "src/components/scale-version-browser.tsx",

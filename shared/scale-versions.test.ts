@@ -42,8 +42,9 @@ describe("viewable scale versions", () => {
       ({ id }) => id === "wood-photo-reference",
     );
     expect(photo?.geometry.columns).toBe(100);
-    expect(photo?.geometry.gap).toBe(0.02);
-    expect(photo?.geometry.variation).toBe(0.3);
+    expect(photo?.geometry.rows).toBe(5);
+    expect(photo?.geometry.gap).toBe(0.012);
+    expect(photo?.geometry.variation).toBe(0.35);
     for (const [key, value] of Object.entries(DEFAULT_SCALE_SHAPE))
       expect(photo?.geometry[key as keyof typeof DEFAULT_SCALE_SHAPE]).toBe(
         value,
@@ -206,3 +207,21 @@ test("all construction presets restore identity body proportions", () => {
     expect(restored.geometry.bodyDepthScale).toBe(1);
   }
 });
+
+test("every starting shape plates the visible front meridian", () => {
+  for (const version of SCALE_VERSION_PRESETS) {
+    const study = (
+      version.geometry.modelId === "maquette"
+        ? generateMaquetteScaleStudy
+        : generateScaleStudy
+    )(version.geometry);
+    expect(
+      study.plates.some(
+        (plate) =>
+          plate.surface === "body" &&
+          plate.sourceBounds.v0 < 0.5 &&
+          0.5 < plate.sourceBounds.v1,
+      ),
+    ).toBe(true);
+  }
+}, 40000);
