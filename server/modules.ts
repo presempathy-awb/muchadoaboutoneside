@@ -8,23 +8,52 @@
  */
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { type AnyElysia, Elysia } from "elysia";
 import * as Y from "yjs";
+import {
+  type BlobEntry,
+  createBlobRoutes,
+  type LakefsConfig,
+  lakefsFromEnv,
+  loadManifest,
+} from "./blobs";
 import { createRooms, type RoomSpec } from "./collab";
+import {
+  createPrefsRoutes,
+  MemoryPrefsStore,
+  PostgresPrefsStore,
+  type PrefsStore,
+} from "./prefs";
+import {
+  PostgresRoomStore,
+  postgresRoomStoreFromEnv,
+  type RoomStore,
+} from "./room-store";
 
 export interface WebModuleOptions {
   /** Short name; routes mount under /api/modules/<name>. */
   name: string;
   /** Host header (without port) that selects this module's pages. */
   host: string;
-  /** Directory holding dist/ and rooms.json. */
+  /** Directory holding dist/, rooms.json and optionally asset-manifest.toml. */
   dir: string;
+  /** lakeFS credentials for the module's heavy assets; env by default. */
+  lakefs?: LakefsConfig;
+  /** Test seam for the lakeFS fetch. */
+  fetch?: typeof fetch;
+  /** Durable room storage; env (EREBE_DATABASE_URL) by default, memory when absent. */
+  store?: RoomStore;
+  /** Per-user preferences; shares the room store's database when it is Postgres. */
+  prefs?: PrefsStore;
 }
 
 export interface WebModule {
   readonly name: string;
   readonly host: string;
   readonly staticDir: string;
-  readonly plugin: ReturnType<typeof createRooms>["plugin"];
+  readonly plugin: AnyElysia;
+  /** sha256 -> lakeFS locator for the module's heavy assets. */
+  readonly blobs: Map<string, BlobEntry>;
   close(): Promise<void>;
 }
 
@@ -69,16 +98,38 @@ export async function loadWebModule(
 ): Promise<WebModule> {
   const dir = resolve(options.dir);
   const rooms = await loadModuleRooms(dir, options.name);
+  const store =
+    options.store ??
+    (await postgresRoomStoreFromEnv(process.env, options.name));
   const collab = createRooms({
     name: `module-${options.name}`,
     prefix: `/api/modules/${options.name}`,
     rooms,
+    store,
   });
+  const blobs = await loadManifest(dir);
+  const prefs =
+    options.prefs ??
+    (store instanceof PostgresRoomStore
+      ? new PostgresPrefsStore(store.client, options.name)
+      : new MemoryPrefsStore());
+  const plugin = new Elysia({ name: `module-${options.name}-plugin` })
+    .use(collab.plugin)
+    .use(createPrefsRoutes({ name: options.name, store: prefs }))
+    .use(
+      createBlobRoutes({
+        name: options.name,
+        entries: blobs,
+        lakefs: options.lakefs ?? lakefsFromEnv(),
+        fetch: options.fetch,
+      }),
+    );
   return {
     name: options.name,
     host: options.host,
     staticDir: resolve(dir, "dist"),
-    plugin: collab.plugin,
+    plugin,
+    blobs,
     close: collab.close,
   };
 }

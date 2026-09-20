@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "a6d967b282cb82308f4b76d0cb0c26bdcf433bb3",
+  "sourceCommit": "9c0d62e3c0f3ee8d8110435aa9d74cdd6da334ad",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5229,14 +5229,19 @@
       "sha256": "c7f7afba8b8babd970694f983eac735b6eae5d2085ed99851832c5536303349f"
     },
     {
+      "path": "server/blobs.ts",
+      "bytes": 6729,
+      "sha256": "023f7b8b2a563cbfc7ff29b31db8615a9203a774fa780018411f53ccfc373212"
+    },
+    {
       "path": "server/collab.test.ts",
       "bytes": 8859,
       "sha256": "78b96abb5a8e19064c3de94ba2c1096704e40abba8b8a2389e74733aa13ac98d"
     },
     {
       "path": "server/collab.ts",
-      "bytes": 11805,
-      "sha256": "69f58ed316725702fe9f2b88a89c09ab270dd6a99a304c3b346f578814ce7de2"
+      "bytes": 13212,
+      "sha256": "09d14069e508240aa0f50d223d790479a055b53f86c7baecb4c581c288765a5b"
     },
     {
       "path": "server/index.ts",
@@ -5245,18 +5250,28 @@
     },
     {
       "path": "server/modules.test.ts",
-      "bytes": 4338,
-      "sha256": "5a40102ec80185f8fff15039f861cf814bbccfac65d9e5e80e21269e734b15a9"
+      "bytes": 13536,
+      "sha256": "db32ca0c454192ade1bfe1ae7226ef6e29528a29533456540d84f982810903b6"
     },
     {
       "path": "server/modules.ts",
-      "bytes": 2726,
-      "sha256": "54184633eb2f6366433f6642623cb923d84f5c1fcad9cb93fc7fb8a2ee53368b"
+      "bytes": 4256,
+      "sha256": "4e4b56090ed96c53e6bd66b250adb045e4957c3609b907a182c42139941573f7"
+    },
+    {
+      "path": "server/prefs.ts",
+      "bytes": 5742,
+      "sha256": "ed21508b02ab282155e2342d341674d3661f60b9124a4e7b44f790290d03029c"
     },
     {
       "path": "server/project.ts",
       "bytes": 2527,
       "sha256": "08a5a10ce5d9a290cdffdded40c927b5e95d3a7724add3f3621f070dc04595a3"
+    },
+    {
+      "path": "server/room-store.ts",
+      "bytes": 6162,
+      "sha256": "3fd62952ed5a4ea63e1cd3a606f4bf2b3aa98eddac33f98f491605acd79048b3"
     },
     {
       "path": "sgconfig.yml",

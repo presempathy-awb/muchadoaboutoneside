@@ -20,6 +20,7 @@ import {
   seedUpdate,
   versionIdForRoom,
 } from "../shared/poem-drafts";
+import { applyStored, type RoomStore } from "./room-store";
 
 const MESSAGE_SYNC = 0;
 const MESSAGE_AWARENESS = 1;
@@ -66,6 +67,7 @@ class Room {
     /** Without files the room lives in memory only and never saves. */
     private readonly file?: string,
     private readonly textFile?: string,
+    private readonly store?: RoomStore,
   ) {
     // The server is a relay, not a participant, so it has no presence.
     this.awareness.setLocalState(null);
@@ -74,7 +76,10 @@ class Room {
       encoding.writeVarUint(encoder, MESSAGE_SYNC);
       syncProtocol.writeUpdate(encoder, update);
       this.broadcast(encoding.toUint8Array(encoder), origin);
-      this.scheduleSave();
+      // A stored room appends every update as it happens; files batch instead.
+      if (this.store && origin !== "load" && origin !== "seed")
+        this.queueAppend(update);
+      else this.scheduleSave();
     });
     this.awareness.on(
       "update",
@@ -100,6 +105,8 @@ class Room {
   }
 
   async load(seed: Uint8Array) {
+    if (this.store)
+      applyStored(this.doc, await this.store.load(this.name), "load");
     if (this.file) {
       try {
         Y.applyUpdate(
@@ -184,12 +191,37 @@ class Room {
     this.closed = true;
     this.awareness.destroy();
     await this.flush();
+    if (this.store) {
+      // Compact: one snapshot replaces the log so the next open is quick.
+      await this.pending;
+      await this.store
+        .snapshot(this.name, Y.encodeStateAsUpdate(this.doc))
+        .catch((error: unknown) => {
+          console.error(
+            `Could not snapshot ${this.label} room ${this.name}:`,
+            error,
+          );
+        });
+    }
     this.doc.destroy();
   }
 
   private broadcast(message: Uint8Array, except?: unknown) {
     for (const connection of this.connections)
       if (connection !== except) connection.send(message);
+  }
+
+  private queueAppend(update: Uint8Array) {
+    const store = this.store;
+    if (!store || this.closed) return;
+    this.pending = this.pending
+      .then(() => store.append(this.name, update))
+      .catch((error: unknown) => {
+        console.error(
+          `Could not store ${this.label} room ${this.name}:`,
+          error,
+        );
+      });
   }
 
   private scheduleSave() {
@@ -228,6 +260,7 @@ class RoomRegistry {
   constructor(
     private readonly spec: RoomSpec,
     private readonly dir?: string,
+    private readonly store?: RoomStore,
   ) {
     this.prepared = dir
       ? mkdir(dir, { recursive: true }).then(() => undefined)
@@ -247,6 +280,7 @@ class RoomRegistry {
           this.spec.label,
           dir && resolve(dir, `${name}.yjs`),
           dir && resolve(dir, `${name}.txt`),
+          this.store,
         );
         await created.load(seed);
         return created;
@@ -288,6 +322,8 @@ export interface CollabOptions {
   rooms: RoomSpec;
   /** Persist rooms here. Without it rooms live in memory and end with the process. */
   dir?: string;
+  /** Persist rooms in a store instead (PG18 in production); wins over dir. */
+  store?: RoomStore;
 }
 
 export const POEM_ROOMS: RoomSpec = {
@@ -322,7 +358,8 @@ export function createRooms(options: CollabOptions) {
   const { rooms } = options;
   const registry = new RoomRegistry(
     rooms,
-    options.dir ? resolve(options.dir) : undefined,
+    options.store ? undefined : options.dir ? resolve(options.dir) : undefined,
+    options.store,
   );
   const unknown = () =>
     Response.json(
@@ -379,5 +416,12 @@ export function createRooms(options: CollabOptions) {
         attached?.room.leave(attached.connection);
       },
     });
-  return { enabled: true, plugin, close: () => registry.close() };
+  return {
+    enabled: true,
+    plugin,
+    close: async () => {
+      await registry.close();
+      await options.store?.close();
+    },
+  };
 }
