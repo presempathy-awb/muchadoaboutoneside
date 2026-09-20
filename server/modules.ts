@@ -18,6 +18,7 @@ import {
   loadManifest,
 } from "./blobs";
 import { createRooms, type RoomSpec } from "./collab";
+import { createInventoryRoutes, inventoryFromEnv } from "./inventory";
 import {
   createPrefsRoutes,
   MemoryPrefsStore,
@@ -45,6 +46,13 @@ export interface WebModuleOptions {
   store?: RoomStore;
   /** Per-user preferences; shares the room store's database when it is Postgres. */
   prefs?: PrefsStore;
+  /** pacinman inventory proxy; env (PACINMAN_SYNC_URL) by default. */
+  inventory?: {
+    syncUrl?: string;
+    origin?: string;
+    workspace?: string;
+    fetch?: typeof fetch;
+  };
 }
 
 export interface WebModule {
@@ -116,6 +124,13 @@ export async function loadWebModule(
   const plugin = new Elysia({ name: `module-${options.name}-plugin` })
     .use(collab.plugin)
     .use(createPrefsRoutes({ name: options.name, store: prefs }))
+    .use(
+      createInventoryRoutes({
+        name: options.name,
+        ...inventoryFromEnv(),
+        ...(options.inventory ?? {}),
+      }),
+    )
     .use(
       createBlobRoutes({
         name: options.name,
