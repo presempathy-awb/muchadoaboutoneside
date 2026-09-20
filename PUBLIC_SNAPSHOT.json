@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "9c0d62e3c0f3ee8d8110435aa9d74cdd6da334ad",
+  "sourceCommit": "e8d6c8d363e2882f1c2a7de36e82d6b4a5767c49",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5244,19 +5244,29 @@
       "sha256": "09d14069e508240aa0f50d223d790479a055b53f86c7baecb4c581c288765a5b"
     },
     {
+      "path": "server/identity.ts",
+      "bytes": 842,
+      "sha256": "6232891329d81e8753f4708f434e5ab6329b1fe6ffacb4ccca4633f8c29a25de"
+    },
+    {
       "path": "server/index.ts",
       "bytes": 1302,
       "sha256": "0443a7d4464f04625f81ea2523bb631b78d8cddb804929906b94ddf55f327fc0"
     },
     {
+      "path": "server/inventory.ts",
+      "bytes": 3615,
+      "sha256": "7b99031fefdd04dea7c37546ab08c639c2a6b7f99990f1fb14d650bf7f882cc3"
+    },
+    {
       "path": "server/modules.test.ts",
-      "bytes": 13536,
-      "sha256": "db32ca0c454192ade1bfe1ae7226ef6e29528a29533456540d84f982810903b6"
+      "bytes": 17460,
+      "sha256": "a176eebfb84874698e2fa7b83e08a0da5fa24866e6e5d1dae087ac5cc4c1d355"
     },
     {
       "path": "server/modules.ts",
-      "bytes": 4256,
-      "sha256": "4e4b56090ed96c53e6bd66b250adb045e4957c3609b907a182c42139941573f7"
+      "bytes": 4665,
+      "sha256": "8efc9ab74db4722a3f6f5dd38a75d186fe57a085131ad67b65382765820ae9b1"
     },
     {
       "path": "server/prefs.ts",

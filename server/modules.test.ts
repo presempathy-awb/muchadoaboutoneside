@@ -377,3 +377,121 @@ describe("postgres prefs store", () => {
     });
   });
 });
+
+describe("crew identity and inventory", () => {
+  async function start(serve: (init?: RequestInit) => Response) {
+    const dir = await moduleDir();
+    const calls: {
+      url: string;
+      email: string | null;
+      origin: string | null;
+      method: string;
+    }[] = [];
+    const erebe = await loadWebModule({
+      name: "erebe",
+      host: "erebe.test",
+      dir,
+      inventory: {
+        syncUrl: "http://pacinman.test",
+        origin: "https://packing-man.test",
+        fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
+          const h = new Headers(init?.headers);
+          calls.push({
+            url: String(input),
+            email: h.get("x-auth-request-email"),
+            origin: h.get("origin"),
+            method: init?.method ?? "GET",
+          });
+          return serve(init);
+        }) as typeof fetch,
+      },
+    });
+    const app = createApp({ modules: [erebe] }).listen({
+      hostname: "127.0.0.1",
+      port: 0,
+    });
+    const port = app.server?.port;
+    if (!port) throw new Error("Server did not start");
+    let stopped: Promise<unknown> | undefined;
+    cleanups.push(() => {
+      stopped ??= app.stop(true);
+      return stopped.then(() => undefined);
+    });
+    return { origin: `http://127.0.0.1:${port}/api/modules/erebe`, calls };
+  }
+  const inani = {
+    "x-authentik-uid": "u-1",
+    "x-authentik-username": "inani",
+    "x-authentik-email": "inani@example.test",
+    "x-authentik-groups": "erebe-writers|authentik Users",
+  };
+
+  test("whoami reflects Authentik headers and nothing without them", async () => {
+    const { origin } = await start(() => new Response("{}"));
+    expect(await (await fetch(`${origin}/whoami`)).json()).toEqual({
+      identity: null,
+    });
+    expect(
+      (await (await fetch(`${origin}/whoami`, { headers: inani })).json())
+        .identity,
+    ).toEqual({
+      uid: "u-1",
+      username: "inani",
+      email: "inani@example.test",
+      name: "inani",
+      groups: ["erebe-writers", "authentik Users"],
+    });
+  });
+
+  test("inventory proxies the workspace as the signed-in address and forwards mutations", async () => {
+    const snapshot = {
+      data: {
+        workspace: { id: "erebe", name: "Erebe", revision: 3 },
+        items: [{ id: "bom-osb", item: "OSB", status: "to-buy" }],
+        collaborators: [],
+        access: null,
+      },
+    };
+    const { origin, calls } = await start(
+      (init) =>
+        new Response(
+          JSON.stringify(init?.method === "POST" ? { ok: true } : snapshot),
+        ),
+    );
+    expect((await fetch(`${origin}/inventory`)).status).toBe(401);
+    const res = await fetch(`${origin}/inventory`, { headers: inani });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({
+      workspace: snapshot.data.workspace,
+      items: snapshot.data.items,
+    });
+    expect(calls[0]).toMatchObject({
+      url: "http://pacinman.test/api/packing/workspaces/erebe",
+      email: "inani@example.test",
+      origin: "https://packing-man.test",
+      method: "GET",
+    });
+    const flip = await fetch(`${origin}/inventory/mutations`, {
+      method: "POST",
+      headers: { ...inani, "content-type": "application/json" },
+      body: JSON.stringify({
+        action: "upsert",
+        mutationId: "m1",
+        baseVersion: 3,
+        item: { id: "bom-osb", status: "have" },
+      }),
+    });
+    expect(flip.status).toBe(200);
+    expect(calls.at(1)).toMatchObject({
+      url: "http://pacinman.test/api/packing/workspaces/erebe/mutations",
+      method: "POST",
+    });
+  });
+
+  test("an address pacinman rejects is explained, not leaked", async () => {
+    const { origin } = await start(() => new Response("nope", { status: 403 }));
+    const res = await fetch(`${origin}/inventory`, { headers: inani });
+    expect(res.status).toBe(403);
+    expect((await res.json()).error).toContain("does not know this address");
+  });
+});
