@@ -643,9 +643,15 @@ try {
     "low contrast reports needs attention",
     `document.querySelector('[data-testid="scales-visibility"]').getAttribute('data-status') === 'needs-attention'`,
   );
-  await evaluate(
-    `(() => { const ink=document.querySelector('#scales-ink'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(ink,${JSON.stringify(originalInk)}); ink.dispatchEvent(new Event('input',{bubbles:true})); ink.dispatchEvent(new Event('change',{bubbles:true})); })()`,
-  );
+  const inkMatches = (color: string) =>
+    `document.querySelector('#scales-ink').value === ${JSON.stringify(color)} && JSON.parse(localStorage.getItem('muchado.scale-study.v1')||'{}').inkColor === ${JSON.stringify(color)}`;
+  async function settleStoredInk(color: string, label: string) {
+    await evaluate(
+      `(() => { const ink=document.querySelector('#scales-ink'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(ink,${JSON.stringify(color)}); ink.dispatchEvent(new Event('input',{bubbles:true})); ink.dispatchEvent(new Event('change',{bubbles:true})); ink.blur(); })()`,
+    );
+    await waitFor(label, () => evaluate<boolean>(inkMatches(color)));
+  }
+  await settleStoredInk(originalInk, "restored ink is stored after contrast");
   await waitFor("restored colors pass measured contrast", () =>
     evaluate<boolean>(
       `document.querySelector('[data-check="proof-contrast"]')?.getAttribute('data-check-status') === 'pass'`,
@@ -654,6 +660,9 @@ try {
   await assert(
     "contrast check recovers after restoring ink",
     `document.querySelector('[data-check="proof-contrast"]').getAttribute('data-check-status') === 'pass'`,
+  );
+  await waitFor("restored ink remains stored after contrast recovery", () =>
+    evaluate<boolean>(inkMatches(originalInk)),
   );
   await assert(
     "scale outline controls and reference comparison are available",
@@ -665,7 +674,7 @@ try {
   async function exerciseBodyTuning(modelId: "maquette" | "archival") {
     await waitFor(`${modelId} baseline before body tuning`, () =>
       evaluate<boolean>(
-        `${readyShape} && ${storedDesign}.geometry.modelId === ${JSON.stringify(modelId)}`,
+        `${readyShape} && ${storedDesign}.geometry.modelId === ${JSON.stringify(modelId)} && ${inkMatches(originalInk)}`,
       ),
     );
     const baselineDraft = await evaluate<string>(
@@ -710,6 +719,10 @@ try {
     );
     const asymmetricFingerprint = await evaluate<string>(
       `${committedShape}.getAttribute('data-plate-fingerprint')`,
+    );
+    await settleStoredInk(
+      originalInk,
+      `${modelId} contrast ink is settled before persist compare`,
     );
     const persistUnchanged = await evaluate<
       { path: string; before: unknown; after: unknown }[]
