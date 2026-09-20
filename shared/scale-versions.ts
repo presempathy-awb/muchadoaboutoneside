@@ -201,7 +201,7 @@ export const SCALE_VERSION_PRESETS: readonly ScaleVersionPreset[] = [
   preset(
     "wood-photo-reference",
     "Photo reference · clipped wood plates",
-    "Chunky clipped plates with a 1.3 width-to-height target, inspired by the photographed wood faces; dimensions remain a visual study.",
+    "Chunky clipped wood plates with a 1.25 width-to-height target, inspired by the photographed faces; dimensions remain a visual study.",
     { ...DEFAULT_SCALE_DESIGN.geometry, ...DEFAULT_SCALE_SHAPE },
     DEFAULT_SCALE_DESIGN.layers,
     "wood",

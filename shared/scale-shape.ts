@@ -13,9 +13,9 @@ export interface ScaleShapeSettings {
 export const DEFAULT_SCALE_SHAPE: ScaleShapeSettings = {
   plateShape: "clipped",
   plateFit: "cover",
-  plateAspect: 1.3,
-  cornerCut: 0.04,
-  plateTaper: 0.025,
+  plateAspect: 1.25,
+  cornerCut: 0.08,
+  plateTaper: 0.05,
 };
 export const LEGACY_SCALE_SHAPE: ScaleShapeSettings = {
   plateShape: "legacy",

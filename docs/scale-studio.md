@@ -9,7 +9,7 @@ download links and an inventory of byte counts and SHA-256 fingerprints.
 ## Geometry and lettering
 
 The archival conforming study follows the existing body and separate jaw surface. Plates
-have irregular, seeded outlines and staggered divisions; their triangulated
+have irregular, seeded outlines and staggered brick-bond courses; their triangulated
 faces follow the source surface instead of bridging each curved region with a
 single fan. Planar faces remain an explicit alternative. Local relief may be
 reduced where the requested offset would invert a face. The page reports that
@@ -96,13 +96,15 @@ layout together for both the archival surface and the actual maquette. Writing
 stays within the regenerated safe region; a narrower or more pointed face can
 leave less room for a word.
 
-A fresh study starts with clipped wood plates, a 1.3 width-to-height target,
-0.04 corner cut, 0.025 taper, 100 × 4 target cells, a 0.02 gap, 0.3 variation,
+A fresh study starts with clipped wood plates, a 1.25 width-to-height target,
+0.08 corner cut, 0.05 taper, 100 × 5 target cells, a 0.012 gap, 0.35 variation,
 1.05 inches maximum relief, and a matte warm-wood preview color. Cover mode is
-the new-study default; the aspect is approximate rather than an exact face ratio. These are editable visual assumptions. The supplied photographs show
+the new-study default; the aspect is approximate rather than an exact face ratio.
+Courses stagger in a brick bond, and the visible front meridian stays inside a
+plate so grout cannot form a stripe down the middle of the body. These are editable visual assumptions. The supplied photographs show
 chunky short rectangles and trapezoids with clipped corners and stepped edges.
 Many near-facing faces appear roughly 1.1–1.7 times as long as their short edge,
-but camera perspective changes that ratio. The 1.3 starting value is a visual
+but camera perspective changes that ratio. The 1.25 starting value is a visual
 interpretation, not calibration of the photographed construction. Neither image
 contains a complete orthogonal view or a usable dimensional reference.
 
@@ -119,7 +121,7 @@ custom gaps, relief, body factors and lettering settings are retained.
 Both models render a solid bare body underneath the plates, so gaps reveal the
 underlying support rather than the scene behind the sculpture. The preview uses
 matte wood shading. Fresh reference settings target 90–95% coverage: measured
-plate footprints cover about 92.1% of the archival body and jaw, and 95.0% of
+plate footprints cover about 90.3% of the archival body and jaw, and 95.0% of
 the eligible print-model surface. Tests also check resized bodies. These are
 surface-area measurements with relief removed, so raised plate sides cannot
 inflate the coverage. Archival faces are compared with the matching supported

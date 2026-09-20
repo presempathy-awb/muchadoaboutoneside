@@ -85,9 +85,10 @@ export function ScaleReferenceComparison({
       </div>
       <p className="scales-hint">
         The reference suggests mostly short rectangles and trapezoids, with
-        visible depth. The new wood-plate shape starts at 1.3 width to height;
-        small corner cuts and taper soften the edges while close-set courses
-        cover the body. Apply photo-reference plates to update an older saved
+        visible depth. The new wood-plate shape starts at 1.25 width to height;
+        stronger corner cuts make clipped octagons, and courses stagger so the
+        front meridian is a plate rather than a grout line. Close-set coverage
+        covers the body. Apply photo-reference plates to update an older saved
         inset layout.
       </p>
       <p className="scales-hint">

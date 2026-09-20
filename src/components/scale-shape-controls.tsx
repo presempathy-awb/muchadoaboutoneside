@@ -251,11 +251,11 @@ export function ScaleShapeControls({
       </button>
       <p className="scales-help">
         The photographs suggest chunky short rectangles and trapezoids with
-        clipped corners. The starting 1.3 : 1 ratio is an adjustable visual
+        clipped corners. The starting 1.25 : 1 ratio is an adjustable visual
         interpretation of those faces; the photographs are not calibrated
         measurements. Changing the shape remaps your lettering. The reference
-        button applies close-set coverage and reference density, gap, and
-        irregularity. It keeps your body proportions, physical size, depth,
+        button applies close-set staggered coverage and reference density, gap,
+        and irregularity. It keeps your body proportions, physical size, depth,
         layers, font, and words.
       </p>
       <p className="scales-help">
