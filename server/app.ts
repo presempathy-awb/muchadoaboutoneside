@@ -3,6 +3,7 @@ import { extname, resolve, sep } from "node:path";
 import { Elysia } from "elysia";
 import { WORKSHEET_FONT_CATALOG } from "../shared/worksheet-font-catalog";
 import { createCollab } from "./collab";
+import type { WebModule } from "./modules";
 import { assetNames, project } from "./project";
 
 export interface AppOptions {
@@ -10,6 +11,8 @@ export interface AppOptions {
   assetDir?: string;
   /** Where live poem drafts are stored; live sync stays off without it. */
   collabDir?: string;
+  /** Sites served for other hosts, each with its own ephemeral rooms. */
+  modules?: readonly WebModule[];
 }
 
 const defaultAssetDir = resolve(import.meta.dir, "../source/assets");
@@ -103,8 +106,10 @@ export function createApp(options: AppOptions = {}) {
     options.collabDir ?? (process.env.COLLAB_DIR?.trim() || undefined),
   );
 
+  const modules = options.modules ?? [];
   const app = new Elysia()
     .use(collab.plugin)
+    .use(new Elysia({ name: "modules" }).use(modules.map((m) => m.plugin)))
     .get("/api/health", () =>
       Response.json(
         { status: "ok" as const },
@@ -129,9 +134,10 @@ export function createApp(options: AppOptions = {}) {
       const { pathname, searchParams } = new URL(request.url);
       if (pathname === "/api" || pathname.startsWith("/api/"))
         return notFound();
-      if (!staticDir) return notFound();
-
-      const requestedPath = safeStaticPath(staticDir, pathname);
+      const host = request.headers.get("host")?.split(":")[0];
+      const root = modules.find((m) => m.host === host)?.staticDir ?? staticDir;
+      if (!root) return notFound();
+      const requestedPath = safeStaticPath(root, pathname);
       if (!requestedPath) return notFound("Invalid static path");
       if (await isFile(requestedPath)) {
         const expectedFontDigest = worksheetFontDigests.get(pathname);
@@ -147,7 +153,7 @@ export function createApp(options: AppOptions = {}) {
 
       if (extname(pathname)) return notFound("Static asset is unavailable");
 
-      const indexPath = resolve(staticDir, "index.html");
+      const indexPath = resolve(root, "index.html");
       return (await isFile(indexPath))
         ? fileResponse(indexPath)
         : notFound("Site build is unavailable");
@@ -157,6 +163,7 @@ export function createApp(options: AppOptions = {}) {
   app.stop = async (closeActiveConnections?: boolean) => {
     await stop(closeActiveConnections);
     await collab.close();
+    await Promise.all(modules.map((m) => m.close()));
     return app;
   };
   return app;

@@ -1,4 +1,5 @@
 import { createApp } from "./app";
+import { loadWebModule } from "./modules";
 
 const host = process.env.HOST?.trim() || "127.0.0.1";
 const rawPort = process.env.PORT?.trim() || "3001";
@@ -11,7 +12,19 @@ if (!Number.isInteger(port) || port < 1 || port > 65_535) {
 }
 
 const collabDir = process.env.COLLAB_DIR?.trim() || undefined;
-const app = createApp({ collabDir }).listen({ hostname: host, port });
+// The Erebe crew board: a web module served for its own host, on only when
+// its built directory is configured.
+const erebeDir = process.env.EREBE_DIR?.trim() || undefined;
+const modules = erebeDir
+  ? [
+      await loadWebModule({
+        name: "erebe",
+        host: process.env.EREBE_HOST?.trim() || "erebe.muchadoaboutoneside.com",
+        dir: erebeDir,
+      }),
+    ]
+  : [];
+const app = createApp({ collabDir, modules }).listen({ hostname: host, port });
 console.log(
   `Much Ado About One Side API listening on http://${host}:${port}${
     collabDir ? ` · live poem drafts in ${collabDir}` : ""
