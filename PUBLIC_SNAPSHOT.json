@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "54e32b11712d67527e683dd64c0873cbba884409",
+  "sourceCommit": "3a21299a49b336f0c4f05a3209726371aac703ba",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5250,8 +5250,8 @@
     },
     {
       "path": "server/disk-fallback.test.ts",
-      "bytes": 9145,
-      "sha256": "5cf1b6a5dca7d1818451b6c70986014df9a1b30f08afc4c1c65cba4adc354730"
+      "bytes": 10648,
+      "sha256": "4642060d3a906f3068648ec801d4ca136ba2d7cae2ff9f8cd71446339b85d236"
     },
     {
       "path": "server/disk-fallback.ts",
@@ -5285,8 +5285,8 @@
     },
     {
       "path": "server/prefs.ts",
-      "bytes": 5882,
-      "sha256": "5a55b3587f21580340dec591319263f37e29854f74f08d7c37c6446ebb0173a9"
+      "bytes": 6618,
+      "sha256": "4a9784e9247735cd36ca4c7435dde365e9dd78db21b6ab1b3a63d5085ff6e0dc"
     },
     {
       "path": "server/project.ts",
@@ -5295,8 +5295,8 @@
     },
     {
       "path": "server/room-store.ts",
-      "bytes": 6162,
-      "sha256": "3fd62952ed5a4ea63e1cd3a606f4bf2b3aa98eddac33f98f491605acd79048b3"
+      "bytes": 6772,
+      "sha256": "459610f6c9a70abe5e7f1023effcde2d43d5f74645fc043b410d4ebcacb51b53"
     },
     {
       "path": "sgconfig.yml",
