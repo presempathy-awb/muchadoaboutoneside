@@ -11,10 +11,16 @@
  * Objects up to VERIFY_IN_MEMORY_BYTES are hashed before the response starts.
  * Larger ones stream and are hashed as they pass; a mismatch there aborts the
  * response so the client sees a failed transfer, not a wrong file.
+ *
+ * When the tier is not configured, unreachable, or returns the wrong bytes, the
+ * route falls back to a filesystem root (a checkout that holds the routed
+ * files at their manifest paths). The same hash check applies, so the fallback
+ * can never serve something the tier would have refused. `x-content-source`
+ * says which one answered.
  */
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
-import { extname, resolve } from "node:path";
+import { readFile, stat } from "node:fs/promises";
+import { extname, resolve, sep } from "node:path";
 import { Elysia } from "elysia";
 
 export interface BlobEntry {
@@ -113,6 +119,13 @@ export function lakefsFromEnv(env = process.env): LakefsConfig | undefined {
   };
 }
 
+/** `<NAME>_ASSETS_DIR`: a directory holding the routed files at their manifest paths. */
+export function assetsDirFromEnv(name: string, env = process.env) {
+  const value =
+    env[`${name.toUpperCase().replace(/[^A-Z0-9]/g, "_")}_ASSETS_DIR`];
+  return value?.trim() ? resolve(value.trim()) : undefined;
+}
+
 function objectUrl(config: LakefsConfig, entry: BlobEntry) {
   const repo = encodeURIComponent(entry.repo);
   const ref = encodeURIComponent(entry.commit);
@@ -141,10 +154,67 @@ function verifiedStream(body: ReadableStream<Uint8Array>, expected: string) {
   );
 }
 
+type Body = Uint8Array<ArrayBuffer> | ReadableStream<Uint8Array>;
+type Attempt = { body: Body } | { failure: string };
+
+function matches(bytes: Uint8Array, entry: BlobEntry) {
+  return (
+    bytes.byteLength === entry.bytes &&
+    createHash("sha256").update(bytes).digest("hex") === entry.sha256
+  );
+}
+
+async function fromTier(
+  config: LakefsConfig,
+  entry: BlobEntry,
+  doFetch: typeof fetch,
+): Promise<Attempt> {
+  let upstream: Response;
+  try {
+    upstream = await doFetch(objectUrl(config, entry), {
+      headers: { authorization: authorization(config) },
+    });
+  } catch {
+    return { failure: "Content tier is unreachable" };
+  }
+  if (!upstream.ok || !upstream.body)
+    return { failure: `Content tier returned ${upstream.status}` };
+  if (entry.bytes > VERIFY_IN_MEMORY_BYTES)
+    return { body: verifiedStream(upstream.body, entry.sha256) };
+  const bytes = new Uint8Array(await upstream.arrayBuffer());
+  return matches(bytes, entry)
+    ? { body: bytes }
+    : { failure: "Content tier object does not match its manifest hash" };
+}
+
+/** The manifest path is generated, but it still never leaves the root. */
+async function fromFilesystem(
+  root: string,
+  entry: BlobEntry,
+): Promise<Attempt> {
+  const file = resolve(root, entry.path);
+  if (!file.startsWith(root + sep))
+    return { failure: "Manifest path escapes the assets directory" };
+  try {
+    if ((await stat(file)).size !== entry.bytes)
+      return { failure: "Local file does not match its manifest size" };
+    if (entry.bytes > VERIFY_IN_MEMORY_BYTES)
+      return { body: verifiedStream(Bun.file(file).stream(), entry.sha256) };
+    const bytes = new Uint8Array(await Bun.file(file).arrayBuffer());
+    return matches(bytes, entry)
+      ? { body: bytes }
+      : { failure: "Local file does not match its manifest hash" };
+  } catch {
+    return { failure: "Local file is not available" };
+  }
+}
+
 export function createBlobRoutes(options: {
   name: string;
   entries: Map<string, BlobEntry>;
   lakefs?: LakefsConfig;
+  /** Filesystem fallback root; see assetsDirFromEnv. */
+  assetsDir?: string;
   fetch?: typeof fetch;
 }) {
   const doFetch = options.fetch ?? fetch;
@@ -157,40 +227,38 @@ export function createBlobRoutes(options: {
           { error: "Unknown blob" },
           { status: 404, headers: noStore },
         );
-      if (!options.lakefs)
+      if (!options.lakefs && !options.assetsDir)
         return Response.json(
           { error: "Content tier is not configured" },
           { status: 503, headers: noStore },
         );
-      const upstream = await doFetch(objectUrl(options.lakefs, entry), {
-        headers: { authorization: authorization(options.lakefs) },
-      });
-      if (!upstream.ok || !upstream.body)
+      let source = "lakefs";
+      let attempt: Attempt = options.lakefs
+        ? await fromTier(options.lakefs, entry, doFetch)
+        : { failure: "Content tier is not configured" };
+      if ("failure" in attempt && options.assetsDir) {
+        const local = await fromFilesystem(options.assetsDir, entry);
+        if ("body" in local) {
+          attempt = local;
+          source = "filesystem";
+        }
+      }
+      if ("failure" in attempt)
         return Response.json(
-          { error: `Content tier returned ${upstream.status}` },
+          { error: attempt.failure },
           { status: 502, headers: noStore },
         );
-      const headers = {
-        "content-type":
-          types[extname(entry.path).toLowerCase()] ??
-          "application/octet-stream",
-        "content-length": String(entry.bytes),
-        "cache-control": "public, max-age=31536000, immutable",
-        etag: `"${entry.sha256}"`,
-        "content-disposition": `inline; filename="${entry.path.split("/").pop()}"`,
-      };
-      if (entry.bytes <= VERIFY_IN_MEMORY_BYTES) {
-        const bytes = new Uint8Array(await upstream.arrayBuffer());
-        const digest = createHash("sha256").update(bytes).digest("hex");
-        if (digest !== entry.sha256 || bytes.byteLength !== entry.bytes)
-          return Response.json(
-            { error: "Content tier object does not match its manifest hash" },
-            { status: 502, headers: noStore },
-          );
-        return new Response(bytes, { headers });
-      }
-      return new Response(verifiedStream(upstream.body, entry.sha256), {
-        headers,
+      return new Response(attempt.body, {
+        headers: {
+          "content-type":
+            types[extname(entry.path).toLowerCase()] ??
+            "application/octet-stream",
+          "content-length": String(entry.bytes),
+          "cache-control": "public, max-age=31536000, immutable",
+          etag: `"${entry.sha256}"`,
+          "content-disposition": `inline; filename="${entry.path.split("/").pop()}"`,
+          "x-content-source": source,
+        },
       });
     },
   );

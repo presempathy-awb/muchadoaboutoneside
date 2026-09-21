@@ -7,3 +7,7 @@ lefthook = "2.1.12"
 trivy = "0.72.0"
 gitleaks = "8.30.1"
 ast-grep = "0.44.1"
+# Used by the container job in .gitea/workflows/site.yml; pinned here so they
+# are covered by mise.lock instead of being resolved at CI time.
+"docker-cli" = "29.4.0"
+"aqua:docker/buildx" = "0.36.1"

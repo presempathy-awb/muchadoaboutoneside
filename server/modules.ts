@@ -11,6 +11,7 @@ import { resolve } from "node:path";
 import { type AnyElysia, Elysia } from "elysia";
 import * as Y from "yjs";
 import {
+  assetsDirFromEnv,
   type BlobEntry,
   createBlobRoutes,
   type LakefsConfig,
@@ -18,6 +19,13 @@ import {
   loadManifest,
 } from "./blobs";
 import { createRooms, type RoomSpec } from "./collab";
+import {
+  FallbackPrefsStore,
+  FilePrefsStore,
+  FileRoomStore,
+  MirroredRoomStore,
+  stateDirFromEnv,
+} from "./disk-fallback";
 import { createInventoryRoutes, inventoryFromEnv } from "./inventory";
 import {
   createPrefsRoutes,
@@ -40,6 +48,10 @@ export interface WebModuleOptions {
   dir: string;
   /** lakeFS credentials for the module's heavy assets; env by default. */
   lakefs?: LakefsConfig;
+  /** Disk fallbacks for rooms, prefs and inventory; env (<NAME>_STATE_DIR) by default. */
+  stateDir?: string;
+  /** Filesystem fallback for heavy assets; env (<NAME>_ASSETS_DIR) by default. */
+  assetsDir?: string;
   /** Test seam for the lakeFS fetch. */
   fetch?: typeof fetch;
   /** Durable room storage; env (EREBE_DATABASE_URL) by default, memory when absent. */
@@ -106,9 +118,18 @@ export async function loadWebModule(
 ): Promise<WebModule> {
   const dir = resolve(options.dir);
   const rooms = await loadModuleRooms(dir, options.name);
-  const store =
+  const stateDir = options.stateDir ?? stateDirFromEnv(options.name);
+  const database =
     options.store ??
     (await postgresRoomStoreFromEnv(process.env, options.name));
+  const roomsOnDisk = stateDir
+    ? new FileRoomStore(resolve(stateDir, "rooms"))
+    : undefined;
+  // Both: mirrored. One: that one. Neither: rooms live in memory and reset on restart.
+  const store =
+    database && roomsOnDisk
+      ? new MirroredRoomStore(database, roomsOnDisk)
+      : (database ?? roomsOnDisk);
   const collab = createRooms({
     name: `module-${options.name}`,
     prefix: `/api/modules/${options.name}`,
@@ -116,11 +137,18 @@ export async function loadWebModule(
     store,
   });
   const blobs = await loadManifest(dir);
-  const prefs =
+  const prefsOnDisk = stateDir
+    ? new FilePrefsStore(resolve(stateDir, "prefs"))
+    : undefined;
+  const prefsInDatabase =
     options.prefs ??
-    (store instanceof PostgresRoomStore
-      ? new PostgresPrefsStore(store.client, options.name)
-      : new MemoryPrefsStore());
+    (database instanceof PostgresRoomStore
+      ? new PostgresPrefsStore(database.client, options.name)
+      : undefined);
+  const prefs =
+    prefsInDatabase && prefsOnDisk
+      ? new FallbackPrefsStore(prefsInDatabase, prefsOnDisk)
+      : (prefsInDatabase ?? prefsOnDisk ?? new MemoryPrefsStore());
   const plugin = new Elysia({ name: `module-${options.name}-plugin` })
     .use(collab.plugin)
     .use(createPrefsRoutes({ name: options.name, store: prefs }))
@@ -128,6 +156,7 @@ export async function loadWebModule(
       createInventoryRoutes({
         name: options.name,
         ...inventoryFromEnv(),
+        cacheDir: stateDir ? resolve(stateDir, "inventory") : undefined,
         ...(options.inventory ?? {}),
       }),
     )
@@ -136,6 +165,7 @@ export async function loadWebModule(
         name: options.name,
         entries: blobs,
         lakefs: options.lakefs ?? lakefsFromEnv(),
+        assetsDir: options.assetsDir ?? assetsDirFromEnv(options.name),
         fetch: options.fetch,
       }),
     );

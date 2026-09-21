@@ -148,15 +148,32 @@ lakefs_path    = "deliveries/R05_whole/model/A.glb"
     accessKeyId: "k",
     secretAccessKey: "s",
   };
-  async function startWithManifest(serve: (url: string) => Response) {
+  async function startWithManifest(
+    serve: (url: string) => Response,
+    fallback: { local?: Uint8Array; tier?: boolean } = {},
+  ) {
     const dir = await moduleDir();
     await writeFile(resolve(dir, "asset-manifest.toml"), manifest);
+    let assetsDir: string | undefined;
+    if (fallback.local) {
+      assetsDir = await mkdtemp(resolve(tmpdir(), "muchado-assets-"));
+      const root = assetsDir;
+      cleanups.push(() => rm(root, { recursive: true, force: true }));
+      await mkdir(resolve(root, "deliveries/R05_whole/model"), {
+        recursive: true,
+      });
+      await writeFile(
+        resolve(root, "deliveries/R05_whole/model/A.glb"),
+        fallback.local,
+      );
+    }
     const seen: string[] = [];
     const erebe = await loadWebModule({
       name: "erebe",
       host: "erebe.test",
       dir,
-      lakefs,
+      lakefs: fallback.tier === false ? undefined : lakefs,
+      assetsDir,
       fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
         seen.push(
@@ -199,6 +216,79 @@ lakefs_path    = "deliveries/R05_whole/model/A.glb"
     );
     const res = await fetch(`${origin}/api/modules/erebe/blob/${sha}`);
     expect(res.status).toBe(502);
+  });
+
+  test("falls back to the filesystem when the tier is unreachable", async () => {
+    const { origin } = await startWithManifest(
+      () => {
+        throw new Error("connect ECONNREFUSED");
+      },
+      { local: glb },
+    );
+    const res = await fetch(`${origin}/api/modules/erebe/blob/${sha}`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("x-content-source")).toBe("filesystem");
+    expect(res.headers.get("etag")).toBe(`"${sha}"`);
+    expect(new Uint8Array(await res.arrayBuffer())).toEqual(glb);
+  });
+
+  test("falls back when the tier answers with an error or the wrong bytes", async () => {
+    const down = await startWithManifest(
+      () => new Response("no", { status: 503 }),
+      { local: glb },
+    );
+    const wrong = await startWithManifest(
+      () => new Response(new Uint8Array([9, 9, 9])),
+      { local: glb },
+    );
+    for (const { origin } of [down, wrong]) {
+      const res = await fetch(`${origin}/api/modules/erebe/blob/${sha}`);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("x-content-source")).toBe("filesystem");
+    }
+  });
+
+  test("serves from the filesystem with no tier configured, and prefers the tier when it works", async () => {
+    const noTier = await startWithManifest(() => new Response(glb), {
+      local: glb,
+      tier: false,
+    });
+    const res = await fetch(`${noTier.origin}/api/modules/erebe/blob/${sha}`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("x-content-source")).toBe("filesystem");
+    expect(noTier.seen).toHaveLength(0);
+
+    const both = await startWithManifest(() => new Response(glb), {
+      local: glb,
+    });
+    expect(
+      (await fetch(`${both.origin}/api/modules/erebe/blob/${sha}`)).headers.get(
+        "x-content-source",
+      ),
+    ).toBe("lakefs");
+  });
+
+  test("never serves a local file that does not match the manifest", async () => {
+    const sameSize = new Uint8Array(glb);
+    sameSize[11] = 0xff;
+    for (const local of [sameSize, new Uint8Array([1, 2, 3])]) {
+      const { origin } = await startWithManifest(
+        () => new Response("no", { status: 503 }),
+        { local },
+      );
+      const res = await fetch(`${origin}/api/modules/erebe/blob/${sha}`);
+      expect(res.status).toBe(502);
+      expect(await res.json()).toEqual({ error: "Content tier returned 503" });
+    }
+  });
+
+  test("is 503 with neither a tier nor a fallback directory", async () => {
+    const { origin } = await startWithManifest(() => new Response(glb), {
+      tier: false,
+    });
+    expect(
+      (await fetch(`${origin}/api/modules/erebe/blob/${sha}`)).status,
+    ).toBe(503);
   });
 
   test("unknown hashes are 404 and never reach the tier", async () => {
@@ -252,6 +342,53 @@ describe("stored rooms", () => {
     const b = join(second.origin, "erebe-notes");
     await b.synced;
     expect(b.text.toString()).toBe("Inani: Bring straps.\n");
+  });
+
+  test("with no database, a state directory carries edits and prefs across a restart", async () => {
+    const stateDir = await mkdtemp(resolve(tmpdir(), "muchado-state-"));
+    cleanups.push(() => rm(stateDir, { recursive: true, force: true }));
+    const start = async () => {
+      const erebe = await loadWebModule({
+        name: "erebe",
+        host: "erebe.test",
+        dir: await moduleDir(),
+        stateDir,
+      });
+      const app = createApp({ modules: [erebe] }).listen({
+        hostname: "127.0.0.1",
+        port: 0,
+      });
+      const port = app.server?.port;
+      if (!port) throw new Error("Server did not start");
+      let stopped: Promise<unknown> | undefined;
+      const stop = () => {
+        stopped ??= app.stop(true).then(() => erebe.close());
+        return stopped.then(() => undefined);
+      };
+      cleanups.push(stop);
+      return { origin: `http://127.0.0.1:${port}`, stop };
+    };
+    const device = { "x-erebe-device": "device-0123456789" };
+    const first = await start();
+    const a = join(first.origin, "erebe-notes");
+    await a.synced;
+    a.text.insert(0, "Chipper: ");
+    await fetch(`${first.origin}/api/modules/erebe/prefs`, {
+      method: "PUT",
+      headers: { ...device, "content-type": "application/json" },
+      body: JSON.stringify({ page: "model" }),
+    });
+    await waitFor(() => existsSync(resolve(stateDir, "rooms/erebe-notes.log")));
+    await first.stop();
+
+    const second = await start();
+    const b = join(second.origin, "erebe-notes");
+    await b.synced;
+    expect(b.text.toString()).toBe("Chipper: Bring straps.\n");
+    const prefs = await fetch(`${second.origin}/api/modules/erebe/prefs`, {
+      headers: device,
+    });
+    expect(JSON.stringify(await prefs.json())).toContain('"page":"model"');
   });
 
   test.skipIf(!liveDatabase.url)(
@@ -425,6 +562,56 @@ describe("crew identity and inventory", () => {
     "x-authentik-email": "inani@example.test",
     "x-authentik-groups": "erebe-writers|authentik Users",
   };
+
+  test("the same routes answer under /crew/api, the only place Traefik lets identity through", async () => {
+    const { origin, calls } = await start(() =>
+      Response.json({ data: { workspace: { revision: 1 }, items: [] } }),
+    );
+    const crew = origin.replace("/api/modules/erebe", "/crew/api/erebe");
+    const host = { host: "erebe.test" };
+    expect(
+      (
+        (await (
+          await fetch(`${crew}/whoami`, { headers: { ...inani, ...host } })
+        ).json()) as { identity: { username: string } }
+      ).identity.username,
+    ).toBe("inani");
+    // No headers, as on any route Traefik strips: nobody, on both bases.
+    expect(
+      await (await fetch(`${crew}/whoami`, { headers: host })).json(),
+    ).toEqual({
+      identity: null,
+    });
+    expect((await fetch(`${crew}/inventory`, { headers: host })).status).toBe(
+      401,
+    );
+    expect(
+      (await fetch(`${crew}/inventory`, { headers: { ...inani, ...host } }))
+        .status,
+    ).toBe(200);
+    expect(calls[0]?.email).toBe("inani@example.test");
+    // A signed-in person's prefs are filed under their uid, claiming the device key.
+    const prefs = await fetch(`${crew}/prefs`, {
+      method: "PUT",
+      headers: {
+        ...inani,
+        ...host,
+        "x-authentik-uid": "uid-inani-0001",
+        "x-erebe-device": "device-0123456789",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ page: "crew" }),
+    });
+    expect(((await prefs.json()) as { subject: string }).subject).toBe(
+      "user:uid-inani-0001",
+    );
+    // The crew page itself is still the module's index.html.
+    const page = await fetch(crew.replace("/crew/api/erebe", "/crew/"), {
+      headers: host,
+    });
+    expect(page.status).toBe(200);
+    expect(page.headers.get("content-type")).toContain("text/html");
+  });
 
   test("whoami reflects Authentik headers and nothing without them", async () => {
     const { origin } = await start(() => new Response("{}"));
