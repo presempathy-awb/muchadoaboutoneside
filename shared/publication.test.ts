@@ -45,6 +45,7 @@ test("public source selection excludes private archives, history, credentials, a
     "LICENSE-APACHE",
     "REUSE.md",
     "package.json",
+    "mise.lock",
     ".github/workflows/site.yml",
     "src/main.tsx",
     "shared/poem.ts",

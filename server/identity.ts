@@ -27,3 +27,14 @@ export function identityOf(request: Request): Identity | undefined {
       .filter(Boolean),
   };
 }
+
+/**
+ * Where a module's identity-aware routes answer. Traefik runs Authentik
+ * forward-auth only on `/crew*`, and blanks X-authentik-* everywhere else, so
+ * a route that needs to know who is asking must also live under `/crew`. The
+ * `/api/modules/<name>` copy stays for the public page, where it always sees
+ * nobody: that is what tells the page to offer the sign-in link.
+ */
+export function identityBases(name: string) {
+  return [`/api/modules/${name}`, `/crew/api/${name}`] as const;
+}

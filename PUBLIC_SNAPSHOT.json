@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "e8d6c8d363e2882f1c2a7de36e82d6b4a5767c49",
+  "sourceCommit": "54e32b11712d67527e683dd64c0873cbba884409",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -234,9 +234,14 @@
       "sha256": "eabcf3071345ea5ab40bc7f6be7571a98098db693698cad78dde26312a4a21c4"
     },
     {
+      "path": "mise.lock",
+      "bytes": 4056,
+      "sha256": "730eb2aa9e95a4d15790a9a110e0b2d036929a06731b0efd503061e3662d96a6"
+    },
+    {
       "path": "mise.toml",
-      "bytes": 146,
-      "sha256": "538678f33fe53d8265895924faf94b5e81d47e69172dffa3d11626c09d8e52dd"
+      "bytes": 345,
+      "sha256": "030c7ccaf6e01bda0d143ff9834e3c48e6ff61032ca46ebd8edd3498b483706f"
     },
     {
       "path": "package.json",
@@ -5180,8 +5185,8 @@
     },
     {
       "path": "scripts/toolchain-check.ts",
-      "bytes": 789,
-      "sha256": "5c2e8ebe5e2db3783a94da48f5f9049a05a28eb4e1e9ad21868e7e47b252fe1c"
+      "bytes": 966,
+      "sha256": "2ab9fa39a73cbf069fdb7cb73c850d0e90ee45d66a1f0c87d51475ed39983022"
     },
     {
       "path": "scripts/verify-assets.ts",
@@ -5230,8 +5235,8 @@
     },
     {
       "path": "server/blobs.ts",
-      "bytes": 6729,
-      "sha256": "023f7b8b2a563cbfc7ff29b31db8615a9203a774fa780018411f53ccfc373212"
+      "bytes": 9128,
+      "sha256": "5ac044f1b4c9eaaa130ceb61223317513ce628d8a37632c9dbae6f590defb2ea"
     },
     {
       "path": "server/collab.test.ts",
@@ -5244,9 +5249,19 @@
       "sha256": "09d14069e508240aa0f50d223d790479a055b53f86c7baecb4c581c288765a5b"
     },
     {
+      "path": "server/disk-fallback.test.ts",
+      "bytes": 9145,
+      "sha256": "5cf1b6a5dca7d1818451b6c70986014df9a1b30f08afc4c1c65cba4adc354730"
+    },
+    {
+      "path": "server/disk-fallback.ts",
+      "bytes": 7760,
+      "sha256": "1e30f1d457e8fee74782da65aa6b117b7eaaabf15dd0b211547530a1abbe2f4e"
+    },
+    {
       "path": "server/identity.ts",
-      "bytes": 842,
-      "sha256": "6232891329d81e8753f4708f434e5ab6329b1fe6ffacb4ccca4633f8c29a25de"
+      "bytes": 1338,
+      "sha256": "6a51fdbaffc52cad875819642a5cb1289a072df00b19988d19602499d936564e"
     },
     {
       "path": "server/index.ts",
@@ -5255,23 +5270,23 @@
     },
     {
       "path": "server/inventory.ts",
-      "bytes": 3615,
-      "sha256": "7b99031fefdd04dea7c37546ab08c639c2a6b7f99990f1fb14d650bf7f882cc3"
+      "bytes": 6841,
+      "sha256": "8f07aa48592610bdbb5b05d339bb171d55e9a0a1c5e9277e432cedcc92641a9f"
     },
     {
       "path": "server/modules.test.ts",
-      "bytes": 17460,
-      "sha256": "a176eebfb84874698e2fa7b83e08a0da5fa24866e6e5d1dae087ac5cc4c1d355"
+      "bytes": 24324,
+      "sha256": "ca57db7021630ade25dd9192f2a890ab74ef98597385b2fdf9544fbca4cf7583"
     },
     {
       "path": "server/modules.ts",
-      "bytes": 4665,
-      "sha256": "8efc9ab74db4722a3f6f5dd38a75d186fe57a085131ad67b65382765820ae9b1"
+      "bytes": 5856,
+      "sha256": "827d7c62645cbd1f24aaa2fd0e3d45b5cfbadf29b2d265ce1c505cd19ad78ce4"
     },
     {
       "path": "server/prefs.ts",
-      "bytes": 5742,
-      "sha256": "ed21508b02ab282155e2342d341674d3661f60b9124a4e7b44f790290d03029c"
+      "bytes": 5882,
+      "sha256": "5a55b3587f21580340dec591319263f37e29854f74f08d7c37c6446ebb0173a9"
     },
     {
       "path": "server/project.ts",
@@ -5450,13 +5465,13 @@
     },
     {
       "path": "shared/publication.test.ts",
-      "bytes": 4991,
-      "sha256": "9172295444b57dd61286144053ca96ece66ac9f6ebd34e51c0f04666d20402c6"
+      "bytes": 5008,
+      "sha256": "33eaf4bcd3ff68d006d8059069fa6402c5db76873e771088f4b8421fba5f3104"
     },
     {
       "path": "shared/publication.ts",
-      "bytes": 5103,
-      "sha256": "ef295dad22af4b040e4eba49cdd73eabbc0e78da274e1be9d31a33d2e01fafa4"
+      "bytes": 5133,
+      "sha256": "3be6e5df5aa5400448eb95c69df3a732b0f8cc6739160ec1dec72461914ba371"
     },
     {
       "path": "shared/reference-gallery.test.ts",

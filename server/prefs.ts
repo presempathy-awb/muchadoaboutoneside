@@ -9,6 +9,7 @@
  * sending both headers once.
  */
 import { Elysia } from "elysia";
+import { identityBases } from "./identity";
 
 export interface PrefsStore {
   get(subject: string): Promise<Record<string, unknown> | undefined>;
@@ -119,35 +120,38 @@ export function createPrefsRoutes(options: {
   const { store } = options;
   const bad = (message: string, status = 400) =>
     Response.json({ error: message }, { status, headers: noStore });
-  return new Elysia({ name: `module-${options.name}-prefs` })
-    .get(`/api/modules/${options.name}/prefs`, async ({ request }) => {
-      const who = subjectOf(request);
-      if (!who) return bad("Send X-authentik-uid or X-erebe-device", 401);
-      if (who.device) await store.claim(who.device, who.subject);
-      return Response.json(
-        { subject: who.subject, prefs: (await store.get(who.subject)) ?? {} },
-        { headers: noStore },
-      );
-    })
-    .put(`/api/modules/${options.name}/prefs`, async ({ request }) => {
-      const who = subjectOf(request);
-      if (!who) return bad("Send X-authentik-uid or X-erebe-device", 401);
-      const text = await request.text();
-      if (text.length > PREFS_MAX_BYTES)
-        return bad("Preferences too large", 413);
-      let prefs: unknown;
-      try {
-        prefs = JSON.parse(text);
-      } catch {
-        return bad("Preferences must be a JSON object");
-      }
-      if (typeof prefs !== "object" || prefs === null || Array.isArray(prefs))
-        return bad("Preferences must be a JSON object");
-      if (who.device) await store.claim(who.device, who.subject);
-      await store.set(who.subject, prefs as Record<string, unknown>);
-      return Response.json(
-        { subject: who.subject, prefs },
-        { headers: noStore },
-      );
-    });
+  const app = new Elysia({ name: `module-${options.name}-prefs` });
+  for (const base of identityBases(options.name))
+    app
+      .get(`${base}/prefs`, async ({ request }) => {
+        const who = subjectOf(request);
+        if (!who) return bad("Send X-authentik-uid or X-erebe-device", 401);
+        if (who.device) await store.claim(who.device, who.subject);
+        return Response.json(
+          { subject: who.subject, prefs: (await store.get(who.subject)) ?? {} },
+          { headers: noStore },
+        );
+      })
+      .put(`${base}/prefs`, async ({ request }) => {
+        const who = subjectOf(request);
+        if (!who) return bad("Send X-authentik-uid or X-erebe-device", 401);
+        const text = await request.text();
+        if (text.length > PREFS_MAX_BYTES)
+          return bad("Preferences too large", 413);
+        let prefs: unknown;
+        try {
+          prefs = JSON.parse(text);
+        } catch {
+          return bad("Preferences must be a JSON object");
+        }
+        if (typeof prefs !== "object" || prefs === null || Array.isArray(prefs))
+          return bad("Preferences must be a JSON object");
+        if (who.device) await store.claim(who.device, who.subject);
+        await store.set(who.subject, prefs as Record<string, unknown>);
+        return Response.json(
+          { subject: who.subject, prefs },
+          { headers: noStore },
+        );
+      });
+  return app;
 }
