@@ -120,38 +120,63 @@ export function createPrefsRoutes(options: {
   const { store } = options;
   const bad = (message: string, status = 400) =>
     Response.json({ error: message }, { status, headers: noStore });
+  // A store that cannot be reached is the host's problem, not the caller's: say so
+  // plainly and keep the driver's error text (hosts, TLS detail) out of the response.
+  const guarded =
+    (handle: (request: Request) => Promise<Response>) =>
+    async ({ request }: { request: Request }) => {
+      try {
+        return await handle(request);
+      } catch (error) {
+        console.error(`Preferences store failed for ${options.name}:`, error);
+        return bad("Preferences are unavailable right now", 503);
+      }
+    };
   const app = new Elysia({ name: `module-${options.name}-prefs` });
   for (const base of identityBases(options.name))
     app
-      .get(`${base}/prefs`, async ({ request }) => {
-        const who = subjectOf(request);
-        if (!who) return bad("Send X-authentik-uid or X-erebe-device", 401);
-        if (who.device) await store.claim(who.device, who.subject);
-        return Response.json(
-          { subject: who.subject, prefs: (await store.get(who.subject)) ?? {} },
-          { headers: noStore },
-        );
-      })
-      .put(`${base}/prefs`, async ({ request }) => {
-        const who = subjectOf(request);
-        if (!who) return bad("Send X-authentik-uid or X-erebe-device", 401);
-        const text = await request.text();
-        if (text.length > PREFS_MAX_BYTES)
-          return bad("Preferences too large", 413);
-        let prefs: unknown;
-        try {
-          prefs = JSON.parse(text);
-        } catch {
-          return bad("Preferences must be a JSON object");
-        }
-        if (typeof prefs !== "object" || prefs === null || Array.isArray(prefs))
-          return bad("Preferences must be a JSON object");
-        if (who.device) await store.claim(who.device, who.subject);
-        await store.set(who.subject, prefs as Record<string, unknown>);
-        return Response.json(
-          { subject: who.subject, prefs },
-          { headers: noStore },
-        );
-      });
+      .get(
+        `${base}/prefs`,
+        guarded(async (request) => {
+          const who = subjectOf(request);
+          if (!who) return bad("Send X-authentik-uid or X-erebe-device", 401);
+          if (who.device) await store.claim(who.device, who.subject);
+          return Response.json(
+            {
+              subject: who.subject,
+              prefs: (await store.get(who.subject)) ?? {},
+            },
+            { headers: noStore },
+          );
+        }),
+      )
+      .put(
+        `${base}/prefs`,
+        guarded(async (request) => {
+          const who = subjectOf(request);
+          if (!who) return bad("Send X-authentik-uid or X-erebe-device", 401);
+          const text = await request.text();
+          if (text.length > PREFS_MAX_BYTES)
+            return bad("Preferences too large", 413);
+          let prefs: unknown;
+          try {
+            prefs = JSON.parse(text);
+          } catch {
+            return bad("Preferences must be a JSON object");
+          }
+          if (
+            typeof prefs !== "object" ||
+            prefs === null ||
+            Array.isArray(prefs)
+          )
+            return bad("Preferences must be a JSON object");
+          if (who.device) await store.claim(who.device, who.subject);
+          await store.set(who.subject, prefs as Record<string, unknown>);
+          return Response.json(
+            { subject: who.subject, prefs },
+            { headers: noStore },
+          );
+        }),
+      );
   return app;
 }

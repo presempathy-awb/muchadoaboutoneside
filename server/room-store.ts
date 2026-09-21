@@ -7,7 +7,7 @@
  *
  * The store is an interface so tests use memory and production uses Bun's
  * built-in Postgres client (no extra dependency). Configure it with
- * EREBE_DATABASE_URL, plus EREBE_DATABASE_CA_FILE and
+ * EREBE_DATABASE_URL (no password in it) and EREBE_DATABASE_PASSWORD, plus EREBE_DATABASE_CA_FILE and
  * EREBE_DATABASE_SERVER_NAME for the wrapper's TLS.
  */
 import { readFile } from "node:fs/promises";
@@ -169,12 +169,26 @@ export class PostgresRoomStore implements RoomStore {
   }
 }
 
+/**
+ * The URL is configuration and may sit in a unit file; the password is a secret
+ * and arrives separately (`hid-in run` injects EREBE_DATABASE_PASSWORD), so no
+ * file on the host ever holds it. A password already in the URL is left alone.
+ */
+export function withPassword(url: string, password: string | undefined) {
+  if (!password) return url;
+  const parsed = new URL(url);
+  if (parsed.password) return url;
+  parsed.password = password;
+  return parsed.toString();
+}
+
 export async function postgresRoomStoreFromEnv(
   env = process.env,
   prefix?: string,
 ): Promise<PostgresRoomStore | undefined> {
-  const url = env.EREBE_DATABASE_URL?.trim();
-  if (!url) return undefined;
+  const configured = env.EREBE_DATABASE_URL?.trim();
+  if (!configured) return undefined;
+  const url = withPassword(configured, env.EREBE_DATABASE_PASSWORD);
   const caFile = env.EREBE_DATABASE_CA_FILE?.trim();
   return new PostgresRoomStore({
     url,

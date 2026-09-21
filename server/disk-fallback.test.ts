@@ -13,7 +13,12 @@ import {
 } from "./disk-fallback";
 import { createInventoryRoutes } from "./inventory";
 import { MemoryPrefsStore, type PrefsStore } from "./prefs";
-import { applyStored, MemoryRoomStore, type RoomStore } from "./room-store";
+import {
+  applyStored,
+  MemoryRoomStore,
+  type RoomStore,
+  withPassword,
+} from "./room-store";
 
 const cleanups: (() => Promise<unknown>)[] = [];
 afterEach(async () => {
@@ -252,4 +257,41 @@ test("the state directory comes from <NAME>_STATE_DIR", () => {
     stateDirFromEnv("erebe", { EREBE_STATE_DIR: " /var/lib/erebe " }),
   ).toBe("/var/lib/erebe");
   expect(stateDirFromEnv("erebe", {})).toBeUndefined();
+});
+
+test("the database password arrives apart from the URL and is percent-encoded", () => {
+  const url = "postgres://erebe@127.0.0.1:15432/erebe";
+  expect(withPassword(url, undefined)).toBe(url);
+  expect(withPassword(url, "p@ss/w:rd")).toBe(
+    "postgres://erebe:p%40ss%2Fw%3Ard@127.0.0.1:15432/erebe",
+  );
+  // A URL that already carries one is an explicit choice; leave it.
+  const explicit = "postgres://erebe:kept@127.0.0.1:15432/erebe";
+  expect(withPassword(explicit, "other")).toBe(explicit);
+});
+
+test("a prefs store that cannot be reached answers 503 without the driver's error text", async () => {
+  const { createPrefsRoutes } = await import("./prefs");
+  const broken: PrefsStore = {
+    get: () =>
+      Promise.reject(new Error("self signed certificate in certificate chain")),
+    set: () =>
+      Promise.reject(new Error("self signed certificate in certificate chain")),
+    claim: () =>
+      Promise.reject(new Error("self signed certificate in certificate chain")),
+  };
+  const app = new Elysia().use(
+    createPrefsRoutes({ name: "erebe", store: broken }),
+  );
+  const headers = { "x-erebe-device": "device-0123456789" };
+  for (const init of [
+    { headers },
+    { method: "PUT", headers, body: JSON.stringify({ page: "model" }) },
+  ]) {
+    const res = await app.handle(
+      new Request("http://erebe.test/api/modules/erebe/prefs", init),
+    );
+    expect(res.status).toBe(503);
+    expect(await res.text()).not.toContain("certificate");
+  }
 });
