@@ -253,10 +253,10 @@ export function ScaleShapeControls({
         The photographs suggest chunky short rectangles and trapezoids with
         clipped corners. The starting 1.25 : 1 ratio is an adjustable visual
         interpretation of those faces; the photographs are not calibrated
-        measurements. Changing the shape remaps your lettering. The reference
-        button applies close-set staggered coverage and reference density, gap,
-        and irregularity. It keeps your body proportions, physical size, depth,
-        layers, font, and words.
+        measurements. Changing the shape remaps your lettering. This close-set
+        staggered coverage is the default. The reference button reapplies that
+        density, gap, and irregularity after later edits. It keeps your body
+        proportions, physical size, depth, layers, font, and words.
       </p>
       <p className="scales-help">
         Raised depth controls the generated plate relief; it is not a uniform

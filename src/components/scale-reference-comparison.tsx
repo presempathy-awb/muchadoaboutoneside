@@ -88,8 +88,8 @@ export function ScaleReferenceComparison({
         visible depth. The new wood-plate shape starts at 1.25 width to height;
         stronger corner cuts make clipped octagons, and courses stagger so the
         front meridian is a plate rather than a grout line. Close-set coverage
-        covers the body. Apply photo-reference plates to update an older saved
-        inset layout.
+        is the homepage default. Older 120×4 inset browser drafts open on that
+        layout; Apply photo-reference plates restores it after later edits.
       </p>
       <p className="scales-hint">
         Many near-facing plates look roughly 1.1–1.7 times as long as they are

@@ -298,11 +298,13 @@ export function measureScaleLetteringPhysicalFit(
     totalWordCount: lettering.totalWordCount,
     placedWordCount: lettering.placements.reduce(
       (sum, placement) =>
-        sum +
-        placement.lines.reduce(
-          (count, line) => count + (line.match(/\S+/gu)?.length ?? 0),
-          0,
-        ),
+        placement.flipped
+          ? sum
+          : sum +
+            placement.lines.reduce(
+              (count, line) => count + (line.match(/\S+/gu)?.length ?? 0),
+              0,
+            ),
       0,
     ),
     unplacedText: lettering.unplacedText,

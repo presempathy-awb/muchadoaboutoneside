@@ -76,9 +76,11 @@ import {
   scaleStudyFile,
 } from "../../shared/scale-scan-file";
 import {
+  applyDefaultScalePlateLayout,
   mergeScaleStudySettings,
   type ScalePlate,
   type ScaleStudySettings,
+  usesRetiredHomepagePlateLayout,
 } from "../../shared/scale-study";
 import {
   applyScaleVersionPreset,
@@ -103,8 +105,18 @@ const EMPTY_PLATES: ScalePlate[] = [];
 
 export function initialScaleDraft(stored: string | null) {
   try {
-    if (stored && stored.length <= MAX_DESIGN_BYTES)
-      return { design: normalizeScaleDesign(JSON.parse(stored)), saved: true };
+    if (stored && stored.length <= MAX_DESIGN_BYTES) {
+      const design = normalizeScaleDesign(JSON.parse(stored));
+      return {
+        design: usesRetiredHomepagePlateLayout(design.geometry)
+          ? {
+              ...design,
+              geometry: applyDefaultScalePlateLayout(design.geometry),
+            }
+          : design,
+        saved: true,
+      };
+    }
   } catch {
     /* An unreadable draft does not stop the studio opening. */
   }
@@ -2086,11 +2098,14 @@ export default function Scales({
               )}
               <p className="scales-help">
                 Auto-fit puts about one word on each plate, as large as that
-                plate allows, so writing spreads around the sculpture. It will
-                not go below your minimum. Turn auto-fit off to keep an exact
-                requested size on fewer faces. A script font previews the
-                composition; hand lettering and swashes still need a practice
-                test.
+                plate allows, so writing spreads around the sculpture. Empty
+                leftover plates repeat that wording in reverse, flipped, and
+                wrap again if plates are still empty. A plate whose unused width
+                is more than twice its ink also draws the same word again,
+                flipped. It will not go below your minimum. Turn auto-fit off to
+                keep an exact requested size on fewer faces. A script font
+                previews the composition; hand lettering and swashes still need
+                a practice test.
               </p>
             </section>
           </details>

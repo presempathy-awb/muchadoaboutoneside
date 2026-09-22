@@ -47,31 +47,55 @@ export function drawScalePlate(
         rect.y +
         (rect.height - lineHeights.reduce((sum, height) => sum + height, 0)) /
           2;
+      const centersX = placement.mirrorAcross
+        ? [rect.x + rect.width * 0.25, rect.x + rect.width * 0.75]
+        : [rect.x + rect.width / 2];
       let cursor = top;
       placement.lines.forEach((line, index) => {
         const lineHeight = lineHeights[index] ?? placement.fontSizeMm * 1.4;
         const centerY = cursor + lineHeight / 2;
         cursor += lineHeight;
-        if (typography) {
-          typography.draw(
-            context,
-            line,
-            placement.fontSizeMm,
-            rect.x + rect.width / 2,
-            centerY,
-            placement.lineRanges?.[index],
-          );
-          return;
+        for (const [copy, centerX] of centersX.entries()) {
+          const flip =
+            Boolean(placement.flipped) !==
+            (placement.mirrorAcross && copy === 1);
+          if (typography) {
+            context.save();
+            if (flip) {
+              context.translate(centerX, centerY);
+              context.scale(-1, 1);
+              typography.draw(
+                context,
+                line,
+                placement.fontSizeMm,
+                0,
+                0,
+                placement.lineRanges?.[index],
+              );
+            } else {
+              typography.draw(
+                context,
+                line,
+                placement.fontSizeMm,
+                centerX,
+                centerY,
+                placement.lineRanges?.[index],
+              );
+            }
+            context.restore();
+            continue;
+          }
+          const metrics = context.measureText(line);
+          const left = metrics.actualBoundingBoxLeft;
+          const right = metrics.actualBoundingBoxRight;
+          const ascent = metrics.actualBoundingBoxAscent;
+          const descent = metrics.actualBoundingBoxDescent;
+          context.save();
+          context.translate(centerX, centerY);
+          if (flip) context.scale(-1, 1);
+          context.fillText(line, -(right - left) / 2, (ascent - descent) / 2);
+          context.restore();
         }
-        const metrics = context.measureText(line);
-        const left = metrics.actualBoundingBoxLeft;
-        const right = metrics.actualBoundingBoxRight;
-        const ascent = metrics.actualBoundingBoxAscent;
-        const descent = metrics.actualBoundingBoxDescent;
-        context.save();
-        context.translate(rect.x + rect.width / 2, centerY);
-        context.fillText(line, -(right - left) / 2, (ascent - descent) / 2);
-        context.restore();
       });
     }
   } finally {

@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { generateFoilGeometry } from "../src/lib/foil-geometry";
 import { LEGACY_SCALE_SHAPE } from "./scale-shape";
 import {
+  applyDefaultScalePlateLayout,
   DEFAULT_SCALE_STUDY_SETTINGS,
   generateScaledScaleGeometry,
   generateScaleStudy,
@@ -11,6 +12,7 @@ import {
   type ScalePlate,
   shiftScalePartitionsToCover,
   staggerScaleCoursePartitions,
+  usesRetiredHomepagePlateLayout,
 } from "./scale-study";
 import { cross, dot, ScaleSurface, subtract, vectorAt } from "./scale-surface";
 
@@ -1036,4 +1038,51 @@ describe("complete archival cover packing", () => {
       }
     }
   }, 20000);
+});
+
+describe("retired homepage plate layout", () => {
+  test("recognizes the pre-tessellation 120×4 inset draft and not archival originals", () => {
+    expect(
+      usesRetiredHomepagePlateLayout({
+        ...DEFAULT_SCALE_STUDY_SETTINGS,
+        columns: 120,
+        rows: 4,
+        gap: 0.12,
+        plateShape: "clipped",
+        plateFit: "inset",
+      }),
+    ).toBe(true);
+    expect(
+      usesRetiredHomepagePlateLayout({
+        ...DEFAULT_SCALE_STUDY_SETTINGS,
+        ...LEGACY_SCALE_SHAPE,
+        columns: 120,
+        rows: 4,
+        gap: 0.12,
+      }),
+    ).toBe(false);
+    expect(usesRetiredHomepagePlateLayout(DEFAULT_SCALE_STUDY_SETTINGS)).toBe(
+      false,
+    );
+  });
+
+  test("reapplies close-set photo-reference density without changing model size", () => {
+    const next = applyDefaultScalePlateLayout({
+      ...DEFAULT_SCALE_STUDY_SETTINGS,
+      columns: 120,
+      rows: 4,
+      gap: 0.12,
+      variation: 0.6,
+      plateFit: "inset",
+      plateAspect: 1.3,
+      modelScale: 2,
+      relief: 0.65,
+    });
+    expect(next.columns).toBe(DEFAULT_SCALE_STUDY_SETTINGS.columns);
+    expect(next.rows).toBe(DEFAULT_SCALE_STUDY_SETTINGS.rows);
+    expect(next.gap).toBe(DEFAULT_SCALE_STUDY_SETTINGS.gap);
+    expect(next.plateFit).toBe("cover");
+    expect(next.modelScale).toBe(2);
+    expect(next.relief).toBe(0.65);
+  });
 });
