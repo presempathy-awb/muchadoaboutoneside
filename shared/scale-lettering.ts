@@ -71,6 +71,16 @@ export interface ScaleLetteringPlacement {
   lineHeightsMm?: number[];
   /** Source occurrence identity survives reflow, including repeated words. */
   lineRanges?: ScaleTextRange[];
+  /**
+   * Return-path echo: the same wording, drawn mirrored so the circuit
+   * continues the other way.
+   */
+  flipped?: boolean;
+  /**
+   * This face has more than twice as much unused width as written ink, so
+   * the same wording is also drawn on the other half, mirrored.
+   */
+  mirrorAcross?: boolean;
 }
 
 export interface ScaleLetteringResult {
@@ -337,9 +347,72 @@ function largestSizeForSegment(
   return low;
 }
 
+function emptyPlacement(
+  plate: ScaleLetteringPlate,
+  fontSizeMm: number,
+): ScaleLetteringPlacement {
+  return {
+    plateId: plate.id,
+    lines: [],
+    lineHeightsMm: [],
+    lineRanges: [],
+    fontSizeMm,
+  };
+}
+
+function placeSegmentOnPlate(
+  words: readonly string[],
+  boundaries: readonly number[],
+  start: number,
+  end: number,
+  plate: ScaleLetteringPlate,
+  options: FitScaleLetteringOptions,
+): ScaleLetteringPlacement {
+  const { maxWidthMm, maxHeightMm } = plateUsableMm(plate, options.marginMm);
+  const fontSizeMm = largestSizeForSegment(
+    words,
+    boundaries,
+    start,
+    end,
+    maxWidthMm,
+    maxHeightMm,
+    options.minFontSizeMm,
+    options,
+  );
+  if (fontSizeMm === null) return emptyPlacement(plate, options.fontSizeMm);
+  const range = {
+    wordStart: boundaries[start] ?? 0,
+    wordEnd: boundaries[end] ?? words.length,
+  };
+  const line = words.slice(range.wordStart, range.wordEnd).join(" ");
+  const metrics = measuredLine(line, fontSizeMm, options, range);
+  return {
+    plateId: plate.id,
+    lines: [line],
+    lineHeightsMm: [metrics.heightMm],
+    lineRanges: [range],
+    fontSizeMm,
+    // Unused width on this face is more than twice the written ink.
+    ...(metrics.widthMm > 0 &&
+    maxWidthMm - metrics.widthMm > 2 * metrics.widthMm
+      ? { mirrorAcross: true }
+      : {}),
+  };
+}
+
+function segmentIndexAt(
+  boundaries: readonly number[],
+  wordIndex: number,
+): number | undefined {
+  const index = boundaries.indexOf(wordIndex);
+  return index >= 0 ? index : undefined;
+}
+
 /**
  * Place one transcript segment on each plate, as large as that plate allows.
- * Faces that cannot take the next segment at the minimum size are skipped.
+ * Faces that cannot take the next unique segment at the minimum size are
+ * skipped. Leftover empty plates then repeat that wording in reverse,
+ * mirrored, wrapping if empty plates remain.
  */
 export function fillScaleLettering(
   plates: readonly ScaleLetteringPlate[],
@@ -358,45 +431,57 @@ export function fillScaleLettering(
   let segmentIndex = 0;
 
   const placements = plates.map((plate): ScaleLetteringPlacement => {
-    const { maxWidthMm, maxHeightMm } = plateUsableMm(plate, options.marginMm);
-    const empty = (): ScaleLetteringPlacement => ({
-      plateId: plate.id,
-      lines: [],
-      lineHeightsMm: [],
-      lineRanges: [],
-      fontSizeMm: options.fontSizeMm,
-    });
-    if (segmentIndex >= boundaries.length - 1) return empty();
+    if (segmentIndex >= boundaries.length - 1)
+      return emptyPlacement(plate, options.fontSizeMm);
     const end = Math.min(
       segmentIndex + SCALE_AUTO_FIT_SEGMENTS_PER_PLATE,
       boundaries.length - 1,
     );
-    const fontSizeMm = largestSizeForSegment(
+    const placed = placeSegmentOnPlate(
       words,
       boundaries,
       segmentIndex,
       end,
-      maxWidthMm,
-      maxHeightMm,
-      options.minFontSizeMm,
+      plate,
       options,
     );
-    if (fontSizeMm === null) return empty();
-    const range = {
-      wordStart: boundaries[segmentIndex] ?? 0,
-      wordEnd: boundaries[end] ?? words.length,
-    };
-    const line = words.slice(range.wordStart, range.wordEnd).join(" ");
-    const { heightMm } = measuredLine(line, fontSizeMm, options, range);
+    if (!placed.lines.length) return placed;
     segmentIndex = end;
-    return {
-      plateId: plate.id,
-      lines: [line],
-      lineHeightsMm: [heightMm],
-      lineRanges: [range],
-      fontSizeMm,
-    };
+    return placed;
   });
+
+  const primaries = placements.filter((placement) => placement.lines.length);
+  const emptyIndexes = placements.flatMap((placement, index) =>
+    placement.lines.length ? [] : [index],
+  );
+  if (primaries.length > 0 && emptyIndexes.length > 0) {
+    const returning = primaries.slice().reverse();
+    let cursor = 0;
+    for (const index of emptyIndexes) {
+      const source = returning[cursor % returning.length];
+      const plate = plates[index];
+      const range = source?.lineRanges?.[0];
+      cursor += 1;
+      if (!source || !plate || !range) continue;
+      const start = segmentIndexAt(boundaries, range.wordStart);
+      const end = segmentIndexAt(boundaries, range.wordEnd);
+      if (start === undefined || end === undefined || end <= start) continue;
+      const echoed = placeSegmentOnPlate(
+        words,
+        boundaries,
+        start,
+        end,
+        plate,
+        options,
+      );
+      if (!echoed.lines.length) continue;
+      placements[index] = {
+        ...echoed,
+        flipped: true,
+        mirrorAcross: false,
+      };
+    }
+  }
 
   const wordIndex = boundaries[segmentIndex] ?? 0;
   return {

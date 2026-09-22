@@ -103,6 +103,35 @@ export const DEFAULT_SCALE_STUDY_SETTINGS: ScaleStudySettings = {
   seed: 1,
 };
 
+/** Close-set photo-reference density and silhouette; keeps size, model, and relief. */
+export function applyDefaultScalePlateLayout(
+  settings: ScaleStudySettings,
+): ScaleStudySettings {
+  return {
+    ...settings,
+    ...DEFAULT_SCALE_SHAPE,
+    columns: DEFAULT_SCALE_STUDY_SETTINGS.columns,
+    rows: DEFAULT_SCALE_STUDY_SETTINGS.rows,
+    gap: DEFAULT_SCALE_STUDY_SETTINGS.gap,
+    variation: DEFAULT_SCALE_STUDY_SETTINGS.variation,
+  };
+}
+
+/**
+ * The pre-tessellation homepage draft: 120×4, 12% grout, not archival original
+ * plates. Those drafts should open on the current close-set layout.
+ */
+export function usesRetiredHomepagePlateLayout(
+  settings: ScaleStudySettings,
+): boolean {
+  return (
+    settings.columns === 120 &&
+    settings.rows === 4 &&
+    Math.abs(settings.gap - 0.12) < 1e-9 &&
+    settings.plateShape !== "legacy"
+  );
+}
+
 const MIN_COLUMNS = 4;
 const MAX_COLUMNS = 240;
 const MIN_ROWS = 1;

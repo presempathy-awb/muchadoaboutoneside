@@ -379,6 +379,27 @@ describe("measured scale lettering visibility", () => {
       measureScaleLetteringPhysicalFit([plate], staleCounts, typography, 2)
         .placedWordCount,
     ).toBe(4);
+    const primary = lettering.placements[0];
+    if (!primary) throw new Error("expected a primary placement");
+    const echoed = {
+      ...lettering,
+      placements: [
+        ...lettering.placements,
+        {
+          ...primary,
+          plateId: "return",
+          flipped: true,
+        },
+      ],
+    };
+    expect(
+      measureScaleLetteringPhysicalFit(
+        [plate, { ...plate, id: "return" }],
+        echoed,
+        typography,
+        2,
+      ).placedWordCount,
+    ).toBe(4);
     expect(
       measureScaleLetteringPhysicalFit(
         [plate],

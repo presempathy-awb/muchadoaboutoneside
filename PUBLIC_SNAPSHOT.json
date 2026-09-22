@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "3a21299a49b336f0c4f05a3209726371aac703ba",
+  "sourceCommit": "b15d664f94fc0262f7687be00ead2e956847935b",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -5515,13 +5515,13 @@
     },
     {
       "path": "shared/scale-lettering.test.ts",
-      "bytes": 14047,
-      "sha256": "ba175016577a408470856699614e2f720be531e58d3a39d23b03965ea5122773"
+      "bytes": 16734,
+      "sha256": "867086bf6a3bac12a16b259d7e546d697bd90babf568797d942e7acdd908cc8a"
     },
     {
       "path": "shared/scale-lettering.ts",
-      "bytes": 15551,
-      "sha256": "df8ccdbd1eb77492093a8fae82b3cfbc0a34cb60d82804e955af641fdfeda92b"
+      "bytes": 17918,
+      "sha256": "d6c4146f1b018a6f1a6060fa7d7dd719fb51c83deac4cb59bd1dda707563b85f"
     },
     {
       "path": "shared/scale-maquette-body.json",
@@ -5615,13 +5615,13 @@
     },
     {
       "path": "shared/scale-study.test.ts",
-      "bytes": 35732,
-      "sha256": "f6cbdcc6b91893b8f5da3520d95cd82e3af29f2affad104b4cb7a98920a6867e"
+      "bytes": 37163,
+      "sha256": "66ac3761b1dbc83f9224233e7843afd20062b559c3a361c434bbabd4ca5719ea"
     },
     {
       "path": "shared/scale-study.ts",
-      "bytes": 29541,
-      "sha256": "426669c806240a11725d2693a8b2bd42ee29d8c87764d824dc5a14ca67ace801"
+      "bytes": 30399,
+      "sha256": "2ea4f78431128213c1f19f7430605324b4dc3ff690ab6acfbdfa42dd5e92531f"
     },
     {
       "path": "shared/scale-surface.ts",
@@ -5910,13 +5910,13 @@
     },
     {
       "path": "src/components/scale-reference-comparison.tsx",
-      "bytes": 7293,
-      "sha256": "b767c0210a593976b6652c56a1866db53fbd18ee156f9da0aeada17be3cbfa58"
+      "bytes": 7348,
+      "sha256": "eecaa666cb33325d5f290b3f2b4e545f6d80b7f7c2238fbe63aa0ddf590bd935"
     },
     {
       "path": "src/components/scale-shape-controls.tsx",
-      "bytes": 8962,
-      "sha256": "5b782f20ee5a4306c052b3a943f9d91c5a5666b611a0fcbf285824a528695e58"
+      "bytes": 8994,
+      "sha256": "457ed3083927fe02ff068c7deebe492adc6611c97adf9a6c926ef476db5a3cb7"
     },
     {
       "path": "src/components/scale-version-browser.tsx",
@@ -6095,23 +6095,23 @@
     },
     {
       "path": "src/lib/scale-lettering-visibility.test.ts",
-      "bytes": 13125,
-      "sha256": "7696efacb7005ee61e73b19a539cd0131723bde6cfad34e498a58ef6d2bea44f"
+      "bytes": 13628,
+      "sha256": "816bdbf1ee6a26d940e3efe0ddaff8880af876d46a14d81d41c9c2b1f7f73850"
     },
     {
       "path": "src/lib/scale-lettering-visibility.ts",
-      "bytes": 12012,
-      "sha256": "3cd73119caa95686ea882f793e268d801176c8c531c4c145275cfe9564874787"
+      "bytes": 12074,
+      "sha256": "e882231f9310fd543242c4787340ee7a2cc0530733493e70f53858604a588d1f"
     },
     {
       "path": "src/lib/scale-plate-canvas.test.ts",
-      "bytes": 1946,
-      "sha256": "09e955176deed2369f84e09496426554befb7749905316d2077da36b386a41af"
+      "bytes": 3546,
+      "sha256": "78aa9b988e898a66916c3d3f62dd0c6906c6ed6f02eff28431dc7a3bfc9338ac"
     },
     {
       "path": "src/lib/scale-plate-canvas.ts",
-      "bytes": 2906,
-      "sha256": "c912103317598f661c40e38b848d20553d02f32f6844ee5b5d71ba792c4fb788"
+      "bytes": 3735,
+      "sha256": "f4704c8fdd83a5c2da7e3c8c8bb56d707988277b3e56865292a4c816517fa7e2"
     },
     {
       "path": "src/lib/scale-preview-readiness.test.ts",
@@ -6370,13 +6370,13 @@
     },
     {
       "path": "src/pages/scales.test.tsx",
-      "bytes": 2257,
-      "sha256": "7a0ad8051661aac393a8b48b15f562fef1b66a91f5a37cfd682a00fb7f78f855"
+      "bytes": 4431,
+      "sha256": "22c3db7473ca547a2e936a8c9c405df91aa3c0c2cacf4f990de8d0423ee87db5"
     },
     {
       "path": "src/pages/scales.tsx",
-      "bytes": 87432,
-      "sha256": "38200650b4accd2992cb2682633f876feda60619f0c130eece43fa03c05c9b61"
+      "bytes": 87990,
+      "sha256": "8568ee9f29eb352b518c2c52b884061067a0726f1d9ac755b656b67c6f1c888c"
     },
     {
       "path": "src/pages/six-foot.tsx",

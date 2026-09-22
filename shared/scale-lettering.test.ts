@@ -442,6 +442,99 @@ test("fill auto-fit skips a face that cannot take the next word at the minimum s
   expect(filled.unplacedText).toBe("");
 });
 
+test("fill auto-fit mirrors a word across a face whose other side is over twice the ink", () => {
+  const filled = fillScaleLettering([plate("wide", 80, 8)], "aa", {
+    fontSizeMm: 2,
+    minFontSizeMm: 1,
+    marginMm: 0,
+    measure: characterMeasure,
+  });
+  expect(filled.placements[0]?.lines).toEqual(["aa"]);
+  expect(filled.placements[0]?.mirrorAcross).toBe(true);
+  expect(filled.placements[0]?.flipped).toBeUndefined();
+  expect(filled.placedWordCount).toBe(1);
+});
+
+test("fill auto-fit repeats leftover empty plates in reverse, flipped", () => {
+  const plates = [
+    plate("a", 40, 40),
+    plate("b", 40, 40),
+    plate("c", 40, 40),
+    plate("d", 40, 40),
+  ];
+  const filled = fillScaleLettering(plates, "aa bb", {
+    fontSizeMm: 2,
+    minFontSizeMm: 1,
+    marginMm: 0,
+    measure: characterMeasure,
+  });
+  expect(filled.placedWordCount).toBe(2);
+  expect(filled.unplacedText).toBe("");
+  expect(
+    filled.placements.map(({ lines, flipped }) => ({ lines, flipped })),
+  ).toEqual([
+    { lines: ["aa"], flipped: undefined },
+    { lines: ["bb"], flipped: undefined },
+    { lines: ["bb"], flipped: true },
+    { lines: ["aa"], flipped: true },
+  ]);
+});
+
+test("fill auto-fit fills a leftover empty plate even when unique words already reached the far side", () => {
+  const filled = fillScaleLettering(
+    [
+      plate("a", 40, 40),
+      plate("b", 40, 40),
+      plate("c", 40, 40),
+      plate("d", 40, 40),
+    ],
+    "aa bb cc",
+    {
+      fontSizeMm: 2,
+      minFontSizeMm: 1,
+      marginMm: 0,
+      measure: characterMeasure,
+    },
+  );
+  expect(filled.placedWordCount).toBe(3);
+  expect(
+    filled.placements.map(({ lines, flipped }) => ({ lines, flipped })),
+  ).toEqual([
+    { lines: ["aa"], flipped: undefined },
+    { lines: ["bb"], flipped: undefined },
+    { lines: ["cc"], flipped: undefined },
+    { lines: ["cc"], flipped: true },
+  ]);
+});
+
+test("fill auto-fit wraps the reversed wording again while empty plates remain", () => {
+  const plates = [
+    plate("a", 40, 40),
+    plate("b", 40, 40),
+    plate("c", 40, 40),
+    plate("d", 40, 40),
+    plate("e", 40, 40),
+    plate("f", 40, 40),
+  ];
+  const filled = fillScaleLettering(plates, "aa bb", {
+    fontSizeMm: 2,
+    minFontSizeMm: 1,
+    marginMm: 0,
+    measure: characterMeasure,
+  });
+  expect(filled.placedWordCount).toBe(2);
+  expect(
+    filled.placements.map(({ lines, flipped }) => ({ lines, flipped })),
+  ).toEqual([
+    { lines: ["aa"], flipped: undefined },
+    { lines: ["bb"], flipped: undefined },
+    { lines: ["bb"], flipped: true },
+    { lines: ["aa"], flipped: true },
+    { lines: ["bb"], flipped: true },
+    { lines: ["aa"], flipped: true },
+  ]);
+});
+
 test("fill auto-fit keeps a joined segment on one plate", () => {
   const filled = fillScaleLettering(
     [plate("first", 80, 40), plate("second", 80, 40)],

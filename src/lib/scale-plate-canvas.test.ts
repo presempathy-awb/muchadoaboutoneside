@@ -71,3 +71,69 @@ test("flat proofs and atlas drawing pass each line's source occurrence to the in
   ]);
   expect(saved).toBe(0);
 });
+
+test("return-path plates draw the same occurrence mirrored", () => {
+  const range = { wordStart: 0, wordEnd: 1 };
+  const drawn: { text: string; range?: ScaleTextRange }[] = [];
+  const scales: number[] = [];
+  const typography: ScaleTypography = {
+    family: "Reviewed ink",
+    engine: "scan",
+    supportedFeatures: [],
+    hasGlyph: () => true,
+    shape() {
+      throw new Error("Raster ink has no font outlines");
+    },
+    measure: () => 10,
+    measureLine: () => ({ widthMm: 10, heightMm: 5 }),
+    draw(_context, text, _size, _x, _y, nextRange) {
+      drawn.push({ text, range: nextRange });
+    },
+  };
+  let saved = 0;
+  const context = {
+    save() {
+      saved++;
+    },
+    restore() {
+      saved--;
+    },
+    translate() {},
+    scale(x: number, y: number) {
+      scales.push(x, y);
+    },
+    fillRect() {},
+    beginPath() {},
+    rect() {},
+    clip() {},
+    fillText() {
+      throw new Error(
+        "No synthetic fallback when scanned typography is supplied",
+      );
+    },
+  } as unknown as CanvasRenderingContext2D;
+  const plate = {
+    widthInches: 2,
+    heightInches: 1,
+    safeRect: { x: 0, y: 0, width: 1, height: 1 },
+  } as ScalePlate;
+  drawScalePlate(
+    context,
+    plate,
+    {
+      plateId: "return",
+      lines: ["echo"],
+      fontSizeMm: 5,
+      lineHeightsMm: [5],
+      lineRanges: [range],
+      flipped: true,
+    },
+    DEFAULT_SCALE_DESIGN,
+    "unused",
+    { x: 0, y: 0, width: 500, height: 250 },
+    typography,
+  );
+  expect(drawn).toEqual([{ text: "echo", range }]);
+  expect(scales).toContain(-1);
+  expect(saved).toBe(0);
+});
