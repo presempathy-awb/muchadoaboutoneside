@@ -2,9 +2,18 @@ import { stat } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { Elysia } from "elysia";
 import { WORKSHEET_FONT_CATALOG } from "../shared/worksheet-font-catalog";
+import {
+  type BrowserRelayOptions,
+  createBrowserRelayRoute,
+} from "./browser-relay";
 import { createCollab } from "./collab";
 import type { WebModule } from "./modules";
 import { assetNames, project } from "./project";
+import { createTelemetryHooks, type TelemetryOptions } from "./telemetry";
+import {
+  createWorksheetAccountRoutes,
+  type WorksheetAccountStore,
+} from "./worksheet-account";
 
 export interface AppOptions {
   staticDir?: string;
@@ -13,6 +22,12 @@ export interface AppOptions {
   collabDir?: string;
   /** Sites served for other hosts, each with its own ephemeral rooms. */
   modules?: readonly WebModule[];
+  /** Overrides telemetry env config; a no-op unless an ingress URL resolves. */
+  telemetry?: TelemetryOptions;
+  /** Overrides browser relay env config; a no-op unless an ingress URL resolves. */
+  browserRelay?: BrowserRelayOptions;
+  /** Crew worksheet copies. Absent, the account route is not mounted. */
+  worksheetAccounts?: WorksheetAccountStore;
 }
 
 const defaultAssetDir = resolve(import.meta.dir, "../source/assets");
@@ -107,9 +122,20 @@ export function createApp(options: AppOptions = {}) {
   );
 
   const modules = options.modules ?? [];
+  const telemetry = createTelemetryHooks(options.telemetry);
+  const browserRelay = createBrowserRelayRoute(options.browserRelay);
   const app = new Elysia()
+    .onRequest(telemetry.onRequest)
+    .onError(telemetry.onError)
+    .onAfterResponse(telemetry.onAfterResponse)
     .use(collab.plugin)
     .use(new Elysia({ name: "modules" }).use(modules.map((m) => m.plugin)))
+    .post("/api/telemetry/relay", ({ request }) => browserRelay.handle(request))
+    .use(
+      options.worksheetAccounts
+        ? createWorksheetAccountRoutes(options.worksheetAccounts)
+        : new Elysia({ name: "worksheet-account-off" }),
+    )
     .get("/api/health", () =>
       Response.json(
         { status: "ok" as const },

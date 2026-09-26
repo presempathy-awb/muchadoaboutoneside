@@ -54,6 +54,8 @@
     "@pdf-lib/fontkit": "1.1.1",
     "@tanstack/react-query": "5.102.8",
     "@tanstack/react-router": "1.170.36",
+    "@telpher/zotel-js-elysia": "0.1.4",
+    "@telpher/zotel-js-zenoh-bun": "0.1.5",
     "@xyflow/react": "12.11.6",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
