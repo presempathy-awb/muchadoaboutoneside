@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "b15d664f94fc0262f7687be00ead2e956847935b",
+  "sourceCommit": "8408535123656683c6ba4ba425b2758e87d21fd6",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -20,8 +20,8 @@
     },
     {
       "path": ".dockerignore",
-      "bytes": 661,
-      "sha256": "c393be1693638ac9757343d1eae7fe9a13d232517cb8c484c0790a0c5286e619"
+      "bytes": 669,
+      "sha256": "30baa550c62a66c5bd5d176b7003612ab3eed8efa67707cd5bcbf31f474242b4"
     },
     {
       "path": ".editorconfig",
@@ -85,8 +85,8 @@
     },
     {
       "path": "Dockerfile",
-      "bytes": 1241,
-      "sha256": "f769804351c24a85aebdf5fd74b6fe7a29a69ce1407192013f18acfe1a1cf709"
+      "bytes": 1606,
+      "sha256": "3e149a284876016e8253de07e7586fa050e8f432655d26c487d891aa5956a422"
     },
     {
       "path": "INTENT.md",
@@ -150,8 +150,8 @@
     },
     {
       "path": "bun.lock",
-      "bytes": 95181,
-      "sha256": "c27fd032a549631614c194eeb46d7b7bc7325a81f74a4f21463ec5a663504f42"
+      "bytes": 109022,
+      "sha256": "68f11bca32ba1bbcce1106443577ebfa2287f1557c83999aee993151ec9c0af4"
     },
     {
       "path": "components.json",
@@ -245,8 +245,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 3355,
-      "sha256": "b76e68aca53680afc6be5a38798efc93d44eccdd63db4d557a1ff9cca241039b"
+      "bytes": 3440,
+      "sha256": "c7d5b431027cddf20abd2f1e26dee1dc6cc5517251503a49b777e5afd8eeee95"
     },
     {
       "path": "public/editions/endless-inscription-study-extended.svg",
@@ -5230,13 +5230,23 @@
     },
     {
       "path": "server/app.ts",
-      "bytes": 5549,
-      "sha256": "c7f7afba8b8babd970694f983eac735b6eae5d2085ed99851832c5536303349f"
+      "bytes": 6669,
+      "sha256": "f0c8c039767317e549d0b5b2c13110534228c8fbc517d2058d24f9fe202abbdd"
     },
     {
       "path": "server/blobs.ts",
       "bytes": 9128,
       "sha256": "5ac044f1b4c9eaaa130ceb61223317513ce628d8a37632c9dbae6f590defb2ea"
+    },
+    {
+      "path": "server/browser-relay.test.ts",
+      "bytes": 4294,
+      "sha256": "a0ee41333e753d0d8e91edd3a2515ffb9372fd7d1508dc50c989980507105dad"
+    },
+    {
+      "path": "server/browser-relay.ts",
+      "bytes": 3209,
+      "sha256": "4df2fe5c7b086b5daae7160aadbb2d28dba1e8c1fc88be89459b2164be75c7da"
     },
     {
       "path": "server/collab.test.ts",
@@ -5265,8 +5275,8 @@
     },
     {
       "path": "server/index.ts",
-      "bytes": 1302,
-      "sha256": "0443a7d4464f04625f81ea2523bb631b78d8cddb804929906b94ddf55f327fc0"
+      "bytes": 1694,
+      "sha256": "5dc70255f0ca53adc5144126ac874a0c6d0b15fae2a3f916be8882c154a1cbae"
     },
     {
       "path": "server/inventory.ts",
@@ -5297,6 +5307,26 @@
       "path": "server/room-store.ts",
       "bytes": 6772,
       "sha256": "459610f6c9a70abe5e7f1023effcde2d43d5f74645fc043b410d4ebcacb51b53"
+    },
+    {
+      "path": "server/telemetry.test.ts",
+      "bytes": 3791,
+      "sha256": "ae973e7a865d95f48dd5aa38c90a74c24ac3326cd4224e681579f57a8b27f1f6"
+    },
+    {
+      "path": "server/telemetry.ts",
+      "bytes": 2443,
+      "sha256": "0dc08905e37d1290b927177d47467332b047e1558814b777b384457b26ae59c5"
+    },
+    {
+      "path": "server/worksheet-account.test.ts",
+      "bytes": 4128,
+      "sha256": "db40e9bd5aae14784ace8c70a1594f865a882e903ab0528cbd2ac1f769f4199e"
+    },
+    {
+      "path": "server/worksheet-account.ts",
+      "bytes": 7093,
+      "sha256": "e191c3a4a0e9251e0f3f3cb8b7e23819aa16c3705d4f94c63adca17cbc4d00f8"
     },
     {
       "path": "sgconfig.yml",
@@ -5689,6 +5719,11 @@
       "sha256": "6bb0bca17a83797b2d0b866b05b8008edc59b9354bb5e8ab995314d0fed83069"
     },
     {
+      "path": "shared/worksheet-account.ts",
+      "bytes": 4086,
+      "sha256": "e40702b115b56d7c43dbaccc58cfdac52b8acc1a63ca9423b760e37d79da5070"
+    },
+    {
       "path": "shared/worksheet-font-catalog.test.ts",
       "bytes": 858,
       "sha256": "dbb15d9fca9805ef6c88939fd8bf3defc74dc76bec4713f493890fbf51d67188"
@@ -5807,6 +5842,11 @@
       "path": "src/components/calligraphy/templates.tsx",
       "bytes": 25241,
       "sha256": "16eaf4a0f3deb0cba10edd0911f563c9ae08fa7218ad2bfb0fa1d10a143ab900"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-account-panel.tsx",
+      "bytes": 4287,
+      "sha256": "a4ce3d97ca175a2618ec5a24178eb77ff4ac1a3417ea2da821fd41c618b3af2f"
     },
     {
       "path": "src/components/calligraphy/worksheet-editor.tsx",
@@ -6390,8 +6430,8 @@
     },
     {
       "path": "src/pages/worksheet-studio.tsx",
-      "bytes": 50041,
-      "sha256": "5c7480e9ab9ce8ab33c674853cf5d18ad00e02552d2824219d007919adedc511"
+      "bytes": 50402,
+      "sha256": "38bf69edbe9e2ec1aa1578286bda97fbffad3a93808863a5b1181849a09b9dd6"
     },
     {
       "path": "src/poem-editor.css",

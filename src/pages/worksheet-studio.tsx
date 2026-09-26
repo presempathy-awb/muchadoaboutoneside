@@ -7,6 +7,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { WorksheetAccountPanel } from "@/components/calligraphy/worksheet-account-panel";
 import { WorksheetEditor } from "@/components/calligraphy/worksheet-editor";
 import {
   WorksheetFontGallery,
@@ -1277,6 +1278,12 @@ function StudioWorkspace({ session }: { session: WorksheetSession }) {
                   Save a copy
                 </button>
               </div>
+              <WorksheetAccountPanel
+                ready={ready}
+                getSnapshot={() => session.getSnapshot()}
+                load={(snapshot) => session.load(snapshot)}
+                keepLocalCopy={(name) => session.saveTemplate(name)}
+              />
               <div className="ws-save-row">
                 <label className="ws-field">
                   <span>Saved in this browser</span>
