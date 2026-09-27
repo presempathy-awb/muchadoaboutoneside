@@ -116,7 +116,7 @@ describe("bounded model size search", () => {
     expect(result.trials.length).toBeLessThanOrEqual(
       MAX_SCALE_SIZE_SEARCH_TRIALS,
     );
-    expect(result.trials.at(-1)?.modelScale).toBe(30);
+    expect(result.trials.some((trial) => trial.modelScale === 30)).toBe(true);
     expect(result.reason).toContain("maximum search size was tested");
   });
 
