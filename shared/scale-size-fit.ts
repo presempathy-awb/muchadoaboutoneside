@@ -185,20 +185,20 @@ export async function searchScaleSizeFit(
   };
 
   try {
-    // Leave approximately half the budget for narrowing a successful bracket.
+    // Verify the supported upper bound early so slower devices retain a real
+    // fitting candidate before the elapsed budget is spent on refinement.
     const coarseCount = Math.min(9, Math.max(2, Math.ceil(maxTrials / 2)));
-    for (let index = 0; index < coarseCount; index += 1) {
-      if (trials.length >= maxTrials) break;
-      const scale =
-        index === 0
-          ? currentScale
-          : index === coarseCount - 1
-            ? maximum
-            : currentScale *
-              (maximum / currentScale) ** (index / (coarseCount - 1));
-      if (index > 0 && scale === currentScale) break;
-      if (await test(scale)) break;
-      lower = scale;
+    if (!(await test(currentScale)) && maximum > currentScale) {
+      if (!(await test(maximum))) {
+        for (let index = 1; index < coarseCount - 1; index += 1) {
+          if (trials.length >= maxTrials) break;
+          const scale =
+            currentScale *
+            (maximum / currentScale) ** (index / (coarseCount - 1));
+          if (await test(scale)) break;
+          lower = scale;
+        }
+      }
     }
     while (best && trials.length < maxTrials) {
       const upper = (best as ScaleDesign).geometry.modelScale;
