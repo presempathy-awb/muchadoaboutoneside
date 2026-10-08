@@ -1329,7 +1329,9 @@
   body:has(.ws-studio) .topbar,
   body:has(.ws-studio) .page-footer,
   body:has(.ws-studio) .skip-link,
-  .ws-studio > :not(.ws-print-pages) {
+  .ws-studio > :not(.ws-print-pages):not(.ws-workspace):not(.ck-workspace),
+  .ws-workspace > :not(.ws-print-pages),
+  .ck-workspace > :not(.ws-print-pages) {
     display: none;
   }
 
@@ -1345,6 +1347,10 @@
     display: block;
     margin: 0;
     padding: 0;
+  }
+  .ws-workspace,
+  .ck-workspace {
+    display: contents;
   }
 
   .ws-print-sheet {

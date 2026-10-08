@@ -1,0 +1,58 @@
+@media screen {
+  .ck-workflow-choice {
+    display: grid;
+    gap: 0.5rem;
+    margin-block: 1rem;
+  }
+  .ck-workflow-choice select {
+    max-width: 100%;
+    min-height: 2.75rem;
+    font-size: 1rem;
+    padding: 0.5rem;
+    color: var(--ck-text);
+    background: var(--ck-surface-raised);
+    border: 1px solid var(--ck-border-strong);
+  }
+  .ck-start-path {
+    margin-block-end: 1rem;
+    min-height: 2.75rem;
+  }
+  .ck-workflow .ck-flow-canvas {
+    height: clamp(15rem, 35vh, 26rem);
+    margin-block-end: 1rem;
+  }
+  .ck-studio .ck-flow-links button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+  }
+  .ck-mermaid-source {
+    margin-block: 1rem;
+    padding: 0.75rem;
+    background: var(--ck-surface-soft);
+    color: var(--ck-text);
+    border: 1px solid var(--ck-border);
+  }
+  .ck-mermaid-source summary {
+    min-height: 2.75rem;
+    display: list-item;
+    align-content: center;
+    cursor: pointer;
+  }
+  .ck-mermaid-source pre {
+    overflow: auto;
+    max-width: 100%;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    padding-block: 0.5rem;
+  }
+  .ck-mermaid-source a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ck-text-strong);
+    min-height: 2.75rem;
+    text-decoration: underline;
+  }
+}

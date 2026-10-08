@@ -6,7 +6,15 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-  build: { manifest: true },
+  build: {
+    manifest: true,
+    rolldownOptions: {
+      input: {
+        site: fileURLToPath(new URL("./index.html", import.meta.url)),
+        calligraphy: fileURLToPath(new URL("./cockpit.html", import.meta.url)),
+      },
+    },
+  },
   // Keep the exact print-mesh adapter out of archival-only worker requests.
   worker: { format: "es" },
   server: {

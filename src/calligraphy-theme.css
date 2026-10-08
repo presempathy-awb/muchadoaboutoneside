@@ -1,0 +1,432 @@
+/* Cockpit color themes only. Paper, SVG lettering, and print geometry stay physical. */
+:root {
+  --ck-canvas: #faedf1;
+  --ck-surface: #fff8f5;
+  --ck-surface-raised: #fff9f6;
+  --ck-surface-soft: #f7e8ed;
+  --ck-surface-accent: #f7dce5;
+  --ck-text: #40232e;
+  --ck-text-muted: #72505e;
+  --ck-text-strong: #62233e;
+  --ck-accent: #922f54;
+  --ck-border: #dbc0c9;
+  --ck-border-strong: #c5a1ae;
+  --ck-focus: #a76a1c;
+  --ck-shadow: rgb(98 35 62 / 14%);
+  --ck-error-surface: #faf0ed;
+  --ck-error-text: #7e3f39;
+  --ck-notice-surface: #fff1f5;
+  --ck-notice-text: #62233e;
+}
+
+:root[data-studio-theme="dark"] {
+  color-scheme: dark;
+  --ck-canvas: #160f14;
+  --ck-surface: #21151c;
+  --ck-surface-raised: #2b1b24;
+  --ck-surface-soft: #321e28;
+  --ck-surface-accent: #3a1f2b;
+  --ck-text: #fff5f7;
+  --ck-text-muted: #d8bfc8;
+  --ck-text-strong: #ffd7e4;
+  --ck-accent: #a33d62;
+  --ck-border: #614252;
+  --ck-border-strong: #7b5061;
+  --ck-focus: #ffbc66;
+  --ck-shadow: rgb(0 0 0 / 38%);
+  --ck-error-surface: #3c1c20;
+  --ck-error-text: #ffc9c5;
+  --ck-notice-surface: #33232b;
+  --ck-notice-text: #ffd7e4;
+}
+
+@media screen {
+  :root[data-studio-theme="dark"] body {
+    color: var(--ck-text);
+    background: var(--ck-canvas);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio {
+    --background: var(--ck-surface);
+    --foreground: var(--ck-text);
+    --primary: var(--ck-accent);
+    --secondary: var(--ck-surface-accent);
+    --border: var(--ck-border);
+    --ws-ink: var(--ck-text);
+    --ws-muted: var(--ck-text-muted);
+    --ws-deep: var(--ck-accent);
+    --ws-sage: var(--ck-surface-soft);
+    --ws-sage-pale: var(--ck-surface-raised);
+    --ws-rule: var(--ck-border);
+    --ws-cream: var(--ck-surface);
+    /* This token also paints the physical sheet. Keep it paper-white. */
+    --ws-paper: #fff9f6;
+    color: var(--ck-text);
+    background: var(--ck-canvas);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio :focus-visible,
+  :root[data-studio-theme="dark"] .ck-paper-dialog :focus-visible,
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(.ws-file, .ws-photo__file-label):focus-within {
+    outline-color: var(--ck-focus);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio ::selection {
+    color: #21151c;
+    background: #ffcadb;
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ck-brand-header {
+    color: var(--ck-text);
+    background: #351322;
+    border-color: var(--ck-border-strong);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ck-brand-header h1.ck-wordmark {
+    color: #fff5f7;
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ck-brand-header .ck-wordmark em,
+  :root[data-studio-theme="dark"] .ck-studio .ck-brand-header .ws-back {
+    color: #ffd7e4;
+  }
+
+  :root[data-studio-theme="dark"] .ck-toolbar,
+  :root[data-studio-theme="dark"] .ck-main > .ck-toolbar,
+  :root[data-studio-theme="dark"] .ck-subnav,
+  :root[data-studio-theme="dark"] .ck-chat-strip,
+  :root[data-studio-theme="dark"] .ck-chat-reply {
+    color: var(--ck-text);
+    background: var(--ck-surface-raised);
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"] .ck-toolbar .ck-tool,
+  :root[data-studio-theme="dark"] .ck-studio .ck-subnav button,
+  :root[data-studio-theme="dark"] .ck-chat-label,
+  :root[data-studio-theme="dark"] .ck-chat-reply {
+    color: var(--ck-text);
+  }
+
+  :root[data-studio-theme="dark"] .ck-chat-label small,
+  :root[data-studio-theme="dark"] .ck-studio .ws-storage,
+  :root[data-studio-theme="dark"] .ck-studio .ws-hint,
+  :root[data-studio-theme="dark"] .ck-studio .ck-eyebrow {
+    color: var(--ck-text-muted);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio button:hover:not(:disabled),
+  :root[data-studio-theme="dark"] .ck-studio .ws-file:hover,
+  :root[data-studio-theme="dark"] .ck-toolbar .ck-tool:hover:not(:disabled),
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    .ck-subnav
+    button:hover:not(:disabled) {
+    color: var(--ck-text);
+    background: var(--ck-surface-accent);
+    border-color: var(--ck-border-strong);
+  }
+
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(
+      .ck-tool,
+      .ck-subnav button,
+      .ws-size-actions button
+    )[aria-pressed="true"],
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(
+      .ck-tool,
+      .ck-subnav button,
+      .ws-size-actions button
+    )[aria-pressed="true"]:hover,
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    .ws-font-creator__steps
+    button[aria-current="step"],
+  :root[data-studio-theme="dark"] .ck-studio .ws-primary,
+  :root[data-studio-theme="dark"] .ck-studio .ws-primary:hover:not(:disabled),
+  :root[data-studio-theme="dark"] .ck-studio .ck-create-font,
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    .ck-create-font:hover:not(:disabled),
+  :root[data-studio-theme="dark"] .ck-studio .ws-wizard-next,
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    .ws-calligraphy-toggle[aria-pressed="true"] {
+    color: #ffffff;
+    background: var(--ck-accent);
+    border-color: var(--ck-accent);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-status-bar,
+  :root[data-studio-theme="dark"] .ck-paper-bay {
+    color: var(--ck-text-muted);
+    background: var(--ck-surface-soft);
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(
+      .ws-controls,
+      .ws-font-access,
+      .ws-text-panel,
+      .ws-photo-panel,
+      .ws-library,
+      .ck-workflow,
+      .ck-help-bay,
+      .ck-output-bay,
+      .ws-wizard,
+      .ws-lettering-size,
+      .ws-surface-control,
+      .ws-font-finish
+    ) {
+    color: var(--ck-text);
+    background: var(--ck-surface);
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(
+      .ws-controls summary,
+      .ws-photo-panel > summary,
+      .ws-library > summary,
+      .ws-font-access legend,
+      .ws-panel-heading h2,
+      .ck-font-wizard h3,
+      .ck-font-wizard h4,
+      .ck-ink-guide h3,
+      .ck-workflow h2,
+      .ws-preview-top h2
+    ) {
+    color: var(--ck-text-strong);
+  }
+
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(
+      .ws-controls summary,
+      .ws-photo-panel > summary,
+      .ws-library > summary
+    ):hover {
+    background: var(--ck-surface-accent);
+  }
+
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(
+      input:not([type="color"]),
+      select,
+      textarea,
+      .ws-inline-choice label,
+      .ws-font-features > div > label,
+      .ws-file,
+      .ws-photo__file-label,
+      .ws-text-button,
+      .ws-page-nav button,
+      .ws-output button:not(.ws-primary),
+      .ck-font-wizard button:not(.ck-create-font),
+      .ws-save-row button,
+      .ws-backup-actions button,
+      .worksheet-editor-toolbar button,
+      .ws-estimate button
+    ),
+  :root[data-studio-theme="dark"] .ck-chat-compose input {
+    color: var(--ck-text);
+    background: #3a1f2b;
+    border-color: var(--ck-border-strong);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio :is(input, textarea)::placeholder,
+  :root[data-studio-theme="dark"] .ck-chat-compose input::placeholder,
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor .cm-placeholder {
+    color: var(--ck-text-muted);
+    opacity: 1;
+  }
+
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(
+      .ws-choice-effect,
+      .ws-font-gallery,
+      .ws-glyph-browser,
+      .ws-font-advanced,
+      .ws-font-features,
+      .ws-photo__tools,
+      .ws-photo__placement,
+      .ws-photo__apply,
+      .ws-photo__accuracy,
+      .ws-photo__result,
+      .ws-wizard-blank
+    ) {
+    color: var(--ck-text);
+    background: var(--ck-surface-raised);
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-font-grid > button,
+  :root[data-studio-theme="dark"] .ck-studio .ws-presets button,
+  :root[data-studio-theme="dark"] .ck-studio .ws-glyph-browser button {
+    color: var(--ck-text);
+    background: var(--ck-surface-raised);
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-font-grid > button.is-selected,
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    .ws-presets
+    button[aria-pressed="true"] {
+    color: var(--ck-text);
+    background: var(--ck-surface-accent);
+    border-color: #c86a8d;
+    outline-color: #e58bab;
+  }
+
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    :is(
+      .ws-font-sample,
+      .ws-font-card-title,
+      .ws-font-card-title strong,
+      .ws-font-note strong,
+      .ws-font-features strong,
+      .ws-font-features label > span > span
+    ) {
+    color: var(--ck-text-strong);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-font-note {
+    color: var(--ck-text-muted);
+    background: var(--ck-surface-raised);
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-font-finish__actions a {
+    color: var(--ck-text-strong);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor {
+    color: var(--ck-text);
+    background: #1c1218;
+    border-color: var(--ck-border-strong);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor-toolbar,
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor-help,
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor > p {
+    color: var(--ck-text-muted);
+    background: var(--ck-surface-raised);
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor .cm-editor,
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor .cm-scroller,
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor .cm-content {
+    color: var(--ck-text);
+    background: #1c1218;
+    caret-color: #ffcadb;
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .worksheet-editor .cm-activeLine {
+    background: #321e28;
+  }
+
+  :root[data-studio-theme="dark"]
+    .ck-studio
+    .worksheet-editor
+    .cm-selectionBackground {
+    background: #784057;
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-photo__figure {
+    color: var(--ck-text-muted);
+    background: var(--ck-surface-raised);
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-ink-warnings {
+    color: #ffe5ad;
+    background: #362815;
+    border-color: #80643b;
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-error,
+  :root[data-studio-theme="dark"] .ck-studio .ws-photo__error {
+    color: var(--ck-error-text);
+    background: var(--ck-error-surface);
+    border-color: #93585c;
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-notice,
+  :root[data-studio-theme="dark"] .ck-studio .ws-confirm {
+    color: var(--ck-notice-text);
+    background: var(--ck-notice-surface);
+    border-color: var(--ck-border-strong);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ws-preview-mat {
+    background: #2e2028;
+    border-color: var(--ck-border-strong);
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / 35%);
+  }
+
+  /* Preserve the paper as a physical white object in both themes. */
+  :root[data-studio-theme="dark"] .ck-studio :is(.ws-paper, .ws-paper-surface),
+  :root[data-studio-theme="dark"] .ck-paper-dialog .ck-zoom-sheet {
+    color-scheme: light;
+  }
+
+  :root[data-studio-theme="dark"] .ck-paper-dialog {
+    color: var(--ck-text);
+    background: var(--ck-surface);
+    border-color: var(--ck-border-strong);
+    box-shadow: 0 24px 80px var(--ck-shadow);
+  }
+
+  /* biome-ignore lint/style/noDescendingSpecificity: The dialog is outside the studio surface hierarchy. */
+  :root[data-studio-theme="dark"] .ck-paper-dialog button {
+    color: var(--ck-text);
+    background: var(--ck-surface-raised);
+    border-color: var(--ck-border-strong);
+  }
+
+  :root[data-studio-theme="dark"] .ck-paper-dialog::backdrop {
+    background: rgb(8 4 7 / 86%);
+  }
+
+  :root[data-studio-theme="dark"] .ck-zoom-viewport {
+    background: #181015;
+  }
+
+  :root[data-studio-theme="dark"] .ck-flow-canvas {
+    background: #181015;
+    border-color: var(--ck-border);
+  }
+
+  :root[data-studio-theme="dark"] .ck-studio .ck-flow-links button,
+  :root[data-studio-theme="dark"] .ck-flow-canvas .react-flow__node,
+  :root[data-studio-theme="dark"] .ck-flow-canvas .react-flow__controls-button {
+    color: var(--ck-text);
+    background: var(--ck-surface-raised);
+    border-color: var(--ck-border-strong);
+    fill: currentColor;
+  }
+
+  :root[data-studio-theme="dark"] .ck-flow-canvas .react-flow__edge-path {
+    stroke: #c86a8d;
+  }
+
+  :root[data-studio-theme="dark"] .ck-flow-canvas .react-flow__background {
+    color: #614252;
+  }
+
+  :root[data-studio-theme="dark"] .ck-chat-strip {
+    box-shadow: 0 -6px 22px var(--ck-shadow);
+  }
+}

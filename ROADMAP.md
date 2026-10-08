@@ -5,7 +5,7 @@ This roadmap separates working studio features from proposed platform work. See 
 ## Available studio
 
 - Original model viewer, assembly map, source downloads and manifest-derived dimensions.
-- Canonical and extended poem views, browser-local drafts, and an optional explicitly enabled file-backed shared relay.
+- Canonical and extended poem views, browser-local drafts, an optional explicitly enabled file-backed shared relay, and an explicit crew save for one worksheet snapshot per Authentik identity.
 - Large-scale conceptual marking studies and a separate 180 mm print/foil system with digital provenance checks.
 - Making, aluminum-on-wood, packing, and CoLab iani handoff guidance.
 - Six-foot indoor display options and a proposed full-sculpture projection/score plan.

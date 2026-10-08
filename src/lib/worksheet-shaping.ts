@@ -70,6 +70,22 @@ export interface WorksheetShapedRun {
   /** Multiply font-unit paths by this value to obtain millimetres. */
   pathScaleMm: number;
   writingScale: number;
+  /** Independently shaped fonts sharing this line's baseline. */
+  parts?: WorksheetShapedPart[];
+}
+
+export interface WorksheetShapedPart {
+  xMm: number;
+  family: string;
+  run: WorksheetShapedRun;
+}
+
+/** Expose each font run with its measured offset for SVG and PDF output. */
+export function worksheetRunParts(
+  run: WorksheetShapedRun,
+  family: string,
+): WorksheetShapedPart[] {
+  return run.parts ?? [{ xMm: 0, family, run }];
 }
 
 export interface WorksheetShaper {

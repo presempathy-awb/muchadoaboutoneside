@@ -1,3 +1,4 @@
+import { Check, ChevronDown, PenTool } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { WorksheetSettings } from "../../../shared/worksheet";
 import {
@@ -188,26 +189,35 @@ function FeatureSample({
 export function WorksheetFontGallery({
   selected,
   onSelect,
+  initiallyOpen = false,
 }: {
   selected: WorksheetSettings["fontId"];
   onSelect: (fontId: WorksheetBundledFontId) => void;
+  initiallyOpen?: boolean;
 }) {
-  const [opened, setOpened] = useState(false);
+  const [opened, setOpened] = useState(initiallyOpen);
   const [families, setFamilies] = useState<Record<string, string>>({});
   const [loadError, setLoadError] = useState("");
   const loaded = WORKSHEET_FONT_CATALOG.every((entry) => families[entry.id]);
 
   useEffect(() => {
-    if (!opened || loaded) return;
+    const requested = opened
+      ? WORKSHEET_FONT_CATALOG
+      : WORKSHEET_FONT_CATALOG.slice(0, 3);
+    if (requested.every((entry) => families[entry.id])) return;
     let active = true;
     Promise.all(
-      WORKSHEET_FONT_CATALOG.map(
+      requested.map(
         async (entry) =>
           [entry.id, await loadWorksheetFontPreview(entry.id)] as const,
       ),
     )
       .then((loadedFamilies) => {
-        if (active) setFamilies(Object.fromEntries(loadedFamilies));
+        if (active)
+          setFamilies((previous) => ({
+            ...previous,
+            ...Object.fromEntries(loadedFamilies),
+          }));
       })
       .catch(() => {
         if (active) {
@@ -219,14 +229,44 @@ export function WorksheetFontGallery({
     return () => {
       active = false;
     };
-  }, [opened, loaded]);
+  }, [opened, families]);
 
   return (
     <details
       className="ws-font-gallery"
+      open={initiallyOpen || undefined}
       onToggle={(event) => setOpened(event.currentTarget.open)}
     >
-      <summary>Browse script fonts visually</summary>
+      <summary>
+        <span className="ws-font-gallery-heading">
+          <PenTool size={23} aria-hidden="true" />
+          <span>
+            <strong>Find your script</strong>
+            <small>
+              Browse six fonts visually. Compare the curves, joins and rhythm.
+            </small>
+          </span>
+          <ChevronDown
+            className="ws-gallery-chevron"
+            size={21}
+            aria-hidden="true"
+          />
+        </span>
+        <span className="ws-font-miniatures" aria-hidden="true">
+          {WORKSHEET_FONT_CATALOG.slice(0, 3).map((entry) => (
+            <span
+              key={entry.id}
+              style={{
+                fontFamily: families[entry.id]
+                  ? `"${families[entry.id]}"`
+                  : undefined,
+              }}
+            >
+              {families[entry.id] ? "Abc" : "…"}
+            </span>
+          ))}
+        </span>
+      </summary>
       <div className="ws-font-grid" aria-busy={opened && !loaded && !loadError}>
         {WORKSHEET_FONT_CATALOG.map((entry) => (
           <button
@@ -245,19 +285,39 @@ export function WorksheetFontGallery({
               }}
               aria-hidden="true"
             >
-              Flourish &amp; form
+              {families[entry.id] ? "Flourish & form" : "Loading specimen…"}
             </span>
             <span className="ws-font-card-title">
               <strong>{entry.name}</strong>
               <small>{FONT_GROUP[entry.id]}</small>
             </span>
+            <span
+              className="ws-font-alphabet"
+              style={{
+                fontFamily: families[entry.id]
+                  ? `"${families[entry.id]}"`
+                  : undefined,
+              }}
+              aria-hidden="true"
+            >
+              {families[entry.id] ? "Aa Bb Cc · 123 &" : ""}
+            </span>
             <span>{entry.description}</span>
+            <span className="ws-font-selection">
+              {selected === entry.id ? (
+                <>
+                  <Check size={16} aria-hidden="true" /> Selected for your sheet
+                </>
+              ) : (
+                "Use this font →"
+              )}
+            </span>
           </button>
         ))}
       </div>
       {!loaded && !loadError && (
         <p className="ws-hint" role="status">
-          Loading the small Latin previews only while this gallery is open…
+          Loading the small Latin specimens. Full print fonts load when needed…
         </p>
       )}
       {loadError && (
@@ -315,8 +375,9 @@ export function WorksheetFontPicker({
 
 export function WorksheetFontTools({
   settings,
-  font,
+  font: selectedFont,
   customFontName,
+  section,
   onChange,
   onImportFont,
   onInsertGlyph,
@@ -324,10 +385,12 @@ export function WorksheetFontTools({
   settings: WorksheetSettings;
   font?: WorksheetFont;
   customFontName?: string;
+  section?: "size" | "features" | "characters" | "advanced";
   onChange: (patch: Partial<WorksheetSettings>) => void;
   onImportFont: (file?: File) => void;
   onInsertGlyph: (glyph: string) => void;
 }) {
+  const font = selectedFont?.baseFont ?? selectedFont;
   const [featureAdjustment, setFeatureAdjustment] = useState<{
     fontId: WorksheetSettings["fontId"];
     message: string;
@@ -371,215 +434,245 @@ export function WorksheetFontTools({
 
   return (
     <>
-      <label className="ws-file">
-        Import your TTF / OTF font
-        <input
-          type="file"
-          accept=".ttf,.otf"
-          onChange={(event) => {
-            onImportFont(event.target.files?.[0]);
-            event.target.value = "";
-          }}
-        />
-      </label>
-      <p className="ws-hint">
-        Use a font you have permission to embed. Font files stay in this browser
-        and your digital backups. Printed lettering is saved as vector outlines
-        in the PDF.
-      </p>
-
-      <fieldset className="ws-inline-choice">
-        <legend>Size lettering by</legend>
-        <label>
+      <div hidden={Boolean(section) && section !== "advanced"}>
+        <label className="ws-file">
+          Import your TTF / OTF font
           <input
-            type="radio"
-            name="ws-font-size-mode"
-            checked={settings.fontSizeMode === "points"}
-            onChange={() => onChange({ fontSizeMode: "points" })}
+            type="file"
+            accept=".ttf,.otf"
+            onChange={(event) => {
+              onImportFont(event.target.files?.[0]);
+              event.target.value = "";
+            }}
           />
-          Point size
         </label>
-        <label>
-          <input
-            type="radio"
-            name="ws-font-size-mode"
-            checked={settings.fontSizeMode === "xheight"}
-            onChange={() => onChange({ fontSizeMode: "xheight" })}
-          />
-          Physical lowercase height
-        </label>
-      </fieldset>
-
-      {settings.fontSizeMode === "points" ? (
-        <div className="ws-xheight-control">
-          <TypographyNumberField
-            label="Font size (pt)"
-            value={settings.fontSizePt}
-            min={4}
-            max={300}
-            step="any"
-            onChange={(fontSizePt) => onChange({ fontSizePt })}
-          />
-          <button
-            type="button"
-            onClick={() =>
-              onChange({
-                fontSizeMode: "xheight",
-                textXHeightMm: settings.xHeightMm,
-              })
-            }
-          >
-            Match guide x-height
-          </button>
-        </div>
-      ) : (
-        <div className="ws-xheight-control">
-          <TypographyNumberField
-            label="Lowercase height (mm)"
-            value={settings.textXHeightMm}
-            min={0.5}
-            max={50}
-            step={0.1}
-            onChange={(textXHeightMm) => onChange({ textXHeightMm })}
-          />
-          <button
-            type="button"
-            onClick={() =>
-              onChange({
-                fontSizeMode: "xheight",
-                textXHeightMm: settings.xHeightMm,
-              })
-            }
-          >
-            Match guide x-height
-          </button>
-        </div>
-      )}
-      <p className="ws-hint">
-        {resolvedSize
-          ? `${selectedName} resolves to ${resolvedSize.toFixed(1)} pt at this physical size.`
-          : "Add practice text or turn on example printing to load the full font and show its exact physical size."}
-      </p>
-      {featureAdjustment?.fontId === settings.fontId && (
-        <p className="ws-font-warning" role="status">
-          {featureAdjustment.message}
+        <p className="ws-hint">
+          Use a font you have permission to embed. Font files stay in this
+          browser and your digital backups. Printed lettering is saved as vector
+          outlines in the PDF.
         </p>
-      )}
+      </div>
 
-      <label className="ws-field">
-        <span>Practice row pattern</span>
-        <select
-          value={settings.practicePattern}
-          onChange={(event) =>
-            onChange({
-              practicePattern: event.target
-                .value as WorksheetSettings["practicePattern"],
-            })
-          }
-        >
-          <option value="continuous">Example on every filled row</option>
-          <option value="model-trace-blank">Model · faint trace · blank</option>
-        </select>
-      </label>
-      <p className="ws-hint">
-        The three-row pattern gives you a clear model, a lighter pass for
-        tracing, then open space to repeat the movement in your own hand.
-      </p>
-
-      {font && supportedFeatures.length > 0 && (
-        <fieldset className="ws-font-features">
-          <legend>Letterform choices available in this font</legend>
-          <p className="ws-hint">
-            These are real choices contained in the font. The preview and PDF
-            use the same settings.
-          </p>
-          <div>
-            {supportedFeatures.map((tag) => {
-              const checked = featureIsEnabled(settings.fontFeatures, tag);
-              return (
-                <label key={tag}>
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={(event) =>
-                      onChange({
-                        fontFeatures: updateFeatureChoice(
-                          settings.fontFeatures,
-                          tag,
-                          event.target.checked,
-                        ),
-                      })
-                    }
-                  />
-                  <span>
-                    <strong>{featureLabel(tag)}</strong>
-                    <FeatureSample font={font} settings={settings} tag={tag} />
-                  </span>
-                </label>
-              );
-            })}
-          </div>
+      <div hidden={Boolean(section) && section !== "size"}>
+        <fieldset className="ws-inline-choice">
+          <legend>Size lettering by</legend>
+          <label>
+            <input
+              type="radio"
+              name="ws-font-size-mode"
+              checked={settings.fontSizeMode === "points"}
+              onChange={() => onChange({ fontSizeMode: "points" })}
+            />
+            Point size
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="ws-font-size-mode"
+              checked={settings.fontSizeMode === "xheight"}
+              onChange={() => onChange({ fontSizeMode: "xheight" })}
+            />
+            Physical lowercase height
+          </label>
         </fieldset>
-      )}
 
-      {glyphs.length > 0 && (
-        <details className="ws-glyph-browser">
-          <summary>Useful characters in this font</summary>
-          <p className="ws-hint">
-            Every character shown is present in the selected font. Choose one to
-            append it to your practice text. Alternate letterforms stay in the
-            letterform controls above because they are font behavior, not
-            pretend characters.
-          </p>
-          <div>
-            {glyphs.map((glyph) => (
-              <button
-                type="button"
-                key={glyph}
-                title={`Append ${glyph} to practice text`}
-                style={{ fontFamily: font?.family }}
-                onClick={() => onInsertGlyph(glyph)}
-              >
-                {glyph}
-              </button>
-            ))}
+        {settings.fontSizeMode === "points" ? (
+          <div className="ws-xheight-control">
+            <TypographyNumberField
+              label="Font size (pt)"
+              value={settings.fontSizePt}
+              min={4}
+              max={300}
+              step="any"
+              onChange={(fontSizePt) => onChange({ fontSizePt })}
+            />
+            <button
+              type="button"
+              onClick={() =>
+                onChange({
+                  fontSizeMode: "xheight",
+                  textXHeightMm: settings.xHeightMm,
+                })
+              }
+            >
+              Match guide x-height
+            </button>
           </div>
-        </details>
-      )}
+        ) : (
+          <div className="ws-xheight-control">
+            <TypographyNumberField
+              label="Lowercase height (mm)"
+              value={settings.textXHeightMm}
+              min={0.5}
+              max={50}
+              step={0.1}
+              onChange={(textXHeightMm) => onChange({ textXHeightMm })}
+            />
+            <button
+              type="button"
+              onClick={() =>
+                onChange({
+                  fontSizeMode: "xheight",
+                  textXHeightMm: settings.xHeightMm,
+                })
+              }
+            >
+              Match guide x-height
+            </button>
+          </div>
+        )}
+        <p className="ws-hint">
+          {resolvedSize
+            ? `${selectedName} resolves to ${resolvedSize.toFixed(1)} pt at this physical size.`
+            : "Add practice text or turn on example printing to load the full font and show its exact physical size."}
+        </p>
+        {featureAdjustment?.fontId === settings.fontId && (
+          <p className="ws-font-warning" role="status">
+            {featureAdjustment.message}
+          </p>
+        )}
 
-      <details className="ws-font-advanced">
-        <summary>Advanced text shaping</summary>
         <label className="ws-field">
-          <span>Shaping engine</span>
+          <span>Practice row pattern</span>
           <select
-            value={settings.shapingEngine}
+            value={settings.practicePattern}
             onChange={(event) =>
               onChange({
-                shapingEngine: event.target
-                  .value as WorksheetSettings["shapingEngine"],
+                practicePattern: event.target
+                  .value as WorksheetSettings["practicePattern"],
               })
             }
           >
-            <option value="fontkit">Fontkit · fast Latin calligraphy</option>
-            <option value="harfbuzz">HarfBuzz · broader script support</option>
+            <option value="continuous">Example on every filled row</option>
+            <option value="model-trace-blank">
+              Model · faint trace · blank
+            </option>
           </select>
         </label>
         <p className="ws-hint">
-          Fontkit is the smaller, faster default for these Latin calligraphy
-          fonts. HarfBuzz loads only when selected and can shape more complex
-          writing systems. Both use the same size and letterform choices in the
-          preview and exported PDF.
+          The three-row pattern gives you a clear model, a lighter pass for
+          tracing, then open space to repeat the movement in your own hand.
         </p>
-      </details>
+      </div>
 
-      <aside className="ws-font-note">
-        <strong>Use these as spacing and rhythm references.</strong>
-        <span>
-          Decorative type cannot teach pressure, stroke order, or pen angle. For
-          Copperplate study, pair the model–trace–blank pattern with a trusted
-          exemplar and the transfer techniques below.
-        </span>
-      </aside>
+      <div hidden={Boolean(section) && section !== "features"}>
+        {font && supportedFeatures.length > 0 && (
+          <fieldset className="ws-font-features">
+            <legend>Letterform choices available in this font</legend>
+            <p className="ws-hint">
+              These are real choices contained in the font. The preview and PDF
+              use the same settings.
+            </p>
+            <div>
+              {supportedFeatures.map((tag) => {
+                const checked = featureIsEnabled(settings.fontFeatures, tag);
+                return (
+                  <label key={tag}>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={(event) =>
+                        onChange({
+                          fontFeatures: updateFeatureChoice(
+                            settings.fontFeatures,
+                            tag,
+                            event.target.checked,
+                          ),
+                        })
+                      }
+                    />
+                    <span>
+                      <strong>{featureLabel(tag)}</strong>
+                      <FeatureSample
+                        font={font}
+                        settings={settings}
+                        tag={tag}
+                      />
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+        {section === "features" && supportedFeatures.length === 0 && (
+          <p className="ws-hint">
+            Turn on calligraphy or add words to load the font’s letterform
+            choices.
+          </p>
+        )}
+      </div>
+
+      <div hidden={Boolean(section) && section !== "characters"}>
+        {glyphs.length > 0 && (
+          <details className="ws-glyph-browser">
+            <summary>Useful characters in this font</summary>
+            <p className="ws-hint">
+              Every character shown is present in the selected font. Choose one
+              to append it to your practice text. Alternate letterforms stay in
+              the letterform controls above because they are font behavior, not
+              pretend characters.
+            </p>
+            <div>
+              {glyphs.map((glyph) => (
+                <button
+                  type="button"
+                  key={glyph}
+                  title={`Append ${glyph} to practice text`}
+                  style={{ fontFamily: font?.family }}
+                  onClick={() => onInsertGlyph(glyph)}
+                >
+                  {glyph}
+                </button>
+              ))}
+            </div>
+          </details>
+        )}
+        {section === "characters" && glyphs.length === 0 && (
+          <p className="ws-hint">
+            Turn on calligraphy or add words to load the font’s supported
+            characters.
+          </p>
+        )}
+      </div>
+
+      <div hidden={Boolean(section) && section !== "advanced"}>
+        <details className="ws-font-advanced">
+          <summary>Advanced text shaping</summary>
+          <label className="ws-field">
+            <span>Shaping engine</span>
+            <select
+              value={settings.shapingEngine}
+              onChange={(event) =>
+                onChange({
+                  shapingEngine: event.target
+                    .value as WorksheetSettings["shapingEngine"],
+                })
+              }
+            >
+              <option value="fontkit">Fontkit · fast Latin calligraphy</option>
+              <option value="harfbuzz">
+                HarfBuzz · broader script support
+              </option>
+            </select>
+          </label>
+          <p className="ws-hint">
+            Fontkit is the smaller, faster default for these Latin calligraphy
+            fonts. HarfBuzz loads only when selected and can shape more complex
+            writing systems. Both use the same size and letterform choices in
+            the preview and exported PDF.
+          </p>
+        </details>
+
+        <aside className="ws-font-note">
+          <strong>Use these as spacing and rhythm references.</strong>
+          <span>
+            Decorative type cannot teach pressure, stroke order, or pen angle.
+            For Copperplate study, pair the model–trace–blank pattern with a
+            trusted exemplar and the transfer techniques below.
+          </span>
+        </aside>
+      </div>
     </>
   );
 }

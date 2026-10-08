@@ -54,7 +54,16 @@ test("a paused render loop settles the fade and commits its newest queued previe
     expect(scene.meshes.length).toBe(firstMeshes.length + secondMeshes.length);
     // No render, observer notification, visibility change, or reduced-motion
     // toggle may be needed to release the queued newest complete preview.
-    await Bun.sleep(850);
+    // Observe both chained deadlines; a busy event loop can start the second
+    // fade after a fixed sleep has already elapsed.
+    const settleDeadline = performance.now() + 3_000;
+    while (
+      (committed.at(-1) !== latest ||
+        scene.meshes.length !== firstMeshes.length) &&
+      performance.now() < settleDeadline
+    ) {
+      await Bun.sleep(10);
+    }
     expect(committed.at(-1)).toBe(latest);
     expect(committed.includes(superseded)).toBe(false);
     expect(scene.meshes.length).toBe(firstMeshes.length);

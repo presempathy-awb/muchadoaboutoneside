@@ -16,7 +16,7 @@ Poem and website created with help from Claude and ChatGPT.
 
 Start with the [project intent](INTENT.md), [roadmap](ROADMAP.md), [recorded decisions](docs/decisions.md), and [development runbook](docs/runbook/development.md). Contributions follow [CONTRIBUTING.md](CONTRIBUTING.md) and the [conduct policy](CODE_OF_CONDUCT.md); current data behavior and reporting limits are described in [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md). Notable changes are recorded in [CHANGELOG.md](CHANGELOG.md). The [instruction runbook](docs/runbook/instructions.md) explains managed agent guidance and its verification.
 
-Today's studio works without an account. Poem drafts are browser-local by default, with an optional explicitly enabled publicly editable relay. Accounts, separate projects/organizations, access-controlled uploads, project URLs, and procurement integration are future platform proposals. The new repository setup does not activate those services.
+Today's studio works without an account. Poem drafts are browser-local by default, with an optional explicitly enabled publicly editable relay. The worksheet studio can explicitly save one crew copy to the current Authentik identity through the crew board. Separate projects/organizations, access-controlled uploads, project URLs, and procurement integration remain future platform proposals.
 
 ## Make something of your own
 
@@ -35,9 +35,15 @@ Project-authored code, poem, designs, artwork, fabrication files, and documentat
 
 The site carries two wordings of the poem. The **extended** forty-line version (2026-09-15), which adds the clerk's innfinite, the herald's writ, the tigerstriped moon, and the wyrm's hourglass eight, is the default. The **canonical** seventeen-line version is the wording every marking master, foil kit, and fabrication file was generated from, and the sculpture preview draws the extended wording live in the substitute script until its own artwork exists. A picker in the top bar switches the whole site: the reading text and 3D foil preview on the home page, the lettering downloads on the instructions and projection pages, and the calligraphy brief with its copperplate template sheets.
 
+Each finished poem also has a reading page under `/poems`: `/poems/much-ado-about-one-side` (the extended wording), `/poems/right-side-out`, `/poems/understudy` and `/poems/turncoats`, each with the text, who speaks, where the wording stands, and a plain-text download. `shared/poems.ts` lists them and a test holds each page to its archival text under `source/poem/`.
+
 Each version has its own files under `public/editions/` (source text, editable UV layout study, and a poem sheet set in the substitute script) and `public/guide/` (the printable lettering brief). `shared/poem.ts` defines the versions; `bun run generate:inscription` and `bun run generate:guide` regenerate the files for all of them. The extended version is previewed live in the browser; no outlined laser artwork exists for it yet.
 
 The public repository includes the working website, generators, tests, and original model assets. Unpublished reference material, browser-retrieval captures, private Git history, and host-specific deployment configuration remain in the maintainer's private archive. The complete reference images explicitly approved on 2026-09-18 are published in the reference gallery.
+
+## Turncoat slough poems
+
+`source/poem/` also holds candidate inscriptions for the shed skin of the Turncoat sculpture study (2026-10-08): `turncoat-right-side-out.txt` is the default, its first draft is kept beside it, `turncoat-understudy.txt` is a second candidate in a different voice, and `turncoat-turncoats.txt` combines the two into one poem in two voices. They are poem texts with reading pages under `/poems`, not site versions, and no scale map or word budget exists yet, so their fit is unverified. See [Turncoat slough poems](docs/turncoat-poems.md) for the inscription notes, alternate endings and the facts behind the images.
 
 ## Poem editor
 
@@ -75,7 +81,19 @@ The production server serves the Vite build and the API together at [127.0.0.1:3
 - **Assembly map** (`/assembly`): React Flow shows the seven named component groups. Drag nodes, select a component, and open it in the studio. Edges represent model membership, not engineering connections or construction order.
 - **Files & source** (`/archive`): download each original file and inspect its SHA-256 checksum. The standalone HTML viewer is served as an attachment.
 - **Calligraphy guide** (`/calligraphy`, with `/calligraphy/steps`, `/calligraphy/templates`, `/calligraphy/quick`, and `/calligraphy/details`): the hand-lettering brief for Jill in five chapters, with a downloadable printable PDF (`/guide/calligraphy-guide.pdf`) that contains the same content plus Letter-landscape template sheets.
-- **Copperplate practice studio** (`/calligraphy/practice`): a live, horizontal-first worksheet maker with 24 evenly spaced blank rules on US Letter landscape by default. Choose paper dimensions, margins, exact spacing, line zones, slants and grids, guide colors/opacity/weight, pagination, text font/size/color/alignment, and paper, ink and tool notes. The separate Yjs writing panel starts empty and can load either poem wording, estimate rows and sheets, and preserve manual breaks. Import a local reference photo for sizing calibration (a known measurement is required; it does not OCR), save named templates and local autosave backups, and export either a visible print PDF or an explicitly editable template PDF. Print at Actual size / 100%. The studio includes practical underlay, light-pad, vellum, graphite-transfer and materials-testing guidance. The standalone `/guide/copperplate-maker.html` remains a portable basic alternative; `/guide/copperplate-24-lines.pdf` is ready to print.
+- **Copperplate practice studio** (`/calligraphy/practice`): a live, horizontal-first worksheet maker with 24 evenly spaced blank rules on US Letter landscape by default. Choose paper dimensions, margins, exact spacing, line zones, slants and grids, guide colors/opacity/weight, pagination, text font/size/color/alignment, and paper, ink and tool notes. The separate Yjs writing panel starts empty and can load either poem wording, estimate rows and sheets, and preserve manual breaks. Import a local reference photo for sizing calibration (a known measurement is required; it does not OCR), save named templates and local autosave backups, explicitly save a crew copy to the signed-in Authentik identity, and export either a visible print PDF or an explicitly editable template PDF. The crew sign-in link opens in a new tab so the anonymous browser draft stays in place. Print at Actual size / 100%. The studio includes practical underlay, light-pad, vellum, graphite-transfer and materials-testing guidance. The standalone `/guide/copperplate-maker.html` remains a portable basic alternative; `/guide/copperplate-24-lines.pdf` is ready to print.
+
+The practice studio's **Wizard quiz mode** offers six purpose-led paths: practice sheets, poems, photo sizing, font creation, ink tests, and learning. It edits the same browser draft as the full studio. The Workflow map follows the same step definitions and exports Mermaid; [the path diagrams](docs/calligraphy-paths.md) show each route. Knowledge & guides offers 43 sourced notes and two complete downloadable public-domain books, with selected book passages available to the server-side AI retrieval.
+
+Both modes offer Letter, Legal, A3, A4, A5, A6, ISO B5, Half Letter, Tabloid/Ledger and custom dimensions, with the resulting writing area and row count. Additional formats use the existing custom-dimension fields in saved drafts. Nine practice templates include warm-ups, Copperplate proportions, italic and freehand zones, two grid sizes and an unguided sheet; printed lettering can use consecutive examples or model/trace/blank groups. Optional ink and paper-surface choices include source-linked guidance about tool compatibility, water resistance, opacity and underlay visibility. Materials are saved notes, not a drying-time or ink-flow simulation, and do not automatically change the printed colours or geometry.
+
+The preview has a Calligraphy on/off toggle and an editor beside the sheet. Turning calligraphy on in an empty draft loads complete opening lines from the default poem that fit the selected paper, font, page count and practice pattern. “Load poem that fits” can replace existing words after confirmation. The fit uses the same measured lettering and physical-page validation as PDF export; it preserves original wording and reports how many poem lines were included. Turning calligraphy off keeps the text. Screen transitions respect reduced-motion preferences and do not animate printed output.
+
+**Special words** in the writing panel gives names, dedications and occasion phrases one separate bundled script at 50–200% of the main text size. Up to eight case-sensitive phrases can share the treatment, saved with the draft and editable exports. Complete-word matching, line wrapping, preview and PDF use the same measured lettering; see [font behavior and limits](docs/calligraphy-studio.md#fonts-and-physical-lettering).
+
+The font browser shows three small specimens before opening, then six roomy comparison cards with real font samples and explicit selection labels. Height and width sliders beside the sheet control physical lowercase height and horizontal proportions independently; “Match guide height” and “Natural width” restore useful reference values. Printer paper is the default screen surface, with a quick vellum/tracing switch. The material choice stays in saved notes; simulated screen translucency is not printed into the PDF.
+
+Photo sizing is manual by default. After importing a straight-on sample and calibrating a known distance, an explicit “Analyze photo on presvd1” action can send the re-encoded image and calibration to the server's vision model. The app does not store that upload server-side. Review estimated lowercase height, baseline spacing, letter width, confidence and uncertainty before applying them to plain rows and the selected font. Low-confidence output cannot be applied. This estimates proportions, not a handwriting font or an OCR transcription; verify with a ruler on a test print. The action is available only when the server enables `WORKSHEET_VISION_URL`; see the [calligraphy studio guide](docs/calligraphy-studio.md) for its workflow.
 
 Regenerate the default practice sheet and offline maker with `bun run generate:copperplate`;
 verify they match their source with `bun run generate:copperplate --check`.
@@ -192,6 +210,32 @@ The four files Andrew supplied from Downloads are preserved byte for byte in `so
 
 **The Claude conversation transcript remains unimported.** The public page returned an application shell and the snapshot endpoint returned a browser-verification challenge. Retrieval evidence remains in the private archive. The supplied artifacts do not establish that every file or conversation in the surrounding Claude Project has been recovered.
 
+The dedicated **Hot Goddess Hot Pen** studio uses `cockpit.html` for
+`hotgoddesshotpen.muchadoaboutoneside.com`, sharing the backend with a targeted
+TanStack/Vite/Tailwind/shadcn bundle and a React Flow practice map. In local
+development open `/cockpit.html`. Its focused tools, persistent paper bay and
+wizard use the existing worksheet draft and export functions. The paper canvas
+fits the viewport with a left rail and subsection selectors. The desktop Columns
+chooser offers two, three or four work bays, adding a poem editor and studio notes
+when space permits. Drag column titles to reorder and dividers to resize; arrow
+keys and move buttons provide keyboard alternatives. Light/dark mode and the
+column preference are saved locally. The preview stays bounded to paper width;
+click it to open a nearly full-screen zoom dialog. Phones use a tool selector
+above the sheet and controls. Templates, Make your own font and At the mixing
+table are main destinations. The font wizard guides upload, calibration, optional registered letter rounds
+and the FontForge / Calligraphr font handoff. Focus paper expands the preview.
+Bottom Studio
+chat uses configurable Qwen with a sourced repository knowledge collection and
+optional, explicitly enabled web research. Suggested settings and a requirements
+wizard combine bounded AI advice with deterministic physical layout, review,
+Apply and Undo. The model connection uses the existing loopback Ollama service;
+queue chat registration and a scoped search-provider credential remain separate
+operator setup. At the mixing table includes manufacturer-linked mixing and test advice.
+Browser drafts are
+specific to each origin; export a studio backup to move one between hostnames.
+See [the calligraphy studio guide](docs/calligraphy-studio.md) for photo sizing,
+font finishing and the prepared, currently disabled named glyph-round consumer.
+
 ## Validation
 
 ```sh
@@ -201,7 +245,7 @@ bun run smoke
 bun run test:browser
 ```
 
-`check` runs Biome's recommended rules, TypeScript 7, Bun tests, source-asset verification, generated-inscription verification, and generated-guide verification. Tests cover metadata, original download bytes, response headers, unknown-file rejection, production SPA routing, exact poem wording, the lettering brief's row plan and proportions, closed reading paths, valid mesh triangles, welded watertightness, source coordinate bounds, and print artifact provenance. Dimension tests check source-inch conversion, print-axis mapping, paper orientation, and feet-and-inches precision. Instruction tests verify the making and packing content and download targets. Laser tests verify geometry and poem provenance, source-triangle coverage, physical edge lengths against the actual preview mesh, reciprocal edge labels, clipped marking vertices, explicit millimeter units, and artifact/ZIP-entry hashes. Asset verification checks SHA-256, GLB structure and triangle totals, and binary STL size/count. `smoke` starts the production app on an ephemeral loopback port and checks all seventeen routes, built entry assets, metadata, original downloads, inscription/font downloads, laser archives, the STL and GLB, private-source rejection, and API 404 behavior over HTTP. These checks do not substitute for browser/WebGL visual review or a physical fabrication test.
+`check` runs Biome's recommended rules, TypeScript 7, Bun tests, source-asset verification, generated-inscription verification, and generated-guide verification. Tests cover metadata, original download bytes, response headers, unknown-file rejection, production SPA routing, exact poem wording, the lettering brief's row plan and proportions, closed reading paths, valid mesh triangles, welded watertightness, source coordinate bounds, and print artifact provenance. Dimension tests check source-inch conversion, print-axis mapping, paper orientation, and feet-and-inches precision. Instruction tests verify the making and packing content and download targets. Laser tests verify geometry and poem provenance, source-triangle coverage, physical edge lengths against the actual preview mesh, reciprocal edge labels, clipped marking vertices, explicit millimeter units, and artifact/ZIP-entry hashes. Asset verification checks SHA-256, GLB structure and triangle totals, and binary STL size/count. `smoke` starts the production app on an ephemeral loopback port and checks all twenty-two routes, built entry assets, metadata, original downloads, inscription/font downloads, laser archives, the STL and GLB, private-source rejection, and API 404 behavior over HTTP. These checks do not substitute for browser/WebGL visual review or a physical fabrication test.
 
 `test:browser` uses isolated Chrome to exercise rendered previews, proof zoom, resizing and persistence, enlargement at fixed type size, font changes, contrast checks, and mobile layout. Shape-control regressions exercise remapping, close-set packing, the solid substrate, and anonymous reload persistence. Body-control regressions cover linked and independent thickness edits, preserved physical settings, deformed measurements, reload durability, and cache identity; see the harness checks for the exact current coverage. See [browser testing](docs/browser-testing.md) for headless and deployed-site commands.
 

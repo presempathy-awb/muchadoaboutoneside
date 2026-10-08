@@ -75,6 +75,93 @@ describe("project API", () => {
   });
 });
 
+describe("shared Ollama admission", () => {
+  test("assistant and photo sizing cannot start concurrent upstream workloads", async () => {
+    let finishAssistant: ((response: Response) => void) | undefined;
+    let assistantCalls = 0;
+    let visionCalls = 0;
+    const aiApp = createApp({
+      calligraphyAssistant: {
+        url: "http://127.0.0.1:11434",
+        models: ["qwen3.5:27b"],
+        searchToken: "",
+        fetchImpl: async () => {
+          assistantCalls++;
+          return new Promise<Response>((resolve) => {
+            finishAssistant = resolve;
+          });
+        },
+      },
+      worksheetVision: {
+        url: "http://127.0.0.1:11434",
+        models: ["qwen3.5:27b"],
+        fetchImpl: async () => {
+          visionCalls++;
+          return Response.json({});
+        },
+      },
+    });
+    const assistantRequest = new Request(
+      "http://local/api/worksheet/assistant",
+      {
+        method: "POST",
+        headers: {
+          origin: "http://127.0.0.1:5173",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          kind: "chat",
+          question: "How should I practise italic?",
+          model: "qwen3.5:27b",
+          web: false,
+          history: [],
+        }),
+      },
+    );
+    const first = aiApp.handle(assistantRequest);
+    for (let count = 0; count < 30 && !finishAssistant; count++)
+      await Promise.resolve();
+    expect(assistantCalls).toBe(1);
+
+    const png = Buffer.alloc(32);
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]).copy(png);
+    png.writeUInt32BE(200, 16);
+    png.writeUInt32BE(100, 20);
+    const vision = await aiApp.handle(
+      new Request("http://local/api/worksheet/vision", {
+        method: "POST",
+        headers: {
+          origin: "http://127.0.0.1:5173",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          dataUrl: `data:image/png;base64,${png.toString("base64")}`,
+          pixelWidth: 200,
+          pixelHeight: 100,
+          mmPerPixel: 0.2,
+        }),
+      }),
+    );
+    expect(vision.status).toBe(429);
+    expect(visionCalls).toBe(0);
+
+    finishAssistant?.(
+      Response.json({
+        model: "qwen3.5:27b",
+        done: true,
+        message: {
+          content: JSON.stringify({
+            answer: "Practise slow, separate strokes.",
+            citations: [],
+            advice: { xHeightMm: null, rowGapMm: null },
+          }),
+        },
+      }),
+    );
+    expect((await first).status).toBe(200);
+  });
+});
+
 describe("production static site", () => {
   let staticDir: string;
 
@@ -83,6 +170,10 @@ describe("production static site", () => {
     await writeFile(
       join(staticDir, "index.html"),
       "<!doctype html><title>fixture app</title>",
+    );
+    await writeFile(
+      join(staticDir, "cockpit.html"),
+      "<!doctype html><title>calligraphy fixture</title>",
     );
     await writeFile(join(staticDir, "app.js"), "globalThis.fixture = true;");
     await writeFile(join(staticDir, "guide.html"), "<h1>stable guide</h1>");
@@ -114,6 +205,36 @@ describe("production static site", () => {
 
   afterAll(async () => {
     await rm(staticDir, { recursive: true, force: true });
+  });
+
+  test("the calligraphy hostname selects its targeted SPA while sharing the existing API", async () => {
+    const app = createApp({ staticDir });
+    const cockpit = await app.handle(
+      new Request("https://hotgoddesshotpen.muchadoaboutoneside.com/", {
+        headers: { host: "hotgoddesshotpen.muchadoaboutoneside.com" },
+      }),
+    );
+    expect(await cockpit.text()).toContain(
+      "<title>calligraphy fixture</title>",
+    );
+    const original = await app.handle(
+      new Request("https://muchadoaboutoneside.com/", {
+        headers: { host: "muchadoaboutoneside.com" },
+      }),
+    );
+    expect(await original.text()).toContain("<title>fixture app</title>");
+    const health = await app.handle(
+      new Request(
+        "https://hotgoddesshotpen.muchadoaboutoneside.com/api/health",
+      ),
+    );
+    expect(await health.json()).toEqual({ status: "ok" });
+    const pipeline = await app.handle(
+      new Request(
+        "https://hotgoddesshotpen.muchadoaboutoneside.com/api/worksheet/glyph-jobs",
+      ),
+    );
+    expect(await pipeline.json()).toEqual({ available: false, profiles: [] });
   });
 
   test("only caches a curated TTF immutably when its exact digest is requested", async () => {

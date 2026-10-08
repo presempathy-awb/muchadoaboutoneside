@@ -5,6 +5,7 @@ import {
   isWorksheetBundledFontId,
   worksheetFontDefinition,
 } from "../../shared/worksheet-font-catalog";
+import { specialWordPhrases } from "../../shared/worksheet-special-words";
 import {
   createFontkitShaper,
   createHarfBuzzShaper,
@@ -23,6 +24,7 @@ const MAX_CACHED_RUNS_PER_FONT = 64;
 const MAX_CACHED_RUN_BYTES_PER_FONT = 4 * 1024 * 1024;
 
 export interface WorksheetFont {
+  baseFont?: WorksheetFont;
   id: string;
   /** A browser-ready CSS font-family value for the live preview. */
   family: string;
@@ -563,6 +565,27 @@ async function cacheFont(cacheKey: string, load: () => Promise<LoadedFont>) {
 export async function loadWorksheetFont(
   snapshot: WorksheetSnapshot,
 ): Promise<WorksheetFont> {
+  const phrases = specialWordPhrases(snapshot.settings.specialWords);
+  if (phrases.length) {
+    const [{ withSpecialWordFont }, base, accent] = await Promise.all([
+      import("./worksheet-special-lettering"),
+      loadSingleWorksheetFont(snapshot),
+      loadSingleWorksheetFont({
+        ...snapshot,
+        settings: {
+          ...snapshot.settings,
+          fontId: snapshot.settings.specialFontId,
+        },
+      }),
+    ]);
+    return withSpecialWordFont(base, accent, phrases);
+  }
+  return loadSingleWorksheetFont(snapshot);
+}
+
+async function loadSingleWorksheetFont(
+  snapshot: WorksheetSnapshot,
+): Promise<WorksheetFont> {
   const { fontId, shapingEngine } = snapshot.settings;
   if (fontId === "custom" && !snapshot.customFont) {
     throw new Error(
@@ -622,7 +645,7 @@ export async function disposeWorksheetTypography(): Promise<void> {
 }
 
 export function worksheetFontBacking(font: WorksheetFont): FontBacking {
-  const backing = backingByFont.get(font);
+  const backing = backingByFont.get(font.baseFont ?? font);
   if (!backing) {
     throw new TypeError("Use a font returned by loadWorksheetFont().");
   }

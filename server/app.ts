@@ -2,18 +2,32 @@ import { stat } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { Elysia } from "elysia";
 import { WORKSHEET_FONT_CATALOG } from "../shared/worksheet-font-catalog";
+import { CALLIGRAPHY_COCKPIT_HOST } from "../shared/worksheet-host";
 import {
   type BrowserRelayOptions,
   createBrowserRelayRoute,
 } from "./browser-relay";
+import {
+  type CalligraphyAssistantOptions,
+  createCalligraphyAssistantRoute,
+} from "./calligraphy-assistant";
 import { createCollab } from "./collab";
 import type { WebModule } from "./modules";
+import { createOllamaAdmission } from "./ollama-admission";
 import { assetNames, project } from "./project";
 import { createTelemetryHooks, type TelemetryOptions } from "./telemetry";
 import {
   createWorksheetAccountRoutes,
   type WorksheetAccountStore,
 } from "./worksheet-account";
+import {
+  createWorksheetPipelineRoute,
+  type WorksheetPipelineOptions,
+} from "./worksheet-pipeline";
+import {
+  createWorksheetVisionRoute,
+  type WorksheetVisionOptions,
+} from "./worksheet-vision";
 
 export interface AppOptions {
   staticDir?: string;
@@ -28,6 +42,9 @@ export interface AppOptions {
   browserRelay?: BrowserRelayOptions;
   /** Crew worksheet copies. Absent, the account route is not mounted. */
   worksheetAccounts?: WorksheetAccountStore;
+  worksheetVision?: WorksheetVisionOptions;
+  worksheetPipeline?: WorksheetPipelineOptions;
+  calligraphyAssistant?: CalligraphyAssistantOptions;
 }
 
 const defaultAssetDir = resolve(import.meta.dir, "../source/assets");
@@ -107,6 +124,13 @@ async function isFile(path: string) {
   }
 }
 
+function requestHostname(request: Request): string | undefined {
+  return (request.headers.get("host") ?? new URL(request.url).host)
+    .split(":")[0]
+    ?.toLowerCase()
+    .replace(/\.$/, "");
+}
+
 export function createApp(options: AppOptions = {}) {
   const assetDir = resolve(options.assetDir ?? defaultAssetDir);
   const configuredStaticDir =
@@ -124,13 +148,70 @@ export function createApp(options: AppOptions = {}) {
   const modules = options.modules ?? [];
   const telemetry = createTelemetryHooks(options.telemetry);
   const browserRelay = createBrowserRelayRoute(options.browserRelay);
+  const ollamaAdmission = createOllamaAdmission();
+  const worksheetVision = createWorksheetVisionRoute({
+    ...options.worksheetVision,
+    admission: ollamaAdmission,
+  });
+  const worksheetPipeline = createWorksheetPipelineRoute(
+    options.worksheetPipeline,
+  );
+  const assistant = createCalligraphyAssistantRoute({
+    ...options.calligraphyAssistant,
+    admission: ollamaAdmission,
+  });
   const app = new Elysia()
+    .onRequest(({ request }) => {
+      // The cockpit is a public entry to the same identity-aware backend.
+      if (requestHostname(request) === CALLIGRAPHY_COCKPIT_HOST)
+        for (const name of Array.from(request.headers.keys()))
+          if (name.startsWith("x-authentik-")) request.headers.delete(name);
+    })
     .onRequest(telemetry.onRequest)
     .onError(telemetry.onError)
     .onAfterResponse(telemetry.onAfterResponse)
     .use(collab.plugin)
     .use(new Elysia({ name: "modules" }).use(modules.map((m) => m.plugin)))
     .post("/api/telemetry/relay", ({ request }) => browserRelay.handle(request))
+    .get("/api/worksheet/assistant", () =>
+      Response.json(assistant.capability, {
+        headers: { "cache-control": "no-store" },
+      }),
+    )
+    .post(
+      "/api/worksheet/assistant",
+      ({ request }) => assistant.handle(request),
+      { parse: "none" },
+    )
+    .get("/api/worksheet/glyph-jobs", () =>
+      Response.json(worksheetPipeline.capability, {
+        headers: { "cache-control": "no-store" },
+      }),
+    )
+    .post(
+      "/api/worksheet/glyph-jobs",
+      ({ request }) => worksheetPipeline.submit(request),
+      { parse: "none" },
+    )
+    .post(
+      "/api/worksheet/glyph-jobs/query",
+      ({ request }) => worksheetPipeline.query(request),
+      { parse: "none" },
+    )
+    .get("/api/worksheet/vision", () =>
+      Response.json(
+        {
+          available: worksheetVision.enabled,
+          models: worksheetVision.enabled ? worksheetVision.models : [],
+        },
+        { headers: { "cache-control": "no-store" } },
+      ),
+    )
+    .post(
+      "/api/worksheet/vision",
+      ({ request }) => worksheetVision.handle(request),
+      { parse: "none" },
+    )
     .use(
       options.worksheetAccounts
         ? createWorksheetAccountRoutes(options.worksheetAccounts)
@@ -160,7 +241,7 @@ export function createApp(options: AppOptions = {}) {
       const { pathname, searchParams } = new URL(request.url);
       if (pathname === "/api" || pathname.startsWith("/api/"))
         return notFound();
-      const host = request.headers.get("host")?.split(":")[0];
+      const host = requestHostname(request);
       const root = modules.find((m) => m.host === host)?.staticDir ?? staticDir;
       if (!root) return notFound();
       const requestedPath = safeStaticPath(root, pathname);
@@ -179,7 +260,10 @@ export function createApp(options: AppOptions = {}) {
 
       if (extname(pathname)) return notFound("Static asset is unavailable");
 
-      const indexPath = resolve(root, "index.html");
+      const indexPath = resolve(
+        root,
+        host === CALLIGRAPHY_COCKPIT_HOST ? "cockpit.html" : "index.html",
+      );
       return (await isFile(indexPath))
         ? fileResponse(indexPath)
         : notFound("Site build is unavailable");

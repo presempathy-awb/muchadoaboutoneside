@@ -65,12 +65,14 @@ export function PoemVersionNameField({
 export function PoemVersionControls({
   text,
   onLoad,
+  onRequestLoad,
   disabled = false,
   loadSelected = true,
   onScanImported,
 }: {
   text: string;
   onLoad(text: string, version: PoemVersion): void;
+  onRequestLoad?(text: string, version: PoemVersion, apply: () => void): void;
   disabled?: boolean;
   loadSelected?: boolean;
   onScanImported?(scan: CalligraphyScan): void;
@@ -222,6 +224,18 @@ export function PoemVersionControls({
     }
   }
 
+  function requestLoad(version: PoemVersion) {
+    const source = draftSource(version);
+    const apply = () => {
+      setImporting(false);
+      setVersionId(version.id);
+      onLoad(source, version);
+      setNotice(`Loaded “${version.label}”.`);
+    };
+    if (onRequestLoad) onRequestLoad(source, version, apply);
+    else apply();
+  }
+
   return (
     <section className="poem-version-controls" aria-label="Poem versions">
       <div className="poem-version-fields">
@@ -235,10 +249,7 @@ export function PoemVersionControls({
                 (version) => version.id === event.target.value,
               );
               if (!selected) return;
-              setImporting(false);
-              setVersionId(selected.id);
-              onLoad(draftSource(selected), selected);
-              setNotice(`Loaded “${selected.label}”.`);
+              requestLoad(selected);
             }}
           >
             {versions.map((version) => (
@@ -281,11 +292,7 @@ export function PoemVersionControls({
           <button
             type="button"
             disabled={unavailable}
-            onClick={() => {
-              setImporting(false);
-              onLoad(draftSource(base), base);
-              setNotice(`Loaded “${base.label}”.`);
-            }}
+            onClick={() => requestLoad(base)}
           >
             Load selected wording
           </button>

@@ -64,7 +64,7 @@ try {
       await Bun.sleep(500);
     }
     if (!ready) throw new Error('Container API did not become healthy');
-    for (const path of ['/', '/instructions', '/six-foot', '/projection']) {
+    for (const path of ['/', '/instructions', '/six-foot', '/projection', '/poems']) {
       const r=await fetch(origin+path);
       if(!r.ok || !(await r.text()).includes('<div id="root"></div>')) throw new Error('Route failed: '+path);
     }

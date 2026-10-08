@@ -1,0 +1,492 @@
+@media screen {
+  .ck-display-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ck-column-choice {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  .ck-studio .ck-column-choice select {
+    min-height: 44px;
+    max-width: 210px;
+    padding: 8px;
+    border-radius: 6px;
+  }
+  .ck-studio .ck-theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 44px;
+    padding: 8px 12px;
+    background: #ffe4ed;
+    color: #62233e;
+    border: 1px solid #efadbf;
+    border-radius: 6px;
+  }
+  .ck-dock {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--ck-canvas);
+  }
+  .ck-dock > [hidden] {
+    display: none;
+  }
+  .ck-dock-panel {
+    flex-basis: 0;
+    min-width: 20rem;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--ck-surface);
+    color: var(--ck-text);
+  }
+  .ck-dock-panel.ck-paper-panel {
+    max-width: 66rem;
+    background: var(--ck-surface-soft);
+  }
+  .ck-panel-handle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 8px;
+    gap: 2px;
+    border-bottom: 1px solid var(--ck-border);
+    background: var(--ck-surface-soft);
+  }
+  .ck-studio .ck-panel-handle button {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: 0;
+    border-radius: 4px;
+    color: var(--ck-text-muted);
+    background: transparent;
+  }
+  .ck-studio .ck-panel-handle .ck-drag-title {
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: auto;
+  }
+  .ck-drag-title:active {
+    cursor: grabbing;
+  }
+  .ck-dock-panel[data-drop-target] {
+    outline: 2px solid var(--ck-accent);
+    outline-offset: -2px;
+  }
+  .ck-move-buttons {
+    display: flex;
+  }
+  .ck-panel-content {
+    min-height: 0;
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .ck-tools-panel .ck-subnav {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+  }
+  .ck-tools-panel .ws-stage {
+    display: contents;
+  }
+  .ck-studio
+    .ck-dock
+    .ck-tools-panel
+    :is(
+      .ws-controls,
+      .ws-font-access,
+      .ws-text-panel,
+      .ws-photo-panel,
+      .ws-library,
+      .ck-workflow,
+      .ck-help-bay,
+      .ck-output-bay
+    ) {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    border: 0;
+    padding: 16px;
+    overflow: auto;
+  }
+  .ck-studio .ck-dock .ws-controls {
+    padding: 0;
+  }
+  .ck-studio .ck-dock .ws-controls > fieldset {
+    padding: 16px;
+  }
+  .ck-dock :where(.ws-controls[data-tool="paper"]) .ws-detail-body {
+    display: block;
+  }
+  .ck-studio .ck-dock [hidden] {
+    display: none;
+  }
+  .ck-studio .ck-dock .ws-detail-body {
+    padding-block: 12px;
+  }
+  .ck-studio .ck-dock .ws-field {
+    margin-block: 0 12px;
+  }
+  .ck-studio .ck-dock .ws-pair {
+    gap: 10px 14px;
+    margin-bottom: 12px;
+  }
+  .ck-studio .ck-dock .ws-choice-effect {
+    padding: 16px;
+    margin-block: 12px;
+  }
+  .ck-studio .ck-dock .ck-paper-bay {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    padding: 12px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .ck-studio .ck-dock .ws-preview-top {
+    grid-row: 1;
+  }
+  .ck-studio .ck-dock .ws-preview-top h2 {
+    font-size: 23px;
+  }
+  .ck-dock :where(.ws-preview-top) .ws-hint {
+    font-size: 14px;
+  }
+  .ck-studio .ck-dock .ws-preview-controls {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .ck-studio .ck-dock .ck-paper-material {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .ck-studio .ck-dock .ws-preview-mat {
+    grid-row: 4;
+    grid-column: 1;
+    margin: 0;
+  }
+  .ck-studio .ck-dock .ck-paper-bay > .ws-output {
+    grid-row: 5;
+    grid-column: 1;
+    flex-wrap: wrap;
+  }
+  .ck-studio .ck-dock .ck-paper-bay > .ws-output button {
+    min-height: 44px;
+    flex: 1 1 auto;
+  }
+  .ck-writing-panel .ck-panel-content,
+  .ck-notes-panel .ck-panel-content {
+    overflow: auto;
+    padding: 18px;
+  }
+  .ck-writing-panel .ws-lettering-editor {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .ck-writing-panel .ws-panel-heading {
+    align-items: start;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .ck-writing-panel .ws-panel-heading h3 {
+    margin: 0;
+    font: 26px / 1.2 var(--font-serif);
+    color: var(--ck-text-strong);
+  }
+  .ck-writing-panel .ws-lettering-editor > .ws-hint {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .ck-writing-panel .worksheet-editor {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  .ck-writing-panel .worksheet-editor > [aria-busy] {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--ck-border);
+    border-radius: 6px;
+  }
+  .ck-writing-panel .cm-editor {
+    height: 100%;
+  }
+  .ck-writing-panel .cm-scroller {
+    min-height: 0;
+    overflow: auto;
+  }
+  .ck-writing-panel .worksheet-editor-help {
+    font-size: 13px;
+    color: var(--ck-text-muted);
+  }
+  .ck-studio .ck-dock .ck-studio-notes h2 {
+    font: 28px / 1.2 var(--font-serif);
+    color: var(--ck-text-strong);
+    margin-top: 0;
+  }
+  .ck-column-divider {
+    height: auto;
+    align-self: stretch;
+    margin: 0;
+    border: 0;
+    width: 10px;
+    flex: 0 0 10px;
+    cursor: col-resize;
+    touch-action: none;
+    background: var(--ck-canvas);
+    position: relative;
+  }
+  .ck-column-divider::after {
+    content: "";
+    position: absolute;
+    height: 44px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--ck-border-strong);
+    left: 3px;
+    top: calc(50% - 22px);
+  }
+  .ck-column-divider:hover::after,
+  .ck-column-divider:focus-visible::after {
+    background: var(--ck-accent);
+  }
+  .ck-studio .ck-dock .ws-font-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  }
+  .ck-studio .ck-dock .ws-presets {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 10px;
+  }
+  .ck-studio .ck-dock .ck-tools-panel .ws-presets button {
+    padding: 12px;
+    font-size: 16px;
+  }
+  .ck-studio .ck-dock .ws-preset-description {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .ck-studio .ck-dock .ck-tools-panel .ws-font-grid > button {
+    padding: 14px;
+    container-type: inline-size;
+    align-content: start;
+  }
+  .ck-studio .ck-dock .ws-font-sample {
+    font-size: clamp(2rem, 13cqi, 3.5rem);
+    line-height: 1.5;
+    padding: 0.35em 0.15em;
+    text-wrap: balance;
+  }
+  .ck-studio .ck-dock .ws-font-alphabet {
+    font-size: clamp(1.5rem, 9cqi, 2.25rem);
+    line-height: 1.5;
+    padding-inline: 0.15em;
+  }
+  .ck-studio .ck-dock .ws-font-card-title {
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+  }
+  .ck-studio .ck-dock .ws-font-card-title small {
+    color: var(--ck-text-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  .ck-studio .ck-dock .ws-feature-sample {
+    height: clamp(3rem, 6vw, 4.5rem);
+    fill: var(--ck-text-strong);
+  }
+  .ck-studio .ck-dock .ws-glyph-browser > div {
+    grid-template-columns: repeat(auto-fit, minmax(3.5rem, 1fr));
+    gap: 0.5rem;
+  }
+  .ck-studio .ck-dock .ck-tools-panel .ws-glyph-browser button {
+    min-height: 3.5rem;
+    padding: 0.25rem;
+    font-size: 2rem;
+    line-height: 1.5;
+  }
+  .ck-dock-focus .ck-paper-panel {
+    margin-inline: auto;
+    width: 100%;
+  }
+  .ck-dock-focus .ck-panel-handle {
+    display: none;
+  }
+  .ck-studio .ck-main .ck-toolbar .ck-tool {
+    text-align: left;
+    white-space: normal;
+    height: auto;
+    min-height: 44px;
+    line-height: 1.3;
+  }
+  .ck-studio .ck-main .ck-create-font {
+    display: none;
+  }
+  .ck-studio .ck-main .ck-toolbar {
+    padding-block: 10px;
+  }
+  @media (min-width: 1200px) {
+    .ck-column-choice {
+      display: flex;
+    }
+  }
+  @media (max-width: 1200px) {
+    .ck-panel-handle {
+      display: none;
+    }
+    .ck-column-divider {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .ck-display-controls {
+      gap: 0;
+    }
+    .ck-studio .ck-theme-toggle {
+      width: 44px;
+      padding: 10px;
+    }
+    .ck-theme-toggle span {
+      display: none;
+    }
+    .ck-studio .ck-brand-header {
+      gap: 8px;
+      padding-inline: 10px;
+    }
+    .ck-studio .ck-brand-header h1.ck-wordmark {
+      font-size: clamp(21px, 6vw, 28px);
+      white-space: normal;
+      line-height: 1;
+    }
+    .ck-studio .ck-brand-header .ws-wizard-launch strong {
+      font-size: 12px;
+      max-width: 70px;
+    }
+    .ck-studio .ck-brand-header .ws-wizard-launch {
+      padding: 6px;
+    }
+    .ck-dock {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(235px, 46%) minmax(0, 1fr);
+    }
+    .ck-dock .ck-paper-panel {
+      min-width: 0;
+      grid-row: 1;
+      max-width: none;
+    }
+    .ck-dock .ck-tools-panel {
+      min-width: 0;
+      grid-row: 2;
+    }
+    .ck-dock .ck-column-divider {
+      display: none;
+    }
+    .ck-studio .ck-dock .ck-paper-bay {
+      padding: 6px 10px;
+      gap: 4px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+    }
+    .ck-studio .ck-dock .ws-preview-top h2 {
+      font-size: 17px;
+    }
+    .ck-studio .ck-dock .ws-preview-controls {
+      grid-row: 2;
+      grid-column: 1;
+    }
+    .ck-studio .ck-dock .ck-paper-material {
+      grid-row: 2;
+      grid-column: 2;
+    }
+    .ck-studio .ck-dock .ws-preview-mat {
+      grid-row: 3;
+      grid-column: 1 / -1;
+      padding: 4px;
+    }
+    .ck-studio .ck-dock .ck-paper-bay > .ws-output {
+      grid-row: 4;
+      grid-column: 1 / -1;
+      flex-wrap: nowrap;
+    }
+    .ck-studio .ck-dock .ck-paper-bay > .ws-output button {
+      font-size: 12px;
+      padding: 4px;
+    }
+    .ck-studio .ck-dock .ws-preview-top .ws-hint {
+      display: none;
+    }
+    .ck-dock-focus {
+      display: flex;
+    }
+  }
+  @media (max-height: 620px) {
+    .ck-studio .ck-dock .ck-paper-bay {
+      grid-template-columns: 44px minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto auto;
+    }
+    .ck-studio .ck-dock .ws-preview-top {
+      display: none;
+    }
+    .ck-studio .ck-dock .ws-preview-mat {
+      grid-row: 1;
+      grid-column: 1 / -1;
+    }
+    .ck-studio .ck-dock .ck-paper-material {
+      display: block;
+      grid-row: 2;
+      grid-column: 1 / -1;
+      justify-self: end;
+    }
+    .ck-studio .ck-dock .ws-preview-controls {
+      grid-row: 3;
+      grid-column: 1;
+    }
+    .ck-studio .ck-dock .ck-paper-bay > .ws-output {
+      grid-row: 3;
+      grid-column: 2;
+    }
+  }
+  @media (max-height: 620px) and (max-width: 720px) and (orientation: landscape) {
+    .ck-dock:not(.ck-dock-focus) {
+      grid-template-columns: minmax(220px, 42%) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+    }
+    .ck-dock:not(.ck-dock-focus) .ck-tools-panel {
+      grid-row: 1;
+      grid-column: 1;
+    }
+    .ck-dock:not(.ck-dock-focus) .ck-paper-panel {
+      grid-row: 1;
+      grid-column: 2;
+    }
+  }
+}

@@ -9,6 +9,7 @@ These decisions describe the current public project contract. Proposals are iden
 | Reuse | Project-authored work is MIT OR Apache-2.0; retain third-party licenses | Permit artistic and commercial adaptation with clear notices |
 | Credits | iani schrodinger for 3D design; Claude and ChatGPT for poem/website assistance | Preserve attribution across the website and source |
 | Anonymous use | Existing studio works without an account; local drafts are default | Keep access simple and avoid silent shared editing |
+| Crew worksheet copy | One explicitly saved worksheet snapshot per Authentik identity; the anonymous draft remains separate | Add durable account storage without silently uploading browser work |
 | Shared drafts | File-backed relay only when `COLLAB_DIR` is explicitly enabled | Make today's publicly editable shared behavior an operator choice |
 | Dimensions | Original geometry in inches/Y-up; separate maquette in millimeters/Z-up | Prevent accidental unit/axis and shipping-envelope confusion |
 | Fabrication evidence | Digital studies remain distinct from physical fit and material approval | Geometry and hash tests cannot establish installation feasibility |
@@ -17,7 +18,7 @@ These decisions describe the current public project contract. Proposals are iden
 
 ## Proposals requiring later review
 
-Voluntary verified-email accounts, organizations/projects, deny-by-default relationship permissions, versioned files, entitled project hosts, telemetry, and inventory/procurement integration are [roadmap](../ROADMAP.md) proposals. Authorization semantics, URL allocation, private reporting contacts, retention and deletion policy, published integration contracts, and operational recovery need explicit evidence before dependent features ship.
+Broader user enrollment, organizations/projects, deny-by-default relationship permissions, versioned files, entitled project hosts, telemetry, and inventory/procurement integration are [roadmap](../ROADMAP.md) proposals. Authorization semantics, URL allocation, private reporting contacts, retention and deletion policy, published integration contracts, and operational recovery need explicit evidence before dependent features ship.
 
 ## Recording changes
 

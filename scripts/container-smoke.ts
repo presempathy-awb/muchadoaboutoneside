@@ -70,7 +70,13 @@ try {
   }
   if (!healthy)
     throw new Error(`Container health failed: ${await docker(["logs", name])}`);
-  for (const route of ["/", "/instructions", "/six-foot", "/projection"]) {
+  for (const route of [
+    "/",
+    "/instructions",
+    "/six-foot",
+    "/projection",
+    "/poems",
+  ]) {
     const response = await fetch(`${origin}${route}`);
     const html = await response.text();
     if (!response.ok || !html.includes('<div id="root"></div>'))

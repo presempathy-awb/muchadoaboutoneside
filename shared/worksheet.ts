@@ -2,6 +2,10 @@ import {
   WORKSHEET_FONT_CATALOG,
   type WorksheetBundledFontId,
 } from "./worksheet-font-catalog";
+import {
+  specialWordPhrases,
+  specialWordWrapUnits,
+} from "./worksheet-special-words";
 
 export type WorksheetLineKind =
   | "baseline"
@@ -43,6 +47,9 @@ export interface WorksheetSettings {
   fontSizeMode: "points" | "xheight";
   textXHeightMm: number;
   fontFeatures: string;
+  specialWords: string;
+  specialFontId: WorksheetBundledFontId;
+  specialSizePercent: number;
   shapingEngine: "fontkit" | "harfbuzz";
   practicePattern: "continuous" | "model-trace-blank";
   textColor: string;
@@ -124,6 +131,9 @@ export const DEFAULT_WORKSHEET_SETTINGS: WorksheetSettings = {
   fontSizeMode: "points",
   textXHeightMm: 5,
   fontFeatures: "",
+  specialWords: "",
+  specialFontId: "pinyon-script",
+  specialSizePercent: 120,
   shapingEngine: "fontkit",
   practicePattern: "continuous",
   textColor: "#56715b",
@@ -289,6 +299,11 @@ const VALIDATORS: { [K in keyof WorksheetSettings]: Validator } = {
   fontSizeMode: oneOf(["points", "xheight"]),
   textXHeightMm: boundedNumber(0.5, 50),
   fontFeatures,
+  specialWords: (value) => {
+    specialWordPhrases(value as string);
+  },
+  specialFontId: oneOf(WORKSHEET_FONT_CATALOG.map((font) => font.id)),
+  specialSizePercent: boundedNumber(50, 200),
   shapingEngine: oneOf(["fontkit", "harfbuzz"]),
   practicePattern: oneOf(["continuous", "model-trace-blank"]),
   textColor: color,
@@ -618,6 +633,7 @@ export function wrapText(
   text: string,
   widthMm: number,
   measure: (line: string) => number,
+  keepTogether: readonly string[] = [],
 ): string[] {
   if (typeof text !== "string") {
     throw new TypeError("Worksheet text must be text.");
@@ -677,9 +693,20 @@ export function wrapText(
       continue;
     }
 
-    const words = paragraph.trim().split(/\s+/u);
+    const words = specialWordWrapUnits(
+      paragraph.trim().replace(/\s+/gu, " "),
+      keepTogether,
+    );
     let current = "";
-    for (const word of words) {
+    for (const { text: word, special } of words) {
+      if (special && measured(word) > widthMm)
+        throw new RangeError(
+          `The special words “${word}” do not fit on one line. Reduce their size or increase the writing area.`,
+        );
+      if (keepTogether.length && measured(word) > widthMm)
+        throw new RangeError(
+          `The word “${word}” is too wide. Reduce the text size or clear special lettering before splitting long words.`,
+        );
       const pieces = measured(word) <= widthMm ? [word] : splitLongWord(word);
       for (const piece of pieces) {
         const candidate = current === "" ? piece : `${current} ${piece}`;

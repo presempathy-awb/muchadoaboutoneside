@@ -1,0 +1,146 @@
+/* Motion follows a change of task, never a keystroke or a measured dimension. */
+@media screen {
+  .ck-studio {
+    --ck-motion-quick: 140ms;
+    --ck-motion-settle: 220ms;
+    --ck-motion-reveal: 320ms;
+    --ck-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Animate the newly visible content, not its persistent editor or scroll host. */
+  .ck-studio :is(.ws-desk, .ws-controls, .ws-preview-mat, .ws-choice-effect) {
+    animation: none;
+  }
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .ck-studio
+    :is(.ck-tool, .ck-subnav button, .ws-font-sample, .ws-journey-option) {
+    transition:
+      background-color var(--ck-motion-quick) ease,
+      border-color var(--ck-motion-quick) ease,
+      color var(--ck-motion-quick) ease,
+      box-shadow var(--ck-motion-settle) ease,
+      transform var(--ck-motion-settle) var(--ck-motion-ease);
+  }
+
+  .ck-studio :is(.ck-tool, .ck-subnav button):active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .ck-studio .ck-tool > svg {
+    transition: transform var(--ck-motion-settle) var(--ck-motion-ease);
+  }
+
+  .ck-studio .ck-tool[aria-pressed="true"] > svg {
+    transform: scale(1.1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .ck-studio :is(.ws-font-sample, .ws-journey-option):hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+  }
+
+  .ck-studio :is(.ws-font-sample, .ws-journey-option):active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .ck-studio
+    .ck-tools-panel
+    :is(
+      .ws-font-access,
+      .ws-text-panel,
+      .ws-photo-panel,
+      .ws-library,
+      .ck-workflow,
+      .ck-help-bay,
+      .ck-output-bay
+    ):not([hidden]),
+  .ck-studio .ws-controls .ws-detail-body > div:not([hidden]),
+  .ck-studio .ws-controls details[open] > .ws-detail-body,
+  .ck-studio .ws-photo__section:not([hidden]),
+  .ck-studio .ws-font-creator > section:not([hidden]),
+  .ck-studio .ck-settings-body > fieldset:not([hidden]),
+  .ck-studio .ws-wizard-answer,
+  .ck-studio .ws-journey-options {
+    animation: ck-content-reveal var(--ck-motion-settle) var(--ck-motion-ease);
+  }
+
+  .ck-studio :is(.ws-wizard, .ws-notice, .ws-error, .ws-confirm),
+  .ck-studio .ck-chat-history > article {
+    animation: ck-content-reveal var(--ck-motion-settle) var(--ck-motion-ease);
+  }
+
+  /* A gentle wipe reveals the rendered specimen; it does not imply stroke order. */
+  .ck-studio .ws-lettering-layer {
+    clip-path: inset(0 100% 0 0);
+    transition:
+      opacity var(--ck-motion-settle) ease,
+      clip-path var(--ck-motion-reveal) var(--ck-motion-ease);
+  }
+
+  .ck-studio .ws-lettering-layer[data-visible="true"] {
+    clip-path: inset(0);
+  }
+
+  .ck-studio .ws-paper-surface {
+    transition: fill var(--ck-motion-reveal) ease;
+  }
+
+  .ck-studio :is(.ws-wizard-progress, .ck-settings-steps) li {
+    transition:
+      background-color var(--ck-motion-settle) ease,
+      border-color var(--ck-motion-settle) ease,
+      color var(--ck-motion-settle) ease;
+  }
+
+  .ck-studio .ws-storage::before {
+    transition: background-color var(--ck-motion-settle) ease;
+  }
+
+  .ck-studio :is(.ck-paper-dialog, .ck-chat-dialog, .ck-settings-dialog)[open] {
+    animation: ck-dialog-reveal var(--ck-motion-reveal) var(--ck-motion-ease);
+    transform-origin: 50% 60%;
+  }
+
+  .ck-studio
+    :is(
+      .ck-paper-dialog,
+      .ck-chat-dialog,
+      .ck-settings-dialog
+    )[open]::backdrop {
+    animation: ck-backdrop-reveal var(--ck-motion-settle) ease;
+  }
+
+  @keyframes ck-content-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes ck-dialog-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes ck-backdrop-reveal {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
