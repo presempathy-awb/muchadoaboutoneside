@@ -66,6 +66,7 @@ export const REQUIRED_PUBLIC_FILES = [
   ".codex/config.toml",
   "repo-profile.json",
   ".github/workflows/site.yml",
+  "cockpit.html",
   "docs/decisions.md",
   "docs/calligraphy-studio.md",
   "docs/calligraphy-knowledge.md",

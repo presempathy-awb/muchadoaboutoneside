@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "bd890aba46c7b06942f0e818a2d0d6351cc44ee7",
+  "sourceCommit": "8cb9d46dc7af8575fc288862ed9a7f6714797b9e",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -40,8 +40,8 @@
     },
     {
       "path": ".github/workflows/site.yml",
-      "bytes": 829,
-      "sha256": "d4fd7578363bde8004c9ea835c7fd611b31b87aa7d79f08951671a7efada3ff8"
+      "bytes": 1440,
+      "sha256": "cdf5af3fd33b354845fa727e2411f38bf58f6c1228ab57b3090cfe4787c2e785"
     },
     {
       "path": ".gitignore",
@@ -152,6 +152,11 @@
       "path": "bun.lock",
       "bytes": 110812,
       "sha256": "fa9469b657db055e433ed921773144b603b894adb1da181b5d24fd03fab979ec"
+    },
+    {
+      "path": "cockpit.html",
+      "bytes": 625,
+      "sha256": "e7f0bda0d8431bbc7f8c159ac39bd49ed489208183a8aeeefbd30cd6b26d9010"
     },
     {
       "path": "components.json",
@@ -5645,8 +5650,8 @@
     },
     {
       "path": "shared/publication.ts",
-      "bytes": 5227,
-      "sha256": "bd24198484d1292400ccd50b8876fa9d732702b1838eadb57e17760bbc9e8e37"
+      "bytes": 5245,
+      "sha256": "942f73dc80e555276cbc8bd58cb9af2d13038d249cfcd9dcc695dd1e23dc92d2"
     },
     {
       "path": "shared/reference-gallery.test.ts",
