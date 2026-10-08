@@ -1,0 +1,150 @@
+@media screen {
+  .ck-knowledge {
+    color: var(--ck-text);
+    background: var(--ck-surface);
+    min-width: 0;
+  }
+  .ck-knowledge > header {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    margin-block-end: 1rem;
+  }
+  .ck-knowledge h2 {
+    margin: 0;
+    color: var(--ck-text-strong);
+    font: 1.875rem / 1.2 var(--font-serif);
+  }
+  .ck-knowledge :is(header p, .ck-knowledge-intro, .ck-source-rights) {
+    color: var(--ck-text-muted);
+    line-height: 1.5;
+  }
+  .ck-knowledge p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  .ck-knowledge header p {
+    margin: 0.25rem 0 0;
+  }
+  .ck-knowledge a {
+    color: var(--ck-text-strong);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .ck-knowledge :is(button, summary, input, a) {
+    font-size: 1rem;
+  }
+  .ck-knowledge :is(button, summary) {
+    min-height: 2.75rem;
+  }
+  .ck-knowledge details {
+    border: 0;
+    border-bottom: 1px solid var(--ck-border);
+  }
+  .ck-knowledge summary {
+    padding: 0.75rem 0;
+    cursor: pointer;
+    font-weight: 650;
+    color: var(--ck-text);
+  }
+  .ck-knowledge details > :is(p, a) {
+    margin-block: 0.5rem 1rem;
+  }
+  .ck-knowledge .ck-source-books {
+    background: var(--ck-surface-soft);
+    border: 1px solid var(--ck-border);
+    padding-inline: 0.875rem;
+    margin-block-end: 1rem;
+  }
+  .ck-source-books article {
+    padding-block: 0.5rem 1rem;
+  }
+  .ck-source-books h3 {
+    margin: 0;
+    font: 1.25rem / 1.3 var(--font-serif);
+  }
+  .ck-source-links,
+  .ck-knowledge-pages,
+  .ck-knowledge-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .ck-source-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.75rem;
+  }
+  .ck-knowledge-search {
+    display: block;
+    margin-block: 1rem 0.625rem;
+  }
+  .ck-knowledge-search > span {
+    display: block;
+    margin-block-end: 0.375rem;
+    font-weight: 650;
+  }
+  .ck-knowledge-search > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--ck-border-strong);
+    border-radius: 0.25rem;
+    background: var(--ck-surface-raised);
+  }
+  .ck-knowledge-search input {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    border: 0;
+    background: transparent;
+    color: var(--ck-text);
+  }
+  .ck-knowledge-search input::placeholder {
+    color: var(--ck-text-muted);
+    opacity: 1;
+  }
+  .ck-knowledge-topics button,
+  .ck-knowledge-pages button {
+    border: 1px solid var(--ck-border);
+    background: var(--ck-surface-raised);
+    color: var(--ck-text);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+  }
+  .ck-knowledge-topics button[aria-pressed="true"] {
+    background: var(--ck-surface-accent);
+    border-color: var(--ck-border-strong);
+    font-weight: 650;
+  }
+  .ck-knowledge-pages {
+    justify-content: space-between;
+    margin-block-start: 1rem;
+  }
+  .ck-knowledge-topics {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+  .ck-knowledge-pages button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+  .ck-knowledge-count {
+    color: var(--ck-text-muted);
+    margin-block: 0.75rem;
+  }
+  .ck-studio .ck-dock .ck-tools-panel .ck-knowledge {
+    flex: 1;
+    min-height: 0;
+    padding: 1rem;
+    overflow: auto;
+  }
+  .ck-knowledge :focus-visible {
+    outline: 2px solid var(--ck-focus);
+    outline-offset: 3px;
+  }
+}

@@ -4,6 +4,17 @@ Much Ado About One Side includes open-source components whose authors retain
 their own copyrights and license terms. The project's MIT OR Apache-2.0 grant
 does not replace the third-party terms reproduced below.
 
+## Calligraphy source books
+
+Two unmodified Project Gutenberg UTF-8 editions are retained under
+`public/guide/library/`: Edward Johnston, *Writing & Illuminating, & Lettering*
+(ebook 47089), and A. N. Palmer, *The Palmer Method of Business Writing*
+(ebook 66476). Gutenberg identifies both as public domain in the USA. Each
+download retains its full Gutenberg license and redistribution terms; these
+are not replaced by this project's code license. The generated server-only
+passage corpus derives from those editions. Source URLs, content hashes and
+selection limits are documented in `docs/calligraphy-knowledge.md`.
+
 ## Inventory scope
 
 The initial inventory was assembled from the installed versions resolved by

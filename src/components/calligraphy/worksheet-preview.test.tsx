@@ -201,4 +201,30 @@ test("renders shaped outlines with model and trace opacity on physical rows", ()
   expect(html).toContain('opacity="0.1"');
   expect(html).toContain("scale(0.02 -0.01)");
   expect(html).not.toContain("<text");
+  const hiddenSnapshot = {
+    ...snapshot,
+    settings: { ...snapshot.settings, textEnabled: false },
+  };
+  const hiddenScreen = renderToStaticMarkup(
+    <WorksheetPreview
+      snapshot={hiddenSnapshot}
+      layout={layout}
+      lines={["Practice", "Practice", ""]}
+      font={font}
+    />,
+  );
+  expect(hiddenScreen.match(/<path /g)).toHaveLength(2);
+  expect(hiddenScreen).toContain('data-visible="false"');
+  expect(hiddenScreen).toContain('aria-hidden="true"');
+  const hiddenPrint = renderToStaticMarkup(
+    <WorksheetPreview
+      snapshot={hiddenSnapshot}
+      layout={layout}
+      lines={["Practice", "Practice", ""]}
+      font={font}
+      printed
+    />,
+  );
+  expect(hiddenPrint).not.toContain("<path");
+  expect(snapshot.text).toBe("Practice");
 });

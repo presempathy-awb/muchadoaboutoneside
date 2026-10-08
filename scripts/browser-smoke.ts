@@ -275,6 +275,43 @@ try {
   await request("Page.addScriptToEvaluateOnNewDocument", {
     source: `if (location.origin === ${JSON.stringify(origin)} && !localStorage.getItem('muchado.scale-study.v1')) localStorage.setItem('muchado.scale-study.v1', ${JSON.stringify(JSON.stringify(syntheticDesign))});`,
   });
+  await request("Page.addScriptToEvaluateOnNewDocument", {
+    source: `(() => {
+      const originalFetch = globalThis.fetch.bind(globalThis);
+      globalThis.fetch = (input, init) => {
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+        if (url === 'https://erebe.muchadoaboutoneside.com/crew/api/worksheet')
+          return Promise.reject(new TypeError('Synthetic Authentik redirect blocked by CORS'));
+        return originalFetch(input, init);
+      };
+    })();`,
+  });
+  await navigate(
+    "/calligraphy/practice",
+    `Array.from(document.querySelectorAll('button')).some(button => button.textContent.trim() === 'Save a crew copy' && !button.disabled)`,
+  );
+  await evaluate(
+    `Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Save a crew copy').click()`,
+  );
+  await waitFor("crew save response", () =>
+    evaluate<boolean>(
+      `Boolean(document.querySelector('.ws-save-row > p:not(.ws-field)')?.textContent.trim())`,
+    ),
+  );
+  await assert(
+    "failed crew save keeps the draft page and offers sign-in in a new tab",
+    `location.pathname === '/calligraphy/practice' && document.body.innerText.includes('The crew board could not confirm a signed-in session.') && (() => { const link=Array.from(document.querySelectorAll('a')).find(anchor => anchor.textContent.trim() === 'Open the crew board to sign in'); return link?.target === '_blank' && link?.rel.includes('noopener'); })()`,
+  );
+  await evaluate(
+    `document.querySelector('.ws-save-row')?.scrollIntoView({ block: 'center' })`,
+  );
+  await Bun.write(
+    join(options.output, "crew-sign-in-handoff.html"),
+    await evaluate<string>(
+      `Array.from(document.querySelectorAll('a')).find(anchor => anchor.textContent.trim() === 'Open the crew board to sign in')?.closest('.ws-save-row')?.outerHTML ?? ''`,
+    ),
+  );
+  await screenshot("crew-sign-in-handoff");
   await navigate(
     "/",
     `Boolean(document.querySelector('#scales-height') && document.querySelector('canvas[aria-label]'))`,

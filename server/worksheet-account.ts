@@ -3,8 +3,8 @@
  * present on the Erebe `/crew` router; every other router strips it. The
  * anonymous studio is a different store and is never read or written here.
  */
-import { createHash } from "node:crypto";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { Elysia } from "elysia";
 import {
@@ -13,6 +13,7 @@ import {
   WorksheetAccountRejected,
   type WorksheetAccountSnapshot,
 } from "../shared/worksheet-account";
+import { CALLIGRAPHY_COCKPIT_HOST } from "../shared/worksheet-host";
 import { identityOf } from "./identity";
 
 const noStore = { "cache-control": "no-store" };
@@ -61,6 +62,7 @@ export class MemoryWorksheetAccountStore implements WorksheetAccountStore {
 
 export class FileWorksheetAccountStore implements WorksheetAccountStore {
   private ready: Promise<unknown>;
+  private readonly activeWrites = new Map<string, Promise<void>>();
   constructor(private readonly dir: string) {
     this.ready = mkdir(dir, { recursive: true, mode: 0o700 });
   }
@@ -95,16 +97,43 @@ export class FileWorksheetAccountStore implements WorksheetAccountStore {
     baseRevision: number,
     snapshot: WorksheetAccountSnapshot,
   ) {
-    await this.ready;
-    const current = await this.get(uid);
-    if ((current?.revision ?? 0) !== baseRevision)
-      return { ok: false as const, record: current };
-    const record = { revision: baseRevision + 1, snapshot };
-    const file = this.path(uid);
-    const temporary = `${file}.${process.pid}.tmp`;
-    await writeFile(temporary, JSON.stringify(record), { mode: 0o600 });
-    await rename(temporary, file);
-    return { ok: true as const, record };
+    const previous = this.activeWrites.get(uid) ?? Promise.resolve();
+    let release = () => {};
+    const active = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const tail = previous.then(() => active);
+    this.activeWrites.set(uid, tail);
+    await previous;
+    try {
+      await this.ready;
+      const current = await this.get(uid);
+      if ((current?.revision ?? 0) !== baseRevision)
+        return { ok: false as const, record: current };
+      const record = { revision: baseRevision + 1, snapshot };
+      const file = this.path(uid);
+      const temporary = `${file}.${process.pid}.${randomUUID()}.tmp`;
+      try {
+        await writeFile(temporary, JSON.stringify(record), { mode: 0o600 });
+        await rename(temporary, file);
+      } catch (error) {
+        try {
+          await unlink(temporary);
+        } catch (cleanupError) {
+          if ((cleanupError as { code?: string }).code !== "ENOENT") {
+            console.error(
+              "Worksheet account temporary-file cleanup failed:",
+              cleanupError,
+            );
+          }
+        }
+        throw error;
+      }
+      return { ok: true as const, record };
+    } finally {
+      release();
+      if (this.activeWrites.get(uid) === tail) this.activeWrites.delete(uid);
+    }
   }
 }
 
@@ -112,6 +141,7 @@ function json(body: unknown, status = 200, origin?: string | null) {
   const headers = new Headers(noStore);
   if (
     origin === CREW_PAGE_ORIGIN ||
+    origin === `https://${CALLIGRAPHY_COCKPIT_HOST}` ||
     origin === "http://127.0.0.1:5173" ||
     origin === "http://localhost:5173"
   ) {

@@ -152,6 +152,7 @@ function renderToCanvas(
 
 export async function normalizeWorksheetImage(
   file: File,
+  maxSide = WORKSHEET_PHOTO_MAX_SIDE_PX,
 ): Promise<NormalizedWorksheetImage> {
   if (!isAcceptedImage(file)) {
     throw new Error("Choose a PNG, JPEG, or WebP image.");
@@ -170,7 +171,7 @@ export async function normalizeWorksheetImage(
   }
 
   try {
-    let dimensions = fitImageDimensions(decoded.width, decoded.height);
+    let dimensions = fitImageDimensions(decoded.width, decoded.height, maxSide);
     let canvas = renderToCanvas(
       decoded.source,
       decoded.width,

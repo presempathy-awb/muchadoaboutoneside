@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "a85c3b42d74ab0743976d9ccb2916edbffcbe122",
+  "sourceCommit": "8cb9d46dc7af8575fc288862ed9a7f6714797b9e",
   "license": "MIT OR Apache-2.0",
   "excludesPrivateHistory": true,
   "files": [
@@ -20,8 +20,8 @@
     },
     {
       "path": ".dockerignore",
-      "bytes": 669,
-      "sha256": "30baa550c62a66c5bd5d176b7003612ab3eed8efa67707cd5bcbf31f474242b4"
+      "bytes": 683,
+      "sha256": "f18f168ac0156dc2841de1ac0be6df98eac3c4e7efd8c1ee304c9a9d4a02d104"
     },
     {
       "path": ".editorconfig",
@@ -40,8 +40,8 @@
     },
     {
       "path": ".github/workflows/site.yml",
-      "bytes": 829,
-      "sha256": "d4fd7578363bde8004c9ea835c7fd611b31b87aa7d79f08951671a7efada3ff8"
+      "bytes": 1440,
+      "sha256": "cdf5af3fd33b354845fa727e2411f38bf58f6c1228ab57b3090cfe4787c2e785"
     },
     {
       "path": ".gitignore",
@@ -65,8 +65,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 2384,
-      "sha256": "7f0f070d5a64543ccea9ea5615331b3fd957ff26facade0d9df4b0148d031fd5"
+      "bytes": 2625,
+      "sha256": "39538614152cec6756c1994bb09078f6db71510cfc7beedbda1e2ff02a0584e8"
     },
     {
       "path": "CLAUDE.md",
@@ -85,8 +85,8 @@
     },
     {
       "path": "Dockerfile",
-      "bytes": 1606,
-      "sha256": "3e149a284876016e8253de07e7586fa050e8f432655d26c487d891aa5956a422"
+      "bytes": 1619,
+      "sha256": "8edaf1824a3eac8d693b054e34c064d75768e073d44281228ebd2044a9ee8ecd"
     },
     {
       "path": "INTENT.md",
@@ -110,13 +110,13 @@
     },
     {
       "path": "PRIVACY.md",
-      "bytes": 3627,
-      "sha256": "22cf3ca30afc79c4e4e46d1692c73a8c7fb11334eea2ba60c63415d54cf10c56"
+      "bytes": 4159,
+      "sha256": "fb4b303fd09fc0df558958f1fdf28225b19f52378067eb228d09db9a3e1a8e49"
     },
     {
       "path": "README.md",
-      "bytes": 34015,
-      "sha256": "c1cf431ae575d3d3eeea96e9e5d3d4de7ea636525d91808a246c39ab1f221e46"
+      "bytes": 40645,
+      "sha256": "e26f88e9d59674b15a405051a3901c5d165070f5e727bac77283f0f0ad540182"
     },
     {
       "path": "REUSE.md",
@@ -125,8 +125,8 @@
     },
     {
       "path": "ROADMAP.md",
-      "bytes": 3493,
-      "sha256": "bb54d8bf0a9dc62afa0d074f5785d48732e4c8254a40ca1033511352857ce4f7"
+      "bytes": 3566,
+      "sha256": "3cf2ecd143da914eeb8de8687c6ea58c768438c82445c07144b3445f812ec9f8"
     },
     {
       "path": "SECURITY.md",
@@ -135,8 +135,8 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 214260,
-      "sha256": "c395be09ed3ee4f3898856abe185c4a90937f7b66f0ede20818479d00956a18a"
+      "bytes": 214880,
+      "sha256": "2f95c1625bd51e94eb8a7fc5d76e8442ba8967264f98c814e1d79a72187d999f"
     },
     {
       "path": "agents.toml",
@@ -150,8 +150,13 @@
     },
     {
       "path": "bun.lock",
-      "bytes": 109022,
-      "sha256": "68f11bca32ba1bbcce1106443577ebfa2287f1557c83999aee993151ec9c0af4"
+      "bytes": 110812,
+      "sha256": "fa9469b657db055e433ed921773144b603b894adb1da181b5d24fd03fab979ec"
+    },
+    {
+      "path": "cockpit.html",
+      "bytes": 625,
+      "sha256": "e7f0bda0d8431bbc7f8c159ac39bd49ed489208183a8aeeefbd30cd6b26d9010"
     },
     {
       "path": "components.json",
@@ -170,8 +175,8 @@
     },
     {
       "path": "docs/browser-testing.md",
-      "bytes": 5113,
-      "sha256": "0c7409f8d949790294cac1fb77c62709f742d197b032827334dd63013d78837b"
+      "bytes": 5422,
+      "sha256": "1d8dc6628b72895d88b9460cd567169d1a9e0ee67812de81108b83f6853ca45c"
     },
     {
       "path": "docs/calligraphy-font-security.md",
@@ -179,14 +184,24 @@
       "sha256": "61398bd5847c5a164a2e8c2b882a3f755ff76a7f6b76d28fff22c825442b59e2"
     },
     {
+      "path": "docs/calligraphy-knowledge.md",
+      "bytes": 10627,
+      "sha256": "f33fa2f96a7449fc6a40f79cda011f1e1b4f4bccd9d7ee1480cdb6c98dc18982"
+    },
+    {
+      "path": "docs/calligraphy-paths.md",
+      "bytes": 5661,
+      "sha256": "6fa4eb4f1fff52e6c5a6b696c47d63b93b9926bb718759a0db76b344e97574e9"
+    },
+    {
       "path": "docs/calligraphy-studio.md",
-      "bytes": 6616,
-      "sha256": "e2c5367cd321256f9d27b1277a2be882fc4a07690f84ee163e9defaca94510b3"
+      "bytes": 25255,
+      "sha256": "0c8ceb45b9f4eb65ff57c234b7ea2c9261c28e8647015b36f39cf5c911b2c497"
     },
     {
       "path": "docs/decisions.md",
-      "bytes": 2673,
-      "sha256": "f3ee9429e5869454870177b799ea3cbf8702288d695f79f1ee89292df735f1d6"
+      "bytes": 2860,
+      "sha256": "f5e7438d6630ad867c41879edb84e4fbe6c9278257450b9e94585b400930bd1c"
     },
     {
       "path": "docs/runbook/containers.md",
@@ -219,6 +234,11 @@
       "sha256": "89d71e9b07ba296101fc09719766ef93d9f999705cd6f23ed32dab9fb79e0de2"
     },
     {
+      "path": "docs/turncoat-poems.md",
+      "bytes": 10659,
+      "sha256": "7e12cd53d6d0864592c14e221f21f3f28b3ffe21fb9b7a39b7dd7944374c15cf"
+    },
+    {
       "path": "index.html",
       "bytes": 656,
       "sha256": "c7aead470c1d4d44e67826b15249b45476fd75c902b6b0d9c39cb7c6f94aa12e"
@@ -245,8 +265,8 @@
     },
     {
       "path": "package.json",
-      "bytes": 3440,
-      "sha256": "c7d5b431027cddf20abd2f1e26dee1dc6cc5517251503a49b777e5afd8eeee95"
+      "bytes": 3738,
+      "sha256": "df42993b749facf6449724818b7f0207d911989cd3e5023027dccb808b4f09f5"
     },
     {
       "path": "public/editions/endless-inscription-study-extended.svg",
@@ -5009,6 +5029,16 @@
       "sha256": "499374bf2847147b09245902713bd2c13432d70b8460698c6918a9e780e69f21"
     },
     {
+      "path": "public/guide/library/palmer-method-business-writing.txt",
+      "bytes": 176561,
+      "sha256": "dab0e10710659b723371dc8ae880f7820afdf17eccb062a463f877f6ad3f7f8b"
+    },
+    {
+      "path": "public/guide/library/writing-illuminating-lettering.txt",
+      "bytes": 548430,
+      "sha256": "686f9e448be1c627985f669ce153ac89f902021e2ddd1f9d2a23ce6a1ac91e5e"
+    },
+    {
       "path": "public/licenses/LICENSE-APACHE.txt",
       "bytes": 11358,
       "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
@@ -5025,8 +5055,8 @@
     },
     {
       "path": "public/licenses/THIRD-PARTY-NOTICES.txt",
-      "bytes": 214260,
-      "sha256": "c395be09ed3ee4f3898856abe185c4a90937f7b66f0ede20818479d00956a18a"
+      "bytes": 214880,
+      "sha256": "2f95c1625bd51e94eb8a7fc5d76e8442ba8967264f98c814e1d79a72187d999f"
     },
     {
       "path": "public/references/iani-sculpture-video-reference-01.png",
@@ -5075,18 +5105,23 @@
     },
     {
       "path": "scripts/browser-smoke.ts",
-      "bytes": 50283,
-      "sha256": "8b595bcf4639065c05eb69ad5368059a99f6bd7b0690f9f243d5d786f82a49e4"
+      "bytes": 52238,
+      "sha256": "dad9cdd49ef3dc53c92bf95579c7609d7fb29828905a0941e4b0c95958986e77"
+    },
+    {
+      "path": "scripts/check-calligraphy-interactions.tsx",
+      "bytes": 17160,
+      "sha256": "ee2b47ff5ac4b8a1e2c23c265ae6364313670a9f404a20996f6963a1fd2f3aed"
     },
     {
       "path": "scripts/container-ci-smoke.ts",
-      "bytes": 4682,
-      "sha256": "9fec00ed1e3f670d3dba73fa98cb35e5da1661745fa4b756926f97e955257b88"
+      "bytes": 4692,
+      "sha256": "70a1f06dbbade6ffe6ea350aedb92f6b76a54c13544d396b4eb26d51b029a64c"
     },
     {
       "path": "scripts/container-smoke.ts",
-      "bytes": 5868,
-      "sha256": "fa722a169f792e96d06527248f105b6d44f48e4fd341bc1435fb16d0174a1421"
+      "bytes": 5903,
+      "sha256": "cfa520b5a3dbbb2896bad9f17b0e6dc815b7ec9b5bad6952655cc933af909f6b"
     },
     {
       "path": "scripts/dev.ts",
@@ -5102,6 +5137,11 @@
       "path": "scripts/generate-calligraphy-guide.tsx",
       "bytes": 4696,
       "sha256": "19970172d42c241cd73c8abb899fc743657955fa0ca34a83aee74a0aa909eaf6"
+    },
+    {
+      "path": "scripts/generate-calligraphy-library.ts",
+      "bytes": 7973,
+      "sha256": "ae700e4f0bd47544a9d85f46465d2e96fb54f3257db6c1d2e9dcd7742fc0e000"
     },
     {
       "path": "scripts/generate-copperplate.ts",
@@ -5180,8 +5220,8 @@
     },
     {
       "path": "scripts/smoke.ts",
-      "bytes": 7566,
-      "sha256": "c5b37061c258f9a29950e872f2d1b00caa6b26fb143447ad58b04a64880a79a5"
+      "bytes": 7696,
+      "sha256": "0d77c11da957b4662d1af0927770078eff699b9b1f405ce50b16709f992392b2"
     },
     {
       "path": "scripts/toolchain-check.ts",
@@ -5215,8 +5255,8 @@
     },
     {
       "path": "scripts/verify-typography-bundle.ts",
-      "bytes": 3054,
-      "sha256": "11d8f9b5274af0ddff1c7539de3c4797f12d477ec6f0cf3649966b833f0a3824"
+      "bytes": 4211,
+      "sha256": "7fcbdad7384d70cdd6a9285be3665b26394095dedb00dcd1bacf216a3d27d4a7"
     },
     {
       "path": "scripts/verify-worksheet-fonts.ts",
@@ -5225,13 +5265,13 @@
     },
     {
       "path": "server/app.test.ts",
-      "bytes": 8724,
-      "sha256": "20c9efd954a482249721b7e4d20017f7798b5968e8035dd1e41cb98513f6a971"
+      "bytes": 12507,
+      "sha256": "ac36caff4e98e44c2efa56ef5f9d8992bb2fc752ed6e209c876e5c2256b81449"
     },
     {
       "path": "server/app.ts",
-      "bytes": 6669,
-      "sha256": "f0c8c039767317e549d0b5b2c13110534228c8fbc517d2058d24f9fe202abbdd"
+      "bytes": 9357,
+      "sha256": "6bc1e2b0cc14209ea4e27ba39e8670ffcd4a9cc078c301fcb1be9399d511f1ee"
     },
     {
       "path": "server/blobs.ts",
@@ -5247,6 +5287,41 @@
       "path": "server/browser-relay.ts",
       "bytes": 3209,
       "sha256": "4df2fe5c7b086b5daae7160aadbb2d28dba1e8c1fc88be89459b2164be75c7da"
+    },
+    {
+      "path": "server/calligraphy-assistant.test.ts",
+      "bytes": 18822,
+      "sha256": "7a98d0c4c66b54fe641e6b0c5b105831b13a1ddc414f592284d37f435845da78"
+    },
+    {
+      "path": "server/calligraphy-assistant.ts",
+      "bytes": 24389,
+      "sha256": "0f8814938e9adf10da0dfbec2782eec80c96ad689e241a45cf4f9c1b71240031"
+    },
+    {
+      "path": "server/calligraphy-book-knowledge.test.ts",
+      "bytes": 2806,
+      "sha256": "8afc0a3925e2999ae3806d229aa342357b9508353090a3a3c81dd2ece221ed35"
+    },
+    {
+      "path": "server/calligraphy-book-knowledge.ts",
+      "bytes": 2954,
+      "sha256": "1ed4ea3bcc32e96a7871c189fe9d8e3a2d6f96f1a5bdd536d5d3c345f1662102"
+    },
+    {
+      "path": "server/calligraphy-book-passages.json",
+      "bytes": 553331,
+      "sha256": "0a4eaf4f1cdb30b0e33760b39a00526132a935daf0353eef2c13571c84c9fbcf"
+    },
+    {
+      "path": "server/calligraphy-search.test.ts",
+      "bytes": 682,
+      "sha256": "fdb8d6ab0e4ba021cbd2840947d0b39efad85239ad2b54f9e6c41d6ffbea4ebe"
+    },
+    {
+      "path": "server/calligraphy-search.ts",
+      "bytes": 2487,
+      "sha256": "855b2f451e9bbf000c5346fe747d9bb688cb7d1cb685412eb0b07a3170dda440"
     },
     {
       "path": "server/collab.test.ts",
@@ -5294,6 +5369,11 @@
       "sha256": "827d7c62645cbd1f24aaa2fd0e3d45b5cfbadf29b2d265ce1c505cd19ad78ce4"
     },
     {
+      "path": "server/ollama-admission.ts",
+      "bytes": 450,
+      "sha256": "00e97cb3decb4666e95980e71bd57d98a8dede09be7e993fc3eb72c3e162c5ff"
+    },
+    {
       "path": "server/prefs.ts",
       "bytes": 6618,
       "sha256": "4a9784e9247735cd36ca4c7435dde365e9dd78db21b6ab1b3a63d5085ff6e0dc"
@@ -5320,18 +5400,43 @@
     },
     {
       "path": "server/worksheet-account.test.ts",
-      "bytes": 4128,
-      "sha256": "db40e9bd5aae14784ace8c70a1594f865a882e903ab0528cbd2ac1f769f4199e"
+      "bytes": 9886,
+      "sha256": "4a0e3736cdf0709e37fe9556c85cfb5785c3c1e806f8755ab7cdc9fc17b224af"
     },
     {
       "path": "server/worksheet-account.ts",
-      "bytes": 7093,
-      "sha256": "e191c3a4a0e9251e0f3f3cb8b7e23819aa16c3705d4f94c63adca17cbc4d00f8"
+      "bytes": 8136,
+      "sha256": "2230cdd9f1f70c676e72eb7295654090b13dad8e639a679487bf2e07c60ba101"
+    },
+    {
+      "path": "server/worksheet-pipeline.test.ts",
+      "bytes": 9782,
+      "sha256": "cb26c7fe2c1404c5e8b158f6a329c3d26617646cf52feab32c14c44b2dee90ce"
+    },
+    {
+      "path": "server/worksheet-pipeline.ts",
+      "bytes": 16639,
+      "sha256": "302f005cf59e115be83024c5e47a0544b8beb7b5d1ddc8dbcec9393308ff6acb"
+    },
+    {
+      "path": "server/worksheet-vision.test.ts",
+      "bytes": 8086,
+      "sha256": "70fc145c51e3eabfeec15e97a68ee88670a5ac04d090fe0394015a4a6159cca2"
+    },
+    {
+      "path": "server/worksheet-vision.ts",
+      "bytes": 13516,
+      "sha256": "13a9e81e25a617174bd1e393dcbd78ef3fd1a370f2cfeaf23fb26ea724ceb636"
     },
     {
       "path": "sgconfig.yml",
       "bytes": 70,
       "sha256": "65616d893c4d5f86c0b7e5d3aa09a6edec9920192cb5b231254898b33542e14b"
+    },
+    {
+      "path": "shared/calligraphy-assistant.ts",
+      "bytes": 945,
+      "sha256": "021e85cb3fca5c5abddd5466e12a158dcdd7c7416d2c911e5dedf2f7c1401f98"
     },
     {
       "path": "shared/calligraphy-guide.test.ts",
@@ -5344,6 +5449,31 @@
       "sha256": "4cbeb0c405b38d138cdbba441b243192100c34210a95e81eb02e6e0f458801a7"
     },
     {
+      "path": "shared/calligraphy-journeys.test.ts",
+      "bytes": 1359,
+      "sha256": "8f8ea885c5152e48549bfdc8d4aca83b61d2176b10b6dff99c19a16b05ac5d5e"
+    },
+    {
+      "path": "shared/calligraphy-journeys.ts",
+      "bytes": 4469,
+      "sha256": "0a9e3f6f9e7982a24450b305c99078e6cdc0ea8bba91507d7dc2f10381ef044c"
+    },
+    {
+      "path": "shared/calligraphy-knowledge.test.ts",
+      "bytes": 5069,
+      "sha256": "7c2d0ebfc51580c6ff8d9b092ee35696f978aabae73d5f09d362abb73aebea1b"
+    },
+    {
+      "path": "shared/calligraphy-knowledge.ts",
+      "bytes": 27536,
+      "sha256": "0047ad9b37acac17a947278fb832d5693e52f5402dddc5bc161e0108a1ffa975"
+    },
+    {
+      "path": "shared/calligraphy-library.ts",
+      "bytes": 2549,
+      "sha256": "a5d0d3d6757db3e9e55742c110d1e951328963ce3d818d377ebd504bef7e583c"
+    },
+    {
       "path": "shared/calligraphy-scan.test.ts",
       "bytes": 7985,
       "sha256": "bdbf40bbb0d3ba77f413fe1b057432ecd711c79ac7b680bb1f415e7194e5b349"
@@ -5352,6 +5482,16 @@
       "path": "shared/calligraphy-scan.ts",
       "bytes": 16334,
       "sha256": "82b1bbfbe13ceac585894f0a1825d48279abdc406027d25fa078e3f4eef6f2ac"
+    },
+    {
+      "path": "shared/calligraphy-settings.test.ts",
+      "bytes": 10830,
+      "sha256": "cc07eb0e7a7a82fc1f444dd65346418c193cd0693acb420a63f0767f922a9fe1"
+    },
+    {
+      "path": "shared/calligraphy-settings.ts",
+      "bytes": 9146,
+      "sha256": "cc6d79bd7c9006f4a3c5f53300c8757968ea4a7df74f91c68f0a7837b2a2e827"
     },
     {
       "path": "shared/copperplate-maker.test.tsx",
@@ -5464,6 +5604,16 @@
       "sha256": "caa0be7abc016e89b37071cedbfed47e89b16e48b485ff1824412b4f4ff2b984"
     },
     {
+      "path": "shared/poems.test.ts",
+      "bytes": 3179,
+      "sha256": "1e4bfed6d6c2534bd30fc0b0edd50376a75103d882492f5271cbe1e8c8f66883"
+    },
+    {
+      "path": "shared/poems.ts",
+      "bytes": 12649,
+      "sha256": "98ddc6f3551e4c286dbdb116578f7943d8db88ee16eeb57815cd41097fc17fc9"
+    },
+    {
       "path": "shared/print-manifest.json",
       "bytes": 3905,
       "sha256": "a9441eb412745c47664d5b06621374fe411d7ed343a0c041f6c4366183c18b03"
@@ -5500,8 +5650,8 @@
     },
     {
       "path": "shared/publication.ts",
-      "bytes": 5133,
-      "sha256": "3be6e5df5aa5400448eb95c69df3a732b0f8cc6739160ec1dec72461914ba371"
+      "bytes": 5245,
+      "sha256": "942f73dc80e555276cbc8bd58cb9af2d13038d249cfcd9dcc695dd1e23dc92d2"
     },
     {
       "path": "shared/reference-gallery.test.ts",
@@ -5734,19 +5884,64 @@
       "sha256": "c91c4b1d2ab9714c7898dc4c65c770bb488e8c51145a3a61b94fd455e5c677ac"
     },
     {
+      "path": "shared/worksheet-glyph-progress.test.ts",
+      "bytes": 834,
+      "sha256": "e6dd5e22b43dabd46b2991ff412f0f6b6046828723ca4bb7c1a087988b462b27"
+    },
+    {
+      "path": "shared/worksheet-glyph-progress.ts",
+      "bytes": 2136,
+      "sha256": "2bdd953a33da6d5fb15b3fcb51b72caea73b9f90cc9fd131276a0a79634ccdea"
+    },
+    {
+      "path": "shared/worksheet-glyph.test.ts",
+      "bytes": 2105,
+      "sha256": "d87be510b2404c3834a44965a5430226db6629227edd4b6b9a6db517142904bf"
+    },
+    {
+      "path": "shared/worksheet-glyph.ts",
+      "bytes": 5514,
+      "sha256": "62ea7210b9f8d826b1aa13edb0221033a9cbcc024c453c31718cdaa65c5fd222"
+    },
+    {
+      "path": "shared/worksheet-host.ts",
+      "bytes": 174,
+      "sha256": "b16a3de5b9596bb69edb90c7cc6ab995685bb4a78a33a43619289cbe16ed40a5"
+    },
+    {
+      "path": "shared/worksheet-special-words.test.ts",
+      "bytes": 2813,
+      "sha256": "8ee80e1d4340f5e29e8034c18bd0a52f3433a4f3db279d873c0fe523e21531c7"
+    },
+    {
+      "path": "shared/worksheet-special-words.ts",
+      "bytes": 2863,
+      "sha256": "73cc7bfc9adccefdd3de82cc66cf025c45c3283702cd6a695677c782cea7f4e7"
+    },
+    {
+      "path": "shared/worksheet-vision.test.ts",
+      "bytes": 844,
+      "sha256": "733c1a6eb213ba6e15f0abb5bb5915cfd2e42c37fd9672570a96ef19b13aa753"
+    },
+    {
+      "path": "shared/worksheet-vision.ts",
+      "bytes": 1470,
+      "sha256": "81dfb51f41cc18307540457fb0c45e2af91f501dd3771e3e0e18c5147ef1e45b"
+    },
+    {
       "path": "shared/worksheet.test.ts",
       "bytes": 11434,
       "sha256": "e865e1b433811a614f9c61ec3d4414261d01ad8285ddb5fe650906729d50526e"
     },
     {
       "path": "shared/worksheet.ts",
-      "bytes": 19850,
-      "sha256": "8cee09ef442096788c30d0b883ad2047f783faee1f608f6eb1fefdd6647b5a75"
+      "bytes": 20862,
+      "sha256": "a787ee6dda204924eff1f69d24ec3313af1201887559e64c268149f85c79c757"
     },
     {
       "path": "source/README.md",
-      "bytes": 1319,
-      "sha256": "24eed922d11908ba9f99784b578365764044d1a3115c7d02754d5cd5b639c919"
+      "bytes": 1494,
+      "sha256": "d7a5059be5a0cb38cb9b380f9767b0c36e6dda90186bb113b105fbb5bda57477"
     },
     {
       "path": "source/assets/manifest.json",
@@ -5784,9 +5979,84 @@
       "sha256": "9558601540ebdbd5e0998ce2736108b968f06ad857daf75f5e5f2e625388381e"
     },
     {
+      "path": "source/poem/turncoat-right-side-out-first-draft.txt",
+      "bytes": 1211,
+      "sha256": "a44e7a2901b7895d85bedf7cabde93d2094993d19166934a1f39c7354b78f772"
+    },
+    {
+      "path": "source/poem/turncoat-right-side-out.txt",
+      "bytes": 1258,
+      "sha256": "7764a5d6308d33c9ea603cf69d857f6f1fc14edbe90e447c75ac372d8bf8cc8c"
+    },
+    {
+      "path": "source/poem/turncoat-turncoats.txt",
+      "bytes": 3121,
+      "sha256": "7d52a171a0ffd32c99592d5dcf455d85444a57b39421117cad16e49a960f4045"
+    },
+    {
+      "path": "source/poem/turncoat-understudy.txt",
+      "bytes": 949,
+      "sha256": "a71efb0344b0ed29b4a03b92a2edb8e08e81d40c58c6ceab9e12a073ab7d6a20"
+    },
+    {
+      "path": "src/calligraphy-chat.css",
+      "bytes": 14462,
+      "sha256": "d98ee1ba72a325b810627571b834b054bbcc90bb55c98dd20b18ae177890ed8c"
+    },
+    {
+      "path": "src/calligraphy-cockpit.css",
+      "bytes": 19082,
+      "sha256": "1e3cb1e261808d1cdbb61e4af8727e05619aedd14146ea34852ee3e01b416453"
+    },
+    {
+      "path": "src/calligraphy-desk.css",
+      "bytes": 11288,
+      "sha256": "62cc981cae8c457fa529ea5efc064b073a6435b34e30733817fd803d1094c522"
+    },
+    {
+      "path": "src/calligraphy-journeys.css",
+      "bytes": 4132,
+      "sha256": "6d51a292031090d3df75184dd8284cf2c10e6a8656133b8dff04fa0ee44e4651"
+    },
+    {
+      "path": "src/calligraphy-library.css",
+      "bytes": 3437,
+      "sha256": "096853b1a6a6d7dc239e283499f703fc8d30935e12bab827aae4631df813e46b"
+    },
+    {
+      "path": "src/calligraphy-main.tsx",
+      "bytes": 1539,
+      "sha256": "df7b902b47d4187fc8e18460acc0dbb0171893be9be72f63e44da3f9de0439f3"
+    },
+    {
+      "path": "src/calligraphy-motion.css",
+      "bytes": 3942,
+      "sha256": "a22ed9c032647486deed9f8822c131023f4e0ea997ebd26cfdcb8159edfa5576"
+    },
+    {
       "path": "src/calligraphy-scan.css",
       "bytes": 3037,
       "sha256": "b8edfd55db02b9fd7405ea77b523cc9c85455c36daf2872b6ce5745655beef05"
+    },
+    {
+      "path": "src/calligraphy-shell.css",
+      "bytes": 13316,
+      "sha256": "2cc2e4700cdeaefd593e0bea0f2a9a05d8add978f431be6e8addf6eb91184ec5"
+    },
+    {
+      "path": "src/calligraphy-theme.css",
+      "bytes": 12582,
+      "sha256": "efad578c220825bb78efd04e03e13457209ca4ea370bede00b7ce568ad42a047"
+    },
+    {
+      "path": "src/calligraphy-workflow.css",
+      "bytes": 1305,
+      "sha256": "bffb4b0e84c7ffe8248777888d53775a92c18594a0deb5aec3cfe0a4085e1127"
+    },
+    {
+      "path": "src/calligraphy-zoom.css",
+      "bytes": 3028,
+      "sha256": "35e13cf8f4a185fb40a2f80245f8f1b80a16f6994a45931f64cfc9c83771dd26"
     },
     {
       "path": "src/calligraphy.css",
@@ -5795,8 +6065,8 @@
     },
     {
       "path": "src/components/app-shell.tsx",
-      "bytes": 6103,
-      "sha256": "7e70ec41411c67b41cb3d64213f6b73c82adb2f78c0f2289d4401efc6506da23"
+      "bytes": 6216,
+      "sha256": "e01b6550670ac26f9af85e67f71105a78c953e7283201db6065565e662eda5a6"
     },
     {
       "path": "src/components/artist-reuse.tsx",
@@ -5817,6 +6087,76 @@
       "path": "src/components/calligraphy/blocks.tsx",
       "bytes": 7217,
       "sha256": "6243700190f395661c2667716bcf3c7693dfd530a45df98444276c3fdcb735df"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-chat-strip.test.tsx",
+      "bytes": 1584,
+      "sha256": "04d0f27c7888b18ebf71830b0a05b599ecf01c7000ac9e4513bb0cfe0b8efa51"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-chat-strip.tsx",
+      "bytes": 18733,
+      "sha256": "a7a4bc2b49263e743b40c0c8d9f68ba6ba2b415f80993806d7bf7fcbb6b7955c"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-cockpit.test.tsx",
+      "bytes": 686,
+      "sha256": "15b24c4b0b0b0f5fd3b0e871cc0ddae636bb75ab9b47cc11caf3d55bedbf4a0f"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-cockpit.tsx",
+      "bytes": 3152,
+      "sha256": "61d6c3a7dcfd166a3a0394e6308b851c1f9569ab722418341cc4c3ec5937a8a2"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-desk.tsx",
+      "bytes": 10640,
+      "sha256": "ceac69b00a0f8caa92af89ef107349d4ac673720cb7a6970d53f5af7f236f984"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-display-controls.tsx",
+      "bytes": 2787,
+      "sha256": "85dfd767b47675205930149df05e1cacf6d25587fe8fe3980fcfc8631db77a70"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-knowledge-library.test.tsx",
+      "bytes": 701,
+      "sha256": "9d3aef1ec0caa2d62b8b0545766ef6d122349ce36632e0950fb17903c4b1c49b"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-knowledge-library.tsx",
+      "bytes": 5193,
+      "sha256": "42560c5c9c372e5802417c431e879b03569039bd347017146fb7046233e5a223"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-reactions.tsx",
+      "bytes": 1595,
+      "sha256": "c74628b69c13292a91a686bfd9b838387dba9ba5580d17256798c59a2208e89e"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-settings-wizard.test.tsx",
+      "bytes": 3415,
+      "sha256": "ae3df2977f4e5664207d13fba38db68dec72bb1f477ba46d17e3adf35fb3aea3"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-settings-wizard.tsx",
+      "bytes": 25958,
+      "sha256": "431afd040a10e0b9bdc0d71895ee17269c74ad8961196f693e9cdd2c84865a37"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-subnav.tsx",
+      "bytes": 1218,
+      "sha256": "82fc57a0ed5271445c5d9e7d0ff6e3ef266578c04b54d3831637017890280f14"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-workflow.test.tsx",
+      "bytes": 646,
+      "sha256": "c1389fa345a108624c49ad20462631288893a17d8f94da8565d6ff295c72f732"
+    },
+    {
+      "path": "src/components/calligraphy/calligraphy-workflow.tsx",
+      "bytes": 4879,
+      "sha256": "f878a85093a0eb8a2177abeed0340ac0380520af2eba41239f5df1ffb55945bd"
     },
     {
       "path": "src/components/calligraphy/copperplate-maker.tsx",
@@ -5845,8 +6185,8 @@
     },
     {
       "path": "src/components/calligraphy/worksheet-account-panel.tsx",
-      "bytes": 4287,
-      "sha256": "a4ce3d97ca175a2618ec5a24178eb77ff4ac1a3417ea2da821fd41c618b3af2f"
+      "bytes": 4462,
+      "sha256": "ac83b50ef91de6fa9ee07fbdafd33ec08fd0089def21a3ddf6dcc3eca000fd16"
     },
     {
       "path": "src/components/calligraphy/worksheet-editor.tsx",
@@ -5854,29 +6194,119 @@
       "sha256": "822b8a3839ca66ec30a73cacd7a7dc7d1d547b169c1b996a7bd3e2ceb89b7777"
     },
     {
+      "path": "src/components/calligraphy/worksheet-font-creator.test.tsx",
+      "bytes": 5208,
+      "sha256": "4112898882ad41e23041f15dcda8f737c9f6af144acc1186fb6f96e34fb9bb17"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-font-creator.tsx",
+      "bytes": 8476,
+      "sha256": "a0d931ea55f320b0d7d52eed47c9f0bcc0a5f019b10a7885248db15ddf80724b"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-font-finish.tsx",
+      "bytes": 3589,
+      "sha256": "fe3a5b43b933eec132526949db0ca9118cf4717d69f4009b42211f34fc4a4836"
+    },
+    {
       "path": "src/components/calligraphy/worksheet-font-tools.tsx",
-      "bytes": 17619,
-      "sha256": "39eba5d4b1e5acf21c76a43c3c48ecb5671ba5dab0fb64d2a5a5b2638db8f0f0"
+      "bytes": 21105,
+      "sha256": "c7ac43c4f934896f460b5d3fc2f20ac35185d6b7a91b5a7a2d597962c7a9b890"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-glyph-jobs.tsx",
+      "bytes": 22247,
+      "sha256": "30b2b4129f51567a05650c6dd153c3c1cee378f46ff7224fea9605c4f2481082"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-lettering-editor.tsx",
+      "bytes": 2489,
+      "sha256": "3b3d19d2414b70e87eb2945da5ea52a6a8b6d05d09b6269a0d01f39486d866c0"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-lettering-size.test.tsx",
+      "bytes": 1769,
+      "sha256": "a7f83fe1f86ba947c484c690ea480d3dfb4d8a0d0f76effd3969f40615fe9e7b"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-lettering-size.tsx",
+      "bytes": 4791,
+      "sha256": "590ae5aa40a700130edab37900ed336e38b345f97a567bf7e9b58284306c5621"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-materials.test.tsx",
+      "bytes": 831,
+      "sha256": "7cf5f31405cdaf78de8fc0db6ce50cd8238fff4fd78a9eacc3a4a384764c9e29"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-materials.tsx",
+      "bytes": 7547,
+      "sha256": "d93ee33d2b1d61bba451de8afb74b240fa2e841b4d58842da511f90ba823ea56"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-number-field.tsx",
+      "bytes": 1976,
+      "sha256": "1d127222774f44561bb565d978581e168d0798d6088aff531db58be38cad1e5e"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-paper-controls.tsx",
+      "bytes": 3584,
+      "sha256": "729846d441be69ce406ffc432f94179ceec72599518c6e9f84b3d271acc3eb68"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-paper-pane.tsx",
+      "bytes": 1626,
+      "sha256": "9fa21a80e9d7d6027a70f6bb95b9fce4df0aa5e2a79c5917b4781197de500e96"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-paper-surface.tsx",
+      "bytes": 2874,
+      "sha256": "c477ebf4cf2d9b9db46afaacb7b64b49d6a63e66ad57bdb44c1cbd98028c1c60"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-paper-zoom.test.tsx",
+      "bytes": 1461,
+      "sha256": "e4678faffbfbc2d376a2493206f599e91b00109c026875ce5a4397e5e5956111"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-paper-zoom.tsx",
+      "bytes": 3283,
+      "sha256": "52a2664575d4ce66c1d323eb66cc8ce0f9483a9283a52f3ca850567bdd156841"
     },
     {
       "path": "src/components/calligraphy/worksheet-photo.tsx",
-      "bytes": 15794,
-      "sha256": "c4c49765dfcfd9de09e46a304c6deea607520e4d59bfc950b6c4aaff7564ec20"
+      "bytes": 29908,
+      "sha256": "66b0cc772e25dfb82855496fe9f202322847029728cb0d118c7bdd178c4b31c9"
     },
     {
       "path": "src/components/calligraphy/worksheet-preview.test.tsx",
-      "bytes": 5158,
-      "sha256": "01db7386c49ade46236bd5fa91529e323e5dca3048e588fed463b6d20adfadc2"
+      "bytes": 5929,
+      "sha256": "020c8090b767adcfeaa65de5f33e22802a422b4dc1b61a2849bc13a28ae86bd5"
     },
     {
       "path": "src/components/calligraphy/worksheet-preview.tsx",
-      "bytes": 5585,
-      "sha256": "c80eee797b774e0e08aa8d7d1f35ae8244fe82c9d2bfeede21aab25b7ed0c99c"
+      "bytes": 6554,
+      "sha256": "6fa09ac5c0cb7caa9d20be5abb9eb8006f645a15a60942379c0de900a6cd47db"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-special-words.tsx",
+      "bytes": 6173,
+      "sha256": "eaffed450b93a9c336a0533bb7ddc8d14acd3938f526fc345722a8c5ec5d9e17"
     },
     {
       "path": "src/components/calligraphy/worksheet-techniques.tsx",
       "bytes": 6794,
       "sha256": "2ce5a9fa7485fe26695309fb2bb5ec64d110b8c2519692eb8dbd361677d2a8a1"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-wizard.test.tsx",
+      "bytes": 3950,
+      "sha256": "f44a3c290d1155c8e8c57fab3efcbe7258b47a621bb4e8dd5f4d4006a368b5f4"
+    },
+    {
+      "path": "src/components/calligraphy/worksheet-wizard.tsx",
+      "bytes": 7001,
+      "sha256": "d3c68a74a474e5f135736a47019a0c1ee09591f936b9b06ec4e87ee01b9a5065"
     },
     {
       "path": "src/components/design-credit.tsx",
@@ -5910,8 +6340,8 @@
     },
     {
       "path": "src/components/poem-version-controls.tsx",
-      "bytes": 11137,
-      "sha256": "af685204cb5b29a9dcf26d524ecd16ad4ead274c8801c84d2af3b354118eb5a6"
+      "bytes": 11290,
+      "sha256": "e0a9a8d5fe6aa88de3ca7b044712e73d8c3baeed0105b3139599d6669c73b129"
     },
     {
       "path": "src/components/poem-version-picker.tsx",
@@ -6009,9 +6439,69 @@
       "sha256": "03013422641148dba60ee1240c44a4d0cc875ebf7bbe5a7c60b0a91ba648756e"
     },
     {
+      "path": "src/lib/calligraphy-assistant.test.ts",
+      "bytes": 3352,
+      "sha256": "b7bd5d277c0e0fd28c9902c2ce811fa4d148f39a607f87fb2c3fb3d70db28b59"
+    },
+    {
+      "path": "src/lib/calligraphy-assistant.ts",
+      "bytes": 6252,
+      "sha256": "271f26d362ef1640420e48a4ea5efad86f6e5796d6e8e03e2556d5e3d8a6ba70"
+    },
+    {
       "path": "src/lib/calligraphy-faces.ts",
       "bytes": 1908,
       "sha256": "dccb5ea04c585906f07fc3aa4197e4f1281527debbf9f5baa178ecb779fb1d35"
+    },
+    {
+      "path": "src/lib/calligraphy-guide.test.ts",
+      "bytes": 1362,
+      "sha256": "83e76ec70d0d0434188aa14c2b026f8ddd7767014577a5ca75fbb77a7b641a16"
+    },
+    {
+      "path": "src/lib/calligraphy-guide.ts",
+      "bytes": 4342,
+      "sha256": "0542baefdc0675047ec2b5db49d70c14f1f31d9535ad61604863afe6010f1255"
+    },
+    {
+      "path": "src/lib/calligraphy-help.test.ts",
+      "bytes": 1796,
+      "sha256": "9d19da98d83cc1e88806af25b86f2b828a2ff7704da28adb8ddbdbecefa3a809"
+    },
+    {
+      "path": "src/lib/calligraphy-help.ts",
+      "bytes": 5849,
+      "sha256": "95236829b812728109b02374af8b08cea0e1e048a8f1c96974bca42fc71c20fd"
+    },
+    {
+      "path": "src/lib/calligraphy-ink-tips.ts",
+      "bytes": 2728,
+      "sha256": "e38806102a3178779baf4954edf2b6bb22c41a9073eac421deb031f506978f92"
+    },
+    {
+      "path": "src/lib/calligraphy-journey-map.test.ts",
+      "bytes": 676,
+      "sha256": "fb089ff19949be7c00265553be2ef22561bb24fffde395f7bfd25639502ea4cf"
+    },
+    {
+      "path": "src/lib/calligraphy-journey-map.ts",
+      "bytes": 1652,
+      "sha256": "559b31fbd081344f12f480f652780b0ab8a8e302999344e2b31ca13a770bb2ef"
+    },
+    {
+      "path": "src/lib/calligraphy-layout.test.ts",
+      "bytes": 1077,
+      "sha256": "0cf282b1182ab5c5d74a65b8c42386ccf04c4e99591f304474fe1bd587f86ba3"
+    },
+    {
+      "path": "src/lib/calligraphy-layout.ts",
+      "bytes": 1090,
+      "sha256": "475faa705f5c5ddf5481a86205005c389ff838339458f0d9f035b5df2f0f6d03"
+    },
+    {
+      "path": "src/lib/calligraphy-reactions.ts",
+      "bytes": 7886,
+      "sha256": "ad42464da01a15eb7c7680cf9d00c5a51a8854638b379a71d303150781b9a990"
     },
     {
       "path": "src/lib/calligraphy-scan-import.ts",
@@ -6180,8 +6670,8 @@
     },
     {
       "path": "src/lib/scale-skin.test.ts",
-      "bytes": 30203,
-      "sha256": "13b08bf049893d21633be528a9eb4f3481e48a43f34a67ea8d5cbb15747761ad"
+      "bytes": 30549,
+      "sha256": "461859387d7b2c10d7a6a27ba5e63663d0833d17813ffa8d1601554efb0824a0"
     },
     {
       "path": "src/lib/scale-skin.ts",
@@ -6285,8 +6775,8 @@
     },
     {
       "path": "src/lib/worksheet-export.ts",
-      "bytes": 32617,
-      "sha256": "aa5b1c168569c700e994469753b4684f40f71e5fbbc69088bde9dab52b0b2316"
+      "bytes": 1418,
+      "sha256": "8492f7e4e717bcfc8b50f3ae7e81329c06cbbbc069baab37a962133d7e6f7465"
     },
     {
       "path": "src/lib/worksheet-font-previews.test.ts",
@@ -6305,8 +6795,53 @@
     },
     {
       "path": "src/lib/worksheet-fonts.ts",
-      "bytes": 19727,
-      "sha256": "21d848f9af8e030eea88ddf1035bd54e88214d2e54ecaaf5ea1ba715eddb918f"
+      "bytes": 20491,
+      "sha256": "b1c993fafcf613443fe239cbd59c2a76dd5eb97d89e639fa32c6f2294140edcc"
+    },
+    {
+      "path": "src/lib/worksheet-glyph-job.test.ts",
+      "bytes": 1468,
+      "sha256": "1cd39757e149c07dde4cfbc1b6463e420308619d68ba432dda6de4f8c43da8b7"
+    },
+    {
+      "path": "src/lib/worksheet-glyph-job.ts",
+      "bytes": 2846,
+      "sha256": "e4e6ebab507c5eefa2bc643888d6f458f8a1957c7bf893364bd59c127f3e0a07"
+    },
+    {
+      "path": "src/lib/worksheet-options.test.ts",
+      "bytes": 2414,
+      "sha256": "d752bb9242363416c11da7b858afd02143d519d05e081001c1d62cbc62bfead2"
+    },
+    {
+      "path": "src/lib/worksheet-options.ts",
+      "bytes": 4769,
+      "sha256": "44fd4d60521c6b1cecdce01664361374b9a1f533dd8366323cc6741e471a2ddf"
+    },
+    {
+      "path": "src/lib/worksheet-paper-surface.test.ts",
+      "bytes": 664,
+      "sha256": "33715f905ec878b545ae16c87b4810426481af5e52a9879cb81bdf33892b85b1"
+    },
+    {
+      "path": "src/lib/worksheet-paper-surface.ts",
+      "bytes": 1133,
+      "sha256": "4feb216beb6f63ef3bdbd26c39c9d245658013128056183eef8085c797cdfb39"
+    },
+    {
+      "path": "src/lib/worksheet-pdf.ts",
+      "bytes": 24540,
+      "sha256": "7660e1941101589b5eb8b54cb89ccf3acabbf2addb8f4e9ad62ac4689a8e9843"
+    },
+    {
+      "path": "src/lib/worksheet-photo-sizing.test.ts",
+      "bytes": 2610,
+      "sha256": "b012bbf58404c20689c152f0d6a5807e769a1ef2f2144561c7acab83ec6324aa"
+    },
+    {
+      "path": "src/lib/worksheet-photo-sizing.ts",
+      "bytes": 1740,
+      "sha256": "2204f263a06a2f99289114f417b63a91724deb3bbe07676e3fd4923266df9e26"
     },
     {
       "path": "src/lib/worksheet-photo.test.ts",
@@ -6315,8 +6850,18 @@
     },
     {
       "path": "src/lib/worksheet-photo.ts",
-      "bytes": 5645,
-      "sha256": "ce10b8f16a1f6871118bd8cfda4e0dff3c47e080fd47c9098e6e9b7c759065bb"
+      "bytes": 5695,
+      "sha256": "4967b50235412731f7263f9e58af79500b1b50eca869a207e951c41df8229693"
+    },
+    {
+      "path": "src/lib/worksheet-poem-excerpt.test.ts",
+      "bytes": 2466,
+      "sha256": "0dc0a2fd58630566a80fc088bda094e42dc4dcdcd0f1dd7b3e0060950bef8351"
+    },
+    {
+      "path": "src/lib/worksheet-poem-excerpt.ts",
+      "bytes": 1377,
+      "sha256": "d3204c0d0c5d48e5ee7f6e6f5557a64a534f795edc98fe861dadb61cf6dbbb18"
     },
     {
       "path": "src/lib/worksheet-shaping.test.ts",
@@ -6325,8 +6870,18 @@
     },
     {
       "path": "src/lib/worksheet-shaping.ts",
-      "bytes": 17108,
-      "sha256": "baa7325df1ffd3ef5325d89e536150273a43cbfa7bb52389789e6e0b0b561790"
+      "bytes": 17545,
+      "sha256": "601c87f540c08852c04b83d935944f864a4a1b494f78a796dca39886f25d5d0e"
+    },
+    {
+      "path": "src/lib/worksheet-special-lettering.test.tsx",
+      "bytes": 6838,
+      "sha256": "7d9f0c0af12f8217c564d503cbd216292bb3d3da0b21d005680714a0253333de"
+    },
+    {
+      "path": "src/lib/worksheet-special-lettering.ts",
+      "bytes": 4162,
+      "sha256": "09aaff51683b2797491a16da1a657b047062163937592320bcd315664cb6e5b1"
     },
     {
       "path": "src/lib/worksheet-store.test.ts",
@@ -6339,9 +6894,14 @@
       "sha256": "44c6fa9c6a306975b5fce2e1f2c0a5d49d9eed5866065ed7e1494e7832dd314e"
     },
     {
+      "path": "src/lib/worksheet-text.ts",
+      "bytes": 9121,
+      "sha256": "c22ef4caca15f8218227dd4550a3c06907b5f54b4e9ebc048c9f4b49584a9091"
+    },
+    {
       "path": "src/main.tsx",
-      "bytes": 5019,
-      "sha256": "956e178812f747ab73a48213c5f828e76684e34c52b4430bfb8b692b2b50c2b8"
+      "bytes": 5668,
+      "sha256": "4ae7f106283b2846634c5a518a0320857e4e4a929533e90a9aeabba6f3c8911e"
     },
     {
       "path": "src/pages/archive.tsx",
@@ -6375,8 +6935,8 @@
     },
     {
       "path": "src/pages/home.tsx",
-      "bytes": 1623,
-      "sha256": "127064c29ee4362556b9ca5f3f597436d7e070b165dfb91a78a779c9826902d5"
+      "bytes": 1885,
+      "sha256": "3f4c8280cf116bbca03aadba8d638d9f0fed505a8dd4849dbef9d0f20d66dc64"
     },
     {
       "path": "src/pages/instructions.test.tsx",
@@ -6397,6 +6957,16 @@
       "path": "src/pages/poem.tsx",
       "bytes": 18042,
       "sha256": "5892be051aac047b3e2cbc6df4aca370e520eae2d084948767f64785edf0215b"
+    },
+    {
+      "path": "src/pages/poems.test.tsx",
+      "bytes": 2089,
+      "sha256": "5ec1980006381ff26badfba2398a2f50c2e44d22681451baaa1c17366d9d6659"
+    },
+    {
+      "path": "src/pages/poems.tsx",
+      "bytes": 5253,
+      "sha256": "1a3a782b539320de4d8301d619143797165b3ad474a96f7189597783a0080439"
     },
     {
       "path": "src/pages/projection.tsx",
@@ -6430,8 +7000,8 @@
     },
     {
       "path": "src/pages/worksheet-studio.tsx",
-      "bytes": 50402,
-      "sha256": "38bf69edbe9e2ec1aa1578286bda97fbffad3a93808863a5b1181849a09b9dd6"
+      "bytes": 83435,
+      "sha256": "a5dc6f2a810df3f70b5d1d61f9c2085b7ad552e6d7a363245b1a3dcae87d1d49"
     },
     {
       "path": "src/poem-editor.css",
@@ -6442,6 +7012,11 @@
       "path": "src/poem-version-controls.css",
       "bytes": 2352,
       "sha256": "9bafc4f1ff262d4852006900b84dfc63c44d9d20cf18636cfae63c973013a174"
+    },
+    {
+      "path": "src/poems.css",
+      "bytes": 3944,
+      "sha256": "59873f871fc1b2a43523887b55eedf8adb76c1d4c276fdfb428599c61a1174a8"
     },
     {
       "path": "src/projection.css",
@@ -6470,8 +7045,8 @@
     },
     {
       "path": "src/site-guide.css",
-      "bytes": 712,
-      "sha256": "4ecaaf369f086c2d5b5cf312590ce73a5a2d9350c3cd86ebc4a1995593924a33"
+      "bytes": 19908,
+      "sha256": "603bb5495664286962326edc50435a6d88fc2546871dadf5d290699e0e8a8f32"
     },
     {
       "path": "src/six-foot.css",
@@ -6485,8 +7060,8 @@
     },
     {
       "path": "src/worksheet-studio.css",
-      "bytes": 23022,
-      "sha256": "dd9b0d9fea20ac2b87fc700486c485e5dd2156c10c1ab94da4451209127522b2"
+      "bytes": 23204,
+      "sha256": "0418becfd737b0558ebc104806d065146c1c8dee80ffe2e20b4b177f050c5883"
     },
     {
       "path": "tests/security/__snapshots__/no-domain-cookie-snapshot.yml",
@@ -6520,8 +7095,8 @@
     },
     {
       "path": "vite.config.ts",
-      "bytes": 681,
-      "sha256": "6b8a2d121fc707e1e2741025fe67c729b8d397bcedb5dca0d4a9b83e437824d7"
+      "bytes": 893,
+      "sha256": "1bc7f607563fa61dd59bbd3b91984a3cc06eb302ceb810835cc69ff57f18d23b"
     }
   ]
 }

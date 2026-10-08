@@ -17,6 +17,11 @@ const Foil = lazy(() => import("@/pages/foil"));
 const Assembly = lazy(() => import("@/pages/assembly"));
 const Archive = lazy(() => import("@/pages/archive"));
 const Calligraphy = lazy(() => import("@/pages/calligraphy"));
+const PoemPage = lazy(() =>
+  import("@/pages/poems").then((module) => ({
+    default: module.PoemPageView,
+  })),
+);
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
 });
@@ -108,6 +113,24 @@ const projectionRoute = createRoute({
   component: lazyRouteComponent(() => import("@/pages/projection")),
   pendingComponent: RouteLoading,
 });
+const poemsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/poems",
+  component: lazyRouteComponent(() => import("@/pages/poems")),
+  pendingComponent: RouteLoading,
+});
+const poemPageRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/poems/$slug",
+  component: function PoemPageRoute() {
+    const { slug } = poemPageRoute.useParams();
+    return (
+      <Suspense fallback={<RouteLoading />}>
+        <PoemPage slug={slug} />
+      </Suspense>
+    );
+  },
+});
 const sixFootRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/six-foot",
@@ -127,6 +150,8 @@ const router = createRouter({
     foilRoute,
     instructionsRoute,
     poemRoute,
+    poemsRoute,
+    poemPageRoute,
     projectionRoute,
     sixFootRoute,
     createRoute({

@@ -22,6 +22,9 @@ type AccountState =
       snapshot: WorksheetAccountSnapshot;
     };
 
+const CREW_SESSION_MESSAGE =
+  "The crew board could not confirm a signed-in session. Open it to sign in or check its status, then return and try again. This browser draft stays here.";
+
 function accountUrl() {
   if (globalThis.location?.hostname === "erebe.muchadoaboutoneside.com")
     return CREW_WORKSHEET_PATH;
@@ -49,7 +52,7 @@ export function WorksheetAccountPanel({
       if (response.status === 401) {
         setState({
           kind: "message",
-          text: "Sign in on the crew board first. This browser draft stays here.",
+          text: CREW_SESSION_MESSAGE,
         });
         return;
       }
@@ -76,7 +79,7 @@ export function WorksheetAccountPanel({
     } catch {
       setState({
         kind: "message",
-        text: "The crew board could not be reached.",
+        text: CREW_SESSION_MESSAGE,
       });
     } finally {
       setBusy(false);
@@ -90,7 +93,7 @@ export function WorksheetAccountPanel({
       if (response.status === 401) {
         setState({
           kind: "message",
-          text: "Sign in on the crew board first. This browser draft stays here.",
+          text: CREW_SESSION_MESSAGE,
         });
         return;
       }
@@ -104,7 +107,7 @@ export function WorksheetAccountPanel({
     } catch {
       setState({
         kind: "message",
-        text: "The crew board could not be reached.",
+        text: CREW_SESSION_MESSAGE,
       });
     } finally {
       setBusy(false);
@@ -118,7 +121,13 @@ export function WorksheetAccountPanel({
         The anonymous desk is not copied until you ask. Signing in happens on
         the crew board.
       </p>
-      <a href={`${CREW_WORKSHEET_ORIGIN}/crew/`}>Open the crew board</a>
+      <a
+        href={`${CREW_WORKSHEET_ORIGIN}/crew/`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open the crew board to sign in
+      </a>
       <button
         type="button"
         disabled={!ready || busy}
@@ -126,7 +135,7 @@ export function WorksheetAccountPanel({
       >
         Save a crew copy
       </button>
-      {state.kind === "message" ? <p>{state.text}</p> : null}
+      {state.kind === "message" ? <p role="status">{state.text}</p> : null}
       {state.kind === "conflict" ? (
         <>
           <p>The crew copy changed since this page looked.</p>

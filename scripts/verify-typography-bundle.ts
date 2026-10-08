@@ -32,6 +32,10 @@ function staticClosure(start: string): Set<string> {
 }
 
 const fontAssets = await readdir(resolve(dist, "assets"));
+assert(
+  !fontAssets.some((file) => file.endsWith(".map")),
+  "Production assets must not publish source maps",
+);
 const wasm = fontAssets.filter((file) => file.endsWith(".wasm"));
 assert.equal(
   wasm.length,
@@ -65,6 +69,39 @@ const checkedRoots = Object.entries(manifest).filter(
   ([key, chunk]) => chunk.isEntry || key === "src/pages/copperplate.tsx",
 );
 assert(checkedRoots.some(([key]) => key === "src/pages/copperplate.tsx"));
+assert(
+  manifest["cockpit.html"]?.isEntry,
+  "The calligraphy SPA must have its own entry",
+);
+const cockpitClosure = staticClosure("cockpit.html");
+assert(
+  !cockpitClosure.has("src/lib/worksheet-pdf.ts"),
+  "Worksheet PDF creation and import must remain outside the startup bundle",
+);
+let cockpitGzipBytes = 0;
+for (const key of cockpitClosure) {
+  const chunk = manifest[key];
+  assert(chunk);
+  cockpitGzipBytes += gzipSync(
+    await readFile(resolve(dist, chunk.file)),
+  ).length;
+}
+assert(
+  cockpitGzipBytes <= 340_000,
+  `Initial cockpit JavaScript exceeds 340,000 gzip bytes: ${cockpitGzipBytes}`,
+);
+assert(
+  !cockpitClosure.has("index.html"),
+  "The cockpit must not import the main site entry",
+);
+for (const key of cockpitClosure) {
+  assert(
+    !/babylon|studio-3d|src\/pages\/(?:studio|assembly|foil|scales|archive)\./i.test(
+      key,
+    ),
+    `Unrelated cockpit dependency: ${key}`,
+  );
+}
 for (const [start] of checkedRoots) {
   for (const key of staticClosure(start)) {
     const chunk = manifest[key];
@@ -85,6 +122,10 @@ console.log(
     {
       ok: true,
       checkedRoots: checkedRoots.map(([key]) => key),
+      cockpitStaticChunks: [...cockpitClosure].map(
+        (key) => manifest[key]?.file,
+      ),
+      cockpitGzipBytes,
       harfbuzz: {
         bytes: wasmBytes.length,
         gzipBytes: gzipSync(wasmBytes).length,

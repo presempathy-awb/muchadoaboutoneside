@@ -1,0 +1,134 @@
+@media screen {
+  .ck-paper-trigger--surface {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: zoom-in;
+  }
+  .ck-paper-trigger--surface::after {
+    content: "Enlarge paper";
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    padding: 7px 10px;
+    border: 1px solid color-mix(in srgb, var(--border, #dbc0c9) 78%, white);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--background, #fff8f5) 92%, transparent);
+    color: var(--foreground, #452532);
+    box-shadow: 0 4px 14px #45253224;
+    font: 600 13px / 1 var(--font-sans);
+    opacity: 0.82;
+    pointer-events: none;
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+  .ck-paper-trigger--surface:is(:hover, :focus-visible)::after {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+  .ck-paper-dialog {
+    margin: auto;
+    width: calc(100vw - 32px);
+    height: calc(100dvh - 32px);
+    max-width: none;
+    max-height: none;
+    padding: 18px;
+    border: 1px solid #b78091;
+    border-radius: 14px;
+    background: var(--background, #fff8f5);
+    color: var(--foreground, #452532);
+    overflow: hidden;
+  }
+  .ck-paper-dialog[open] {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ck-paper-dialog::backdrop {
+    background: #27141ed9;
+  }
+  .ck-paper-dialog header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .ck-paper-dialog h2 {
+    font: 26px / 1.2 var(--font-serif);
+    margin: 0 auto 0 0;
+  }
+  .ck-paper-dialog label {
+    display: grid;
+    gap: 4px;
+    min-width: 180px;
+  }
+  .ck-paper-dialog input {
+    accent-color: #9c2850;
+  }
+  .ck-paper-dialog button {
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #b78091;
+    border-radius: 6px;
+    background: var(--background, #fff8f5);
+    color: inherit;
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .ck-paper-dialog :focus-visible {
+    outline: 3px solid #9c2850;
+    outline-offset: 3px;
+  }
+  .ck-paper-dialog > p {
+    margin: 0;
+    font-size: 14px;
+  }
+  .ck-zoom-viewport {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    container-type: size;
+    display: grid;
+    place-items: safe center;
+    background: color-mix(in srgb, var(--secondary, #ecd7dc) 82%, #8c6472);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .ck-zoom-sheet {
+    flex: 0 0 auto;
+  }
+  .ck-zoom-sheet svg {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    filter: drop-shadow(0 6px 12px #45253226);
+  }
+  @media (max-width: 640px) {
+    .ck-paper-dialog {
+      width: calc(100vw - 12px);
+      height: calc(100dvh - 12px);
+      padding: 12px;
+    }
+    .ck-zoom-viewport {
+      padding: 10px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ck-paper-trigger--surface::after {
+      transition: none;
+    }
+  }
+}
+@media print {
+  .ck-paper-dialog {
+    display: none;
+  }
+}

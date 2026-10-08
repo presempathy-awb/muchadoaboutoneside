@@ -1,9 +1,11 @@
-import { useId } from "react";
+import { memo, useId } from "react";
 import type { WorksheetLayout } from "../../../shared/worksheet";
 import type { WorksheetFont } from "../../lib/worksheet-fonts";
+import { paperSurface } from "../../lib/worksheet-paper-surface";
+import { worksheetRunParts } from "../../lib/worksheet-shaping";
 import type { WorksheetSnapshot } from "../../lib/worksheet-store";
 
-export function WorksheetPreview({
+export const WorksheetPreview = memo(function WorksheetPreview({
   snapshot,
   layout,
   lines,
@@ -21,6 +23,7 @@ export function WorksheetPreview({
   return (
     <svg
       className="ws-paper"
+      data-surface={printed ? "printer" : paperSurface(settings.paperName)}
       viewBox={`0 0 ${layout.widthMm} ${layout.heightMm}`}
       width={`${layout.widthMm}mm`}
       height={`${layout.heightMm}mm`}
@@ -35,7 +38,12 @@ export function WorksheetPreview({
           <rect width={layout.widthMm} height={layout.heightMm} />
         </clipPath>
       </defs>
-      <rect width={layout.widthMm} height={layout.heightMm} fill="white" />
+      <rect
+        className="ws-paper-surface"
+        width={layout.widthMm}
+        height={layout.heightMm}
+        fill="white"
+      />
       <g clipPath={`url(#${id}-clip)`}>
         {photo && (!printed || photo.print) && (
           <image
@@ -67,75 +75,85 @@ export function WorksheetPreview({
             }
           />
         ))}
-        {settings.textEnabled &&
-          font &&
-          lines.map((line, index) => {
-            const role =
-              settings.practicePattern === "model-trace-blank"
-                ? index % 3 === 0
-                  ? "model"
-                  : index % 3 === 1
-                    ? "trace"
-                    : "blank"
-                : "model";
-            if (!line || role === "blank") return null;
-            const run = font.shape(line, settings);
-            const width = run.widthMm;
-            const available = layout.contentX2Mm - layout.contentX1Mm;
-            const x =
-              layout.contentX1Mm +
-              (settings.textAlign === "center"
-                ? (available - width) / 2
-                : settings.textAlign === "right"
-                  ? available - width
-                  : 0);
-            const baseline = layout.baselineYsMm[index];
-            if (baseline === undefined) return null;
-            const opacity =
-              role === "trace"
-                ? settings.textOpacity * 0.25
-                : settings.textOpacity;
-            if (
-              run.glyphs.length > 0 &&
-              run.glyphs.every((glyph) => glyph.path !== undefined)
-            ) {
-              return (
-                <g
-                  key={`${baseline}-${line}`}
-                  fill={settings.textColor}
-                  opacity={opacity}
-                >
-                  {run.glyphs.map((glyph) =>
-                    glyph.path ? (
-                      <path
-                        key={`${glyph.cluster}-${glyph.id}-${glyph.xMm}-${glyph.yMm}`}
-                        d={glyph.path}
-                        transform={`translate(${x + glyph.xMm} ${baseline - glyph.yMm}) scale(${run.pathScaleMm * run.writingScale} ${-run.pathScaleMm})`}
-                      />
-                    ) : null,
-                  )}
-                </g>
-              );
-            }
-            return (
-              <text
-                key={`${baseline}-${line}`}
-                x={x}
-                y={baseline}
-                fontFamily={font.family}
-                fontSize={(run.sizePt * 25.4) / 72}
-                fill={settings.textColor}
-                opacity={opacity}
-                letterSpacing={settings.letterSpacingMm}
-                wordSpacing={settings.wordSpacingMm}
-                textLength={width > 0 ? width : undefined}
-                lengthAdjust="spacingAndGlyphs"
-                xmlSpace="preserve"
-              >
-                {line}
-              </text>
-            );
-          })}
+        <g
+          className={printed ? undefined : "ws-lettering-layer"}
+          data-visible={settings.textEnabled && Boolean(font)}
+          aria-hidden={!settings.textEnabled}
+        >
+          {(!printed || settings.textEnabled) &&
+            font &&
+            lines.map((line, index) => {
+              const role =
+                settings.practicePattern === "model-trace-blank"
+                  ? index % 3 === 0
+                    ? "model"
+                    : index % 3 === 1
+                      ? "trace"
+                      : "blank"
+                  : "model";
+              if (!line || role === "blank") return null;
+              const lineRun = font.shape(line, settings);
+              const width = lineRun.widthMm;
+              const available = layout.contentX2Mm - layout.contentX1Mm;
+              const x =
+                layout.contentX1Mm +
+                (settings.textAlign === "center"
+                  ? (available - width) / 2
+                  : settings.textAlign === "right"
+                    ? available - width
+                    : 0);
+              const baseline = layout.baselineYsMm[index];
+              if (baseline === undefined) return null;
+              const opacity =
+                role === "trace"
+                  ? settings.textOpacity * 0.25
+                  : settings.textOpacity;
+              return worksheetRunParts(lineRun, font.family).map((part) => {
+                const { run } = part;
+                const partX = x + part.xMm;
+                if (
+                  run.glyphs.length > 0 &&
+                  run.glyphs.every((glyph) => glyph.path !== undefined)
+                ) {
+                  return (
+                    <g
+                      key={`${baseline}-${part.xMm}`}
+                      fill={settings.textColor}
+                      opacity={opacity}
+                    >
+                      {run.glyphs.map((glyph) =>
+                        glyph.path ? (
+                          <path
+                            key={`${glyph.cluster}-${glyph.id}-${glyph.xMm}-${glyph.yMm}`}
+                            d={glyph.path}
+                            transform={`translate(${partX + glyph.xMm} ${baseline - glyph.yMm}) scale(${run.pathScaleMm * run.writingScale} ${-run.pathScaleMm})`}
+                          />
+                        ) : null,
+                      )}
+                    </g>
+                  );
+                }
+                return (
+                  <text
+                    key={`${baseline}-${part.xMm}`}
+                    x={partX}
+                    y={baseline}
+                    fontFamily={part.family}
+                    fontSize={(run.sizePt * 25.4) / 72}
+                    fill={settings.textColor}
+                    opacity={opacity}
+                    letterSpacing={settings.letterSpacingMm}
+                    wordSpacing={settings.wordSpacingMm}
+                    textLength={run.widthMm > 0 ? run.widthMm : undefined}
+                    lengthAdjust="spacingAndGlyphs"
+                    xmlSpace="preserve"
+                  >
+                    {run.text}
+                  </text>
+                );
+              });
+            })}
+        </g>
         {settings.calibrationMark && (
           <g stroke="#000000" fill="#444444" strokeWidth={(0.6 * 25.4) / 72}>
             <path
@@ -155,4 +173,4 @@ export function WorksheetPreview({
       </g>
     </svg>
   );
-}
+});

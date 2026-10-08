@@ -1,0 +1,848 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@xyflow/react/dist/style.css";
+@import "./calligraphy-chat.css";
+
+@theme inline {
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-accent: var(--secondary);
+  --color-accent-foreground: var(--foreground);
+  --color-muted-foreground: #72505e;
+  --color-border: var(--border);
+  --color-ring: #a33d62;
+  --radius-md: 0.5rem;
+}
+:root {
+  font-family: var(--font-sans);
+  color: #40232e;
+  background: #faedf1;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --background: #fff8f5;
+  --foreground: #40232e;
+  --primary: #922f54;
+  --secondary: #f7dce5;
+  --border: #dbc0c9;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+a {
+  color: inherit;
+}
+:focus-visible {
+  outline: 3px solid #a76a1c;
+  outline-offset: 3px;
+}
+::selection {
+  background: #d4e0bf;
+}
+.ck-skip {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 100;
+  background: white;
+  padding: 1rem;
+}
+.ck-skip:focus {
+  top: 1rem;
+}
+@media screen {
+  body:has(.ck-studio) {
+    overflow: hidden;
+  }
+  .ws-studio.ck-studio {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+  }
+  .ck-studio .ws-heading {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 130px 290px;
+    column-gap: 2rem;
+    padding: 12px 24px;
+    margin: 0;
+    background: #62233e;
+    color: #fbf8eb;
+    border-bottom: 1px solid #af985d;
+  }
+  .ck-studio .ws-heading :focus-visible {
+    outline-color: #fff9ea;
+  }
+  .ck-studio .ws-heading .ws-back {
+    font-size: 14px;
+    color: #dce6d9;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    margin: 0 0 6px;
+  }
+  .ck-studio .ws-heading h1 {
+    grid-column: 1;
+    max-width: none;
+    font-size: clamp(28px, 3vw, 39px);
+    line-height: 1.12;
+    margin: 0;
+    color: #fff9ea;
+  }
+  .ck-studio .ws-heading h1 em {
+    display: inline;
+    color: #e5cd96;
+  }
+  .ck-studio .ws-heading > p {
+    grid-column: 1;
+    margin: 8px 0 0;
+    color: #e4ece2;
+    font-size: 16px;
+  }
+  .ck-studio .ws-wizard-launch {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    width: 290px;
+    max-width: none;
+    align-self: center;
+    margin: 0;
+    background: #f6ecd2;
+    color: #62233e;
+    border: 1px solid #d9c391;
+    box-shadow: none;
+  }
+  .ck-studio .ws-wizard-launch:hover {
+    background: #fff8e8;
+  }
+  .ck-studio .ws-wizard-launch {
+    min-height: 72px;
+    padding: 10px 16px;
+  }
+  .ck-studio .ws-wizard-launch strong {
+    font-size: 21px;
+    line-height: 1.25;
+  }
+  .ck-studio .ws-wizard-launch small {
+    color: #465545;
+  }
+  .ck-workspace {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .ck-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff9f6;
+    border-bottom: 1px solid #dbc0c9;
+    padding: 8px 20px;
+    flex: 0 0 auto;
+  }
+  .ck-tool-tabs {
+    display: flex;
+    gap: 3px;
+    overflow: auto;
+    scrollbar-width: thin;
+    flex: 1;
+  }
+  .ck-toolbar .ck-tool {
+    flex-shrink: 0;
+    height: 44px;
+    padding: 0 12px;
+    color: #613647;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 7px;
+    gap: 7px;
+  }
+  .ck-toolbar .ck-tool[aria-pressed="true"] {
+    color: #ffffff;
+    background: #922f54;
+  }
+  .ck-toolbar .ck-tool:hover {
+    background: #f7dce5;
+    color: #62233e;
+  }
+  .ck-toolbar .ck-tool[aria-pressed="true"]:hover {
+    background: #922f54;
+    color: white;
+  }
+  .ck-focus {
+    border-left: 1px solid #d2d9cb;
+  }
+  .ck-studio .ws-status-bar {
+    padding: 8px 28px;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    font-size: 14px;
+    flex: 0 0 auto;
+    background: #f7e8ed;
+  }
+  .ck-workspace > .ws-error,
+  .ck-workspace > .ws-notice,
+  .ck-workspace > .ws-confirm {
+    flex: 0 0 auto;
+    max-height: 130px;
+    overflow: auto;
+    margin: 8px 24px;
+  }
+  .ck-studio .ws-desk {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(20rem, 1fr) minmax(0, min(52vw, 46rem));
+    grid-template-areas: "tools paper";
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .ck-studio .ws-stage {
+    display: contents;
+  }
+  .ck-studio .ws-desk [hidden] {
+    display: none;
+  }
+  .ck-studio .ws-controls,
+  .ck-studio .ws-font-access,
+  .ck-studio .ws-text-panel,
+  .ck-studio .ws-photo-panel,
+  .ck-studio .ws-library,
+  .ck-workflow,
+  .ck-help-bay {
+    grid-area: tools;
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 0;
+    border-right: 1px solid #dbc0c9;
+    background: #fff8f5;
+    border-radius: 0;
+    padding: 22px;
+    margin: 0;
+    animation: ck-arrive 180ms ease-out;
+  }
+  .ck-output-bay {
+    grid-area: tools;
+    overflow: auto;
+    min-height: 0;
+    padding: 22px;
+    background: #fff8f5;
+    border-right: 1px solid #dbc0c9;
+  }
+  .ck-studio .ws-controls {
+    padding: 0;
+  }
+  .ck-studio .ws-controls > fieldset {
+    padding: 22px;
+  }
+  .ck-studio .ws-controls[data-tool="paper"] > fieldset {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    align-items: start;
+    gap: 24px;
+  }
+  .ck-studio .ws-controls details {
+    border-bottom: 1px solid #dbc0c9;
+  }
+  .ck-studio .ws-controls .ws-detail-body {
+    padding: 16px 0 20px;
+  }
+  .ck-studio .ws-controls summary,
+  .ck-studio .ws-photo-panel > summary,
+  .ck-studio .ws-library > summary {
+    font-family: var(--font-serif);
+    font-size: 23px;
+    line-height: 1.3;
+    color: #62233e;
+    padding: 10px 0;
+  }
+  .ck-studio .ws-guide-presets {
+    margin-bottom: 18px;
+  }
+  .ck-studio .ws-guide-presets > div {
+    grid-template-columns: 1fr;
+  }
+  .ck-studio .ws-font-access {
+    display: block;
+  }
+  .ck-studio .ws-font-access legend {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    color: #62233e;
+  }
+  .ck-studio .ws-font-access-row {
+    display: grid;
+  }
+  .ck-studio .ws-font-gallery {
+    margin: 24px 0;
+  }
+  .ck-studio .ws-font-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+  .ck-studio .ws-font-card {
+    padding: 22px;
+  }
+  .ck-paper-bay {
+    grid-area: paper;
+    width: 100%;
+    max-width: 46rem;
+    justify-self: center;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    gap: 10px 14px;
+    padding: 16px clamp(16px, 2vw, 32px);
+    background: #f7e8ed;
+  }
+  .ck-studio .ws-preview-top {
+    grid-column: 1 / -1;
+    margin: 0;
+    gap: 12px;
+  }
+  .ck-studio .ws-preview-top h2 {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    color: #62233e;
+  }
+  .ck-studio .ws-preview-mat {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    min-height: 0;
+    min-width: 0;
+    height: 100%;
+    padding: 16px;
+    border: 1px solid #d7b9c3;
+    background: #efd7df;
+    box-shadow: inset 0 1px 3px #183c3410;
+    border-radius: 12px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+  .ck-studio .ws-preview-mat > svg {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    max-width: none;
+    background: transparent;
+    box-shadow: none;
+    filter: drop-shadow(0 8px 12px #62233e29);
+  }
+  .ck-studio .ws-paper-surface {
+    margin-top: 14px;
+  }
+  .ck-paper-bay .ws-preview-controls {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 0;
+  }
+  .ck-paper-bay .ws-preview-control-hint,
+  .ck-paper-bay :where(.ws-surface-control) > .ws-hint,
+  .ck-paper-bay .ws-surface-control > legend {
+    display: none;
+  }
+  .ck-paper-material {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .ck-paper-material .ws-surface-control {
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  .ck-paper-material .ws-size-actions {
+    flex-wrap: nowrap;
+    margin: 0;
+  }
+  .ck-paper-material button,
+  .ck-paper-bay .ws-preview-controls button {
+    min-height: 44px;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+  .ck-studio .ws-hint {
+    font-size: 16px;
+    color: #72505e;
+  }
+  .ck-studio .ws-field > :is(span, label) {
+    font-size: 16px;
+  }
+  .ck-studio :is(input, select, textarea) {
+    font-size: 16px;
+  }
+  .ck-studio .ws-output {
+    margin-top: 20px;
+  }
+  .ck-paper-bay > .ws-output {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin: 0;
+    flex-wrap: nowrap;
+  }
+  .ck-paper-bay > .ws-output button {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  .ck-paper-bay > .ws-error {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    z-index: 1;
+    margin: 0;
+  }
+  .ck-studio .ws-output > button {
+    min-height: 46px;
+  }
+  .ck-studio .ck-paper-focus .ws-desk {
+    grid-template-columns: 1fr;
+    grid-template-areas: "paper";
+  }
+  .ck-paper-focus .ws-desk > .ws-controls,
+  .ck-paper-focus .ws-stage > :not(.ck-paper-bay) {
+    display: none;
+  }
+  .ck-paper-focus .ck-paper-bay {
+    padding-inline: clamp(16px, 2vw, 32px);
+  }
+  .ck-studio .ws-wizard-form {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    margin: 0;
+    padding: 20px 28px;
+  }
+  .ck-studio .ws-wizard-form:has(.ck-paper-bay) {
+    overflow: hidden;
+    padding-block: 8px;
+  }
+  .ck-studio .ws-wizard:has(.ck-paper-bay) {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+  .ck-studio .ws-wizard:has(.ck-paper-bay) > .ws-wizard-progress,
+  .ck-studio .ws-wizard:has(.ck-paper-bay) > .ws-hint,
+  .ck-studio :where(.ws-wizard:has(.ck-paper-bay)) .ws-wizard-question > p {
+    display: none;
+  }
+  .ck-studio .ws-wizard:has(.ck-paper-bay) .ws-wizard-answer {
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: flex;
+  }
+  .ck-studio .ws-wizard-answer > .ck-paper-bay {
+    flex: 1;
+  }
+  .ck-studio
+    .ws-wizard:has(.ck-paper-bay)
+    :is(.ws-wizard-top, .ws-wizard-question h2, .ws-wizard-navigation) {
+    margin: 0;
+  }
+  .ck-studio .ck-output-bay h2 {
+    font: 28px / 1.2 var(--font-serif);
+    margin: 8px 0 24px;
+  }
+  .ck-ink-guide {
+    margin-top: 24px;
+  }
+  .ck-studio .ck-ink-guide h3 {
+    font: 26px / 1.2 var(--font-serif);
+    color: #62233e;
+    margin: 0 0 12px;
+  }
+  .ck-studio .ck-ink-guide details {
+    padding: 10px 0;
+  }
+  .ck-studio .ck-ink-guide summary {
+    font: 600 16px / 1.5 var(--font-sans);
+  }
+  .ck-studio .ck-ink-guide p {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  .ck-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.13em;
+    color: #72505e;
+    font-weight: 700;
+  }
+  .ck-studio .ck-workflow h2 {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    line-height: 1.15;
+    color: #62233e;
+    margin: 8px 0 18px;
+  }
+  .ck-studio .ck-workflow p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .ck-flow-canvas {
+    height: 350px;
+    border: 1px solid #dbc0c9;
+    border-radius: 10px;
+    margin: 24px 0;
+  }
+  .ck-flow-canvas .react-flow__node {
+    border-color: #bd8198;
+    background: #fff9f6;
+    color: #62233e;
+    font-size: 16px;
+    width: 210px;
+    padding: 18px;
+    cursor: pointer;
+  }
+  .ck-flow-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ck-studio .ck-flow-links button {
+    min-height: 44px;
+    background: white;
+    border: 1px solid #dbc0c9;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 16px;
+  }
+  @keyframes ck-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @media (max-width: 1050px) {
+    .ck-studio .ws-heading {
+      grid-template-columns: minmax(0, 1fr) 270px;
+    }
+    .ck-studio .ws-heading .ws-back {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: start;
+      min-height: 32px;
+    }
+    .ck-studio .ws-heading h1 {
+      grid-row: 2;
+    }
+    .ck-studio .ws-heading > p {
+      display: none;
+    }
+    .ck-studio .ws-wizard-launch {
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
+    .ck-toolbar {
+      padding-inline: 12px;
+    }
+    .ck-studio .ws-desk {
+      grid-template-columns: minmax(300px, 350px) minmax(0, 1fr);
+    }
+    .ck-studio .ws-heading > p {
+      max-width: 40ch;
+    }
+    .ck-studio .ws-wizard-launch {
+      width: 270px;
+    }
+  }
+  @media (max-width: 720px) {
+    .ck-studio .ws-heading {
+      padding: 8px 12px;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .ck-studio .ws-heading .ws-back {
+      display: none;
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .ck-studio .ws-heading h1 {
+      font-size: 23px;
+      grid-row: 1;
+      align-self: center;
+    }
+    .ck-studio .ws-heading > p {
+      display: none;
+    }
+    .ck-studio .ws-wizard-launch {
+      grid-column: 2;
+      grid-row: 1;
+      width: auto;
+      padding: 8px 10px;
+      min-height: 50px;
+      gap: 8px;
+    }
+    .ck-studio .ws-wizard-launch strong {
+      font-size: 16px;
+    }
+    .ck-studio .ws-wizard-launch small {
+      display: none;
+    }
+    .ck-studio .ws-wizard-launch > svg:last-child {
+      display: none;
+    }
+    .ck-toolbar {
+      gap: 4px;
+      padding: 6px 8px;
+    }
+    .ck-toolbar .ck-tool {
+      font-size: 14px;
+      padding: 0 10px;
+    }
+    .ck-toolbar .ck-focus {
+      width: 44px;
+      overflow: hidden;
+      padding: 10px;
+      font-size: 0;
+      gap: 0;
+    }
+    .ck-toolbar .ck-focus svg {
+      flex-shrink: 0;
+    }
+    .ck-studio .ws-status-bar {
+      padding: 5px 16px;
+      font-size: 14px;
+    }
+    .ck-studio .ws-status-bar > span:last-child {
+      display: none;
+    }
+    .ck-studio .ws-desk {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "paper" "tools";
+      grid-template-rows: minmax(240px, 48%) minmax(0, 1fr);
+      overflow: hidden;
+    }
+    .ck-studio .ws-controls,
+    .ck-studio .ws-font-access,
+    .ck-studio .ws-text-panel,
+    .ck-studio .ws-photo-panel,
+    .ck-studio .ws-library,
+    .ck-workflow,
+    .ck-help-bay,
+    .ck-output-bay {
+      overflow: auto;
+      padding: 20px 16px;
+      border-right: 0;
+      border-top: 1px solid #dbc0c9;
+    }
+    .ck-studio .ws-controls > fieldset {
+      padding: 16px;
+    }
+    .ck-paper-bay {
+      overflow: hidden;
+      padding: 8px 12px;
+      gap: 6px;
+    }
+    .ck-paper-bay .ws-preview-top {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
+    .ck-paper-bay .ws-preview-top h2 {
+      font-size: 18px;
+      margin: 0;
+    }
+    .ck-paper-bay .ws-preview-top .ws-hint {
+      display: none;
+    }
+    .ck-paper-bay .ws-preview-top strong {
+      font-size: 13px;
+      font-weight: 400;
+    }
+    .ck-paper-bay .ws-page-nav {
+      width: auto;
+      margin: 0;
+      font-size: 13px;
+      gap: 4px;
+    }
+    .ck-paper-bay .ws-page-nav button {
+      min-width: 36px;
+    }
+    .ck-paper-bay .ws-preview-controls button {
+      font-size: 0;
+      width: 44px;
+      height: 44px;
+      padding: 10px;
+      gap: 0;
+    }
+    .ck-studio .ck-paper-material button {
+      font-size: 14px;
+      padding: 8px 10px;
+    }
+    .ck-paper-material .ws-size-actions {
+      gap: 6px;
+    }
+    .ck-studio .ws-preview-mat {
+      padding: 8px;
+    }
+    .ck-paper-focus .ws-desk {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+    }
+    .ck-paper-focus .ck-paper-bay {
+      padding: 12px;
+    }
+    .ck-studio .ws-wizard-form {
+      padding: 16px;
+    }
+    .ck-studio .ws-wizard-question h2 {
+      font-size: 22px;
+    }
+  }
+  @media (min-width: 1500px) {
+    .ck-studio .ws-font-card {
+      padding: 18px;
+    }
+  }
+  @media (max-height: 620px) {
+    .ck-studio .ws-heading {
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding: 8px 16px;
+    }
+    .ck-studio .ws-heading :is(.ws-back, p) {
+      display: none;
+    }
+    .ck-studio .ws-heading h1 {
+      grid-row: 1;
+      font-size: 26px;
+    }
+    .ck-studio .ws-wizard-launch {
+      grid-column: 2;
+      grid-row: 1;
+      width: auto;
+      min-height: 48px;
+    }
+    .ck-studio .ws-wizard-launch small {
+      display: none;
+    }
+    .ck-studio .ws-status-bar {
+      display: none;
+    }
+    .ck-paper-bay .ws-preview-top .ws-hint {
+      display: none;
+    }
+    .ck-paper-bay .ws-preview-top h2 {
+      display: none;
+    }
+    .ck-paper-bay .ws-preview-top {
+      min-height: 36px;
+      flex-direction: row;
+    }
+    .ck-paper-bay .ws-preview-top strong {
+      font-size: 13px;
+    }
+    .ck-paper-bay .ws-page-nav button {
+      min-height: 36px;
+      min-width: 36px;
+    }
+    .ck-paper-bay .ws-preview-controls button {
+      font-size: 0;
+      width: 44px;
+      height: 44px;
+      padding: 10px;
+      gap: 0;
+    }
+    .ck-studio .ck-paper-material button {
+      font-size: 14px;
+      padding: 8px 10px;
+    }
+    .ck-studio .ws-preview-mat {
+      padding: 6px;
+    }
+    .ck-paper-bay > .ws-output button {
+      min-height: 44px;
+      padding: 8px;
+      font-size: 14px;
+    }
+    .ck-paper-bay {
+      padding: 8px 12px;
+      gap: 6px;
+      grid-template-columns: 44px minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+    .ck-paper-bay .ws-preview-top {
+      display: none;
+    }
+    .ck-paper-bay .ws-preview-mat {
+      grid-row: 1;
+    }
+    .ck-paper-bay .ws-preview-controls {
+      grid-row: 2;
+      grid-column: 1;
+    }
+    .ck-paper-bay > .ws-output {
+      grid-row: 2;
+      grid-column: 2;
+    }
+  }
+  @media (max-height: 620px) and (max-width: 720px) {
+    .ck-studio .ws-desk {
+      grid-template-columns: minmax(220px, 42%) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      grid-template-areas: "tools paper";
+    }
+    .ck-paper-focus .ws-desk {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "paper";
+    }
+    .ck-studio .ws-status-bar {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ck-studio *,
+    .ck-studio *::before,
+    .ck-studio *::after {
+      /* biome-ignore lint/complexity/noImportantStyles: Honor reduced motion over every nested preview/graph component. */
+      animation: none !important;
+      /* biome-ignore lint/complexity/noImportantStyles: Honor reduced motion over every nested preview/graph component. */
+      transition: none !important;
+      /* biome-ignore lint/complexity/noImportantStyles: Honor reduced motion over every nested preview/graph component. */
+      scroll-behavior: auto !important;
+    }
+  }
+}

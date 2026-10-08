@@ -23,6 +23,13 @@ export default function Home() {
               The wrapped poem, source dimensions, and fabrication files.
             </span>
           </Link>
+          <Link to="/poems">
+            <strong>The finished poems</strong>
+            <span>
+              Each major poem on its own page: the living snake's wording and
+              the three for Turncoat's shed skin.
+            </span>
+          </Link>
           <Link to="/calligraphy/practice">
             <strong>Calligraphy practice sheets</strong>
             <span>

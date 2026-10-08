@@ -30,3 +30,970 @@
 .guide-site .guide-table td {
   padding-right: 12px;
 }
+
+/* Practice studio screen presentation; PDF geometry and print rules stay separate. */
+@media screen {
+  .ws-studio {
+    --ws-ink: #253b30;
+    --ws-muted: #4e6053;
+    --ws-deep: #244d40;
+    --ws-rule: #c5cec0;
+    --ws-cream: #f8f6ef;
+    --ws-paper: #fffefa;
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .ws-heading {
+    max-width: none;
+    margin-bottom: 1.5rem;
+  }
+
+  .ws-back {
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--ws-muted);
+  }
+
+  .ws-heading h1 {
+    max-width: 22ch;
+    margin: 0.375rem 0 0.75rem;
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
+    letter-spacing: -0.04em;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+
+  .ws-heading h1 em {
+    color: var(--ws-deep);
+  }
+
+  .ws-heading > p {
+    max-width: 60ch;
+    color: var(--ws-muted);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .ws-flow-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .ws-flow-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    color: var(--ws-deep);
+    font-size: 0.875rem;
+    font-weight: 650;
+    text-decoration: underline;
+    text-decoration-color: var(--ws-rule);
+    text-underline-offset: 0.3em;
+  }
+
+  .ws-flow-links a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .ws-studio [id] {
+    scroll-margin-top: 2rem;
+  }
+
+  .ws-status-bar {
+    flex-wrap: wrap;
+    padding: 0.75rem 0;
+    border-width: 1px 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--ws-muted);
+    font-size: 0.875rem;
+  }
+
+  .ws-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    margin: 1.25rem 0 1.75rem;
+  }
+
+  .ws-presets legend {
+    margin-bottom: 0.75rem;
+    color: var(--ws-ink);
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .ws-presets button {
+    padding: 1rem;
+    text-align: left;
+    border-radius: 0.25rem;
+    background: var(--ws-paper);
+  }
+
+  .ws-preset-description {
+    display: block;
+    margin-top: 0.375rem;
+    color: var(--ws-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .ws-choice-effect {
+    padding: 1rem;
+    border: 1px solid var(--ws-rule);
+    border-radius: 0.25rem;
+    background: var(--ws-sage-pale);
+    color: var(--ws-ink);
+    font-size: 0.875rem;
+    line-height: 1.65;
+  }
+
+  .ws-choice-effect p {
+    margin: 0.5rem 0 0;
+  }
+
+  .ws-choice-effect a {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: var(--ws-deep);
+    text-underline-offset: 0.2em;
+  }
+
+  .ws-materials,
+  .ws-material-choice {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .ws-materials {
+    gap: 1.5rem;
+  }
+
+  .ws-preview-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+  }
+
+  .ws-preview-control-hint {
+    flex: 1 1 20rem;
+    margin: 0;
+  }
+
+  .ws-calligraphy-toggle[aria-pressed="true"] {
+    background: var(--ws-deep);
+    color: var(--ws-paper);
+    border-color: var(--ws-deep);
+  }
+
+  .ws-lettering-editor {
+    margin-bottom: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--ws-rule);
+    background: var(--ws-cream);
+    border-radius: 0.25rem;
+  }
+
+  .ws-lettering-editor h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-family: var(--font-serif);
+  }
+
+  .ws-special-words {
+    min-width: 0;
+    margin: 1rem 0 0;
+    padding: 0;
+    border: 0;
+    color: var(--ws-ink);
+  }
+
+  .ws-special-words legend {
+    font: 1.25rem / 1.4 var(--font-serif);
+  }
+
+  .ws-special-words textarea,
+  .ws-special-words select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .ws-special-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1rem;
+    align-items: center;
+  }
+
+  :where(.ws-special-options) label {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .ws-special-options input {
+    min-height: 2.75rem;
+  }
+
+  .ws-special-sample {
+    display: grid;
+    place-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 0.5rem;
+    margin-block: 1rem;
+    border-block: 1px solid var(--ws-rule);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .ws-special-sample span {
+    max-width: 100%;
+    font-size: 2.5rem;
+    line-height: 1.5;
+  }
+
+  .ws-special-sample figcaption {
+    font: inherit;
+  }
+
+  .ws-special-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ws-special-actions button {
+    min-height: 2.75rem;
+  }
+
+  .ws-special-actions [aria-pressed="true"] {
+    color: var(--ws-paper);
+    background: var(--ws-deep);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .ws-lettering-layer {
+    opacity: 0;
+    transition: opacity 240ms ease;
+  }
+
+  .ws-lettering-layer[data-visible="true"] {
+    opacity: 1;
+  }
+
+  .ws-studio button,
+  .ws-studio input,
+  .ws-studio select,
+  .ws-studio textarea,
+  .ws-studio a,
+  .ws-studio summary {
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .ws-wizard,
+  .ws-wizard-answer,
+  .ws-desk,
+  .ws-preview-mat,
+  .ws-choice-effect,
+  .ws-notice,
+  .ws-error {
+    animation: ws-step-enter 220ms ease-out;
+  }
+
+  @keyframes ws-step-enter {
+    from {
+      opacity: 0.5;
+      transform: translateY(0.3rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .ws-font-gallery > summary {
+    list-style: none;
+    padding: 1.5rem;
+    color: var(--ws-ink);
+  }
+
+  .ws-font-gallery > summary::-webkit-details-marker {
+    display: none;
+  }
+  .ws-gallery-chevron {
+    transition: transform 180ms ease;
+  }
+  .ws-font-gallery[open] .ws-gallery-chevron {
+    transform: rotate(180deg);
+  }
+
+  .ws-font-gallery-heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .ws-font-gallery-heading > span {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ws-font-gallery-heading strong {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .ws-font-gallery-heading small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .ws-font-miniatures {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+    padding: 1.25rem 0 0;
+    font-size: 2.5rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--ws-deep);
+  }
+
+  .ws-font-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .ws-font-grid > button {
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 0.25rem;
+    background: var(--ws-paper);
+    color: var(--ws-ink);
+    box-shadow: none;
+  }
+
+  .ws-font-sample {
+    padding: 0.5rem 0;
+    overflow: visible;
+    font-size: clamp(2.25rem, 3vw, 3.5rem);
+    line-height: 1.5;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: var(--ws-deep);
+  }
+
+  .ws-font-alphabet {
+    font-size: 2rem;
+    line-height: 1.5;
+  }
+
+  .ws-font-selection {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--ws-rule);
+    font-size: 1rem;
+  }
+
+  .ws-lettering-size,
+  .ws-surface-control {
+    margin: 1rem 0;
+    padding: 1.25rem;
+    border: 1px solid var(--ws-rule);
+    background: var(--ws-cream);
+  }
+
+  .ws-lettering-size legend {
+    color: var(--ws-ink);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .ws-size-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1.5rem;
+  }
+
+  .ws-lettering-closeup {
+    min-width: 0;
+    margin: 0 0 1rem;
+    color: var(--ck-text-strong, var(--ws-deep));
+    container-type: inline-size;
+  }
+
+  .ws-lettering-closeup svg {
+    display: block;
+    width: 100%;
+    height: clamp(5rem, 24cqi, 8rem);
+    fill: currentColor;
+  }
+
+  .ws-lettering-closeup figcaption {
+    margin-top: 0.25rem;
+    color: var(--ck-text-muted, var(--ws-muted));
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .ws-size-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ws-ink);
+    font-size: 1rem;
+  }
+
+  .ws-size-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .ws-size-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ws-size-actions button[aria-pressed="true"],
+  .ws-studio .ws-size-actions button[aria-pressed="true"]:hover:not(:disabled) {
+    background: var(--ws-deep);
+    color: var(--ws-paper);
+  }
+
+  .ws-paper-surface {
+    transition: fill 240ms ease;
+  }
+
+  .ws-paper[data-surface="vellum"] .ws-paper-surface {
+    fill: rgb(255 252 234 / 76%);
+  }
+
+  .ws-paper[data-surface="smooth"] .ws-paper-surface {
+    fill: #fffdf4;
+  }
+
+  .ws-presets button[aria-pressed="true"] {
+    outline: 2px solid var(--ws-deep);
+    outline-offset: -2px;
+    background: var(--ws-sage-pale);
+  }
+
+  .ws-presets button[aria-pressed="true"]::after {
+    display: block;
+    margin-top: 0.25rem;
+    content: "Selected";
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .ws-desk {
+    grid-template-columns: minmax(18rem, 21rem) minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  .ws-controls,
+  .ws-text-panel,
+  .ws-photo-panel,
+  .ws-library,
+  .ws-font-access {
+    border-color: var(--ws-rule);
+    border-radius: 0.25rem;
+    box-shadow: none;
+    background: var(--ws-cream);
+  }
+
+  .ws-controls summary,
+  .ws-photo-panel > summary,
+  .ws-library > summary,
+  .ws-techniques summary {
+    padding: 1.125rem 2.5rem 1.125rem 1.125rem;
+    font-size: 1.125rem;
+    color: var(--ws-ink);
+    line-height: 1.4;
+  }
+
+  .ws-detail-body {
+    gap: 1.125rem;
+    padding: 0.25rem 1.125rem 1.25rem;
+  }
+
+  .ws-field,
+  :where(.ws-photo fieldset, .ws-photo__apply) > label,
+  .ws-inline-choice legend,
+  .ws-font-features legend {
+    color: var(--ws-muted);
+    font-size: 0.875rem;
+    letter-spacing: 0;
+    line-height: 1.5;
+  }
+
+  .ws-special-words .ws-field {
+    font-size: 1rem;
+  }
+
+  .ws-field
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .ws-field select,
+  .ws-field textarea,
+  .ws-photo input[type="number"],
+  .ws-panel-heading select {
+    font-size: 1rem;
+    border-color: #8b9b88;
+  }
+
+  .ws-studio input::placeholder,
+  .ws-studio textarea::placeholder,
+  .worksheet-editor .cm-placeholder {
+    color: var(--ws-muted);
+    opacity: 1;
+  }
+
+  .ws-studio button,
+  .ws-toggle,
+  .ws-file,
+  .ws-photo__file-label,
+  .ws-inline-choice label {
+    min-height: 2.75rem;
+    font-size: 0.875rem;
+  }
+
+  .ws-toggle {
+    color: var(--ws-ink);
+  }
+
+  .ws-hint,
+  .worksheet-editor-help,
+  .worksheet-editor > p,
+  .ws-estimate,
+  .ws-font-note,
+  .ws-font-warning,
+  .ws-photo > small,
+  .ws-photo__apply small,
+  .ws-photo__figure figcaption,
+  .ws-photo__heading p,
+  .ws-photo__accuracy p,
+  .ws-photo__tool-note,
+  .ws-technique-grid p {
+    color: var(--ws-muted);
+    font-size: 0.875rem;
+    line-height: 1.65;
+  }
+
+  .ws-preview-top h2 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  .ws-preview-top strong,
+  .ws-page-nav {
+    color: var(--ws-muted);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .ws-preview-mat {
+    min-height: 0;
+    padding: clamp(1rem, 2.5vw, 2rem);
+    border-color: var(--ws-rule);
+    border-radius: 0.25rem;
+    background: #dfe5d8;
+  }
+
+  .ws-output button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 3rem;
+  }
+
+  .ws-output .ws-toggle {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+
+  .ws-font-access {
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1rem 1.25rem 1.25rem;
+    background: var(--ws-sage-pale);
+  }
+
+  .ws-font-access > legend {
+    font-family: var(--font-serif);
+    font-size: 1.375rem;
+    font-weight: 500;
+  }
+
+  .ws-font-access > button {
+    justify-self: start;
+    padding: 0.5rem 0.875rem;
+  }
+
+  .ws-font-gallery > summary,
+  .ws-glyph-browser > summary,
+  .ws-font-advanced > summary,
+  .ws-font-card-title small,
+  .ws-font-grid > button > span:last-child,
+  .ws-font-features strong {
+    color: var(--ws-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .ws-font-card-title {
+    flex-wrap: wrap;
+  }
+
+  .ws-font-grid > button.is-selected {
+    outline: 2px solid var(--ws-deep);
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+
+  .ws-font-note {
+    border: 1px solid var(--ws-rule);
+  }
+
+  .ws-studio :is(button, a, summary, input, select, textarea):focus-visible {
+    outline: 2px solid var(--ws-deep);
+    outline-offset: 3px;
+  }
+
+  .ws-file:focus-within,
+  .ws-photo__file-label:focus-within {
+    outline: 2px solid var(--ws-deep);
+    outline-offset: 3px;
+  }
+
+  .ws-wizard-launch {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: min(100%, 35rem);
+    min-height: 6rem;
+    margin: 1.5rem 0 0.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--ws-deep);
+    border-radius: 0.375rem;
+    background: var(--ws-deep);
+    color: var(--ws-paper);
+    text-align: left;
+  }
+
+  .ws-wizard-launch > span {
+    display: grid;
+    flex: 1;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .ws-wizard-launch strong {
+    font-family: var(--font-serif);
+    font-size: clamp(1.375rem, 3vw, 1.75rem);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .ws-wizard-launch small {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .ws-wizard-launch > svg {
+    flex: 0 0 auto;
+  }
+
+  .ws-studio .ws-wizard-launch:hover:not(:disabled),
+  .ws-studio .ws-wizard-next:hover:not(:disabled) {
+    border-color: var(--ws-ink);
+    background: var(--ws-ink);
+  }
+
+  .ws-wizard {
+    max-width: 54rem;
+    margin: 2rem auto;
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    border: 1px solid var(--ws-rule);
+    border-radius: 0.375rem;
+    background: var(--ws-paper);
+  }
+
+  .ws-wizard-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .ws-wizard-count {
+    margin: 0;
+    color: var(--ws-deep);
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .ws-wizard-top button,
+  .ws-wizard-navigation button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+
+  .ws-wizard-progress {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    gap: 0.5rem;
+    padding: 0;
+    margin: 1rem 0 2rem;
+    list-style: none;
+  }
+
+  .ws-wizard-progress li {
+    padding: 0.75rem 0;
+    border-top: 3px solid var(--ws-rule);
+    color: var(--ws-muted);
+    font-size: 0.875rem;
+  }
+
+  .ws-wizard-progress li[aria-current="step"] {
+    border-color: var(--ws-deep);
+    color: var(--ws-deep);
+    font-weight: 700;
+  }
+
+  .ws-wizard-question h2 {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.875rem, 4vw, 2.75rem);
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .ws-wizard-question p {
+    max-width: 58ch;
+    margin: 0 0 1.5rem;
+    color: var(--ws-muted);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .ws-wizard-answer {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .ws-wizard .ws-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 0.75rem;
+    margin: 0;
+  }
+
+  .ws-wizard .ws-presets button {
+    min-height: 4.5rem;
+    padding: 1rem;
+    background: var(--ws-cream);
+    font-size: 1.125rem;
+    text-align: left;
+  }
+
+  .ws-wizard .ws-preset-description {
+    display: block;
+    margin-top: 0.375rem;
+    color: var(--ws-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .ws-wizard-fields {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 40rem;
+  }
+
+  .ws-wizard .ws-field,
+  .ws-wizard .ws-toggle {
+    font-size: 1rem;
+  }
+
+  .ws-wizard-blank {
+    margin: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--ws-rule);
+    background: var(--ws-sage-pale);
+    color: var(--ws-ink);
+    font-family: var(--font-serif);
+    font-size: 1.375rem;
+    line-height: 1.5;
+  }
+
+  .ws-wizard-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 2rem 0 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--ws-rule);
+  }
+
+  .ws-wizard-next {
+    border: 1px solid var(--ws-deep);
+    border-radius: 0.25rem;
+    background: var(--ws-deep);
+    color: var(--ws-paper);
+    font-weight: 650;
+  }
+
+  .ws-studio details[open] > .ws-detail-body {
+    animation: ws-step-enter 180ms ease-out;
+  }
+}
+
+@media screen {
+  .ws-font-finish {
+    margin: 1.25rem 0;
+    padding: 1.25rem;
+    border: 1px solid var(--ws-rule);
+    background: var(--ws-cream);
+    color: var(--ws-ink);
+  }
+
+  .ws-font-finish > summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: 2.75rem;
+    cursor: pointer;
+    font-size: 1.125rem;
+    font-weight: 650;
+  }
+
+  .ws-font-finish > summary span {
+    flex-basis: 100%;
+    color: var(--ws-muted);
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .ws-font-finish ol {
+    display: grid;
+    gap: 1.25rem;
+    padding-inline-start: 1.5rem;
+    line-height: 1.65;
+  }
+
+  .ws-font-finish__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .ws-font-finish__actions a,
+  .ws-font-finish__actions .ws-file {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    color: var(--ws-deep);
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .ws-desk {
+    grid-template-columns: minmax(17rem, 19rem) minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .ws-desk {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .ws-heading h1 {
+    font-size: clamp(2.25rem, 9vw, 3rem);
+    letter-spacing: -0.04em;
+  }
+
+  .ws-heading h1 em {
+    display: block;
+  }
+
+  .ws-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ws-font-access {
+    padding: 1rem;
+  }
+
+  .ws-font-access-row > .ws-field {
+    flex-basis: 100%;
+  }
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  .ws-studio *,
+  .ws-studio *::before,
+  .ws-studio *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: Override nested worksheet animation specificity for reduced motion. */
+    animation: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Override nested worksheet transition specificity for reduced motion. */
+    transition: none !important;
+    scroll-behavior: auto;
+  }
+}
